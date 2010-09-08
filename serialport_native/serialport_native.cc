@@ -465,33 +465,33 @@ void signal_handler_IO (int status)
     long PARITY;
 
     if (!args[0]->IsString()) {
-      return THROW_BAD_ARGS;
+      return scope.Close(THROW_BAD_ARGS);
     }
     
     // Baud Rate Argument
     if (args.Length() >= 2 && !args[1]->IsInt32()) {
-      return THROW_BAD_ARGS;
+      return scope.Close(THROW_BAD_ARGS);
     } else {
       Baud_Rate = args[1]->Int32Value();
     }
 
     // Data Bits Argument
     if (args.Length() >= 3 && !args[2]->IsInt32()) {
-      return THROW_BAD_ARGS;
+      return scope.Close(THROW_BAD_ARGS);
     } else {
       Data_Bits = args[2]->Int32Value();
     }
 
     // Stop Bits Arguments
     if (args.Length() >= 4 && !args[3]->IsInt32()) {
-      return THROW_BAD_ARGS;
+      return scope.Close(THROW_BAD_ARGS);
     } else {
       Stop_Bits = args[2]->Int32Value();
     }
 
     // Parity Arguments
     if (args.Length() >= 5 && !args[4]->IsInt32()) {
-      return THROW_BAD_ARGS;
+      return scope.Close(THROW_BAD_ARGS);
     } else {
       Parity = args[2]->Int32Value();
     }
@@ -602,7 +602,7 @@ void signal_handler_IO (int status)
     int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK);
     
     int fd = open(*path, flags);
-    if (fd < 0) return ThrowException(errno_exception(errno));
+    if (fd < 0) return scope.Close(ThrowException(errno_exception(errno)));
 
     struct sigaction saio; 
     saio.sa_handler = signal_handler_IO;
@@ -634,7 +634,7 @@ void signal_handler_IO (int status)
     HandleScope scope;
 
     if (args.Length() < 3 || !args[0]->IsInt32()) {
-      return THROW_BAD_ARGS;
+      return scope.Close(THROW_BAD_ARGS);
     }
 
     int fd = args[0]->Int32Value();
@@ -644,7 +644,7 @@ void signal_handler_IO (int status)
     ssize_t len = DecodeBytes(args[1], enc);
     if (len < 0) {
       Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
-      return ThrowException(exception);
+      return scope.Close(ThrowException(exception));
     }
 
     char * buf = new char[len];
@@ -655,7 +655,7 @@ void signal_handler_IO (int status)
       ASYNC_CALL(write, args[3], fd, buf, len, offset)
     } else {
       written = write(fd, buf, len);
-      if (written < 0) return ThrowException(errno_exception(errno));
+      if (written < 0) return scope.Close(ThrowException(errno_exception(errno)));
       return scope.Close(Integer::New(written));
     }
   }
@@ -664,7 +664,7 @@ void signal_handler_IO (int status)
     HandleScope scope;
     
     if (args.Length() < 1 || !args[0]->IsInt32()) {
-      return THROW_BAD_ARGS;
+      return scope.Close(THROW_BAD_ARGS);
     }
     
     int fd = args[0]->Int32Value();
@@ -673,8 +673,12 @@ void signal_handler_IO (int status)
       ASYNC_CALL(close, args[1], fd)
         } else {
       int ret = close(fd);
-      if (ret != 0) return ThrowException(errno_exception(errno));
-      return Undefined();
+      if (ret != 0) {
+        
+        return scope.Close(ThrowException(errno_exception(errno)));
+      }
+      
+      return scope.Close(Undefined());
     }
   }
 
