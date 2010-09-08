@@ -25,19 +25,6 @@ namespace node {
 
 using namespace v8;
 
-
-
-#define THROW_BAD_ARGS ThrowException(Exception::TypeError(String::New("Bad argument")))
-
-
-
-#define ASYNC_CALL(func, callback, ...)                           \
-  eio_req *req = eio_##func(__VA_ARGS__, EIO_PRI_DEFAULT, After,  \
-    cb_persist(callback));                                        \
-  assert(req);                                                    \
-  ev_ref(EV_DEFAULT_UC);                                          \
-  return Undefined();
-
 static Persistent<String> encoding_symbol;
 static Persistent<String> errno_symbol;
 
@@ -47,6 +34,132 @@ static inline Local<Value> errno_exception(int errorno) {
   obj->Set(errno_symbol, Integer::New(errorno));
   return e;
 }
+
+#define THROW_BAD_ARGS ThrowException(Exception::TypeError(String::New("Bad argument")))
+static int After(eio_req *req) {
+  HandleScope scope;
+
+  Persistent<Function> *callback = cb_unwrap(req->data);
+
+  ev_unref(EV_DEFAULT_UC);
+
+  int argc = 0;
+  Local<Value> argv[6];  // 6 is the maximum number of args
+
+  if (req->errorno != 0) {
+    argc = 1;
+    argv[0] = errno_exception(req->errorno);
+  } else {
+    // Note: the error is always given the first argument of the callback.
+    // If there is no error then then the first argument is null.
+    argv[0] = Local<Value>::New(Null());
+
+    switch (req->type) {
+      case EIO_CLOSE:
+      case EIO_RENAME:
+      case EIO_UNLINK:
+      case EIO_RMDIR:
+      case EIO_MKDIR:
+      case EIO_FTRUNCATE:
+      case EIO_LINK:
+      case EIO_SYMLINK:
+      case EIO_CHMOD:
+        argc = 0;
+        break;
+
+      case EIO_OPEN:
+      case EIO_SENDFILE:
+        argc = 2;
+        argv[1] = Integer::New(req->result);
+        break;
+
+      case EIO_WRITE:
+        argc = 2;
+        argv[1] = Integer::New(req->result);
+        break;
+
+      case EIO_STAT:
+      case EIO_LSTAT:
+      {
+        struct stat *s = reinterpret_cast<struct stat*>(req->ptr2);
+        argc = 2;
+        argv[1] = BuildStatsObject(s);
+        break;
+      }
+      
+      case EIO_READLINK:
+      {
+        argc = 2;
+        argv[1] = String::New(static_cast<char*>(req->ptr2), req->result);
+        break;
+      }
+
+      case EIO_READ:
+      {
+        argc = 3;
+        Local<Object> obj = Local<Object>::New(*callback);
+        Local<Value> enc_val = obj->GetHiddenValue(encoding_symbol);
+        argv[1] = Encode(req->ptr2, req->result, ParseEncoding(enc_val));
+        argv[2] = Integer::New(req->result);
+        break;
+      }
+
+      case EIO_READDIR:
+      {
+        char *namebuf = static_cast<char*>(req->ptr2);
+        int nnames = req->result;
+
+        Local<Array> names = Array::New(nnames);
+
+        for (int i = 0; i < nnames; i++) {
+          Local<String> name = String::New(namebuf);
+          names->Set(Integer::New(i), name);
+#ifndef NDEBUG
+          namebuf += strlen(namebuf);
+          assert(*namebuf == '\0');
+          namebuf += 1;
+#else
+          namebuf += strlen(namebuf) + 1;
+#endif
+        }
+
+        argc = 2;
+        argv[1] = names;
+        break;
+      }
+
+      default:
+        assert(0 && "Unhandled eio response");
+    }
+  }
+
+  if (req->type == EIO_WRITE) {
+    assert(req->ptr2);
+    delete [] reinterpret_cast<char*>(req->ptr2);
+  }
+
+  TryCatch try_catch;
+
+  (*callback)->Call(Context::GetCurrent()->Global(), argc, argv);
+
+  if (try_catch.HasCaught()) {
+    FatalException(try_catch);
+  }
+
+  // Dispose of the persistent handle
+  cb_destroy(callback);
+
+  return 0;
+}
+
+
+#define ASYNC_CALL(func, callback, ...)                           \
+  eio_req *req = eio_##func(__VA_ARGS__, EIO_PRI_DEFAULT, After,  \
+    cb_persist(callback));                                        \
+  assert(req);                                                    \
+  ev_ref(EV_DEFAULT_UC);                                          \
+  return Undefined();
+
 
   /*
 
@@ -516,40 +629,37 @@ void signal_handler_IO (int status)
     return scope.Close(Integer::New(fd));
   }
 
+  
   static Handle<Value> Write(const Arguments& args) {
     HandleScope scope;
-    
+
     if (args.Length() < 3 || !args[0]->IsInt32()) {
       return THROW_BAD_ARGS;
     }
-    
+
     int fd = args[0]->Int32Value();
     off_t offset = -1;
-    
-    enum encoding enc = ParseEncoding(args[3]);
+
+    enum encoding enc = ParseEncoding(args[2]);
     ssize_t len = DecodeBytes(args[1], enc);
     if (len < 0) {
-      return THROW_BAD_ARGS;
+      Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
+      return ThrowException(exception);
     }
-    
+
     char * buf = new char[len];
     ssize_t written = DecodeWrite(buf, len, args[1], enc);
     assert(written == len);
-    
-    if (args[4]->IsFunction()) {
-      ASYNC_CALL(write, args[4], fd, buf, len, offset)
-        } else {
-      if (offset < 0) {
-        written = write(fd, buf, len);
-      } else {
-        written = pwrite(fd, buf, len, offset);
-      }
+
+    if (args[3]->IsFunction()) {
+      ASYNC_CALL(write, args[3], fd, buf, len, offset)
+    } else {
+      written = write(fd, buf, len);
       if (written < 0) return ThrowException(errno_exception(errno));
       return scope.Close(Integer::New(written));
     }
   }
   
-
   static Handle<Value> Close(const Arguments& args) {
     HandleScope scope;
     
@@ -574,7 +684,7 @@ void signal_handler_IO (int status)
     
     NODE_SET_METHOD(target, "close", Close);
     NODE_SET_METHOD(target, "open", Open);
-    //    NODE_SET_METHOD(target, "write", Write);
+    NODE_SET_METHOD(target, "write", Write);
     
     errno_symbol = NODE_PSYMBOL("errno");
     encoding_symbol = NODE_PSYMBOL("node:encoding");
