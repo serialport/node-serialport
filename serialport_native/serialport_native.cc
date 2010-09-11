@@ -1,5 +1,5 @@
 // Copyright 2010 Chris Williams <chris@iterativedesigns.com>
-#include <serialport_native.h>
+#include "serialport_native.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
