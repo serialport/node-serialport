@@ -62,7 +62,7 @@ public:
     t->InstanceTemplate()->SetInternalFieldCount(1);
       
     data_symbol = NODE_PSYMBOL("data");
-	  close_symbol = NODE_PSYMBOL("close");
+    close_symbol = NODE_PSYMBOL("close");
       
     NODE_SET_PROTOTYPE_METHOD(t, "open", Open);
     NODE_SET_PROTOTYPE_METHOD(t, "close", Close);
@@ -74,13 +74,13 @@ public:
     
   void signal_handler_IO (int status)
   {
-		printf("%i", status);
+    printf("%i", status);
     printf("received SIGIO signal.\n");
   }
 
 
   bool Open(const char* path, int baudrate, int databits, int stopbits, int parity) {
-		if (fd_) return false;
+    if (fd_) return false;
     struct termios newtio; 
 
     long BAUD;
@@ -192,9 +192,9 @@ public:
 
     struct sigaction saio; 
 
-		// TODO: Hook event emitter to signal handler
+    // TODO: Hook event emitter to signal handler
     // saio.sa_handler = signal_handler_IO;
-		// ENDTODO
+    // ENDTODO
 
     sigemptyset(&saio.sa_mask);   //saio.sa_mask = 0;
     saio.sa_flags = 0;
@@ -215,8 +215,8 @@ public:
     tcflush(fd_, TCIFLUSH);
     tcsetattr(fd_,TCSANOW,&newtio);
 
-		Ref();
-		
+    Ref();
+    
     return true;
   }
 
@@ -225,13 +225,13 @@ public:
     return written;
   }
 
-	void Close (Local<Value> exception = Local<Value>())
+  void Close (Local<Value> exception = Local<Value>())
   {
     HandleScope scope;
-		if (fd_)	{
-			close(fd_);
-			fd_ = NULL;
-		}
+    if (fd_)  {
+      close(fd_);
+      fd_ = NULL;
+    }
     Emit(close_symbol, 0, NULL);
     Unref();
   }
@@ -240,105 +240,106 @@ public:
 
 protected:
 
-	static Handle<Value>
-	New (const Arguments& args)
-	{
-	  HandleScope scope;
+  static Handle<Value>
+  New (const Arguments& args)
+  {
+    HandleScope scope;
 
-	  SerialPort *serial_port = new SerialPort();
-	  serial_port->Wrap(args.This());
+    SerialPort *serial_port = new SerialPort();
+    serial_port->Wrap(args.This());
 
-	  return scope.Close(args.This());
-	}
-	
-	static Handle<Value>
-	Write (const Arguments& args)
-	{
-	  HandleScope scope;
+    return scope.Close(args.This());
+  }
+  
+  static Handle<Value>
+  Write (const Arguments& args)
+  {
+    HandleScope scope;
       
-	  SerialPort *serial_port = ObjectWrap::Unwrap<SerialPort>(args.This());
-		if (!Buffer::HasInstance(args[0])) {
-	    return ThrowException(Exception::Error(
-	                String::New("Second argument needs to be a buffer")));
-	  }
+    SerialPort *serial_port = ObjectWrap::Unwrap<SerialPort>(args.This());
+    
+    
+    
+    if (!Buffer::HasInstance(args[0])) {
+      return ThrowException(Exception::Error(String::New("First argument needs to be a buffer")));
+    }
 
-	  Local<Object> buffer_obj = args[0]->ToObject();
-	  char *buffer_data = Buffer::Data(buffer_obj);
-	  size_t buffer_length = Buffer::Length(buffer_obj);
-	
-		if (buffer_length < 0) {
+    Buffer * buffer = ObjectWrap::Unwrap<Buffer>(args[1]->ToObject());
+    int buffer_length = buffer->length();
+    char * buf = (char*)buffer->data();
+    if (buffer_length < 0) {
       return ThrowException(Exception::TypeError(String::New("Bad argument")));
     }
-		int written = serial_port->Write(buffer_data, buffer_length);
+    int written = serial_port->Write(buf, buffer_length);
     if (written < 0) return ThrowException(Exception::Error(String::NewSymbol(strerror(errno))));
-		return scope.Close(Integer::New(written));
-	}
-	
-	
-	
-	static Handle<Value>
-	Open (const Arguments& args)
-	{
-	  HandleScope scope;
+    return scope.Close(Integer::New(written));
+  }
+  
+  
+  
+  static Handle<Value>
+  Open (const Arguments& args)
+  {
+    HandleScope scope;
       
-	  SerialPort *serial_port = ObjectWrap::Unwrap<SerialPort>(args.This());
+    SerialPort *serial_port = ObjectWrap::Unwrap<SerialPort>(args.This());
       
-	  long baudrate = 38400;
-	  int databits = 8;
-	  int stopbits = 1;
-	  int parity = 0;
+    long baudrate = 38400;
+    int databits = 8;
+    int stopbits = 1;
+    int parity = 0;
 
-	  if (!args[0]->IsString()) {
-	    return scope.Close(ThrowException(Exception::Error(String::New("Must give serial device string as argument"))));
-	  }
+    if (!args[0]->IsString()) {
+      return scope.Close(ThrowException(Exception::Error(String::New("Must give serial device string as argument"))));
+    }
 
-	  String::Utf8Value path(args[0]->ToString());
+    String::Utf8Value path(args[0]->ToString());
 
-	  // Baud Rate Argument
-	  if (args.Length() >= 2 && !args[1]->IsInt32()) {
-	    return scope.Close(ThrowException(Exception::Error(
-	                                                       String::New("If giving baud rate, must be a integer value."))));
-	  } else {
-	    baudrate = args[1]->Int32Value();
-	  }
+    // Baud Rate Argument
+    if (args.Length() >= 2 && !args[1]->IsInt32()) {
+      return scope.Close(ThrowException(Exception::Error(
+                                                         String::New("If giving baud rate, must be a integer value."))));
+    } else {
+      baudrate = args[1]->Int32Value();
+    }
 
-	  // Data Bits Argument
-	  if (args.Length() >= 3 && !args[2]->IsInt32()) {
-	    return scope.Close(ThrowException(Exception::Error(
-	                                                       String::New("If giving data bits, must be a integer value."))));
-	  } else {
-	    databits = args[2]->Int32Value();
-	  }
+    // Data Bits Argument
+    if (args.Length() >= 3 && !args[2]->IsInt32()) {
+      return scope.Close(ThrowException(Exception::Error(
+                                                         String::New("If giving data bits, must be a integer value."))));
+    } else {
+      databits = args[2]->Int32Value();
+    }
 
-	  // Stop Bits Arguments
-	  if (args.Length() >= 4 && !args[3]->IsInt32()) {
-	    return scope.Close(ThrowException(Exception::Error(
-	                                                       String::New("If giving stop bits, must be a integer value."))));
-	  } else {
-	    stopbits = args[3]->Int32Value();
-	  }
+    // Stop Bits Arguments
+    if (args.Length() >= 4 && !args[3]->IsInt32()) {
+      return scope.Close(ThrowException(Exception::Error(
+                                                         String::New("If giving stop bits, must be a integer value."))));
+    } else {
+      stopbits = args[3]->Int32Value();
+    }
 
-	  // parity Arguments
-	  if (args.Length() >= 5 && !args[4]->IsInt32()) {
-	    return scope.Close(ThrowException(Exception::Error(
-	                                                       String::New("If giving parity, must be a integer value."))));
-	  } else {
-	    parity = args[4]->Int32Value();
-	  }
+    // parity Arguments
+    if (args.Length() >= 5 && !args[4]->IsInt32()) {
+      return scope.Close(ThrowException(Exception::Error(
+                                                         String::New("If giving parity, must be a integer value."))));
+    } else {
+      parity = args[4]->Int32Value();
+    }
       
       
       
-	  bool r = serial_port->Open(*path, baudrate, databits, stopbits, parity);
-	  if (!r) {
-	    return ThrowException(Exception::Error(
-	                                           String::New("Could not open serial port.")));
-	  }
+    bool r = serial_port->Open(*path, baudrate, databits, stopbits, parity);
+    if (!r) {
+      return ThrowException(Exception::Error(
+                                             String::New("Could not open serial port.")));
+    }
 
-	  return scope.Close(Undefined());
-	}
-	
-	
-	
+    return scope.Close(Undefined());
+  }
+  
+  
+  
   static Handle<Value>
   Close (const Arguments& args)
   {
@@ -350,41 +351,41 @@ protected:
 
 
 
-	// static Handle<Value>
-	// Close (const Arguments& args) 
-	// {
-	//   HandleScope scope;
-	// 	if (fd_) {
-	//     int ret = close(fd_);
-	//     if (ret != 0) return scope.Close(ThrowException(ErrnoException(errno)));
-	// 	}
-	//     return scope.Close(Undefined());
-	// }
-	    
-	//     
-	// static Handle<Value>
-	// Write (const Arguments& args)
-	// {
-	//       
-	// }
-	// 
-	//   
-	//   
+  // static Handle<Value>
+  // Close (const Arguments& args) 
+  // {
+  //   HandleScope scope;
+  //  if (fd_) {
+  //     int ret = close(fd_);
+  //     if (ret != 0) return scope.Close(ThrowException(ErrnoException(errno)));
+  //  }
+  //     return scope.Close(Undefined());
+  // }
+      
+  //     
+  // static Handle<Value>
+  // Write (const Arguments& args)
+  // {
+  //       
+  // }
+  // 
+  //   
+  //   
 
-	SerialPort () : EventEmitter () 
-	{
-	  fd_ = NULL;
-	}
+  SerialPort () : EventEmitter () 
+  {
+    fd_ = NULL;
+  }
 
-	~SerialPort ()
-	{
-		if(fd_) { 
-			close(fd_); 
-			fd_ = NULL;
-		}
-	}
+  ~SerialPort ()
+  {
+    if(fd_) { 
+      close(fd_); 
+      fd_ = NULL;
+    }
+  }
 private:
-	int fd_;
+  int fd_;
     // 
     //     
     //     
