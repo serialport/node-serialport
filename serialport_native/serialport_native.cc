@@ -186,13 +186,13 @@ class SerialPort : public EventEmitter {
     }
     
     
-    void signal_handler_IO (int status)
+    static void signal_handler_IO (int status)
     {
        printf("received SIGIO signal.\n");
     }
 
 
-    static Handle<Value> Open(const char* device, int baudrate, int databits, int stopbits, int parity) {
+    static Handle<Value> Open(const char* path, int baudrate, int databits, int stopbits, int parity) {
       HandleScope scope;
 
       struct termios newtio; 
@@ -300,15 +300,15 @@ class SerialPort : public EventEmitter {
         }
 
 
-      String::Utf8Value path(device->ToString());
+
 
       int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK);
 
-      int fd = open(*path, flags);
+      int fd = open(path, flags);
       if (fd < 0) return scope.Close(ThrowException(errno_exception(errno)));
 
       struct sigaction saio; 
-      saio.sa_handler = signal_handler_IO;
+      saio.sa_handler = &SerialPort::signal_handler_IO;
       sigemptyset(&saio.sa_mask);   //saio.sa_mask = 0;
       saio.sa_flags = 0;
       //    saio.sa_restorer = NULL;
@@ -417,6 +417,8 @@ class SerialPort : public EventEmitter {
                 String::New("Must give serial device string as argument"))));
         }
 
+        String::Utf8Value path(args[0]->ToString());
+
         // Baud Rate Argument
         if (args.Length() >= 2 && !args[1]->IsInt32()) {
           return scope.Close(ThrowException(Exception::Error(
@@ -451,7 +453,7 @@ class SerialPort : public EventEmitter {
         
         
         
-        bool r = serial_port->Open(args[0], baudrate, databits, stopbits, parity);
+        bool r = serial_port->Open(*path, baudrate, databits, stopbits, parity);
         if (!r) {
           return ThrowException(Exception::Error(
                 String::New(connection->ErrorMessage())));
