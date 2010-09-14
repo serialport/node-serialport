@@ -21,6 +21,7 @@
 
 #include <node.h>
 #include <node_events.h>
+#include <node_buffer.h>
 #include <v8.h>
 
 using namespace v8;
@@ -65,7 +66,7 @@ public:
       
     NODE_SET_PROTOTYPE_METHOD(t, "open", Open);
     NODE_SET_PROTOTYPE_METHOD(t, "close", Close);
-    // NODE_SET_PROTOTYPE_METHOD(t, "write", Write);
+    NODE_SET_PROTOTYPE_METHOD(t, "write", Write);
     target->Set(String::NewSymbol("SerialPort"), t->GetFunction());
       
   }
@@ -190,7 +191,11 @@ public:
     if (fd_ < 0) return false;
 
     struct sigaction saio; 
-    saio.sa_handler = signal_handler_IO;
+
+		// TODO: Hook event emitter to signal handler
+    // saio.sa_handler = signal_handler_IO;
+		// ENDTODO
+
     sigemptyset(&saio.sa_mask);   //saio.sa_mask = 0;
     saio.sa_flags = 0;
     //    saio.sa_restorer = NULL;
@@ -214,40 +219,11 @@ public:
 		
     return true;
   }
-  // 
-  // 
-  // int Write(char* buf, size_t length, enum encoding enc) {
-  //     
-  //   /*
-  //   if (length < 0) {
-  //     return ThrowException(Exception::TypeError(String::New("Bad argument")));
-  //   }
-  //   ssize_t written = write(_fd, buf, length);
-  //   if (written < 0) return ThrowException(errno_exception(errno));
-  //   return written;
-  //   */
-  //   return 0;
-  // }
-  // 
-  // 
-  // 
-  // 
-  // 
-  // void Close (Local<Value> exception = Local<Value>())
-  // {
-  //   int ret = 0;
-  //   if (_fd)  {
-  //     int ret = close(_fd);
-  //   }
-  //   if (ret != 0) {
-  //     return ThrowException(errno_exception(errno));
-  //   }
-  //   _fd = NULL;
-  //   Unref();
-  // }
-  //   
-  //   
-  //   
+
+  int Write(char* buf, size_t length) {
+    ssize_t written = write(fd_, buf, length);
+    return written;
+  }
 
 	void Close (Local<Value> exception = Local<Value>())
   {
@@ -275,6 +251,28 @@ protected:
 	  return scope.Close(args.This());
 	}
 	
+	static Handle<Value>
+	Write (const Arguments& args)
+	{
+	  HandleScope scope;
+      
+	  SerialPort *serial_port = ObjectWrap::Unwrap<SerialPort>(args.This());
+		if (!Buffer::HasInstance(args[0])) {
+	    return ThrowException(Exception::Error(
+	                String::New("Second argument needs to be a buffer")));
+	  }
+
+	  Local<Object> buffer_obj = args[0]->ToObject();
+	  char *buffer_data = Buffer::Data(buffer_obj);
+	  size_t buffer_length = Buffer::Length(buffer_obj);
+	
+		if (buffer_length < 0) {
+      return ThrowException(Exception::TypeError(String::New("Bad argument")));
+    }
+		int written = serial_port->Write(buffer_data, buffer_length);
+    if (written < 0) return ThrowException(Exception::Error(String::NewSymbol(strerror(errno))));
+		return scope.Close(Integer::New(written));
+	}
 	
 	
 	
@@ -291,8 +289,7 @@ protected:
 	  int parity = 0;
 
 	  if (!args[0]->IsString()) {
-	    return scope.Close(ThrowException(Exception::Error(
-	                                                       String::New("Must give serial device string as argument"))));
+	    return scope.Close(ThrowException(Exception::Error(String::New("Must give serial device string as argument"))));
 	  }
 
 	  String::Utf8Value path(args[0]->ToString());
