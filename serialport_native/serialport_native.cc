@@ -195,8 +195,8 @@ public:
     return true;
   }
 
-  int Write(char* buf, ssize_t length) {
-    ssize_t written = write(fd_, buf, length);
+  int Write(char* buf, size_t length) {
+    size_t written = write(fd_, buf, length);
     return written;
   }
 
@@ -239,7 +239,7 @@ protected:
       written = serial_port->Write(*buffer, buffer.length());
     } else if (Buffer::HasInstance(args[0])) {
       Buffer * buffer = ObjectWrap::Unwrap<Buffer>(args[0]->ToObject());
-      ssize_t buffer_length = buffer->length();
+      size_t buffer_length = buffer->length();
       char * buf = (char*)buffer->data();
       if (buffer_length < 0) {
         return ThrowException(Exception::TypeError(String::New("Bad argument")));
