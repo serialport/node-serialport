@@ -2,7 +2,9 @@ var sys = require("sys");
 var SerialPort = require("./serialport_native").SerialPort;
 sp = new SerialPort;
 sp.open("/dev/tty");
-sp.write("TEST");
+
+var d = "TEST";
+sp.write(d);
 sp.close();
 
 /*
