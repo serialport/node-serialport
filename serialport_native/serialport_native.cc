@@ -29,20 +29,6 @@ using namespace node;
 
 
 
-// static Persistent<String> encoding_symbol;
-// static Persistent<String> errno_symbol;
-
-// #define THROW_BAD_ARGS ThrowException(Exception::TypeError(String::New("Bad argument")))
-// 
-// static inline Local<Value> errno_exception(int errorno) {
-//   Local<Value> e = Exception::Error(String::NewSymbol(strerror(errorno)));
-//   Local<Object> obj = e->ToObject();
-//   obj->Set(errno_symbol, Integer::New(errorno));
-//   return e;
-// }
-
-
-
 
 
 static Persistent<String> data_symbol;
@@ -198,7 +184,6 @@ public:
 
     sigemptyset(&saio.sa_mask);   //saio.sa_mask = 0;
     saio.sa_flags = 0;
-    //    saio.sa_restorer = NULL;
     sigaction(SIGIO,&saio,NULL);
 
     //all process to receive SIGIO
@@ -351,27 +336,6 @@ protected:
 
 
 
-  // static Handle<Value>
-  // Close (const Arguments& args) 
-  // {
-  //   HandleScope scope;
-  //  if (fd_) {
-  //     int ret = close(fd_);
-  //     if (ret != 0) return scope.Close(ThrowException(ErrnoException(errno)));
-  //  }
-  //     return scope.Close(Undefined());
-  // }
-      
-  //     
-  // static Handle<Value>
-  // Write (const Arguments& args)
-  // {
-  //       
-  // }
-  // 
-  //   
-  //   
-
   SerialPort () : EventEmitter () 
   {
     fd_ = NULL;
@@ -386,17 +350,6 @@ protected:
   }
 private:
   int fd_;
-    // 
-    //     
-    //     
-    // private:
-    //   static inline Local<Value> errno_exception(int errorno) {
-    //     Local<Value> e = Exception::Error(String::NewSymbol(strerror(errorno)));
-    //     Local<Object> obj = e->ToObject();
-    //     obj->Set(errno_symbol, Integer::New(errorno));
-    //     return e;
-    //   }
-    // }
     
 };
 
