@@ -57,15 +57,6 @@ public:
       
   }
     
-    
-  static void 
-  signal_handler_IO (int status)
-  {
-    printf("%i", status);
-    printf("received SIGIO signal.\n");
-  }
-
-
   bool Open(const char* path, int baudrate, int databits, int stopbits, int parity) {
     if (fd_) return false;
     struct termios newtio; 
@@ -340,6 +331,12 @@ protected:
   SerialPort () : EventEmitter () 
   {
     fd_ = NULL;
+    
+    ev_init(&read_watcher_, io_event);
+    read_watcher_.data = this;
+
+    ev_init(&write_watcher_, io_event);
+    write_watcher_.data = this;
   }
 
   ~SerialPort ()
@@ -350,7 +347,32 @@ protected:
     }
   }
 private:
+  
+  void Event (int revents)
+    {
+      if (revents & EV_ERROR) {
+        printf("EV_ERROR");
+        return;
+      }
+
+      if (revents & EV_READ) {
+        Emit(data_symbol, 0, NULL);
+        return;
+      }
+    }
+  
+  
+  static void
+   io_event (EV_P_ ev_io *w, int revents)
+   {
+     SerialPort *serial_port = static_cast<SerialPort*>(w->data);
+     serial_port->Event(revents);
+   }
+   
+   
   int fd_;
+  ev_io read_watcher_;
+  ev_io write_watcher_;
     
 };
 
