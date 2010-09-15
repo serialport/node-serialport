@@ -1,6 +1,4 @@
 // Copyright 2010 Chris Williams <chris@iterativedesigns.com>
-#include "serialport_native.h"
-
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
@@ -197,7 +195,7 @@ public:
     return true;
   }
 
-  int Write(char* buf, size_t length) {
+  int Write(char* buf, ssize_t length) {
     ssize_t written = write(fd_, buf, length);
     return written;
   }
@@ -235,27 +233,21 @@ protected:
       
     SerialPort *serial_port = ObjectWrap::Unwrap<SerialPort>(args.This());
     
-    
-    if (!args[0]->IsString()) {
-      return scope.Close(ThrowException(Exception::Error(String::New("first argument must be a string"))));
+    int written = 0;
+    if (args[0]->IsString()) {
+      String::Utf8Value buffer(args[0]->ToString());
+      written = serial_port->Write(*buffer, buffer.length());
+    } else if (Buffer::HasInstance(args[0])) {
+      Buffer * buffer = ObjectWrap::Unwrap<Buffer>(args[0]->ToObject());
+      ssize_t buffer_length = buffer->length();
+      char * buf = (char*)buffer->data();
+      if (buffer_length < 0) {
+        return ThrowException(Exception::TypeError(String::New("Bad argument")));
+      }
+      written = serial_port->Write(buf, buffer_length);
+    } else {
+      return scope.Close(ThrowException(Exception::Error(String::New("First argument must be a string or buffer."))));
     }
-    
-    String::Utf8Value buffer(args[0]->ToString());
-        // 
-        // if (!Buffer::HasInstance(args[0])) {
-        //   return ThrowException(Exception::Error(String::New("First argument needs to be a buffer")));
-        // }
-        // 
-        // Buffer * buffer = ObjectWrap::Unwrap<Buffer>(args[1]->ToObject());
-        // int buffer_length = buffer->length();
-        // char * buf = (char*)buffer->data();
-        // if (buffer_length < 0) {
-        //   return ThrowException(Exception::TypeError(String::New("Bad argument")));
-        // }
-        
-    
-        
-    int written = serial_port->Write(*buffer, buffer.length());
     if (written < 0) return ThrowException(Exception::Error(String::NewSymbol(strerror(errno))));
     return scope.Close(Integer::New(written));
   }
