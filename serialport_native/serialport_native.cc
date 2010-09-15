@@ -58,7 +58,8 @@ public:
   }
     
     
-  void signal_handler_IO (int status)
+  static void 
+  signal_handler_IO (int status)
   {
     printf("%i", status);
     printf("received SIGIO signal.\n");
@@ -179,7 +180,7 @@ public:
     struct sigaction saio; 
 
     // TODO: Hook event emitter to signal handler
-    // saio.sa_handler = signal_handler_IO;
+    saio.sa_handler = SIG_IGN;
     // ENDTODO
 
     sigemptyset(&saio.sa_mask);   //saio.sa_mask = 0;
