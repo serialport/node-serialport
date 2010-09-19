@@ -1,4 +1,5 @@
 // Copyright 2010 Chris Williams <chris@iterativedesigns.com>
+#include "serialport_native.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
@@ -224,8 +225,6 @@ namespace node {
     HandleScope scope;
     NODE_SET_METHOD(target, "open", Open);
   }
-
-}
 
 
   extern "C" void
