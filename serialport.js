@@ -56,37 +56,24 @@ function SerialPort(path) {
     this.empty_reads = 0;
     this.buf = new Buffer(65535);
 
-    // 
-    // function data_ready(header) {
-    //     header.link_type = me.link_type;
-    //     header.time_ms = (header.tv_sec * 1000) + (header.tv_usec / 1000);
-    //     me.buf.pcap_header = header;
-    //     me.emit('data', me.buf);
-    // }
 
 
-    // 
-    // // readWatcher gets a callback when pcap has data to read. multiple packets may be readable.
     this.readWatcher.callback = function () {
-      if (me.fd) {
-        data_read = fs.readSync(me.fd, me.buf, 0, 65535, function (err, bytesRead) {
-          sys.puts(bytesRead);
-          if (err) { 
-            sys.puts('error');
-            me.emit('error',err);
-          } else if (bytesRead > 0) {
-            sys.puts('data: '+ me.buf);
-            me.emit('data', me.buf);
-          }
-          sys.puts("truncate")
-          fs.truncate(me.fd, bytesRead);
-        });
-      }
-        // var packets_read = binding.dispatch(me.buf, data_ready);
-        // if (packets_read < 1) {
-        //     // TODO - figure out what is causing this, and if it is bad.
-        //     me.empty_reads += 1;
-        // }
+        sys.puts("read callback");
+        if (me.fd) {
+            data_read = fs.read(me.fd, me.buf, 0, 65535, function (err, bytesRead) {
+                sys.puts(bytesRead);
+                if (err) { 
+                    sys.puts('error');
+                    me.emit('error',err);
+                } else if (bytesRead > 0) {
+                    sys.puts('data: '+ me.buf);
+                    me.emit('data', me.buf);
+                }
+                sys.puts("truncate")
+                fs.truncate(me.fd, bytesRead);
+            });
+        }
     };
     this.readWatcher.set(this.fd, true, false);
     this.readWatcher.start();
@@ -107,10 +94,10 @@ SerialPort.prototype.close = function () {
 
 
 SerialPort.prototype.write = function (buffer, cb) { 
-  if (cb) 
-    fs.write(this.fd, buffer, cb);
-  else
-    fs.write(this.fd, buffer);
+    if (cb) 
+        fs.write(this.fd, buffer, cb);
+    else
+        fs.write(this.fd, buffer);
 }
 
 
