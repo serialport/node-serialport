@@ -57,7 +57,7 @@ namespace node {
     int buffer_length = buffer->length();
     char *buffer_data = (char*)buffer->data();
     int bytes_read = read(fd, buffer_data, buffer_length);
-    return scope.Close(Integer::NewFromUnsigned(fd));
+    return scope.Close(Integer::NewFromUnsigned(bytes_read));
   }
   
   static Handle<Value> Open(const Arguments& args) {
@@ -245,8 +245,6 @@ namespace node {
     newtio.c_cc[VTIME]=0;
     tcflush(fd, TCIFLUSH);
     tcsetattr(fd,TCSANOW,&newtio);
-
-
     return scope.Close(Integer::New(fd));
   }
 

@@ -48,8 +48,8 @@ function SerialPort(path) {
 
 
     this.readWatcher.callback = function () {
-        sys.puts("read callback");
         if (me.fd) {
+          sys.puts("callback");
           data_read = serialport_native.read(me.fd, me.buf);
           if (data_read > 0)   {
             sys.puts("Read some data: " + data_read + " bytes");
