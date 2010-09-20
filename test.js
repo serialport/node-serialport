@@ -1,9 +1,9 @@
+var SerialPort = require("./serialport").SerialPort;
 var sys = require("sys");
-var fs = require("fs");
 
-var SerialPort = require("./serialport_native").SerialPort;
-
-
-var fd = SerialPort.open("./sampleport");
-fs.close(fd);
-
+var serial_port = new SerialPort("./sampleport");
+serial_port.write("test");
+serial_port.on("data", function () {
+  sys.puts("here");
+})
+// serial_port.close();

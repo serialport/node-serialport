@@ -1,11 +1,11 @@
 "use strict";
 /*global process require exports console */
 
-var sys        = require('sys'),
-Buffer     = require('buffer').Buffer,
-events     = require('events'),
-fs         = require('fs'),
-serialport_native    = require('./serialport_native');
+var sys        = require('sys');
+var Buffer     = require('buffer').Buffer;
+var events     = require('events');
+var fs         = require('fs');
+var serialport_native    = require('./serialport_native');
 
 
 var BAUDRATES = [115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 120,, 600, 300, 200, 150, 134, 110, 75, 50];
@@ -37,7 +37,7 @@ function SerialPort(path) {
         this.parity = arguments[4];
     }
     
-    this.fd = serialport_native.open(path, baudrate, databits, stopbits, parity);
+    this.fd = serialport_native.open(path, this.baudrate, this.databits, this.stopbits, this.parity);
     this.active = true;
 
     this.readWatcher = new process.IOWatcher();
@@ -55,7 +55,7 @@ function SerialPort(path) {
 
     // readWatcher gets a callback when pcap has data to read. multiple packets may be readable.
     this.readWatcher.callback = function pcap_read_callback() {
-        var packets_read = binding.dispatch(me.buf, packet_ready);
+        var packets_read = binding.dispatch(me.buf, data_ready);
         if (packets_read < 1) {
             // TODO - figure out what is causing this, and if it is bad.
             me.empty_reads += 1;
@@ -79,8 +79,11 @@ SerialPort.prototype.close = function () {
 };
 
 
-SerialPort.prototype.write = function (buffer) { 
-    fs.write(this.fd);
+SerialPort.prototype.write = function (buffer, cb) { 
+  if (cb) 
+    fs.write(this.fd, buffer, cb);
+  else
+    fs.write(this.fd, buffer);
 }
 
 
