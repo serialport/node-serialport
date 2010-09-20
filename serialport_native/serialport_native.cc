@@ -97,6 +97,15 @@ namespace node {
       default:
         BAUD = B38400;
         break;
+      case 115200:
+        BAUD = B115200;
+        break;
+      case 76800:
+        BAUD = B76800;
+        break;
+      case 57600:
+        BAUD = B57600;
+        break;
       case 19200:
         BAUD  = B19200;
         break;
