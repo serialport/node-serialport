@@ -6,7 +6,7 @@ var Buffer     = require('buffer').Buffer;
 var events     = require('events');
 var fs         = require('fs');
 var serialport_native    = require('./serialport_native');
-
+// var IOWatcher   = process.binding('io_watcher').IOWatcher; // - for the future!
 
 var BAUDRATES = [115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 120,, 600, 300, 200, 150, 134, 110, 75, 50];
 var DATABITS  = [8, 7, 6, 5];
@@ -39,20 +39,9 @@ function SerialPort(path) {
     
     this.fd = serialport_native.open(path, this.baudrate, this.databits, this.stopbits, this.parity);
     this.active = true;
-    // 
-    // this.readStream = fs.createReadStream(path);
-    // this.readStream.on('data', function(data) {
-    //   me.emit('data', data);
-    // });
-    // this.readStream.on('close', function() {
-    //   me.emit('close');
-    // });
-    // this.readStream.on('error', function(err) {
-    //   me.emit('error', err);
-    // });
-    // this.readStream.resume()
-
+    
     this.readWatcher = new process.IOWatcher();
+    // this.readWatcher = new IOWatcher();
     this.empty_reads = 0;
     this.buf = new Buffer(65535);
 
@@ -61,18 +50,12 @@ function SerialPort(path) {
     this.readWatcher.callback = function () {
         sys.puts("read callback");
         if (me.fd) {
-            data_read = fs.read(me.fd, me.buf, 0, 65535, function (err, bytesRead) {
-                sys.puts(bytesRead);
-                if (err) { 
-                    sys.puts('error');
-                    me.emit('error',err);
-                } else if (bytesRead > 0) {
-                    sys.puts('data: '+ me.buf);
-                    me.emit('data', me.buf);
-                }
-                sys.puts("truncate")
-                fs.truncate(me.fd, bytesRead);
-            });
+          data_read = serialport_native.read(me.fd, me.buf);
+          if (data_read > 0)   {
+            sys.puts("Read some data: " + data_read + " bytes");
+            sys.puts("Here is the data: " + me.buf.toString('utf8', 0, data_read));
+            me.emit('data', me.buf);
+          }
         }
     };
     this.readWatcher.set(this.fd, true, false);

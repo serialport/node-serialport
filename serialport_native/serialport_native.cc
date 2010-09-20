@@ -19,6 +19,7 @@
 #include <sys/types.h>
 
 #include <node.h>
+#include <node_buffer.h>
 #include <v8.h>
 
 
@@ -36,6 +37,27 @@ namespace node {
     Local<Object> obj = e->ToObject();
     obj->Set(NODE_PSYMBOL("errno"), Integer::New(errorno));
     return e;
+  }
+  
+  
+  static Handle<Value> Read(const Arguments& args) {
+    HandleScope scope;
+    if (args.Length() != 2) {
+      return ThrowException(Exception::TypeError(String::New("Read takes exactly two arguments")));
+    }
+    if (!args[0]->IsInt32()) {
+        return ThrowException(Exception::TypeError(String::New("First argument must be an fd")));
+    }
+    if (!Buffer::HasInstance(args[1])) {
+        return ThrowException(Exception::TypeError(String::New("Second argument must be a buffer")));
+    }
+ 
+    int fd = args[0]->Int32Value();
+    Buffer *buffer = ObjectWrap::Unwrap<Buffer>(args[1]->ToObject());
+    int buffer_length = buffer->length();
+    char *buffer_data = (char*)buffer->data();
+    int bytes_read = read(fd, buffer_data, buffer_length);
+    return scope.Close(Integer::NewFromUnsigned(fd));
   }
   
   static Handle<Value> Open(const Arguments& args) {
@@ -233,6 +255,7 @@ namespace node {
   void SerialPort::Initialize(Handle<Object> target) {
     HandleScope scope;
     NODE_SET_METHOD(target, "open", Open);
+    NODE_SET_METHOD(target, "read", Read);
   }
 
 
