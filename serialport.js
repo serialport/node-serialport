@@ -74,7 +74,8 @@ SerialPort.prototype.close = function () {
     if (this.active)  {
         this.active = false;
         fs.close(this.fd);
-        this.readWatcher.stop();
+        // Commented out so it doesnt kill the process
+        // this.readWatcher.stop();
     }
 };
 
