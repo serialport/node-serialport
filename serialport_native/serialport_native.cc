@@ -263,11 +263,11 @@ namespace node {
       }
       int fd = args[0]->Int32Value();
       
-      if (args[0]->IsString()) {
-        String::Utf8Value buffer(args[0]->ToString());
+      if (args[1]->IsString()) {
+        String::Utf8Value buffer(args[1]->ToString());
         written = write(fd, *buffer, buffer.length());
-      } else if (Buffer::HasInstance(args[0])) {
-        Buffer * buffer = ObjectWrap::Unwrap<Buffer>(args[0]->ToObject());
+      } else if (Buffer::HasInstance(args[1])) {
+        Buffer * buffer = ObjectWrap::Unwrap<Buffer>(args[1]->ToObject());
         size_t buffer_length = buffer->length();
         char * buf = (char*)buffer->data();
         if (buffer_length < 0) {
