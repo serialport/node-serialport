@@ -39,6 +39,9 @@ function SerialPort(path) {
     
     this.fd = serialport_native.open(path, this.baudrate, this.databits, this.stopbits, this.parity);
     this.active = true;
+    /*
+    //      Commented out so it doesnt kill the process
+    
     
     this.readWatcher = new process.IOWatcher();
     // this.readWatcher = new IOWatcher();
@@ -60,7 +63,7 @@ function SerialPort(path) {
     };
     this.readWatcher.set(this.fd, true, false);
     this.readWatcher.start();
-    
+    */
 }
 
 sys.inherits(SerialPort, events.EventEmitter);
