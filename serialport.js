@@ -80,11 +80,8 @@ SerialPort.prototype.close = function () {
 };
 
 
-SerialPort.prototype.write = function (buffer, cb) { 
-    if (cb) 
-        fs.write(this.fd, buffer, cb);
-    else
-        fs.write(this.fd, buffer);
+SerialPort.prototype.write = function (buffer) { 
+  serialport_native.write(this.fd, buffer)
 }
 
 

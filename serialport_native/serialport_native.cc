@@ -250,9 +250,43 @@ namespace node {
 
 
 
+
+  static Handle<Value>
+    Write (const Arguments& args)
+    {
+      HandleScope scope;
+
+      size_t written = 0;
+      
+      if (!args[0]->IsInt32())  {
+        return scope.Close(THROW_BAD_ARGS);
+      }
+      int fd = args[0]->Int32Value();
+      
+      if (args[0]->IsString()) {
+        String::Utf8Value buffer(args[0]->ToString());
+        written = write(fd, *buffer, buffer.length());
+      } else if (Buffer::HasInstance(args[0])) {
+        Buffer * buffer = ObjectWrap::Unwrap<Buffer>(args[0]->ToObject());
+        size_t buffer_length = buffer->length();
+        char * buf = (char*)buffer->data();
+        if (buffer_length < 0) {
+          return ThrowException(Exception::TypeError(String::New("Bad argument")));
+        }
+        written = write(fd, buf, buffer_length);
+      } else {
+        return scope.Close(ThrowException(Exception::Error(String::New("First argument must be a string or buffer."))));
+      }
+      if (written < 0) return ThrowException(Exception::Error(String::NewSymbol(strerror(errno))));
+      return scope.Close(Integer::New(written));
+    }
+
+
+
   void SerialPort::Initialize(Handle<Object> target) {
     HandleScope scope;
     NODE_SET_METHOD(target, "open", Open);
+    NODE_SET_METHOD(target, "write", Write);
     NODE_SET_METHOD(target, "read", Read);
   }
 
