@@ -122,9 +122,7 @@ namespace node {
       case 115200:
         BAUD = B115200;
         break;
-      case 76800:
-        BAUD = B76800;
-        break;
+
       case 57600:
         BAUD = B57600;
         break;

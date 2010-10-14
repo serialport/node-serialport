@@ -39,36 +39,34 @@ function SerialPort(path) {
     
     this.fd = serialport_native.open(path, this.baudrate, this.databits, this.stopbits, this.parity);
     this.active = true;
-    /*
-    //      Commented out so it doesnt kill the process
-    
-    
+
+
     this.readWatcher = new process.IOWatcher();
-    // this.readWatcher = new IOWatcher();
     this.empty_reads = 0;
-    this.buf = new Buffer(65535);
-
-
-
     this.readWatcher.callback = function () {
-        if (me.fd) {
-          sys.puts("callback");
-          data_read = serialport_native.read(me.fd, me.buf);
-          if (data_read > 0)   {
-            sys.puts("Read some data: " + data_read + " bytes");
-            sys.puts("Here is the data: " + me.buf.toString('utf8', 0, data_read));
-            me.emit('data', me.buf);
-          }
-        }
+        sys.puts("read")
+        me.read();
     };
     this.readWatcher.set(this.fd, true, false);
     this.readWatcher.start();
-    */
+
 }
 
 sys.inherits(SerialPort, events.EventEmitter);
 
-
+SerialPort.prototype.read = function () {
+    if (this.fd) {
+        sys.puts("callback");
+        var buff = new Buffer(65535);
+        data_read = serialport_native.read(this.fd, buff);
+        sys.p(buff);
+        if (data_read > 0)   {
+            sys.puts("Read some data: " + data_read + " bytes");
+            sys.puts("Here is the data: " + buff.toString('utf8', 0, data_read));
+            me.emit('data', buff);
+        }
+    }
+}
 
 SerialPort.prototype.close = function () {
     if (this.active)  {
@@ -81,7 +79,7 @@ SerialPort.prototype.close = function () {
 
 
 SerialPort.prototype.write = function (buffer) { 
-  serialport_native.write(this.fd, buffer)
+    serialport_native.write(this.fd, buffer);
 }
 
 
