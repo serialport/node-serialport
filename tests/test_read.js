@@ -1,6 +1,6 @@
 // Test with the epic VirtualSerialPortApp - http://code.google.com/p/macosxvirtualserialport/
 
-var SerialPort = require("./serialport").SerialPort;
+var SerialPort = require("../serialport").SerialPort;
 var sys = require("sys"), repl = require("repl");
 
 var serial_port = new SerialPort("/dev/master", 9600);

@@ -1,4 +1,6 @@
-var SerialPort = require("./serialport").SerialPort;
+// To test with a z-wave device, I recommend: http://www.aeon-labs.com/site/products/view/2/
+
+var SerialPort = require("../serialport").SerialPort;
 var sys = require("sys");
 
 var serial_port = new SerialPort("/dev/ttyUSB0");
