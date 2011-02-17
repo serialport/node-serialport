@@ -1,3 +1,5 @@
+// Copyright 2011 Chris Williams <chris@iterativedesigns.com>
+
 #include "serialport_native.h"
 #include <stdio.h>   /* Standard input/output definitions */
 #include <string.h>  /* String function definitions */

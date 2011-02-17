@@ -1,4 +1,4 @@
-// Copyright 2010 Chris Williams <chris@iterativedesigns.com>
+// Copyright 2011 Chris Williams <chris@iterativedesigns.com>
 #ifndef SRC_FILE_H_
 #define SRC_FILE_H_
 

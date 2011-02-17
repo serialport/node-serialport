@@ -1,6 +1,8 @@
 "use strict";
 /*global process require exports console */
 
+// Copyright 2011 Chris Williams <chris@iterativedesigns.com>
+
 var sys        = require('sys');
 var Buffer     = require('buffer').Buffer;
 var events     = require('events');
@@ -22,7 +24,6 @@ function SerialPort(path) {
   this.databits = 8;
   this.stopbits = 1;
   this.parity = 0;
-  this.encoding = 'utf-8';
   this.port = path;
   
   if (arguments.length >= 2 && BAUDRATES.indexOf(arguments[1]) >= 0) {
@@ -36,9 +37,6 @@ function SerialPort(path) {
   }
   if (arguments.length >= 5 && PARITY.indexOf(arguments[4]) >= 0)  {
     this.parity = arguments[4];
-  }
-  if (arguments.length ==6) { 
-    this.encoding = arguments[5];
   }
   
   this.fd = serialport_native.open(this.port, this.baudrate, this.databits, this.stopbits, this.parity);
