@@ -1,27 +1,14 @@
-// Copyright 2010 Chris Williams <chris@iterativedesigns.com>
 #include "serialport_native.h"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <assert.h>
-#include <string.h>
-#include <errno.h>
-#include <limits.h>
+#include <stdio.h>   /* Standard input/output definitions */
+#include <string.h>  /* String function definitions */
+#include <unistd.h>  /* UNIX standard function definitions */
+#include <fcntl.h>   /* File control definitions */
+#include <errno.h>   /* Error number definitions */
+#include <termios.h> /* POSIX terminal control definitions */
 
-#include <termios.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/signal.h>
-#include <sys/types.h>
-
-#include <node.h>
+#include <node.h>    /* Includes for JS, node.js and v8 *//
 #include <node_buffer.h>
 #include <v8.h>
-
 
 
 #define THROW_BAD_ARGS ThrowException(Exception::TypeError(String::New("Bad argument")))
@@ -30,40 +17,69 @@
 namespace node {
 
   using namespace v8;
-
-
-  static inline Local<Value> errno_exception(int errorno) {
-    Local<Value> e = Exception::Error(String::NewSymbol(strerror(errorno)));
-    Local<Object> obj = e->ToObject();
-    obj->Set(NODE_PSYMBOL("errno"), Integer::New(errorno));
-    return e;
+  
+  static void on_data(int status)
+  {
+    printf("Data Received: %i.\n", status);
   }
-  
-  
+
+
   static Handle<Value> Read(const Arguments& args) {
     HandleScope scope;
-    if (args.Length() != 2) {
-      return ThrowException(Exception::TypeError(String::New("Read takes exactly two arguments")));
+
+    if (!args[0]->IsInt32())  {
+      return scope.Close(THROW_BAD_ARGS);
     }
-    if (!args[0]->IsInt32()) {
-        return ThrowException(Exception::TypeError(String::New("First argument must be an fd")));
-    }
-    if (!Buffer::HasInstance(args[1])) {
-        return ThrowException(Exception::TypeError(String::New("Second argument must be a buffer")));
-    }
- 
     int fd = args[0]->Int32Value();
-    Buffer *buffer = ObjectWrap::Unwrap<Buffer>(args[1]->ToObject());
-    int buffer_length = buffer->length();
-    char *buffer_data = (char*)buffer->data();
-    int bytes_read = read(fd, buffer_data, buffer_length);
-    return scope.Close(Integer::NewFromUnsigned(bytes_read));
+
+    char buf[255];
+    size_t nbytes;
+    ssize_t bytes_read;
+
+    nbytes = sizeof(buf);
+    bytes_read = read(fd, buf, nbytes);
+    // Buffer *buffer = Buffer::New(buf, bytes_read);
+    return scope.Close(String::New(buf,bytes_read));
   }
-  
+
+  static Handle<Value> Write(const Arguments& args) {
+    HandleScope scope;
+    
+    if (!args[0]->IsInt32())  {
+      return scope.Close(THROW_BAD_ARGS);
+    }
+    int fd = args[0]->Int32Value();
+
+    if (!Buffer::HasInstance(args[1])) {
+      return ThrowException(Exception::Error(String::New("Second argument needs to be a buffer")));
+    }
+
+    Local<Object> buffer_obj = args[1]->ToObject();
+    char *buffer_data = Buffer::Data(buffer_obj);
+    size_t buffer_length = Buffer::Length(buffer_obj);
+    
+    int n = write(fd, buffer_data, buffer_length);
+    return scope.Close(Integer::New(n));
+
+  }
+
+  static Handle<Value> Close(const Arguments& args) {
+    HandleScope scope;
+    
+    if (!args[0]->IsInt32())  {
+      return scope.Close(THROW_BAD_ARGS);
+    }
+    int fd = args[0]->Int32Value();
+
+    close(fd);
+
+    return scope.Close(Integer::New(1));
+  }
+
   static Handle<Value> Open(const Arguments& args) {
     HandleScope scope;
 
-    struct termios newtio; 
+    struct termios options; 
 
     long Baud_Rate = 38400;
     int Data_Bits = 8;
@@ -79,7 +95,7 @@ namespace node {
     if (!args[0]->IsString()) {
       return scope.Close(THROW_BAD_ARGS);
     }
-    
+
     // Baud Rate Argument
     if (args.Length() >= 2 && !args[1]->IsInt32()) {
       return scope.Close(THROW_BAD_ARGS);
@@ -197,95 +213,97 @@ namespace node {
         break;
       } 
 
-
-    switch (Parity)
-      {
-      case 0:
-      default:                       //none
-        PARITYON = 0;
-        PARITY = 0;
-        break;
-      case 1:                        //odd
-        PARITYON = PARENB;
-        PARITY = PARODD;
-        break;
-      case 2:                        //even
-        PARITYON = PARENB;
-        PARITY = 0;
-        break;
-      }
-
-
     String::Utf8Value path(args[0]->ToString());
     
-    int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK);
+    int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_NDELAY);
+    int fd    = open(*path, flags);
+
+    if (fd == -1) {
+      perror("open_port: Unable to open /dev/ttyS0 - ");
+      return scope.Close(Integer::New(fd));
+    } else {
+      struct sigaction saio; 
+      saio.sa_handler = SIG_IGN;
+      sigemptyset(&saio.sa_mask);   //saio.sa_mask = 0;
+      saio.sa_flags = 0;
+      //    saio.sa_restorer = NULL;
+      // printf("%i\n", sigaction(SIGIO,&saio,NULL));
+      
+      //all process to receive SIGIO
+      // fcntl(fd, F_SETOWN, getpid());
+      printf("%i\n", fcntl(fd, F_SETFL, FASYNC));
+      
+      // Set baud and other configuration.
+      tcgetattr(fd, &options);
+
+      /* Specify the baud rate */
+      cfsetispeed(&options, BAUD);
+      cfsetospeed(&options, BAUD);
+      
+
+      /* Specify data bits */
+      options.c_cflag &= ~CSIZE; 
+      options.c_cflag |= DATABITS;    
     
-    int fd = open(*path, flags);
-    if (fd < 0) return scope.Close(ThrowException(errno_exception(errno)));
-
-    struct sigaction saio; 
-    saio.sa_handler = SIG_IGN;
-    sigemptyset(&saio.sa_mask);   //saio.sa_mask = 0;
-    saio.sa_flags = 0;
-    //    saio.sa_restorer = NULL;
-    sigaction(SIGIO,&saio,NULL);
-
-    //all process to receive SIGIO
-    fcntl(fd, F_SETOWN, getpid());
-    fcntl(fd, F_SETFL, FASYNC);
 
 
-    newtio.c_cflag = BAUD | CRTSCTS | DATABITS | STOPBITS | PARITYON | PARITY | CLOCAL | CREAD;
-    newtio.c_iflag = IGNPAR;
-    newtio.c_oflag = 0;
-    newtio.c_lflag = 0;       //ICANON;
-    newtio.c_cc[VMIN]=1;
-    newtio.c_cc[VTIME]=0;
-    tcflush(fd, TCIFLUSH);
-    tcsetattr(fd,TCSANOW,&newtio);
-    return scope.Close(Integer::New(fd));
+
+      switch (Parity)
+        {
+        case 0:
+        default:                       //none
+          options.c_cflag &= ~PARENB;
+          options.c_cflag &= ~CSTOPB;
+          options.c_cflag &= ~CSIZE;
+          options.c_cflag |= CS8;
+          break;
+        case 1:                        //odd
+          options.c_cflag |= PARENB;
+          options.c_cflag |= PARODD;
+          options.c_cflag &= ~CSTOPB;
+          options.c_cflag &= ~CSIZE;
+          options.c_cflag |= CS7;
+          break;
+        case 2:                        //even
+          options.c_cflag |= PARENB;
+          options.c_cflag &= ~PARODD;
+          options.c_cflag &= ~CSTOPB;
+          options.c_cflag &= ~CSIZE;
+          options.c_cflag |= CS7;
+          break;
+        }
+      
+
+      options.c_cflag |= (CLOCAL | CREAD);
+      options.c_iflag = IGNPAR;
+      options.c_oflag = 0;
+      options.c_lflag = 0;       //ICANON;
+      options.c_cc[VMIN]=1;
+      options.c_cc[VTIME]=0;
+
+
+      tcflush(fd, TCIFLUSH);
+      tcsetattr(fd, TCSANOW, &options);
+
+      return scope.Close(Integer::New(fd));
+    }
   }
 
 
 
 
-  static Handle<Value>
-    Write (const Arguments& args)
-    {
-      HandleScope scope;
-
-      size_t written = 0;
-      
-      if (!args[0]->IsInt32())  {
-        return scope.Close(THROW_BAD_ARGS);
-      }
-      int fd = args[0]->Int32Value();
-      
-      if (args[1]->IsString()) {
-        String::Utf8Value buffer(args[1]->ToString());
-        written = write(fd, *buffer, buffer.length());
-      } else if (Buffer::HasInstance(args[1])) {
-        Buffer * buffer = ObjectWrap::Unwrap<Buffer>(args[1]->ToObject());
-        size_t buffer_length = buffer->length();
-        char * buf = (char*)buffer->data();
-        if (buffer_length < 0) {
-          return ThrowException(Exception::TypeError(String::New("Bad argument")));
-        }
-        written = write(fd, buf, buffer_length);
-      } else {
-        return scope.Close(ThrowException(Exception::Error(String::New("First argument must be a string or buffer."))));
-      }
-      if (written < 0) return ThrowException(Exception::Error(String::NewSymbol(strerror(errno))));
-      return scope.Close(Integer::New(written));
-    }
-
-
-
   void SerialPort::Initialize(Handle<Object> target) {
+    
     HandleScope scope;
+
     NODE_SET_METHOD(target, "open", Open);
     NODE_SET_METHOD(target, "write", Write);
+    NODE_SET_METHOD(target, "close", Close);
     NODE_SET_METHOD(target, "read", Read);
+
+
+    //    NODE_SET_METHOD(target, "read", Read);
+    //    buf_symbol = NODE_PSYMBOL("__buf"); 
   }
 
 
@@ -298,8 +316,3 @@ namespace node {
 
 
 }
-
-//-------------
-
-
-
