@@ -26,7 +26,9 @@ Using node-serialport is pretty easy because it is pretty basic. It provides you
 To Install
 ----------
 
-`npm install serialport`
+<pre>
+  npm install serialport
+</pre>
 
 To Use
 ------
@@ -56,7 +58,9 @@ You can get updates of new data from the Serial Port as follows:
 
 You can write to the serial port by sending a string or buffer to the write method as follows:
 
-`serialPort.write("OMG IT WORKS\r");`
+<pre>
+serialPort.write("OMG IT WORKS\r");
+</pre>
 
 Enjoy and do cool things with this code.
 
