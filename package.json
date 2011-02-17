@@ -1,6 +1,6 @@
 {   "name" : "serialport",
-    "version" : "0.1.0",
-    "description" : "Welcome your robotic javascript overlords. Better still program them!",
+    "version" : "0.1.1",
+    "description" : "Welcome your robotic javascript overlords. Better yet, program them!",
     "author": "Chris Williams <voodootikigod@gmail.com>",
     "main": "./serialport",
     "repository": {
