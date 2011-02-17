@@ -14,7 +14,7 @@
 
 *****
 
-Imagine a world where you can write JavaScript to control blenders, lights, security systems, or even robots. Yes, I said robots. That world is today with node-serialport. This provides a very simple interface to the low level serial port code necessary to program [Arduino](http://www.arduino.cc/) chipsets, [X10](http://www.smarthome.com/manuals/protocol.txt) wireless communications, or even the rising [Z-Wave](http://www.z-wave.com/modules/ZwaveStart/) and [Zigbee](http://www.zigbee.org/) standards. The physical world is your oyster with this goodie, don't believe us - watch [this presentation from JSConf EU 2010](http://jsconf.eu/2010/speaker/livingroombindmotion_function.html) by [Nikolai Onken](http://twitter.com/nonken) and [Jörn Zaefferer](http://bassistance.de/).
+Imagine a world where you can write JavaScript to control blenders, lights, security systems, or even robots. Yes, I said robots. That world is here and now with node-serialport. It provides a very simple interface to the low level serial port code necessary to program [Arduino](http://www.arduino.cc/) chipsets, [X10](http://www.smarthome.com/manuals/protocol.txt) wireless communications, or even the rising [Z-Wave](http://www.z-wave.com/modules/ZwaveStart/) and [Zigbee](http://www.zigbee.org/) standards. The physical world is your oyster with this goodie, don't believe us - watch [this presentation from JSConf EU 2010](http://jsconf.eu/2010/speaker/livingroombindmotion_function.html) by [Nikolai Onken](http://twitter.com/nonken) and [Jörn Zaefferer](http://bassistance.de/).
 
 *****
 
@@ -33,8 +33,10 @@ To Use
 
 Opening a serial port:
 
+<pre>
   var SerialPort = require("serialport").SerialPort
   var serialPort = new SerialPort("/dev/tty-usbserial1", 9600);
+</pre>
   
 When opening a serial port, you can specify (in this order).
 
@@ -46,13 +48,15 @@ When opening a serial port, you can specify (in this order).
 
 You can get updates of new data from the Serial Port as follows:
 
+<pre>
   serialPort.on("data", function (data) {
     sys.puts("here: "+data);
   });
-  
+</pre>
+
 You can write to the serial port by sending a string or buffer to the write method as follows:
 
-  serialPort.write("OMG IT WORKS\r");
+`serialPort.write("OMG IT WORKS\r");`
 
 Enjoy and do cool things with this code.
 
