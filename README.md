@@ -1,14 +1,14 @@
-eeeee eeeee eeeee eeee       e  eeeee 
-8   8 8  88 8   8 8          8  8   " 
-8e  8 8   8 8e  8 8eee       8e 8eeee 
-88  8 8   8 88  8 88      e  88    88 
-88  8 8eee8 88ee8 88ee 88 8ee88 8ee88
+  eeeee eeeee eeeee eeee       e  eeeee 
+  8   8 8  88 8   8 8          8  8   " 
+  8e  8 8   8 8e  8 8eee       8e 8eeee 
+  88  8 8   8 88  8 88      e  88    88 
+  88  8 8eee8 88ee8 88ee 88 8ee88 8ee88
 
-eeeee eeee eeeee  e  eeeee e     eeeee eeeee eeeee eeeee 
-8   " 8    8   8  8  8   8 8     8   8 8  88 8   8   8   
-8eeee 8eee 8eee8e 8e 8eee8 8e    8eee8 8   8 8eee8e  8e  
-   88 88   88   8 88 88  8 88    88    8   8 88   8  88  
-8ee88 88ee 88   8 88 88  8 88eee 88    8eee8 88   8  88
+  eeeee eeee eeeee  e  eeeee e     eeeee eeeee eeeee eeeee 
+  8   " 8    8   8  8  8   8 8     8   8 8  88 8   8   8   
+  8eeee 8eee 8eee8e 8e 8eee8 8e    8eee8 8   8 8eee8e  8e  
+     88 88   88   8 88 88  8 88    88    8   8 88   8  88  
+  8ee88 88ee 88   8 88 88  8 88eee 88    8eee8 88   8  88
 
 *****
 
