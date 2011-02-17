@@ -18,11 +18,6 @@ namespace node {
 
   using namespace v8;
   
-  static void on_data(int status)
-  {
-    printf("Data Received: %i.\n", status);
-  }
-
 
   static Handle<Value> Read(const Arguments& args) {
     HandleScope scope;
@@ -227,11 +222,11 @@ namespace node {
       sigemptyset(&saio.sa_mask);   //saio.sa_mask = 0;
       saio.sa_flags = 0;
       //    saio.sa_restorer = NULL;
-      // printf("%i\n", sigaction(SIGIO,&saio,NULL));
+      sigaction(SIGIO,&saio,NULL);
       
       //all process to receive SIGIO
-      // fcntl(fd, F_SETOWN, getpid());
-      printf("%i\n", fcntl(fd, F_SETFL, FASYNC));
+      fcntl(fd, F_SETOWN, getpid());
+      fcntl(fd, F_SETFL, FASYNC);
       
       // Set baud and other configuration.
       tcgetattr(fd, &options);
@@ -301,9 +296,6 @@ namespace node {
     NODE_SET_METHOD(target, "close", Close);
     NODE_SET_METHOD(target, "read", Read);
 
-
-    //    NODE_SET_METHOD(target, "read", Read);
-    //    buf_symbol = NODE_PSYMBOL("__buf"); 
   }
 
 

@@ -42,53 +42,21 @@ function SerialPort(path) {
   }
   
   this.fd = serialport_native.open(this.port, this.baudrate, this.databits, this.stopbits, this.parity);
-  // 
-  // var stream = require('net').Stream(this.fd);
-  // stream.readable = stream.writable = true;
-  // stream.resume();
-  // 
-  // 
-  // net.Socket.call(this, this.fd);
-  // 
-  // this.on('data', function (event) {
-  //   console.log("data");
-  //   if (Buffer.isBuffer(s)) {
-  //     console.log("Data: "+s.toString(this.encoding));
-  //   }
-  // });
 
-  // 
-  // 
   this.readWatcher = new IOWatcher();
   this.empty_reads = 0;
   this.readWatcher.callback = (function (file_id, me) {
     return function () {
       var buffer = serialport_native.read(file_id, buffer);
       me.emit('data', buffer);
-      // me.read();
     }
   })(this.fd, this);
-  // 
   this.readWatcher.set(this.fd, true, false);
   this.readWatcher.start();
 
 }
 
 sys.inherits(SerialPort, events.EventEmitter);
-// 
-// SerialPort.prototype.read = function () {
-//   if (this.fd) {
-//     sys.puts("callback");
-//     var buff = new Buffer(1024);
-//     data_read = serialport_native.read(this.fd, buff);
-//     // sys.p(buff);
-//     if (data_read > 0)   {
-//       sys.puts("Read some data: " + data_read + " bytes");
-//       sys.puts("Here is the data: " + buff.toString('utf8', 0, data_read));
-//       me.emit('data', buff);
-//     }
-//   }
-// }
 
 SerialPort.prototype.close = function () {
   if (this.fd)  {
