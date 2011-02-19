@@ -20,6 +20,7 @@ namespace node {
 
   using namespace v8;
   
+  static Persistent<String> errno_symbol;
 
   static Handle<Value> Read(const Arguments& args) {
     HandleScope scope;
@@ -29,14 +30,21 @@ namespace node {
     }
     int fd = args[0]->Int32Value();
 
-    char buf[255];
-    size_t nbytes;
-    ssize_t bytes_read;
 
-    nbytes = sizeof(buf);
-    bytes_read = read(fd, buf, nbytes);
+    char * buf = NULL;
+
+    if (!Buffer::HasInstance(args[1])) {
+      return ThrowException(Exception::Error(
+                  String::New("Second argument needs to be a buffer")));
+    }
+
+    Local<Object> buffer_obj = args[1]->ToObject();
+    char *buffer_data = Buffer::Data(buffer_obj);
+    size_t buffer_length = Buffer::Length(buffer_obj);
+    ssize_t bytes_read = read(fd, buffer_data, buffer_length);
+    if (bytes_read < 0) return ThrowException(ErrnoException(errno));
     // Buffer *buffer = Buffer::New(buf, bytes_read);
-    return scope.Close(String::New(buf,bytes_read));
+    return scope.Close(Integer::New(bytes_read));
   }
 
   static Handle<Value> Write(const Arguments& args) {
@@ -297,6 +305,9 @@ namespace node {
     NODE_SET_METHOD(target, "write", Write);
     NODE_SET_METHOD(target, "close", Close);
     NODE_SET_METHOD(target, "read", Read);
+
+    errno_symbol = NODE_PSYMBOL("errno");
+
 
   }
 

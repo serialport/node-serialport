@@ -45,8 +45,9 @@ function SerialPort(path) {
   this.empty_reads = 0;
   this.readWatcher.callback = (function (file_id, me) {
     return function () {
-      var buffer = serialport_native.read(file_id, buffer);
-      me.emit('data', buffer);
+      var buffer = new Buffer(255);
+      var bytes_read = serialport_native.read(file_id, buffer);
+      me.emit('data', buffer.slice(0, bytes_read));
     }
   })(this.fd, this);
   this.readWatcher.set(this.fd, true, false);
@@ -65,9 +66,8 @@ SerialPort.prototype.close = function () {
 
 
 SerialPort.prototype.write = function (b) { 
-  // console.log(this.fd);
   if (Buffer.isBuffer(b))
-    serialport_native.write(this.fd, buffer);
+    serialport_native.write(this.fd, b);
   else
     serialport_native.write(this.fd, new Buffer(b));
 }
