@@ -74,10 +74,15 @@ function SerialPort(path, options) {
   this.readWatcher.callback = (function (file_id, me) {
     return function () {
       var buffer = new Buffer(_options.buffersize);
-      var bytes_read = serialport_native.read(file_id, buffer);
+      var bytes_read = 0, err = null;
+      try
+        bytes_read = serialport_native.read(file_id, buffer);
+      catch (e) {
+        err = e;
+      }
       if (bytes_read <= 0) {
         // assume issue with reading.
-        me.emit("error", "Read triggered, but no bytes available. Assuming error with serial port shutting down.");
+        me.emit("error", (err ? err :"Read triggered, but no bytes available. Assuming error with serial port shutting down."));
         me.close();
       }
       _options.parser(me, buffer.slice(0, bytes_read));
