@@ -78,7 +78,7 @@ function SerialPort(path, options) {
       if (bytes_read <= 0) {
         // assume issue with reading.
         me.emit("error", "Read triggered, but no bytes available. Assuming error with serial port shutting down.");
-        me.readWatcher.stop();
+        me.close();
       }
       _options.parser(me, buffer.slice(0, bytes_read));
     }
@@ -91,10 +91,13 @@ function SerialPort(path, options) {
 sys.inherits(SerialPort, events.EventEmitter);
 
 SerialPort.prototype.close = function () {
+  this.readWatcher.stop();
+  
   if (this.fd)  {
     serialport_native.close(this.fd);
     this.fd = null;
   }
+
 };
 
 
