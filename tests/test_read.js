@@ -8,7 +8,9 @@ var serial_port = new SerialPort("/dev/master", 9600);
 serial_port.on("data", function (data) {
   sys.puts("here: "+data);
 })
-
+serial_port.on("error", function (msg) {
+  sys.puts("error: "+msg);
+})
 repl.start("=>")
 
 //serial_port.close();

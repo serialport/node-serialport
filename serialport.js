@@ -16,38 +16,71 @@ var DATABITS  = [8, 7, 6, 5];
 var STOPBITS  = [1, 2];
 var PARITY    = [0, 1, 2];
 
+
+var parsers = {
+  raw: function (emitter, buffer) {
+    emitter.emit("data", buffer);
+  },
+  readline: function (delimiter) {
+    if (!delimiter) { delimiter == "\r" }
+    return function (emitter, buffer) {
+      var lines = buffer.toString().split(delimiter);
+      lines.forEach(function (i) {
+        emitter.emit('data', i);
+      })
+    }
+  }
+}
+
+
 // can accept path, baudrate, databits, stopbits, parity
-function SerialPort(path) {
+function SerialPort(path, options) {
+  var _options = {
+    baudrate: 38400,
+    databits: 8,
+    stopbits: 1,
+    parity: 0,
+    buffersize: 255,
+    parser: parsers.raw
+  };
+  
   events.EventEmitter.call(this);
 
-  this.baudrate = 38400;
-  this.databits = 8;
-  this.stopbits = 1;
-  this.parity = 0;
   this.port = path;
   
-  if (arguments.length >= 2 && BAUDRATES.indexOf(arguments[1]) >= 0) {
-    this.baudrate = arguments[1];
+  if (options.baudrate && BAUDRATES.indexOf(options.baudrate) >= 0) {
+    _options.baudrate = options.baudrate;
   }
-  if (arguments.length >= 3 && DATABITS.indexOf(arguments[2]) >= 0)  {
-    this.databits = arguments[2];
+  if (options.databits && DATABITS.indexOf(options.databits) >= 0)  {
+    _options.databits = options.databits;
   }
-  if (arguments.length >= 4 && STOPBITS.indexOf(arguments[3]) >= 0)  {
-    this.stopbits = arguments[3];
+  if (options.stopbits && STOPBITS.indexOf(options.stopbits) >= 0)  {
+    _options.stopbits = options.stopbits;
   }
-  if (arguments.length >= 5 && PARITY.indexOf(arguments[4]) >= 0)  {
-    this.parity = arguments[4];
+  if (options.parity && PARITY.indexOf(options.parity) >= 0)  {
+    _options.parity = options.parity;
+  }
+  if (options.buffersize && typeof options.buffersize == "number" || options.buffersize instanceof Number) {
+    _options.buffersize = options.buffersize;
+  }
+  if (options.parser && typeof options.parser == 'function') {
+    _options.parser = options.parser;
   }
   
-  this.fd = serialport_native.open(this.port, this.baudrate, this.databits, this.stopbits, this.parity);
+  this.fd = serialport_native.open(this.port, _options.baudrate, _options.databits, _options.stopbits, _options.parity);
 
   this.readWatcher = new IOWatcher();
   this.empty_reads = 0;
   this.readWatcher.callback = (function (file_id, me) {
     return function () {
-      var buffer = new Buffer(255);
+      var buffer = new Buffer(_options.buffersize);
       var bytes_read = serialport_native.read(file_id, buffer);
-      me.emit('data', buffer.slice(0, bytes_read));
+      if (bytes_read <= 0) {
+        // assume issue with reading.
+        me.emit("error", "Read triggered, but no bytes available. Assuming error with serial port shutting down.");
+        me.readWatcher.stop();
+      }
+      _options.parser(me, buffer.slice(0, bytes_read));
     }
   })(this.fd, this);
   this.readWatcher.set(this.fd, true, false);
@@ -73,4 +106,5 @@ SerialPort.prototype.write = function (b) {
 }
 
 
-exports.SerialPort = SerialPort;
+module.exports.SerialPort = SerialPort;
+module.exports.parsers = parsers;
