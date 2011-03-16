@@ -22,15 +22,15 @@ var parsers = {
     emitter.emit("data", buffer);
   },
   readline: function (delimiter) {
-    if (!delimiter) { delimiter == "\r" }
+    if (!delimiter) { delimiter == "\r"; }
     return function (emitter, buffer) {
       var lines = buffer.toString().split(delimiter);
       lines.forEach(function (i) {
         emitter.emit('data', i);
-      })
-    }
+      });
+    };
   }
-}
+};
 
 
 // can accept path, baudrate, databits, stopbits, parity
@@ -75,8 +75,9 @@ function SerialPort(path, options) {
     return function () {
       var buffer = new Buffer(_options.buffersize);
       var bytes_read = 0, err = null;
-      try
+      try {
         bytes_read = serialport_native.read(file_id, buffer);
+      }
       catch (e) {
         err = e;
       }
@@ -86,7 +87,7 @@ function SerialPort(path, options) {
         me.close();
       }
       _options.parser(me, buffer.slice(0, bytes_read));
-    }
+    };
   })(this.fd, this);
   this.readWatcher.set(this.fd, true, false);
   this.readWatcher.start();
@@ -111,7 +112,7 @@ SerialPort.prototype.write = function (b) {
     serialport_native.write(this.fd, b);
   else
     serialport_native.write(this.fd, new Buffer(b));
-}
+};
 
 
 module.exports.SerialPort = SerialPort;
