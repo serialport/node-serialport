@@ -22,11 +22,24 @@ var parsers = {
     emitter.emit("data", buffer);
   },
   readline: function (delimiter) {
-    if (!delimiter) { delimiter == "\r"; }
+    if (typeof delimiter === "undefined" || delimiter === null) { delimiter = "\r"; }
+    // Delimiter buffer saved in closure
+    var data = "";
     return function (emitter, buffer) {
-      var lines = buffer.toString().split(delimiter);
-      lines.forEach(function (i) {
-        emitter.emit('data', i);
+
+      // Collect data
+      data += buffer.toString();
+
+      // Split collected data by delimiter
+      data.split(delimiter).forEach(function (part, i, array) {
+        if (i !== array.length-1) {
+          // Fully delimited part. Lets emit it.
+          emitter.emit('data', part);
+        }
+        else {
+          // Last split part might be partial. We can't emit it just yet.
+          data = part;
+        }
       });
     };
   }
