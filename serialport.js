@@ -5,7 +5,7 @@
 
 var sys        = require('sys');
 var Buffer     = require('buffer').Buffer;
-var events     = require('events');
+var stream     = require('stream');
 var fs         = require('fs');
 var net        = require('net');
 var serialport_native    = require('./serialport_native');
@@ -44,7 +44,7 @@ function SerialPort(path, options) {
     parser: parsers.raw
   };
   
-  events.EventEmitter.call(this);
+  stream.Stream.call(this);
 
   this.port = path;
   
@@ -75,9 +75,9 @@ function SerialPort(path, options) {
     return function () {
       var buffer = new Buffer(_options.buffersize);
       var bytes_read = 0, err = null;
-      try
+      try {
         bytes_read = serialport_native.read(file_id, buffer);
-      catch (e) {
+      } catch (e) {
         err = e;
       }
       if (bytes_read <= 0) {
@@ -93,7 +93,7 @@ function SerialPort(path, options) {
 
 }
 
-sys.inherits(SerialPort, events.EventEmitter);
+sys.inherits(SerialPort, stream.Stream);
 
 SerialPort.prototype.close = function () {
   this.readWatcher.stop();
