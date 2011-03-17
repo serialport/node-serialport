@@ -114,5 +114,13 @@ SerialPort.prototype.write = function (b) {
 }
 
 
+SerialPort.prototype.end = function(buf, enc) {
+  if (buf) {
+    this.write(buf, enc);
+  }
+  this.close();
+}
+
+
 module.exports.SerialPort = SerialPort;
 module.exports.parsers = parsers;
