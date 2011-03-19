@@ -5,7 +5,7 @@
 
 var sys        = require('sys');
 var Buffer     = require('buffer').Buffer;
-var events     = require('events');
+var stream     = require('stream');
 var fs         = require('fs');
 var net        = require('net');
 var serialport_native    = require('./serialport_native');
@@ -46,52 +46,47 @@ var parsers = {
 };
 
 
-// can accept path, baudrate, databits, stopbits, parity
+// The default options, can be overwritten in the 'SerialPort' constructor
+var _options = {
+  baudrate: 38400,
+  databits: 8,
+  stopbits: 1,
+  parity: 0,
+  buffersize: 255,
+  parser: parsers.raw
+};
 function SerialPort(path, options) {
-  var _options = {
-    baudrate: 38400,
-    databits: 8,
-    stopbits: 1,
-    parity: 0,
-    buffersize: 255,
-    parser: parsers.raw
-  };
-  
-  events.EventEmitter.call(this);
+  options = options || {};
+  options.__proto__ = _options;
+
+  if (BAUDRATES.indexOf(options.baudrate) == -1) {
+    throw new Error('Invalid "baudrate": ' + options.baudrate);
+  }
+  if (DATABITS.indexOf(options.databits) == -1) {
+    throw new Error('Invalid "databits": ' + options.databits);
+  }
+  if (STOPBITS.indexOf(options.stopbits) == -1) {
+    throw new Error('Invalid "stopbits": ' + options.stopbits);
+  }
+  if (PARITY.indexOf(options.parity) == -1) {
+    throw new Error('Invalid "parity": ' + options.parity);
+  }
+
+  stream.Stream.call(this);
 
   this.port = path;
   
-  if (options.baudrate && BAUDRATES.indexOf(options.baudrate) >= 0) {
-    _options.baudrate = options.baudrate;
-  }
-  if (options.databits && DATABITS.indexOf(options.databits) >= 0)  {
-    _options.databits = options.databits;
-  }
-  if (options.stopbits && STOPBITS.indexOf(options.stopbits) >= 0)  {
-    _options.stopbits = options.stopbits;
-  }
-  if (options.parity && PARITY.indexOf(options.parity) >= 0)  {
-    _options.parity = options.parity;
-  }
-  if (options.buffersize && typeof options.buffersize == "number" || options.buffersize instanceof Number) {
-    _options.buffersize = options.buffersize;
-  }
-  if (options.parser && typeof options.parser == 'function') {
-    _options.parser = options.parser;
-  }
-  
-  this.fd = serialport_native.open(this.port, _options.baudrate, _options.databits, _options.stopbits, _options.parity);
+  this.fd = serialport_native.open(this.port, options.baudrate, options.databits, options.stopbits, options.parity);
 
   this.readWatcher = new IOWatcher();
   this.empty_reads = 0;
   this.readWatcher.callback = (function (file_id, me) {
     return function () {
-      var buffer = new Buffer(_options.buffersize);
+      var buffer = new Buffer(options.buffersize);
       var bytes_read = 0, err = null;
       try {
         bytes_read = serialport_native.read(file_id, buffer);
-      }
-      catch (e) {
+      } catch (e) {
         err = e;
       }
       if (bytes_read <= 0) {
@@ -99,15 +94,15 @@ function SerialPort(path, options) {
         me.emit("error", (err ? err :"Read triggered, but no bytes available. Assuming error with serial port shutting down."));
         me.close();
       }
-      _options.parser(me, buffer.slice(0, bytes_read));
-    };
+      options.parser(me, buffer.slice(0, bytes_read));
+    }
   })(this.fd, this);
   this.readWatcher.set(this.fd, true, false);
   this.readWatcher.start();
 
 }
 
-sys.inherits(SerialPort, events.EventEmitter);
+sys.inherits(SerialPort, stream.Stream);
 
 SerialPort.prototype.close = function () {
   this.readWatcher.stop();
@@ -126,6 +121,14 @@ SerialPort.prototype.write = function (b) {
   else
     serialport_native.write(this.fd, new Buffer(b));
 };
+
+
+SerialPort.prototype.end = function(buf, enc) {
+  if (buf) {
+    this.write(buf, enc);
+  }
+  this.close();
+}
 
 
 module.exports.SerialPort = SerialPort;
