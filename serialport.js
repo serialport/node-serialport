@@ -9,9 +9,9 @@ var events     = require('events');
 var fs         = require('fs');
 var net        = require('net');
 var serialport_native    = require('./serialport_native');
-var IOWatcher   = process.binding('io_watcher').IOWatcher; // - for the future!
+var IOWatcher   = process.binding('io_watcher').IOWatcher;
 
-var BAUDRATES = [115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 120,, 600, 300, 200, 150, 134, 110, 75, 50];
+var BAUDRATES = [115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, 50];
 var DATABITS  = [8, 7, 6, 5];
 var STOPBITS  = [1, 2];
 var PARITY    = [0, 1, 2];
