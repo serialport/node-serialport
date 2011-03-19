@@ -11,7 +11,7 @@ var net        = require('net');
 var serialport_native    = require('./serialport_native');
 var IOWatcher   = process.binding('io_watcher').IOWatcher; // - for the future!
 
-var BAUDRATES = [115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 120,, 600, 300, 200, 150, 134, 110, 75, 50];
+var BAUDRATES = [115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 120, 600, 300, 200, 150, 134, 110, 75, 50];
 var DATABITS  = [8, 7, 6, 5];
 var STOPBITS  = [1, 2];
 var PARITY    = [0, 1, 2];
@@ -45,6 +45,20 @@ var _options = {
 function SerialPort(path, options) {
   options = options || {};
   options.__proto__ = _options;
+
+  if (BAUDRATES.indexOf(options.baudrate) == -1) {
+    throw new Error('Invalid "baudrate": ' + options.baudrate);
+  }
+  if (DATABITS.indexOf(options.databits) == -1) {
+    throw new Error('Invalid "databits": ' + options.databits);
+  }
+  if (STOPBITS.indexOf(options.stopbits) == -1) {
+    throw new Error('Invalid "stopbits": ' + options.stopbits);
+  }
+  if (PARITY.indexOf(options.parity) == -1) {
+    throw new Error('Invalid "parity": ' + options.parity);
+  }
+
   stream.Stream.call(this);
 
   this.port = path;
