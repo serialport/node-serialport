@@ -75,7 +75,6 @@ function SerialPort(path, options) {
   stream.Stream.call(this);
 
   this.port = path;
-  
   this.fd = serialport_native.open(this.port, options.baudrate, options.databits, options.stopbits, options.parity);
 
   this.readWatcher = new IOWatcher();
@@ -93,8 +92,9 @@ function SerialPort(path, options) {
         // assume issue with reading.
         me.emit("error", (err ? err :"Read triggered, but no bytes available. Assuming error with serial port shutting down."));
         me.close();
+      } else {
+        options.parser(me, buffer.slice(0, bytes_read));
       }
-      options.parser(me, buffer.slice(0, bytes_read));
     }
   })(this.fd, this);
   this.readWatcher.set(this.fd, true, false);
