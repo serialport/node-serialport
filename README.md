@@ -49,7 +49,7 @@ When opening a serial port, you can specify (in this order).
 
 The options object allows you to pass named options to the serial port during initialization. The valid attributes for the options object are the following
 
-* baudrate: Baud Rate, defaults to 9600. Must be one of: 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 120,, 600, 300, 200, 150, 134, 110, 75, or 50.
+* baudrate: Baud Rate, defaults to 9600. Must be one of: 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, or 50.
 * databits: Data Bits, defaults to 8. Must be one of: 8, 7, 6, or 5.
 * stopbits: Stop Bits, defaults to 1. Must be one of: 1 or 2.
 * parity: Parity, defaults to 0. Must be one of: 0, 1, or 2.
