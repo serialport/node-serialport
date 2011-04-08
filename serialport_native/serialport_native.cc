@@ -119,14 +119,14 @@ namespace node {
     if (args.Length() >= 4 && !args[3]->IsInt32()) {
       return scope.Close(THROW_BAD_ARGS);
     } else {
-      Stop_Bits = args[2]->Int32Value();
+      Stop_Bits = args[3]->Int32Value();
     }
 
     // Parity Arguments
     if (args.Length() >= 5 && !args[4]->IsInt32()) {
       return scope.Close(THROW_BAD_ARGS);
     } else {
-      Parity = args[2]->Int32Value();
+      Parity = args[4]->Int32Value();
     }
 
 
