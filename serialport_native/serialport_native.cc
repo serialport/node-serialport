@@ -90,12 +90,14 @@ namespace node {
     int Data_Bits = 8;
     int Stop_Bits = 1;
     int Parity = 0;
+    int Flowcontrol = 0;
 
     long BAUD;
     long DATABITS;
     long STOPBITS;
     long PARITYON;
     long PARITY;
+    long FLOWCONTROL;
 
     if (!args[0]->IsString()) {
       return scope.Close(THROW_BAD_ARGS);
@@ -119,16 +121,22 @@ namespace node {
     if (args.Length() >= 4 && !args[3]->IsInt32()) {
       return scope.Close(THROW_BAD_ARGS);
     } else {
-      Stop_Bits = args[2]->Int32Value();
+      Stop_Bits = args[3]->Int32Value();
     }
 
     // Parity Arguments
     if (args.Length() >= 5 && !args[4]->IsInt32()) {
       return scope.Close(THROW_BAD_ARGS);
     } else {
-      Parity = args[2]->Int32Value();
+      Parity = args[4]->Int32Value();
     }
 
+    // Flow control Arguments
+    if (args.Length() >= 6 && !args[5]->IsInt32()) {
+      return scope.Close(THROW_BAD_ARGS);
+    } else {
+      Flowcontrol = args[5]->Int32Value();
+    }
 
 
 
@@ -218,6 +226,17 @@ namespace node {
         break;
       } 
 
+    switch (Flowcontrol)
+      {
+      case 0:
+      default:
+	FLOWCONTROL = 0;
+	break;
+      case 1:
+	FLOWCONTROL = CRTSCTS;
+	break;
+      }
+
     String::Utf8Value path(args[0]->ToString());
     
     int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_NDELAY);
@@ -251,7 +270,9 @@ namespace node {
       options.c_cflag |= DATABITS;    
     
 
-
+      /* Specify flow control */
+      options.c_cflag &= ~FLOWCONTROL;
+      options.c_cflag |= FLOWCONTROL;
 
       switch (Parity)
         {
@@ -286,7 +307,7 @@ namespace node {
       options.c_cc[VMIN]=1;
       options.c_cc[VTIME]=0;
 
-
+      //memset(&options, 0, 128000);
       tcflush(fd, TCIFLUSH);
       tcsetattr(fd, TCSANOW, &options);
 

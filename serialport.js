@@ -15,7 +15,7 @@ var BAUDRATES = [115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600,
 var DATABITS  = [8, 7, 6, 5];
 var STOPBITS  = [1, 2];
 var PARITY    = [0, 1, 2];
-
+var FLOWCONTROL = [0, 1];
 
 var parsers = {
   raw: function (emitter, buffer) {
@@ -52,6 +52,7 @@ var _options = {
   databits: 8,
   stopbits: 1,
   parity: 0,
+  flowcontrol: 0,
   buffersize: 255,
   parser: parsers.raw
 };
@@ -71,11 +72,14 @@ function SerialPort(path, options) {
   if (PARITY.indexOf(options.parity) == -1) {
     throw new Error('Invalid "parity": ' + options.parity);
   }
+  if (FLOWCONTROL.indexOf(options.flowcontrol) == -1) {
+    throw new Error('Invalid "flowcontrol": ' + options.flowcontrol);
+  }
 
   stream.Stream.call(this);
 
   this.port = path;
-  this.fd = serialport_native.open(this.port, options.baudrate, options.databits, options.stopbits, options.parity);
+  this.fd = serialport_native.open(this.port, options.baudrate, options.databits, options.stopbits, options.parity, options.flowcontrol);
 
   this.readWatcher = new IOWatcher();
   this.empty_reads = 0;
