@@ -43,9 +43,15 @@ namespace node {
     size_t buffer_length = Buffer::Length(buffer_obj);
     ssize_t bytes_read = read(fd, buffer_data, buffer_length);
     if (bytes_read < 0) return ThrowException(ErrnoException(errno));
-    // Buffer *buffer = Buffer::New(buf, bytes_read);
+    // reset current pointer
+    size_t seek_ret = lseek(fd,bytes_read,SEEK_CUR);
     return scope.Close(Integer::New(bytes_read));
   }
+
+
+
+
+
 
   static Handle<Value> Write(const Arguments& args) {
     HandleScope scope;
@@ -243,7 +249,7 @@ namespace node {
     int fd    = open(*path, flags);
 
     if (fd == -1) {
-      perror("open_port: Unable to open /dev/ttyS0 - ");
+      perror("open_port: Unable to open specified serial port connection.");
       return scope.Close(Integer::New(fd));
     } else {
       struct sigaction saio; 

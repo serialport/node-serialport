@@ -26,20 +26,13 @@ var parsers = {
     // Delimiter buffer saved in closure
     var data = "";
     return function (emitter, buffer) {
-
       // Collect data
       data += buffer.toString();
-
       // Split collected data by delimiter
-      data.split(delimiter).forEach(function (part, i, array) {
-        if (i !== array.length-1) {
-          // Fully delimited part. Lets emit it.
-          emitter.emit('data', part);
-        }
-        else {
-          // Last split part might be partial. We can't emit it just yet.
-          data = part;
-        }
+      var parts = data.split(delimiter)
+      data = parts.pop();
+      parts.forEach(function (part, i, array) {
+        emitter.emit('data', part);
       });
     };
   }
