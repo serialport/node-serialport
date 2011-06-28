@@ -73,37 +73,29 @@ function SerialPort(path, options) {
 
   this.port = path;
   this.fd = serialport_native.open(this.port, options.baudrate, options.databits, options.stopbits, options.parity, options.flowcontrol);
-
-  this.readWatcher = new IOWatcher();
-  this.empty_reads = 0;
-  this.readWatcher.callback = (function (file_id, me) {
-    return function () {
-      var buffer = new Buffer(options.buffersize);
-      var bytes_read = 0, err = null;
-      try {
-        bytes_read = serialport_native.read(file_id, buffer);
-      } catch (e) {
-        err = e;
-      }
-      if (bytes_read <= 0) {
-        // assume issue with reading.
-        me.emit("error", (err ? err :"Read triggered, but no bytes available. Assuming error with serial port shutting down."));
-        me.close();
-      } else {
-        options.parser(me, buffer.slice(0, bytes_read));
-      }
-    }
-  })(this.fd, this);
-  this.readWatcher.set(this.fd, true, false);
-  this.readWatcher.start();
-
+  if (this.fd == -1) {
+    this.emit("error", new Error('could not open serial port'))
+  } else {
+    this.readStream = fs.createReadStream(this.port);
+    var dataCallback = (function (me) {
+      return (function (buffer) {
+        options.parser(me, buffer)
+      });
+    })(this);
+    var errorCallback = (function (me) {
+      return (function (err) {
+        me.emit("error", err);
+      });
+    });
+    this.readStream.on("data", dataCallback);
+    this.readStream.on("error", errorCallback);
+  }
 }
 
 sys.inherits(SerialPort, stream.Stream);
 
 SerialPort.prototype.close = function () {
-  this.readWatcher.stop();
-  
+  this.readStream.close();
   if (this.fd)  {
     serialport_native.close(this.fd);
     this.fd = null;

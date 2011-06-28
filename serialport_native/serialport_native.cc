@@ -249,7 +249,7 @@ namespace node {
     int fd    = open(*path, flags);
 
     if (fd == -1) {
-      perror("open_port: Unable to open specified serial port connection.");
+      // perror("open_port: Unable to open specified serial port connection.");
       return scope.Close(Integer::New(fd));
     } else {
       struct sigaction saio; 
