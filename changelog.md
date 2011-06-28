@@ -1,3 +1,7 @@
+Version 0.2.7
+-------------
+- Make no port available be an exception not error emitted - Ticket #12.
+
 Version 0.2.5 - Version 0.2.6
 -----------------------------
 - Debugging issue with IOWatcher not holding in the event loop in node.js. 

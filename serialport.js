@@ -74,7 +74,7 @@ function SerialPort(path, options) {
   this.port = path;
   this.fd = serialport_native.open(this.port, options.baudrate, options.databits, options.stopbits, options.parity, options.flowcontrol);
   if (this.fd == -1) {
-    this.emit("error", new Error('could not open serial port'))
+    throw new Error("Could not open serial port");
   } else {
     this.readStream = fs.createReadStream(this.port);
     var dataCallback = (function (me) {
