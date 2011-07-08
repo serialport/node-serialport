@@ -1,3 +1,7 @@
+Version 0.2.8
+-------------
+- BufferSize fix for readstream (thanks jgautier, you rock)
+
 Version 0.2.7
 -------------
 - Make no port available be an exception not error emitted - Ticket #12.
