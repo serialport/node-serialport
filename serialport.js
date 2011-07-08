@@ -76,7 +76,7 @@ function SerialPort(path, options) {
   if (this.fd == -1) {
     throw new Error("Could not open serial port");
   } else {
-    this.readStream = fs.createReadStream(this.port);
+    this.readStream = fs.createReadStream(this.port,{bufferSize:options.buffersize});
     var dataCallback = (function (me) {
       return (function (buffer) {
         options.parser(me, buffer)
