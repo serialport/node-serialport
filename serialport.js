@@ -95,12 +95,11 @@ function SerialPort(path, options) {
 sys.inherits(SerialPort, stream.Stream);
 
 SerialPort.prototype.close = function () {
-  this.readStream.close();
   if (this.fd)  {
     serialport_native.close(this.fd);
     this.fd = null;
   }
-
+  this.readStream.destroy();
 };
 
 
