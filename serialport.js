@@ -41,7 +41,7 @@ var parsers = {
 
 // The default options, can be overwritten in the 'SerialPort' constructor
 var _options = {
-  baudrate: 38400,
+  baudrate: 9600,
   databits: 8,
   stopbits: 1,
   parity: 0,
