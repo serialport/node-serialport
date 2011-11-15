@@ -3,7 +3,7 @@
 
 // Copyright 2011 Chris Williams <chris@iterativedesigns.com>
 
-var sys        = require('sys');
+var util        = require('util');
 var Buffer     = require('buffer').Buffer;
 var stream     = require('stream');
 var fs         = require('fs');
@@ -92,7 +92,7 @@ function SerialPort(path, options) {
   }
 }
 
-sys.inherits(SerialPort, stream.Stream);
+util.inherits(SerialPort, stream.Stream);
 
 SerialPort.prototype.close = function () {
   if (this.fd)  {
