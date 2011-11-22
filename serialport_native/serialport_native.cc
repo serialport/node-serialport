@@ -8,7 +8,7 @@
 #include <errno.h>   /* Error number definitions */
 #include <termios.h> /* POSIX terminal control definitions */
 
-#include <node.h>    /* Includes for JS, node.js and v8 *//
+#include <node.h>    /* Includes for JS, node.js and v8 */
 #include <node_buffer.h>
 #include <v8.h>
 
