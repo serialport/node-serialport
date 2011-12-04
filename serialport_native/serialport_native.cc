@@ -236,11 +236,11 @@ namespace node {
       {
       case 0:
       default:
-	FLOWCONTROL = 0;
-	break;
+        FLOWCONTROL = 0;
+        break;
       case 1:
-	FLOWCONTROL = CRTSCTS;
-	break;
+        FLOWCONTROL = CRTSCTS;
+        break;
       }
 
     String::Utf8Value path(args[0]->ToString());
