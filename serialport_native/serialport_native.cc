@@ -22,6 +22,116 @@ namespace node {
   
   static Persistent<String> errno_symbol;
 
+  static long GetBaudConstant(long Baud_Rate) {
+    switch (Baud_Rate) {
+      case 230400: return B230400;
+      case 115200: return B115200;
+      case 57600:  return B57600;
+      case 38400:  return B38400;
+      case 19200:  return B19200;
+      case 9600:   return B9600;
+      case 4800:   return B4800;
+      case 2400:   return B2400;
+      case 1800:   return B1800;
+      case 1200:   return B1200;
+      case 600:    return B600;
+      case 300:    return B300;
+      case 200:    return B200;
+      case 150:    return B150;
+      case 134:    return B134;
+      case 110:    return B110;
+      case 75:     return B75;
+      case 50:     return B50;
+      case 0:      return B0;
+    }
+    // Custom Speed?
+    return Baud_Rate;       
+  }
+
+  static long GetDataBitsConstant(long Data_Bits) {
+    switch (Data_Bits) {
+      case 8: default: return CS8;
+      case 7: return CS7;
+      case 6: return CS6;
+      case 5: return CS5;
+    }  
+  }
+
+  static long GetStopBitsConstant(long Stop_Bits) {
+    switch (Stop_Bits) {
+      case 1: default: return 0;
+      case 2: return CSTOPB;
+    }
+  }
+
+  static long GetFlowcontrolConstant(long Flowcontrol) {
+    switch (Flowcontrol) {
+      case 0: default: return 0;
+      case 1: return CRTSCTS;
+    }
+  }
+
+  static Handle<Value> SetBaudRate(const Arguments& args) {
+    HandleScope scope;
+
+    long BAUD;
+    long Baud_Rate = 38400;
+    struct termios options; 
+
+    if (!args[0]->IsInt32())  {
+      return scope.Close(THROW_BAD_ARGS);
+    }
+    int fd = args[0]->Int32Value();
+
+    // Baud Rate Argument
+    if (args.Length() >= 2 && !args[1]->IsInt32()) {
+      return scope.Close(THROW_BAD_ARGS);
+    } else {
+      Baud_Rate = args[1]->Int32Value();
+    }
+   
+    // Set baud and other configuration.
+    tcgetattr(fd, &options);
+
+    BAUD = GetBaudConstant(Baud_Rate);
+    printf("Setting baud rate to %ld\n", BAUD);
+
+    /* Specify the baud rate */
+    cfsetispeed(&options, BAUD);
+    cfsetospeed(&options, BAUD);
+    
+    tcflush(fd, TCIFLUSH);
+    tcsetattr(fd, TCSANOW, &options);
+
+    return scope.Close(Integer::New(BAUD));
+  }
+
+
+
+  static Handle<Value> SetDTR(const Arguments& args) {
+    HandleScope scope;
+
+    if (!args[0]->IsInt32())  {
+      return scope.Close(THROW_BAD_ARGS);
+    }
+    int fd = args[0]->Int32Value();
+
+    if (!args[1]->IsBoolean())  {
+      return scope.Close(THROW_BAD_ARGS);
+    }
+    bool DTR = args[1]->BooleanValue();
+
+    if (DTR) { // DTR Set
+      fcntl(fd, TIOCMBIS, TIOCM_DTR);
+    } else { // DTR Clear
+      fcntl(fd, TIOCMBIC, TIOCM_DTR);
+    }
+
+    return scope.Close(Integer::New(1));
+  }
+
+
+
   static Handle<Value> Read(const Arguments& args) {
     HandleScope scope;
 
@@ -144,104 +254,10 @@ namespace node {
       Flowcontrol = args[5]->Int32Value();
     }
 
-
-
-
-
-    switch (Baud_Rate)
-      {
-      case 38400:
-      default:
-        BAUD = B38400;
-        break;
-      case 115200:
-        BAUD = B115200;
-        break;
-
-      case 57600:
-        BAUD = B57600;
-        break;
-      case 19200:
-        BAUD  = B19200;
-        break;
-      case 9600:
-        BAUD  = B9600;
-        break;
-      case 4800:
-        BAUD  = B4800;
-        break;
-      case 2400:
-        BAUD  = B2400;
-        break;
-      case 1800:
-        BAUD  = B1800;
-        break;
-      case 1200:
-        BAUD  = B1200;
-        break;
-      case 600:
-        BAUD  = B600;
-        break;
-      case 300:
-        BAUD  = B300;
-        break;
-      case 200:
-        BAUD  = B200;
-        break;
-      case 150:
-        BAUD  = B150;
-        break;
-      case 134:
-        BAUD  = B134;
-        break;
-      case 110:
-        BAUD  = B110;
-        break;
-      case 75:
-        BAUD  = B75;
-        break;
-      case 50:
-        BAUD  = B50;
-        break;
-      }
-    
-    switch (Data_Bits)
-      {
-      case 8:
-      default:
-        DATABITS = CS8;
-        break;
-      case 7:
-        DATABITS = CS7;
-        break;
-      case 6:
-        DATABITS = CS6;
-        break;
-      case 5:
-        DATABITS = CS5;
-        break;
-      }
-    switch (Stop_Bits)
-      {
-      case 1:
-      default:
-        STOPBITS = 0;
-        break;
-      case 2:
-        STOPBITS = CSTOPB;
-        break;
-      } 
-
-    switch (Flowcontrol)
-      {
-      case 0:
-      default:
-        FLOWCONTROL = 0;
-        break;
-      case 1:
-        FLOWCONTROL = CRTSCTS;
-        break;
-      }
+    BAUD = GetBaudConstant(Baud_Rate);
+    DATABITS = GetDataBitsConstant(Data_Bits);
+    STOPBITS = GetStopBitsConstant(Stop_Bits);
+    FLOWCONTROL = GetFlowcontrolConstant(Flowcontrol);
 
     String::Utf8Value path(args[0]->ToString());
     
@@ -306,7 +322,9 @@ namespace node {
         }
       
 
-      options.c_cflag |= (CLOCAL | CREAD);
+      options.c_cflag |= CLOCAL; //ignore status lines
+      options.c_cflag |= CREAD;  //enable receiver
+      options.c_cflag |= HUPCL;  //drop DTR (i.e. hangup) on close
       options.c_iflag = IGNPAR;
       options.c_oflag = 0;
       options.c_lflag = 0;       //ICANON;
@@ -332,6 +350,8 @@ namespace node {
     NODE_SET_METHOD(target, "write", Write);
     NODE_SET_METHOD(target, "close", Close);
     NODE_SET_METHOD(target, "read", Read);
+    NODE_SET_METHOD(target, "set_baud_rate", SetBaudRate);
+    NODE_SET_METHOD(target, "set_dtr", SetDTR);
 
     errno_symbol = NODE_PSYMBOL("errno");
 

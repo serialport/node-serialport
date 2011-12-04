@@ -118,6 +118,21 @@ SerialPort.prototype.end = function(buf, enc) {
   this.close();
 }
 
+SerialPort.prototype.set_baud_rate = function(baud_rate) {
+  if (this.fd) {
+    serialport_native.set_baud_rate(this.fd, baud_rate);
+  } else {
+    throw new Error("Can't set baud rate; invalid file descriptor");
+  }
+}
+
+SerialPort.prototype.set_dtr = function(boolean_value) {
+  if (this.fd) {
+    serialport_native.set_dtr(this.fd, boolean_value);
+  } else {
+    throw new Error("Can't set or clear DTR; invalid file descriptor");
+  }
+}
 
 module.exports.SerialPort = SerialPort;
 module.exports.parsers = parsers;
