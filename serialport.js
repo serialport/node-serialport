@@ -86,9 +86,21 @@ function SerialPort(path, options) {
       return (function (err) {
         me.emit("error", err);
       });
-    });
+    })(this);
+    var closeCallback = (function (me) {
+      return (function () {
+        me.emit("close");
+      });
+    })(this);
+    var endCallback = (function (me) {
+      return (function () {
+        me.emit("end");
+      });
+    })(this);
     this.readStream.on("data", dataCallback);
     this.readStream.on("error", errorCallback);
+    this.readStream.on("close", closeCallback);
+    this.readStream.on("end", endCallback);
   }
 }
 
