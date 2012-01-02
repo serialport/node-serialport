@@ -1,3 +1,8 @@
+Version 0.6.5
+-------------
+- Added SetBaudRate, SetDTR; Custom Baud Rates
+- New "close" listener when device being disconnected
+
 Version 0.2.8
 -------------
 - BufferSize fix for readstream (thanks jgautier, you rock)
