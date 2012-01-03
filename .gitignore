@@ -1,3 +1,4 @@
+serialport_native/.lock-wscript
 *.node
 .DS_Store
 *lock-wscript
