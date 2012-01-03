@@ -9,6 +9,22 @@ var SerialPort = require("serialport");
 var fs = require("fs");
 var port = process.argv[2];
 var baudrate = process.argv[3];
+var active = false;
+
+function attemptLogging(fd, port, baudrate) {
+  fs.write(fd, "\n------------------------------------------------------------\nOpening SerialPort: "+target+" at "+Date.now()+"\n------------------------------------------------------------\n");  
+  var serialPort = new SerialPort.SerialPort(port, {
+    baudrate: baudrate
+  });
+  serialPort.on("data", function (data) {
+    fs.write(fd, data.toString());
+  });
+  serialPort.on("close", function (data) {
+    active = false;
+    fs.write(fd, "\n------------------------------------------------------------\nClosing SerialPort: "+target+" at "+Date.now()+"\n------------------------------------------------------------\n");  
+  });
+}
+
 if (!port) {
   console.log("You must specify a serial port location.");
 } else {
@@ -18,16 +34,16 @@ if (!port) {
     baudrate = 115200;
   }
   fs.open("./"+target, 'w', function (err, fd) {
-    fs.write(fd, "\n------------------------------------------------------------\nOpening SerialPort: "+target+" at "+Date.now()+"\n------------------------------------------------------------\n");  
-    var serialPort = new SerialPort.SerialPort(port, {
-      baudrate: baudrate
-    });
-    serialPort.on("data", function (data) {
-      fs.write(fd, data.toString());
-    });
-    serialPort.on("close", function (data) {
-      fs.write(fd, "\n------------------------------------------------------------\nClosing SerialPort: "+target+" at "+Date.now()+"\n------------------------------------------------------------\n");  
-    });
+    setInterval(function () {
+      if (!active) {
+        try {
+          attemptLogging(fd, port, baudrate);  
+        } catch (e) {
+          // Error means port is not available for listening.
+          active = false;
+        }
+      }
+    }, 1000);
   });
 }
 
