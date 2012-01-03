@@ -12,10 +12,10 @@ var baudrate = process.argv[3];
 var active = false;
 
 function attemptLogging(fd, port, baudrate) {
-  fs.write(fd, "\n------------------------------------------------------------\nOpening SerialPort: "+target+" at "+Date.now()+"\n------------------------------------------------------------\n");  
   var serialPort = new SerialPort.SerialPort(port, {
     baudrate: baudrate
   });
+  fs.write(fd, "\n------------------------------------------------------------\nOpening SerialPort: "+target+" at "+Date.now()+"\n------------------------------------------------------------\n");  
   serialPort.on("data", function (data) {
     fs.write(fd, data.toString());
   });
