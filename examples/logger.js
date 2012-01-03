@@ -12,17 +12,25 @@ var baudrate = process.argv[3];
 var active = false;
 
 function attemptLogging(fd, port, baudrate) {
-  var serialPort = new SerialPort.SerialPort(port, {
-    baudrate: baudrate
-  });
-  fs.write(fd, "\n------------------------------------------------------------\nOpening SerialPort: "+target+" at "+Date.now()+"\n------------------------------------------------------------\n");  
-  serialPort.on("data", function (data) {
-    fs.write(fd, data.toString());
-  });
-  serialPort.on("close", function (data) {
-    active = false;
-    fs.write(fd, "\n------------------------------------------------------------\nClosing SerialPort: "+target+" at "+Date.now()+"\n------------------------------------------------------------\n");  
-  });
+  if (!active) {
+    fs.stat(port,  function (err, stats) {
+      if (!err) {
+        active = true;
+        
+        var serialPort = new SerialPort.SerialPort(port, {
+          baudrate: baudrate
+        });
+        fs.write(fd, "\n------------------------------------------------------------\nOpening SerialPort: "+target+" at "+Date.now()+"\n------------------------------------------------------------\n");  
+        serialPort.on("data", function (data) {
+          fs.write(fd, data.toString());
+        });
+        serialPort.on("close", function (data) {
+          active = false;
+          fs.write(fd, "\n------------------------------------------------------------\nClosing SerialPort: "+target+" at "+Date.now()+"\n------------------------------------------------------------\n");  
+        });
+      }
+    });
+  }
 }
 
 if (!port) {
