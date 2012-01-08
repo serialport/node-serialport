@@ -20,6 +20,16 @@ Imagine a world where you can write JavaScript to control blenders, lights, secu
 
 *****
 
+Robots, you say?
+================
+
+This library is admittedly a base level toolkit for building amazing things with real world (including robots). Here are a couple of those amazing things that leverage node-serialport:
+
+* [tmpad](http://tmpvar.com/project/tmpad/) [source](https://github.com/tmpvar/tmpad) - a DIY midi pad using infrared, arduino, and nodejs. [Video](http://vimeo.com/34575470)
+* [duino](https://github.com/ecto/duino) - A higher level framework for working with Arduinos in node.js.
+* [Arduino Drinking Game Extravaganza](http://jsconf.eu/2011/arduino_drinking_game_extravaganza.html) - AKA "The Russian" a hexidecimal drinking game for geeks by Uxebu.
+* [Arduino controlling popcorn.js](https://gist.github.com/968773) - Controlling a popcorn.js video with an Arduino kit.
+
 How To Use
 ==========
 
