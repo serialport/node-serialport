@@ -25,6 +25,7 @@ Robots, you say?
 
 This library is admittedly a base level toolkit for building amazing things with real world (including robots). Here are a couple of those amazing things that leverage node-serialport:
 
+* [firmata](https://github.com/jgautier/firmata) Talk natively to Arduino using the firmata protocol.
 * [tmpad](http://tmpvar.com/project/tmpad/) [source](https://github.com/tmpvar/tmpad) - a DIY midi pad using infrared, arduino, and nodejs. [Video](http://vimeo.com/34575470)
 * [duino](https://github.com/ecto/duino) - A higher level framework for working with Arduinos in node.js.
 * [Arduino Drinking Game Extravaganza](http://jsconf.eu/2011/arduino_drinking_game_extravaganza.html) - AKA "The Russian" a hexidecimal drinking game for geeks by Uxebu presented at JSConf EU 2011.
