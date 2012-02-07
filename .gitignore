@@ -1,5 +1,6 @@
-serialport_native/.lock-wscript
+.lock-wscript
 *.node
 .DS_Store
-*lock-wscript
 *build
+node_modules
+npm-debug.log
