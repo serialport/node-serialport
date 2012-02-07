@@ -10,5 +10,8 @@
     "scripts": {
         "install": "node-waf configure build"
     },
+    "dependencies": {
+        "bindings": "*"
+    },
     "engines": { "node": "0.6" }
 }

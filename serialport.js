@@ -8,7 +8,7 @@ var Buffer     = require('buffer').Buffer;
 var stream     = require('stream');
 var fs         = require('fs');
 var net        = require('net');
-var serialport_native    = require('./serialport_native');
+var serialport_native    = require('bindings')('serialport_native.node');
 var IOWatcher   = process.binding('io_watcher').IOWatcher;
 
 var BAUDRATES = [115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, 50];
