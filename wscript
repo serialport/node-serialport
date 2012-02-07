@@ -12,4 +12,4 @@ def configure(conf):
 def build(bld):
   obj = bld.new_task_gen('cxx', 'shlib', 'node_addon')
   obj.target = 'serialport_native'
-  obj.source = 'serialport_native.cc'
+  obj.source = 'serialport_native/serialport_native.cc'
