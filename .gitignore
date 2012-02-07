@@ -1,5 +1,11 @@
-serialport_native/.lock-wscript
+.lock-wscript
 *.node
 .DS_Store
-*lock-wscript
-*build
+build/
+node_modules
+npm-debug.log
+Makefile.gyp
+*.Makefile
+*.target.gyp.mk
+out
+gyp-mac-tool
