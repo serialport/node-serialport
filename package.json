@@ -7,7 +7,11 @@
         "type": "git",
         "url": "git://github.com/voodootikigod/node-serialport.git"
     },
-    "scripts": { "install": "cd serialport_native;node-waf configure build;cp build/Release/serialport_native.node ../" },
-    
+    "scripts": {
+        "install": "node-waf configure build"
+    },
+    "dependencies": {
+        "bindings": "*"
+    },
     "engines": { "node": "0.6" }
 }
