@@ -19,11 +19,12 @@
 namespace node {
 
   using namespace v8;
-  
+
   static Persistent<String> errno_symbol;
 
   static long GetBaudConstant(long Baud_Rate) {
     switch (Baud_Rate) {
+      case 500000: return B500000;
       case 230400: return B230400;
       case 115200: return B115200;
       case 57600:  return B57600;
