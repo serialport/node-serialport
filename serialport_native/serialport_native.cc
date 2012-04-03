@@ -12,6 +12,15 @@
 #include <node_buffer.h>
 #include <v8.h>
 
+#ifdef __APPLE__
+#include <AvailabilityMacros.h>
+#endif
+#if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
+#include <sys/ioctl.h>
+#include <IOKit/serial/ioss.h>
+#include <errno.h>
+#endif
+
 
 #define THROW_BAD_ARGS ThrowException(Exception::TypeError(String::New("Bad argument")))
 
@@ -96,12 +105,20 @@ namespace node {
     // Set baud and other configuration.
     tcgetattr(fd, &options);
 
+    printf("Setting baud rate to %ld\n", Baud_Rate);
+#if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
+    speed_t speed = Baud_Rate;
+    if ( ioctl( fd,	 IOSSIOSPEED, &speed ) == -1 )
+    {
+      printf( "Error %d calling ioctl( ..., IOSSIOSPEED, ... )\n", errno );
+    }
+#else
     BAUD = GetBaudConstant(Baud_Rate);
-    printf("Setting baud rate to %ld\n", BAUD);
 
     /* Specify the baud rate */
     cfsetispeed(&options, BAUD);
     cfsetospeed(&options, BAUD);
+#endif 
     
     tcflush(fd, TCIFLUSH);
     tcsetattr(fd, TCSANOW, &options);
