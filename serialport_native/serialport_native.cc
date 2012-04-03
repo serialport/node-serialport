@@ -24,7 +24,9 @@ namespace node {
 
   static long GetBaudConstant(long Baud_Rate) {
     switch (Baud_Rate) {
+#ifdef B500000
       case 500000: return B500000;
+#endif
       case 230400: return B230400;
       case 115200: return B115200;
       case 57600:  return B57600;
