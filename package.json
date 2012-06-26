@@ -1,4 +1,5 @@
-{   "name" : "serialport",
+{
+    "name" : "serialport",
     "version" : "0.7.3",
     "description" : "Welcome your robotic javascript overlords. Better yet, program them!",
     "author": "Chris Williams <voodootikigod@gmail.com>",
@@ -13,5 +14,7 @@
     "dependencies": {
         "bindings": "*"
     },
-    "engines": { "node": "0.6" }
+    "engines": {
+        "node": ">=0.6"
+    }
 }
