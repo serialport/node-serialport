@@ -1,5 +1,5 @@
 {   "name" : "serialport",
-    "version" : "0.7.3",
+    "version" : "0.7.4",
     "description" : "Welcome your robotic javascript overlords. Better yet, program them!",
     "author": "Chris Williams <voodootikigod@gmail.com>",
     "main": "./serialport",
