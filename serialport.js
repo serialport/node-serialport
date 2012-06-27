@@ -14,9 +14,9 @@ var child_process = require('child_process');
 
 var BAUDRATES = [500000, 230400, 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, 50];
 var DATABITS = [8, 7, 6, 5];
-var STOPBITS = [1, 2];
-var PARITY = [0, 1, 2, 'none'];
-var FLOWCONTROL = [0, 1];
+var STOPBITS = [1, 2, 1.5];
+var PARITY = ['none', 'even', 'mark', 'odd', 'space'];
+var FLOWCONTROL = [false, true];
 
 var parsers = {
   raw: function (emitter, buffer) {
@@ -45,7 +45,7 @@ var _options = {
   databits: 8,
   stopbits: 1,
   parity: 0,
-  flowcontrol: 0,
+  flowcontrol: false,
   buffersize: 255,
   parser: parsers.raw
 };
