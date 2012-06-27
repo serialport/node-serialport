@@ -83,7 +83,7 @@ function SerialPort(path, options) {
     }
     options.bufferSize = options.bufferSize || 100;
     options.dataCallback = function (data) {
-      self.emit('data', data);
+      options.parser(self, data);
     };
     options.errorCallback = function (err) {
       self.emit('error', err);
