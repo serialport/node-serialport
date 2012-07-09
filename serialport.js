@@ -44,7 +44,7 @@ var _options = {
   baudrate: 9600,
   databits: 8,
   stopbits: 1,
-  parity: 0,
+  parity: 'none',
   flowcontrol: false,
   buffersize: 255,
   parser: parsers.raw
