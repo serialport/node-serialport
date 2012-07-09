@@ -1,3 +1,10 @@
+Version 1.0.0
+-------------
+- Added Windows support thanks to Joe Ferner.
+- Merged in the various underlying changes from node-serialport2 complete thanks to Joe Ferner for that!
+- Verified against known installations.
+
+
 Version 0.6.5
 -------------
 - Added SetBaudRate, SetDTR; Custom Baud Rates
