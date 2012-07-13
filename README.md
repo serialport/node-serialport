@@ -12,7 +12,7 @@
   8ee88 88ee 88   8 88 88  8 88eee 88    8eee8 88   8  88
 </pre>
 
-Version: 0.3.0 - Released July 28, 2011
+Version: 1.0.0 - Released July 11, 2012
 
 *****
 
