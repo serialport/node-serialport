@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "Welcome your robotic javascript overlords. Better yet, program them!",
   "author": {
-    "Chris Williams <voodootikigod@gmail.com>",
-    "Joe Ferner <joe.ferner@nearinfinity.com>"
+    "name": "Chris Williams",
+    "email": "voodootikigod@gmail.com",
+    "url": "http://www.voodootikigod.com"
   },
   "main": "./serialport",
   "repository": {
