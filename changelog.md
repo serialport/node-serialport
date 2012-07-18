@@ -1,3 +1,8 @@
+Version 1.0.1
+-------------
+- Fixed items from Firmata
+- Added flexibility for options (camelcase or all lower)
+
 Version 1.0.0
 -------------
 - Added Windows support thanks to Joe Ferner.
