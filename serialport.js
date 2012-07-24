@@ -68,6 +68,9 @@ function SerialPort(path, options) {
   if (FLOWCONTROL.indexOf(options.flowcontrol) == -1) {
     throw new Error('Invalid "flowcontrol": ' + options.flowcontrol);
   }
+  if (!path) {
+    throw new Error('Invalid port specified: ' + path);
+  }
 
   stream.Stream.call(this);
 
