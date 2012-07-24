@@ -49,7 +49,7 @@ var _options = {
   buffersize: 255,
   parser: parsers.raw
 };
-function SerialPort(path, options) {
+function SerialPort (path, options) {
   options = options || {};
   options.__proto__ = _options;
 
@@ -92,6 +92,9 @@ function SerialPort(path, options) {
       self.emit('error', err);
     };
     options.disconnectedCallback = function () {
+      if (self.closing) {
+        return;
+      }
       self.emit('error', new Error("Disconnected"));
       self.close();
     };
@@ -102,17 +105,19 @@ function SerialPort(path, options) {
 
     SerialPortBinding.open(path, options, function (err, fd) {
       self.fd = fd;
-      self.readStream = fs.createReadStream(path, { bufferSize: options.bufferSize, fd: fd });
-      self.readStream.on("data", options.dataCallback);
-      self.readStream.on("error", options.errorCallback);
-      self.readStream.on("close", function () {
-        self.close();
-      });
-      self.readStream.on("end", function () {
-        self.emit('end');
-      });
       if (err) {
         return self.emit('error', err);
+      }
+      if (process.platform !== 'win32') {
+        self.readStream = fs.createReadStream(path, { bufferSize: options.bufferSize, fd: fd });
+        self.readStream.on("data", options.dataCallback);
+        self.readStream.on("error", options.errorCallback);
+        self.readStream.on("close", function () {
+          self.close();
+        });
+        self.readStream.on("end", function () {
+          self.emit('end');
+        });
       }
 
       self.emit('open');
