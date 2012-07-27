@@ -151,10 +151,12 @@ SerialPort.prototype.write = function (buffer, callback) {
 };
 
 SerialPort.prototype.close = function (callback) {
+  var self = this;
+  
   var fd = this.fd;
   this.fd = 0;
 
-  if (this.closing) {
+  if (self.closing) {
     return;
   }
   if (!fd) {
@@ -165,9 +167,8 @@ SerialPort.prototype.close = function (callback) {
     }
   }
 
-  this.closing = true;
+  self.closing = true;
   try {
-    var self = this;
     if (self.readStream) {
       self.readStream.destroy();
     }
@@ -180,10 +181,10 @@ SerialPort.prototype.close = function (callback) {
         callback(err);
       }
       self.emit('close');
-      this.closing = false;
+      self.closing = false;
     });
   } catch (ex) {
-    this.closing = false;
+    self.closing = false;
     throw ex;
   }
 };
