@@ -1,3 +1,7 @@
+Version 1.0.2
+-------------
+- Fixed issue 59 - https://github.com/voodootikigod/node-serialport/issues/59
+
 Version 1.0.1
 -------------
 - Fixed items from Firmata
