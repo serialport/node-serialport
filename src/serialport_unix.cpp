@@ -6,6 +6,16 @@
 #include <errno.h>
 #include <termios.h>
 
+#ifdef __APPLE__
+#include <AvailabilityMacros.h>
+#endif
+#if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
+#include <sys/ioctl.h>
+#include <IOKit/serial/ioss.h>
+#include <errno.h>
+#endif
+
+
 int ToBaudConstant(int baudRate);
 int ToDataBitsConstant(int dataBits);
 int ToStopBitsConstant(SerialPortStopBits stopBits);
@@ -71,12 +81,13 @@ int ToFlowControlConstant(bool flowControl) {
 void EIO_Open(uv_work_t* req) {
   OpenBaton* data = static_cast<OpenBaton*>(req->data);
 
+#if not ( defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4) )
   int baudRate = ToBaudConstant(data->baudRate);
   if(baudRate == -1) {
     sprintf(data->errorString, "Invalid baud rate setting %d", data->baudRate);
     return;
   }
-
+#endif
   int dataBits = ToDataBitsConstant(data->dataBits);
   if(dataBits == -1) {
     sprintf(data->errorString, "Invalid data bits setting %d", data->dataBits);
@@ -89,7 +100,7 @@ void EIO_Open(uv_work_t* req) {
     return;
   }
 
-  int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_NDELAY);
+  int flags = (O_RDWR | O_NOCTTY);
   int fd = open(data->path, flags);
 
   if (fd == -1) {
@@ -111,9 +122,11 @@ void EIO_Open(uv_work_t* req) {
   // Set baud and other configuration.
   tcgetattr(fd, &options);
 
+#if not ( defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4) )
   // Specify the baud rate
   cfsetispeed(&options, baudRate);
   cfsetospeed(&options, baudRate);
+#endif 
 
   // Specify data bits
   options.c_cflag &= ~CSIZE;
@@ -176,12 +189,23 @@ void EIO_Open(uv_work_t* req) {
   tcflush(fd, TCIFLUSH);
   tcsetattr(fd, TCSANOW, &options);
 
+
+#if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
+    speed_t speed = data->baudRate;
+    if ( ioctl( fd,	 IOSSIOSPEED, &speed ) == -1 )
+    {
+      printf( "Error %d calling ioctl( ..., IOSSIOSPEED, ... )\n", errno );
+    }
+#endif 
+
+
   data->result = fd;
 }
 
 void EIO_Write(uv_work_t* req) {
   WriteBaton* data = static_cast<WriteBaton*>(req->data);
 
+  tcdrain(data->fd);
   int bytesWritten = write(data->fd, data->bufferData, data->bufferLength);
 
   data->result = bytesWritten;
