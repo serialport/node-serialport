@@ -49,7 +49,13 @@ var _options = {
   buffersize: 255,
   parser: parsers.raw
 };
-function SerialPort (path, options) {
+function SerialPort (path, options, callback) {
+  
+  if (!callback && typeof options == "function") {
+    callback = options; // callback is in the second parameter
+    options = {};
+  }
+  
   options = options || {};
   options.__proto__ = _options;
 
@@ -95,7 +101,9 @@ function SerialPort (path, options) {
       if (self.closing) {
         return;
       }
-      self.emit('error', new Error("Disconnected"));
+      var error = new Error("Disconnected");
+      self.emit('error', error);
+      callback(error);
       self.close();
     };
 
@@ -121,6 +129,7 @@ function SerialPort (path, options) {
       }
 
       self.emit('open');
+      callback();
     });
   });
 }
