@@ -100,7 +100,7 @@ void EIO_Open(uv_work_t* req) {
     return;
   }
 
-  int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_NDELAY);
+  int flags = (O_RDWR | O_NOCTTY);
   int fd = open(data->path, flags);
 
   if (fd == -1) {
@@ -205,6 +205,7 @@ void EIO_Open(uv_work_t* req) {
 void EIO_Write(uv_work_t* req) {
   WriteBaton* data = static_cast<WriteBaton*>(req->data);
 
+  tcdrain(data->fd);
   int bytesWritten = write(data->fd, data->bufferData, data->bufferLength);
 
   data->result = bytesWritten;
