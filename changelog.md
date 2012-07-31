@@ -1,3 +1,8 @@
+Version 1.0.3
+-------------
+- Fixed issue 65 - https://github.com/voodootikigod/node-serialport/issues/65
+- Added note in readme about what is required for the system to be able to compile module, should solve 90% of issues.
+
 Version 1.0.2
 -------------
 - Fixed issue 59 - https://github.com/voodootikigod/node-serialport/issues/59

@@ -44,6 +44,21 @@ To Install
   npm install serialport
 </pre>
 
+This assumes you have everything on your system necessary to compile ANY native module for Node.js. This may not be the case, though, so please ensure the following are true for your system before filing an issue about "Does not install". For all operatings systems, please ensure you have Python 2.x installed AND not 3.0, node-gyp (what we use to compile) requires Python 2.x.
+
+### Windows:
+
+Ensure you have Visual Studio 2010 installed. If you have any version OTHER THAN VS 2010, please read this: https://github.com/TooTallNate/node-gyp/issues/44 
+
+### Mac OS X:
+
+Ensure that you have at a minimum the xCode Command Line Tools installed appropriate for your system configuration. If you recently upgrade OS, it probably removed your installation of Command Line Tools, please verify before submitting a ticket.
+
+### Linux:
+
+You know what you need for you system, basically your appropriate analog of build-essential. Keep rocking!
+
+
 To Use
 ------
 
