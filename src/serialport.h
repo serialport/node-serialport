@@ -55,6 +55,7 @@ public:
   int result;
   int baudRate;
   int dataBits;
+  int bufferSize;
   bool flowControl;
   SerialPortParity parity;
   SerialPortStopBits stopBits;

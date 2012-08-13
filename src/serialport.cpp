@@ -31,6 +31,7 @@ v8::Handle<v8::Value> Open(const v8::Arguments& args) {
   strcpy(baton->path, *path);
   baton->baudRate = options->Get(v8::String::New("baudRate"))->ToInt32()->Int32Value();
   baton->dataBits = options->Get(v8::String::New("dataBits"))->ToInt32()->Int32Value();
+  baton->bufferSize = options->Get(v8::String::New("bufferSize"))->ToInt32()->Int32Value();
   baton->parity = ToParityEnum(options->Get(v8::String::New("parity"))->ToString());
   baton->stopBits = ToStopBitEnum(options->Get(v8::String::New("stopBits"))->ToNumber()->NumberValue());
   baton->flowControl = options->Get(v8::String::New("flowControl"))->ToBoolean()->BooleanValue();

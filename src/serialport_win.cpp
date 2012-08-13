@@ -6,7 +6,7 @@
 #ifdef WIN32
 
 std::list<int> g_closingHandles;
-
+int bufferSize;
 void ErrorCodeToString(const char* prefix, int errorCode, char *errorStr) {
   switch(errorCode) {
   case ERROR_FILE_NOT_FOUND:
@@ -45,6 +45,8 @@ void EIO_Open(uv_work_t* req) {
     return;
   }
 
+  bufferSize = data->bufferSize;
+
   DCB dcb = { 0 };
   dcb.DCBlength = sizeof(DCB);
   if(!BuildCommDCB("9600,n,8,1", &dcb)) {
@@ -53,7 +55,6 @@ void EIO_Open(uv_work_t* req) {
   }
 
   dcb.fBinary = true;
-  dcb.fDtrControl = DTR_CONTROL_DISABLE;
   dcb.BaudRate = data->baudRate;
   dcb.ByteSize = data->dataBits;
   switch(data->parity) {
@@ -125,8 +126,8 @@ void EIO_WatchPort(uv_work_t* req) {
   while(true){
     OVERLAPPED ov = {0};
     ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-    if(!ReadFile(data->fd, data->buffer, 100, &data->bytesRead, &ov)) {
+    
+    if(!ReadFile(data->fd, data->buffer, bufferSize, &data->bytesRead, &ov)) {
       data->errorCode = GetLastError();
       if(data->errorCode == ERROR_OPERATION_ABORTED) {
         data->disconnected = true;
