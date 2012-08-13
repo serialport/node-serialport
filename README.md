@@ -85,6 +85,20 @@ The options object allows you to pass named options to the serial port during in
 
 **Note, we have added support for either all lowercase OR camelcase of the options (thanks @jagautier), use whichever style you prefer.**
 
+List Ports
+----------
+
+You can also list the ports along with some metadata as well.
+
+<pre>
+  serialport.list(function (err, ports) {
+    ports.forEach(function(port) {
+      console.log(port.comName);
+      console.log(port.pnpId);
+      console.log(port.manufacturer);
+    });
+  });
+</pre>
 
 Parsers
 -------
