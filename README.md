@@ -12,7 +12,7 @@
   8ee88 88ee 88   8 88 88  8 88eee 88    8eee8 88   8  88
 </pre>
 
-Version: 1.0.2 - Released July 27, 2012 - Now with Windows Support!!!
+Version: 1.0.4 - Released August 13, 2012 - Now with Windows Support!!!
 
 *****
 

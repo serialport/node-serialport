@@ -1,3 +1,7 @@
+Version 1.0.4
+-------------
+- Fix for arduino firmata support on windows thanks to @jgautier.
+
 Version 1.0.3
 -------------
 - Fixed issue 65 - https://github.com/voodootikigod/node-serialport/issues/65
