@@ -280,18 +280,14 @@ SerialPort.prototype.flush = function (callback) {
     }
   }
 
-  try {
-    SerialPortBinding.flush(fd, function (err, result) {
-      if (err) {
-        self.emit('error', err);
-      }
-      if (callback) {
-        callback(err, result);
-      }
-    });
-  } catch (ex) {
-    throw ex;
-  }
+  SerialPortBinding.flush(fd, function (err, result) {
+    if (err) {
+      self.emit('error', err);
+    }
+    if (callback) {
+      callback(err, result);
+    }
+  });
 };
 
 module.exports.SerialPort = SerialPort;
