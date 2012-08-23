@@ -268,5 +268,27 @@ exports.list = function (callback) {
   }
 };
 
+SerialPort.prototype.flush = function (callback) {
+  var self = this;
+  var fd = this.fd;
+
+  if (!fd) {
+    if (callback) {
+      return callback(new Error("Serialport not open."));
+    } else {
+      return;
+    }
+  }
+
+  SerialPortBinding.flush(fd, function (err, result) {
+    if (err) {
+      self.emit('error', err);
+    }
+    if (callback) {
+      callback(err, result);
+    }
+  });
+};
+
 module.exports.SerialPort = SerialPort;
 module.exports.parsers = parsers;
