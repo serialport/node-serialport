@@ -197,4 +197,10 @@ void EIO_List(uv_work_t* req) {
   // This code exists in javascript for unix platforms
 }
 
+void EIO_Flush(uv_work_t* req) {
+  FlushBaton* data = static_cast<FlushBaton*>(req->data);
+
+  data->result = tcflush(data->fd, TCIFLUSH);
+}
+
 #endif
