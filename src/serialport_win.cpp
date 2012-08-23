@@ -325,7 +325,10 @@ void EIO_List(uv_work_t* req) {
 void EIO_Flush(uv_work_t* req) {
   FlushBaton* data = static_cast<FlushBaton*>(req->data);
 
-  // TODO: How to flush the fd in Windows?
+  if(!FlushFileBuffers((HANDLE)data->fd)) {
+    ErrorCodeToString("flushing connection", GetLastError(), data->errorString);
+    return;
+  }
 }
 
 #endif
