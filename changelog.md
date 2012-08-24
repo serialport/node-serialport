@@ -1,3 +1,7 @@
+Version 1.0.5
+-------------
+- Added flush support.
+
 Version 1.0.4
 -------------
 - Fix for arduino firmata support on windows thanks to @jgautier.
