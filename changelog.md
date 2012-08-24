@@ -1,3 +1,7 @@
+Version 1.0.6
+-------------
+- Support higher baud rates in Mac OS X
+
 Version 1.0.5
 -------------
 - Added flush support.
