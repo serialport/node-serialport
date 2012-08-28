@@ -73,7 +73,7 @@ describe('Echo', function() {
           var frameSequence = readData[0];
 
           // Manual 8 bit rollover for readSequence
-          if (readSequence++ === 256) {
+          if (readSequence++ === 255) {
             readSequence = 0;
           }
 
