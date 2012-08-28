@@ -22,6 +22,12 @@ describe('Echo', function() {
           portName = results[i].comName;
           break;
         }
+
+        // Under Ubuntu 12.04 this catches a Leonardo.
+        if (item.pnpId && item.pnpId.indexOf('Arduino') != -1) {
+          portName = results[i].comName;
+          break;          
+        }
       }
 
       console.log("Arduino found on " + portName);
