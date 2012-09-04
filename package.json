@@ -29,11 +29,18 @@
     "optimist": "~0.3.4",
     "node-gyp": "0.6.2"
   },
+  "devDependencies": {
+    "mocha": "*",
+    "chai": "*"
+  },
   "engines": {
     "node": ">= 0.6.0"
   },
   "bin": {
     "serialportlist": "./bin/serialportList.js",
     "serialportterm": "./bin/serialportTerminal.js"
+  },
+  "scripts": {
+    "test": "mocha -R spec -t 60s -s 60s"
   }
 }

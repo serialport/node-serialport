@@ -77,6 +77,13 @@ public:
   char errorString[1024];
 };
 
+struct QueuedWrite {
+public:
+  uv_work_t req;
+  ngx_queue_t queue;
+  WriteBaton* baton;
+};
+
 struct CloseBaton {
 public:
   int fd;
