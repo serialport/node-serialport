@@ -1,3 +1,7 @@
+Version 1.0.7
+-------------
+- Guaranteed in-order delivery of messages thanks to Jay Beaver and bnoordhuis
+
 Version 1.0.6
 -------------
 - Support higher baud rates in Mac OS X
