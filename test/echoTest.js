@@ -17,6 +17,7 @@ describe('Echo', function() {
       for (var i = 0; i < results.length; i++) {
         var item = results[i];
 
+        // Under Windows this catches any Arduino that is loaded using the Teensyduino INF.
         // Hardcoded to detect a Teensy INF device for now.  Teensy INF works with Leonardo too.
         if (item.manufacturer && item.manufacturer.indexOf('PJRC') != -1) {
           portName = results[i].comName;
@@ -25,6 +26,12 @@ describe('Echo', function() {
 
         // Under Ubuntu 12.04 this catches a Leonardo.
         if (item.pnpId && item.pnpId.indexOf('Arduino') != -1) {
+          portName = results[i].comName;
+          break;          
+        }
+
+        // Under Ubuntu 12.04 this catches a Teensy.
+        if (item.pnpId && item.pnpId.indexOf('Teensy') != -1) {
           portName = results[i].comName;
           break;          
         }
@@ -89,13 +96,12 @@ describe('Echo', function() {
 
         sendFrame('abc');
         sendFrame('def');
-        sendFrame('ghi');        
+        sendFrame('ghi');
       }
 
       sp.on('open', function () {
         setInterval(loop, 200);
       });
-
     });
   });
 });
