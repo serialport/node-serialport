@@ -5,8 +5,14 @@
 #define strcasecmp stricmp
 #endif
 
+uv_mutex_t write_queue_mutex;
+ngx_queue_t write_queue;
+
 v8::Handle<v8::Value> Open(const v8::Arguments& args) {
   v8::HandleScope scope;
+
+  uv_mutex_init(&write_queue_mutex);
+  ngx_queue_init(&write_queue);
 
   // path
   if(!args[0]->IsString()) {
@@ -97,15 +103,28 @@ v8::Handle<v8::Value> Write(const v8::Arguments& args) {
   baton->bufferLength = bufferLength;
   baton->callback = v8::Persistent<v8::Value>::New(callback);
 
-  uv_work_t* req = new uv_work_t();
-  req->data = baton;
-  uv_queue_work(uv_default_loop(), req, EIO_Write, EIO_AfterWrite);
+  QueuedWrite* queuedWrite = new QueuedWrite();
+  memset(queuedWrite, 0, sizeof(QueuedWrite));
+  ngx_queue_init(&queuedWrite->queue);
+  queuedWrite->baton = baton;
+  queuedWrite->req.data = queuedWrite;
+
+  uv_mutex_lock(&write_queue_mutex);
+  bool empty = ngx_queue_empty(&write_queue);
+
+  ngx_queue_insert_tail(&write_queue, &queuedWrite->queue);
+
+  if (empty) {
+    uv_queue_work(uv_default_loop(), &queuedWrite->req, EIO_Write, EIO_AfterWrite);
+  }   
+  uv_mutex_unlock(&write_queue_mutex);
 
   return scope.Close(v8::Undefined());
 }
 
 void EIO_AfterWrite(uv_work_t* req) {
-  WriteBaton* data = static_cast<WriteBaton*>(req->data);
+  QueuedWrite* queuedWrite = static_cast<QueuedWrite*>(req->data);
+  WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
 
   v8::Handle<v8::Value> argv[2];
   if(data->errorString[0]) {
@@ -117,10 +136,21 @@ void EIO_AfterWrite(uv_work_t* req) {
   }
   v8::Function::Cast(*data->callback)->Call(v8::Context::GetCurrent()->Global(), 2, argv);
 
+  uv_mutex_lock(&write_queue_mutex);
+  ngx_queue_remove(&queuedWrite->queue);
+
+  if (!ngx_queue_empty(&write_queue)) {
+    // Always pull the next work item from the head of the queue
+    ngx_queue_t* head = ngx_queue_head(&write_queue);
+    QueuedWrite* nextQueuedWrite = ngx_queue_data(head, QueuedWrite, queue);
+    uv_queue_work(uv_default_loop(), &nextQueuedWrite->req, EIO_Write, EIO_AfterWrite);
+  }
+  uv_mutex_unlock(&write_queue_mutex);
+
   data->buffer.Dispose();
   data->callback.Dispose();
   delete data;
-  delete req;
+  delete queuedWrite;
 }
 
 v8::Handle<v8::Value> Close(const v8::Arguments& args) {

@@ -222,7 +222,8 @@ void AfterOpenSuccess(int fd, v8::Handle<v8::Value> dataCallback, v8::Handle<v8:
 }
 
 void EIO_Write(uv_work_t* req) {
-  WriteBaton* data = static_cast<WriteBaton*>(req->data);
+  QueuedWrite* queuedWrite = static_cast<QueuedWrite*>(req->data);
+  WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
 
   OVERLAPPED ov = {0};
   ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
