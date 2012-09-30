@@ -125,21 +125,26 @@ void EIO_WatchPort(uv_work_t* req) {
 
   while(true){
     OVERLAPPED ov = {0};
+	memset(&ov, 0, sizeof(ov));
     ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
     
     if(!ReadFile(data->fd, data->buffer, bufferSize, &data->bytesRead, &ov)) {
       data->errorCode = GetLastError();
       if(data->errorCode == ERROR_OPERATION_ABORTED) {
         data->disconnected = true;
+        CloseHandle(ov.hEvent);
         return;
       }
       if(data->errorCode != ERROR_IO_PENDING) {
         ErrorCodeToString("Reading from COM port (ReadFile)", GetLastError(), data->errorString);
+        CloseHandle(ov.hEvent);
         return;
       }
 
       DWORD waitResult = WaitForSingleObject(ov.hEvent, 1000);
       if(waitResult == WAIT_TIMEOUT) {
+        CancelIo(data->fd);
+		CloseHandle(ov.hEvent);
         data->bytesRead = 0;
         data->errorCode = 0;
         return;
@@ -147,10 +152,12 @@ void EIO_WatchPort(uv_work_t* req) {
       if(waitResult != WAIT_OBJECT_0) {
         DWORD lastError = GetLastError();
         ErrorCodeToString("Reading from COM port (WaitForSingleObject)", lastError, data->errorString);
+		CloseHandle(ov.hEvent);
         return;
       }
 
       if(!GetOverlappedResult((HANDLE)data->fd, &ov, &data->bytesRead, TRUE)) {
+		CloseHandle(ov.hEvent);
         DWORD lastError = GetLastError();
         if(lastError == ERROR_OPERATION_ABORTED) {
           data->disconnected = true;
@@ -160,6 +167,7 @@ void EIO_WatchPort(uv_work_t* req) {
         return;
       }
     }
+    CloseHandle(ov.hEvent);
     if(data->bytesRead > 0) {
       return;
     }
@@ -226,6 +234,7 @@ void EIO_Write(uv_work_t* req) {
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
 
   OVERLAPPED ov = {0};
+  memset(&ov, 0, sizeof(ov));
   ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
   DWORD bytesWritten;
@@ -233,21 +242,26 @@ void EIO_Write(uv_work_t* req) {
     DWORD lastError = GetLastError();
     if(lastError != ERROR_IO_PENDING) {
       ErrorCodeToString("Writing to COM port (WriteFile)", lastError, data->errorString);
+      CloseHandle(ov.hEvent);
       return;
     }
 
     if(WaitForSingleObject(ov.hEvent, 1000) != WAIT_OBJECT_0) {
       DWORD lastError = GetLastError();
       ErrorCodeToString("Writing to COM port (WaitForSingleObject)", lastError, data->errorString);
+      CloseHandle(ov.hEvent);
       return;
     }
 
     if(!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesWritten, TRUE)) {
       DWORD lastError = GetLastError();
       ErrorCodeToString("Writing to COM port (GetOverlappedResult)", lastError, data->errorString);
+      CloseHandle(ov.hEvent);
       return;
     }
   }
+
+  CloseHandle(ov.hEvent);
 
   data->result = bytesWritten;
 }
