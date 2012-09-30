@@ -140,6 +140,7 @@ void EIO_WatchPort(uv_work_t* req) {
 
       DWORD waitResult = WaitForSingleObject(ov.hEvent, 1000);
       if(waitResult == WAIT_TIMEOUT) {
+        CancelIo(data->fd);
         data->bytesRead = 0;
         data->errorCode = 0;
         return;
