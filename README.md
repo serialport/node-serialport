@@ -72,7 +72,9 @@ Opening a serial port:
 
 <pre>
   var SerialPort = require("serialport").SerialPort
-  var serialPort = new SerialPort("/dev/tty-usbserial1");
+  var serialPort = new SerialPort("/dev/tty-usbserial1", {
+    baudrate: 57600
+  });
 </pre>
   
 When opening a serial port, you can specify (in this order).
