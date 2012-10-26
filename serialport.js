@@ -152,7 +152,7 @@ SerialPort.prototype.write = function (buffer, callback) {
 
 SerialPort.prototype.close = function (callback) {
   var self = this;
-  
+
   var fd = this.fd;
   this.fd = 0;
 
@@ -244,6 +244,7 @@ function listOSX (callback) {
     }
 
     var lines = stdout.split('\n');
+
     var items = [];
     var currentItem = {};
     lines.forEach(function (line) {
@@ -263,7 +264,7 @@ function listOSX (callback) {
         currentItem['manufacturer'] = m[1];
       } else if (/^$/.test(line)) {
         if ('serialNumber' in currentItem) {
-          currentItem['comName'] = "/dev/cu.usbserial-" + currentItem['serialNumber'];
+          currentItem['comName'] = "/dev/cu.usbmodem" + currentItem['locationId'].substring(2, 6) + '1';
           items.push(currentItem);
           currentItem = {};
         }
