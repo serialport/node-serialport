@@ -152,7 +152,7 @@ SerialPort.prototype.write = function (buffer, callback) {
 
 SerialPort.prototype.close = function (callback) {
   var self = this;
-
+  
   var fd = this.fd;
   this.fd = 0;
 
@@ -198,6 +198,7 @@ function listUnix (callback) {
       }
       return console.log(err);
     }
+
     var dirName = "/dev/serial/by-id";
     async.map(files, function (file, callback) {
       var fileName = path.join(dirName, file);
@@ -211,43 +212,43 @@ function listUnix (callback) {
           manufacturer: undefined,
           pnpId: file
         });
-      }, callback);
-    // Suspect code per ticket: #104 removed for deeper inspection.
-    // fs.readdir("/dev/serial/by-path", function(err_path, paths) {
-    //   if (err_path) {
-    //     if (err.errno === 34) return callback(null, []);
-    //     return console.log(err);
-    //   }
-
-    //   var dirName, items;
-    //   //check if multiple devices of the same id are connected
-    //   if (files.length !== paths.length) {
-    //     dirName = "/dev/serial/by-path";
-    //     items = paths;
-    //   } else {
-    //     dirName = "/dev/serial/by-id";
-    //     items = files;
-    //   }
-
-    //   async.map(items, function (file, callback) {
-    //     var fileName = path.join(dirName, file);
-    //     fs.readlink(fileName, function (err, link) {
-    //       if (err) {
-    //         return callback(err);
-    //       }
-    //       link = path.resolve(dirName, link);
-    //       callback(null, {
-    //         comName: link,
-    //         manufacturer: undefined,
-    //         pnpId: file
-    //       });
-    //     });
-    //   }, callback);
-    });
+      });
+    }, callback);
   });
 }
 
 function listOSX (callback) {
+  function getBSDDeviceName(deviceType, callback) {
+    child_process.exec('/usr/sbin/system_profiler SPNetworkDataType', function (err, stdout, stderr) {
+      if (err) {
+        return callback(err);
+      }
+
+      stderr = stderr.trim();
+      if (stderr.length > 0) {
+        return callback(new Error(stderr));
+      }
+
+      var lines = stdout.split('\n');
+      var name = null;
+      var currentItem = {};
+      for (var i = 0, len = lines.length; i < len; i ++) {
+        var line = lines[i].trim();
+        line = line.replace(/\s+/, ' ');
+        var m;
+
+        if (m = line.match(/^BSD Device Name: (.+)$/)) {
+          var header = lines[i - 4];
+          var re = new RegExp(deviceType + ':');
+          if (re.test(header)) {
+            name = m[1];
+          }
+        }
+      }
+      callback(null, name);
+    });
+  }
+
   child_process.exec('/usr/sbin/system_profiler SPUSBDataType', function (err, stdout, stderr) {
     if (err) {
       return callback(err);
@@ -259,33 +260,52 @@ function listOSX (callback) {
     }
 
     var lines = stdout.split('\n');
-
     var items = [];
     var currentItem = {};
-    lines.forEach(function (line) {
-      line = line.trim();
+    for (var i = 0, len = lines.length; i < len; i ++) {
+      var line = lines[i].trim();
       line = line.replace(/\s+/, ' ');
       var m;
 
-      if (m = line.match(/^Serial Number: (.+)$/)) {
+      if (m = line.match(/^Product ID: (.+)$/)) {
+        currentItem['productId'] = m[1];
+
+        var header = lines[i - 2];
+        if (/:/.test(header)) {
+          header = header.trim();
+          header = header.substring(0, header.length - 1);
+          currentItem['deviceType'] = header;
+        }
+      } else if (m = line.match(/^Vendor ID: (.+)$/)) {
+        currentItem['vendorId'] = m[1];
+      } else if (m = line.match(/^Serial Number: (.+)$/)) {
         currentItem['serialNumber'] = m[1];
       } else if (m = line.match(/^Location ID: (.+)$/)) {
         currentItem['locationId'] = m[1];
-      } else if (m = line.match(/^Product ID: (.+)$/)) {
-        currentItem['productId'] = m[1];
-      } else if (m = line.match(/^Vendor ID: (.+)$/)) {
-        currentItem['vendorId'] = m[1];
       } else if (m = line.match(/^Manufacturer: (.+)$/)) {
         currentItem['manufacturer'] = m[1];
       } else if (/^$/.test(line)) {
         if ('serialNumber' in currentItem) {
-          currentItem['comName'] = "/dev/cu.usbmodem" + currentItem['locationId'].substring(2, 6) + '1';
+          currentItem['comName'] = "/dev/cu.usbserial-" + currentItem['serialNumber'];
+          items.push(currentItem);
+          currentItem = {};
+        } else if ('productId' in currentItem && 'vendorId' in currentItem) {
           items.push(currentItem);
           currentItem = {};
         }
       }
+    }
+
+    async.forEach(items, function(item, callback) {
+      getBSDDeviceName(item.deviceType, function(err, name) {
+        if (name) {
+          item.comName = '/dev/cu.' + name;
+        }
+        callback(err);
+      });
+    }, function(err) {
+      callback(null, items);
     });
-    callback(null, items);
   });
 }
 
