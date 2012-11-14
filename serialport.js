@@ -211,7 +211,7 @@ function listUnix (callback) {
           manufacturer: undefined,
           pnpId: file
         });
-      }, callback);
+      });
     // Suspect code per ticket: #104 removed for deeper inspection.
     // fs.readdir("/dev/serial/by-path", function(err_path, paths) {
     //   if (err_path) {
@@ -243,7 +243,7 @@ function listUnix (callback) {
     //       });
     //     });
     //   }, callback);
-    });
+    }, callback);
   });
 }
 
