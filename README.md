@@ -93,6 +93,27 @@ The options object allows you to pass named options to the serial port during in
 
 **Note, we have added support for either all lowercase OR camelcase of the options (thanks @jagautier), use whichever style you prefer.**
 
+open event
+----------
+
+You MUST wait for the open event to be emitted before reading/writing to the serial port. The open happens asynchronously so installing 'data' listeners and writing 
+before the open event might result in... nothing at all.
+
+Assuming you are connected to a serial console, you would for example:
+
+<pre>
+serialPort.on("open", function () {
+  console.log('open');
+  serialPort.on('data', function(data) {
+    console.log('data received: ' + data);
+  });  
+  serialPort.write("ls\n", function(err, results) {
+    console.log('err ' + err);
+    console.log('results ' + results);
+  });  
+});
+</pre>
+
 List Ports
 ----------
 
