@@ -39,9 +39,10 @@ void EIO_Open(uv_work_t* req) {
     FILE_FLAG_OVERLAPPED,
     NULL);
   if (file == INVALID_HANDLE_VALUE) {
+    DWORD errorCode = GetLastError();
     char temp[100];
     sprintf(temp, "Opening %s", data->path);
-    ErrorCodeToString(temp, GetLastError(), data->errorString);
+    ErrorCodeToString(temp, errorCode, data->errorString);
     return;
   }
 
@@ -91,17 +92,30 @@ void EIO_Open(uv_work_t* req) {
     return;
   }
 
-  // set the com port to return immediatly after a read
+  // Set the com port read/write timeouts
+  DWORD serialBitsPerByte = 8/*std data bits*/ + 1/*start bit*/;
+  serialBitsPerByte += (data->parity   == SERIALPORT_PARITY_NONE ) ? 0 : 1;
+  serialBitsPerByte += (data->stopBits == SERIALPORT_STOPBITS_ONE) ? 1 : 2;
+  DWORD msPerByte = (data->baudRate > 0) ?
+                    ((1000 * serialBitsPerByte + data->baudRate - 1) / data->baudRate) :
+                    1;
+  if (msPerByte < 1) {
+    msPerByte = 1;
+  }
   COMMTIMEOUTS commTimeouts = {0};
-  commTimeouts.ReadIntervalTimeout = MAXDWORD;
-  commTimeouts.ReadTotalTimeoutMultiplier = MAXDWORD;
-  commTimeouts.ReadTotalTimeoutConstant = 1000;
-  commTimeouts.WriteTotalTimeoutConstant = 1000;
-  commTimeouts.WriteTotalTimeoutMultiplier = 1000;
+  commTimeouts.ReadIntervalTimeout = msPerByte; // Minimize chance of concatenating of separate serial port packets on read
+  commTimeouts.ReadTotalTimeoutMultiplier  = 0; // Do not allow big read timeout when big read buffer used
+  commTimeouts.ReadTotalTimeoutConstant    = 1000; // Total read timeout (period of read loop)
+  commTimeouts.WriteTotalTimeoutConstant   = 1000; // Const part of write timeout
+  commTimeouts.WriteTotalTimeoutMultiplier = msPerByte; // Variable part of write timeout (per byte)
   if(!SetCommTimeouts(file, &commTimeouts)) {
     ErrorCodeToString("SetCommTimeouts", GetLastError(), data->errorString);
     return;
   }
+
+  // Remove garbage data in RX/TX queues
+  PurgeComm(file, PURGE_RXCLEAR); 
+  PurgeComm(file, PURGE_TXCLEAR);
 
   data->result = (int)file;
 }
@@ -121,57 +135,67 @@ public:
 
 void EIO_WatchPort(uv_work_t* req) {
   WatchPortBaton* data = static_cast<WatchPortBaton*>(req->data);
+  data->bytesRead = 0;
   data->disconnected = false;
 
-  while(true){
+  // Event used by GetOverlappedResult(..., TRUE) to wait for incoming data or timeout
+  // Event MUST be used if program has several simultaneous asynchronous operations
+  // on the same handle (i.e. ReadFile and WriteFile)
+  HANDLE hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+
+  while(true) {
     OVERLAPPED ov = {0};
-	memset(&ov, 0, sizeof(ov));
-    ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-    
-    if(!ReadFile(data->fd, data->buffer, bufferSize, &data->bytesRead, &ov)) {
+    ov.hEvent = hEvent;
+
+    // Start read operation - synchrounous or asynchronous
+    DWORD bytesReadSync = 0;
+    if(!ReadFile((HANDLE)data->fd, data->buffer, bufferSize, &bytesReadSync, &ov)) {
       data->errorCode = GetLastError();
-      if(data->errorCode == ERROR_OPERATION_ABORTED) {
-        data->disconnected = true;
-        CloseHandle(ov.hEvent);
-        return;
-      }
       if(data->errorCode != ERROR_IO_PENDING) {
-        ErrorCodeToString("Reading from COM port (ReadFile)", GetLastError(), data->errorString);
-        CloseHandle(ov.hEvent);
-        return;
-      }
-
-      DWORD waitResult = WaitForSingleObject(ov.hEvent, 1000);
-      if(waitResult == WAIT_TIMEOUT) {
-        CancelIo(data->fd);
-		CloseHandle(ov.hEvent);
-        data->bytesRead = 0;
-        data->errorCode = 0;
-        return;
-      }
-      if(waitResult != WAIT_OBJECT_0) {
-        DWORD lastError = GetLastError();
-        ErrorCodeToString("Reading from COM port (WaitForSingleObject)", lastError, data->errorString);
-		CloseHandle(ov.hEvent);
-        return;
-      }
-
-      if(!GetOverlappedResult((HANDLE)data->fd, &ov, &data->bytesRead, TRUE)) {
-		CloseHandle(ov.hEvent);
-        DWORD lastError = GetLastError();
-        if(lastError == ERROR_OPERATION_ABORTED) {
+        // Read operation error
+        if(data->errorCode == ERROR_OPERATION_ABORTED) {
           data->disconnected = true;
-          return;
         }
-        ErrorCodeToString("Reading from COM port (GetOverlappedResult)", lastError, data->errorString);
-        return;
+        else {
+          ErrorCodeToString("Reading from COM port (ReadFile)", data->errorCode, data->errorString);
+        }
+        break;
+      }
+
+      // Read operation is asynchronous and is pending
+      // We MUST wait for operation completion before deallocation of OVERLAPPED struct
+      // or read data buffer
+
+      // Wait for async read operation completion or timeout
+      DWORD bytesReadAsync = 0;
+      if(!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesReadAsync, TRUE)) {
+        // Read operation error
+        data->errorCode = GetLastError();
+        if(data->errorCode == ERROR_OPERATION_ABORTED) {
+          data->disconnected = true;
+        }
+        else {
+          ErrorCodeToString("Reading from COM port (GetOverlappedResult)", data->errorCode, data->errorString);
+        }
+        break;
+      }
+      else {
+        // Read operation completed asynchronously
+        data->bytesRead = bytesReadAsync;
       }
     }
-    CloseHandle(ov.hEvent);
+    else {
+      // Read operation completed synchronously
+      data->bytesRead = bytesReadSync;
+    }
+
+    // Return data received if any
     if(data->bytesRead > 0) {
-      return;
+      break;
     }
   }
+
+  CloseHandle(hEvent);
 }
 
 bool IsClosingHandle(int fd) {
@@ -232,38 +256,46 @@ void AfterOpenSuccess(int fd, v8::Handle<v8::Value> dataCallback, v8::Handle<v8:
 void EIO_Write(uv_work_t* req) {
   QueuedWrite* queuedWrite = static_cast<QueuedWrite*>(req->data);
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
+  data->result = 0;
 
   OVERLAPPED ov = {0};
-  memset(&ov, 0, sizeof(ov));
+  // Event used by GetOverlappedResult(..., TRUE) to wait for outgoing data or timeout
+  // Event MUST be used if program has several simultaneous asynchronous operations
+  // on the same handle (i.e. ReadFile and WriteFile)
   ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
-  DWORD bytesWritten;
-  if(!WriteFile((HANDLE)data->fd, data->bufferData, data->bufferLength, &bytesWritten, &ov)) {
+  // Start write operation - synchrounous or asynchronous
+  DWORD bytesWrittenSync = 0;
+  if(!WriteFile((HANDLE)data->fd, data->bufferData, data->bufferLength, &bytesWrittenSync, &ov)) {
     DWORD lastError = GetLastError();
     if(lastError != ERROR_IO_PENDING) {
+      // Write operation error
       ErrorCodeToString("Writing to COM port (WriteFile)", lastError, data->errorString);
-      CloseHandle(ov.hEvent);
-      return;
     }
+    else {
+      // Write operation is asynchronous and is pending
+      // We MUST wait for operation completion before deallocation of OVERLAPPED struct
+      // or write data buffer
 
-    if(WaitForSingleObject(ov.hEvent, 1000) != WAIT_OBJECT_0) {
-      DWORD lastError = GetLastError();
-      ErrorCodeToString("Writing to COM port (WaitForSingleObject)", lastError, data->errorString);
-      CloseHandle(ov.hEvent);
-      return;
+      // Wait for async write operation completion or timeout
+      DWORD bytesWrittenAsync = 0;
+      if(!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesWrittenAsync, TRUE)) {
+        // Write operation error
+        DWORD lastError = GetLastError();
+        ErrorCodeToString("Writing to COM port (GetOverlappedResult)", lastError, data->errorString);
+      }
+      else {
+        // Write operation completed asynchronously
+        data->result = bytesWrittenAsync;
+      }
     }
-
-    if(!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesWritten, TRUE)) {
-      DWORD lastError = GetLastError();
-      ErrorCodeToString("Writing to COM port (GetOverlappedResult)", lastError, data->errorString);
-      CloseHandle(ov.hEvent);
-      return;
-    }
+  }
+  else {
+    // Write operation completed synchronously
+    data->result = bytesWrittenSync;
   }
 
   CloseHandle(ov.hEvent);
-
-  data->result = bytesWritten;
 }
 
 void EIO_Close(uv_work_t* req) {
