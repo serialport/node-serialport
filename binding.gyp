@@ -13,7 +13,10 @@
             'sources': [
               "src/serialport_win.cpp",
               'src/win/disphelper.c',
-              'src/win/disphelper.h'
+              'src/win/disphelper.h',
+              'src/win/enumser.cpp',
+              'src/win/enumser.h',
+              'src/win/stdafx.h'
             ]
           }
         ],
