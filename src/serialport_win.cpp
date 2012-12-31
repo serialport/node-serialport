@@ -8,6 +8,8 @@
 
 #ifdef WIN32
 
+#define MAX_BUFFER_SIZE 1000
+
 std::list<int> g_closingHandles;
 int bufferSize;
 void ErrorCodeToString(const char* prefix, int errorCode, char *errorStr) {
@@ -50,6 +52,9 @@ void EIO_Open(uv_work_t* req) {
   }
 
   bufferSize = data->bufferSize;
+  if(bufferSize > MAX_BUFFER_SIZE) {
+    bufferSize = MAX_BUFFER_SIZE;
+  }
 
   DCB dcb = { 0 };
   dcb.DCBlength = sizeof(DCB);
@@ -127,7 +132,7 @@ struct WatchPortBaton {
 public:
   HANDLE fd;
   DWORD bytesRead;
-  char buffer[100];
+  char buffer[MAX_BUFFER_SIZE];
   char errorString[1000];
   DWORD errorCode;
   bool disconnected;
