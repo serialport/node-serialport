@@ -1,4 +1,5 @@
 
+
 #include "serialport.h"
 
 #ifdef WIN32
@@ -48,7 +49,7 @@ v8::Handle<v8::Value> Open(const v8::Arguments& args) {
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
-  uv_queue_work(uv_default_loop(), req, EIO_Open, EIO_AfterOpen);
+  uv_queue_work(uv_default_loop(), req, EIO_Open, (uv_after_work_cb)EIO_AfterOpen);
 
   return scope.Close(v8::Undefined());
 }
@@ -115,7 +116,7 @@ v8::Handle<v8::Value> Write(const v8::Arguments& args) {
   ngx_queue_insert_tail(&write_queue, &queuedWrite->queue);
 
   if (empty) {
-    uv_queue_work(uv_default_loop(), &queuedWrite->req, EIO_Write, EIO_AfterWrite);
+    uv_queue_work(uv_default_loop(), &queuedWrite->req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
   }   
   uv_mutex_unlock(&write_queue_mutex);
 
@@ -143,7 +144,7 @@ void EIO_AfterWrite(uv_work_t* req) {
     // Always pull the next work item from the head of the queue
     ngx_queue_t* head = ngx_queue_head(&write_queue);
     QueuedWrite* nextQueuedWrite = ngx_queue_data(head, QueuedWrite, queue);
-    uv_queue_work(uv_default_loop(), &nextQueuedWrite->req, EIO_Write, EIO_AfterWrite);
+    uv_queue_work(uv_default_loop(), &nextQueuedWrite->req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
   }
   uv_mutex_unlock(&write_queue_mutex);
 
@@ -175,7 +176,7 @@ v8::Handle<v8::Value> Close(const v8::Arguments& args) {
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
-  uv_queue_work(uv_default_loop(), req, EIO_Close, EIO_AfterClose);
+  uv_queue_work(uv_default_loop(), req, EIO_Close, (uv_after_work_cb)EIO_AfterClose);
 
   return scope.Close(v8::Undefined());
 }
@@ -211,7 +212,7 @@ v8::Handle<v8::Value> List(const v8::Arguments& args) {
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
-  uv_queue_work(uv_default_loop(), req, EIO_List, EIO_AfterList);
+  uv_queue_work(uv_default_loop(), req, EIO_List, (uv_after_work_cb)EIO_AfterList);
 
   return scope.Close(v8::Undefined());
 }
@@ -268,7 +269,7 @@ v8::Handle<v8::Value> Flush(const v8::Arguments& args) {
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
-  uv_queue_work(uv_default_loop(), req, EIO_Flush, EIO_AfterFlush);
+  uv_queue_work(uv_default_loop(), req, EIO_Flush, (uv_after_work_cb)EIO_AfterFlush);
 
   return scope.Close(v8::Undefined());
 }
