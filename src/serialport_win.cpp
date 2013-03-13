@@ -10,6 +10,10 @@
 
 #define MAX_BUFFER_SIZE 1000
 
+// Declare type of pointer to CancelIoEx function
+typedef BOOL (WINAPI *CancelIoExType)(HANDLE hFile, LPOVERLAPPED lpOverlapped);
+
+
 std::list<int> g_closingHandles;
 int bufferSize;
 void ErrorCodeToString(const char* prefix, int errorCode, char *errorStr) {
@@ -310,6 +314,17 @@ void EIO_Close(uv_work_t* req) {
   CloseBaton* data = static_cast<CloseBaton*>(req->data);
 
   g_closingHandles.push_back(data->fd);
+
+  HMODULE hKernel32 = LoadLibrary("kernel32.dll");
+  // Look up function address
+  CancelIoExType pCancelIoEx = (CancelIoExType)GetProcAddress(hKernel32, "CancelIoEx");
+  // Do something with it
+  if (pCancelIoEx)
+  {
+      // Function exists so call it
+      // Cancel all pending IO Requests for the current device
+      pCancelIoEx((HANDLE)data->fd, NULL);
+  }
   if(!CloseHandle((HANDLE)data->fd)) {
     ErrorCodeToString("closing connection", GetLastError(), data->errorString);
     return;
