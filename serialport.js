@@ -12,7 +12,7 @@ var path = require('path');
 var async = require('async');
 var child_process = require('child_process');
 
-var BAUDRATES = [500000, 230400, 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, 50];
+var BAUDRATES = [562500, 500000, 230400, 125000, 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, 50];
 var DATABITS = [8, 7, 6, 5];
 var STOPBITS = [1, 2, 1.5];
 var PARITY = ['none', 'even', 'mark', 'odd', 'space'];
@@ -30,7 +30,7 @@ var parsers = {
       // Collect data
       data += buffer.toString();
       // Split collected data by delimiter
-      var parts = data.split(delimiter)
+      var parts = data.split(delimiter);
       data = parts.pop();
       parts.forEach(function (part, i, array) {
         emitter.emit('data', part);
@@ -39,8 +39,20 @@ var parsers = {
   }
 };
 
+// helper
+var mergeOptions = function(options, defaultOptions) {
+  if (!options || typeof options === 'function') {
+    return defaultOptions;
+  }
+
+  var merged = {};
+  for (var attrname in defaultOptions) { merged[attrname] = defaultOptions[attrname]; }
+  for (attrname in options) { if (options[attrname]) merged[attrname] = options[attrname]; }
+  return merged;
+};
+
 // The default options, can be overwritten in the 'SerialPort' constructor
-var _options = {
+var defaults = {
   baudrate: 9600,
   databits: 8,
   stopbits: 1,
@@ -51,11 +63,11 @@ var _options = {
 };
 function SerialPort (path, options) {
   options = options || {};
-  options.__proto__ = _options;
+  options = mergeOptions(options, defaults);
 
-  if (BAUDRATES.indexOf(options.baudrate) == -1) {
-    throw new Error('Invalid "baudrate": ' + options.baudrate);
-  }
+  // if (BAUDRATES.indexOf(options.baudrate) == -1) {
+  //   throw new Error('Invalid "baudrate": ' + options.baudrate);
+  // }
   if (DATABITS.indexOf(options.databits) == -1) {
     throw new Error('Invalid "databits": ' + options.databits);
   }
@@ -268,18 +280,18 @@ function listOSX (callback) {
       var m;
 
       if (m = line.match(/^Serial Number: (.+)$/)) {
-        currentItem['serialNumber'] = m[1];
+        currentItem.serialNumber = m[1];
       } else if (m = line.match(/^Location ID: (.+)$/)) {
-        currentItem['locationId'] = m[1];
+        currentItem.locationId = m[1];
       } else if (m = line.match(/^Product ID: (.+)$/)) {
-        currentItem['productId'] = m[1];
+        currentItem.productId = m[1];
       } else if (m = line.match(/^Vendor ID: (.+)$/)) {
-        currentItem['vendorId'] = m[1];
+        currentItem.vendorId = m[1];
       } else if (m = line.match(/^Manufacturer: (.+)$/)) {
-        currentItem['manufacturer'] = m[1];
+        currentItem.manufacturer = m[1];
       } else if (/^$/.test(line)) {
         if ('serialNumber' in currentItem) {
-          currentItem['comName'] = "/dev/cu.usbmodem" + currentItem['locationId'].substring(2, 6) + '1';
+          currentItem.comName = "/dev/cu.usbmodem" + currentItem.locationId.substring(2, 6) + '1';
           items.push(currentItem);
           currentItem = {};
         }
@@ -289,7 +301,7 @@ function listOSX (callback) {
   });
 }
 
-exports.list = function (callback) {
+module.exports.list = function (callback) {
   if (process.platform === 'win32') {
     SerialPortBinding.list(callback);
   } else if (process.platform === 'darwin') {
