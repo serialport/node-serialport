@@ -12,13 +12,16 @@
 #include <IOKit/IOCFPlugIn.h>
 #include <IOKit/usb/IOUSBLib.h>
 #include <IOKit/serial/IOSerialKeys.h>
+
+uv_mutex_t list_mutex;
+Boolean lockInitialised = FALSE;
+
 #endif
 #if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
 #include <sys/ioctl.h>
 #include <IOKit/serial/ioss.h>
 #include <errno.h>
 #endif
-
 
 int ToBaudConstant(int baudRate);
 int ToDataBitsConstant(int dataBits);
@@ -247,8 +250,7 @@ static stDeviceListItem* GetSerialDevices();
 static kern_return_t FindModems(io_iterator_t *matchingServices)
 {
     kern_return_t     kernResult; 
-    CFMutableDictionaryRef  classesToMatch
-;
+    CFMutableDictionaryRef  classesToMatch;
     classesToMatch = IOServiceMatching(kIOSerialBSDServiceValue);
     if (classesToMatch != NULL)
     {
@@ -279,7 +281,7 @@ static io_registry_entry_t GetUsbDevice(char* pathName)
             while ((service = IOIteratorNext(matchingServices)) && !deviceFound)
             {
                 CFStringRef bsdPathAsCFString = (CFStringRef) IORegistryEntrySearchCFProperty(service, kIOServicePlane, CFSTR(kIOCalloutDeviceKey), kCFAllocatorDefault, kIORegistryIterateRecursively);
-                
+
                 if (bsdPathAsCFString)
                 {
                     Boolean result;
@@ -308,7 +310,7 @@ static io_registry_entry_t GetUsbDevice(char* pathName)
             }
             // Release the iterator.
             IOObjectRelease(matchingServices); 
-          }
+        }
     }
     
     return device;
@@ -400,8 +402,10 @@ static stDeviceListItem* GetSerialDevices()
                 modemFound = true;
                 kernResult = KERN_SUCCESS;
                 
+                uv_mutex_lock(&list_mutex);
+
                 io_registry_entry_t device = GetUsbDevice(bsdPath);
-                
+        
                 if (device) {
                     IOCFPlugInInterface **plugInInterface = NULL;
                     SInt32        score;
@@ -436,11 +440,13 @@ static stDeviceListItem* GetSerialDevices()
                     // Release the device
                     (void) IOObjectRelease(device);
                 }
+                
+                uv_mutex_unlock(&list_mutex);
             }
         }
 
         // Release the io_service_t now that we are done with it.
-    (void) IOObjectRelease(modemService);
+        (void) IOObjectRelease(modemService);
     }
     
     IOObjectRelease(serialPortIterator);  // Release the iterator.
@@ -454,6 +460,12 @@ void EIO_List(uv_work_t* req) {
   // This code exists in javascript for unix platforms
 
 #ifdef __APPLE__
+  if(!lockInitialised)
+  {
+    uv_mutex_init(&list_mutex);
+    lockInitialised = TRUE;
+  }
+
   ListBaton* data = static_cast<ListBaton*>(req->data);
 
   stDeviceListItem* devices = GetSerialDevices();
