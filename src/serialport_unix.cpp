@@ -1,4 +1,3 @@
-
 #ifndef WIN32
 #include "serialport.h"
 #include <unistd.h>
@@ -248,8 +247,8 @@ static stDeviceListItem* GetSerialDevices();
 static kern_return_t FindModems(io_iterator_t *matchingServices)
 {
     kern_return_t     kernResult; 
-    CFMutableDictionaryRef  classesToMatch;
-
+    CFMutableDictionaryRef  classesToMatch
+;
     classesToMatch = IOServiceMatching(kIOSerialBSDServiceValue);
     if (classesToMatch != NULL)
     {
@@ -265,7 +264,7 @@ static kern_return_t FindModems(io_iterator_t *matchingServices)
 
 static io_registry_entry_t GetUsbDevice(char* pathName)
 {
-    io_registry_entry_t device = NULL;
+    io_registry_entry_t device = 0;
             
     CFMutableDictionaryRef classesToMatch = IOServiceMatching(kIOUSBDeviceClassName);
     if (classesToMatch != NULL)
@@ -300,12 +299,44 @@ static io_registry_entry_t GetUsbDevice(char* pathName)
                         //memset(bsdPath, 0, sizeof(bsdPath));
                         device = service;
                     }
+                    else
+                    {
+                       // Release the object which are no longer needed
+                       (void) IOObjectRelease(service);
+                    }
                 }
             }
-        }
+            // Release the iterator.
+            IOObjectRelease(matchingServices); 
+          }
     }
     
     return device;
+}
+
+static void ExtractUsbInformation(stSerialDevice *serialDevice, IOUSBDeviceInterface  **deviceInterface)
+{
+    kern_return_t kernResult = KERN_FAILURE;
+    UInt32 locationID;
+    kernResult = (*deviceInterface)->GetLocationID(deviceInterface, &locationID);
+    if (KERN_SUCCESS == kernResult)
+    {
+        snprintf(serialDevice->locationId, 11, "0x%08x", locationID);
+    }
+
+    UInt16 vendorID;
+    kernResult = (*deviceInterface)->GetDeviceVendor(deviceInterface, &vendorID);
+    if (KERN_SUCCESS == kernResult)
+    {
+        snprintf(serialDevice->vendorId, 7, "0x%04x", vendorID);
+    }
+
+    UInt16 productID;
+    kernResult = (*deviceInterface)->GetDeviceProduct(deviceInterface, &productID);
+    if (KERN_SUCCESS == kernResult)
+    {
+        snprintf(serialDevice->productId, 7, "0x%04x", productID);
+    }
 }
 
 static stDeviceListItem* GetSerialDevices()
@@ -395,41 +426,15 @@ static stDeviceListItem* GetSerialDevices()
                     if (res || deviceInterface == NULL) {
                         continue;
                     }
-                    
-                    
-                    UInt32 locationID;
-                    kernResult = (*deviceInterface)->GetLocationID(deviceInterface, &locationID);
-                    if (KERN_SUCCESS != kernResult)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        snprintf(serialDevice->locationId, 11, "0x%08x", locationID);
-                    }
-                    
-                    UInt16 vendorID;
-                    kernResult = (*deviceInterface)->GetDeviceVendor(deviceInterface, &vendorID);
-                    if (KERN_SUCCESS != kernResult)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        snprintf(serialDevice->vendorId, 7, "0x%04x", vendorID);
-                    }
-                    
-                    UInt16 productID;
-                    kernResult = (*deviceInterface)->GetDeviceProduct(deviceInterface, &productID);
-                    if (KERN_SUCCESS != kernResult)
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        snprintf(serialDevice->productId, 7, "0x%04x", productID);
-                    }
 
+                    // Extract the desired Information
+                    ExtractUsbInformation(serialDevice, deviceInterface);
+
+                    // Release the Interface
+                    (*deviceInterface)->Release(deviceInterface);
+
+                    // Release the device
+                    (void) IOObjectRelease(device);
                 }
             }
         }
@@ -453,11 +458,11 @@ void EIO_List(uv_work_t* req) {
 
   stDeviceListItem* devices = GetSerialDevices();
 
-  if ((* devices->length) > 0)
+  if (*(devices->length) > 0)
   {    
     stDeviceListItem* next = devices;
     
-    for (int i = 0, len = (* devices->length); i < len; i++) {
+    for (int i = 0, len = *(devices->length); i < len; i++) {
         stSerialDevice device = (* next).value;
 
         ListResultItem* resultItem = new ListResultItem();
@@ -476,9 +481,9 @@ void EIO_List(uv_work_t* req) {
 
         stDeviceListItem* current = next;
 
-        if ((* next).next != NULL)
+        if (next->next != NULL)
         {
-          next = (* next).next;
+          next = next->next;
         }
 
         free(current);
