@@ -31,6 +31,7 @@ This library is admittedly a base level toolkit for building amazing things with
 * [Arduino Drinking Game Extravaganza](http://jsconf.eu/2011/arduino_drinking_game_extravaganza.html) - AKA "The Russian" a hexidecimal drinking game for geeks by Uxebu presented at JSConf EU 2011.
 * [Arduino controlling popcorn.js](https://gist.github.com/968773) - Controlling a popcorn.js video with an Arduino kit.
 * [Robotic JavaScript](http://jsconf.eu/2010/speaker/livingroombindmotion_function.html) - The first live presentation of the node-serialport code set as presented at JSConf EU 2010.
+* [devicestack](https://github.com/adrai/devicestack) - This module helps you to represent a device and its protocol.
 
 For getting started with node-serialport, we recommend you begin with the following articles:
 
@@ -103,6 +104,26 @@ Assuming you are connected to a serial console, you would for example:
 
 <pre>
 serialPort.on("open", function () {
+  console.log('open');
+  serialPort.on('data', function(data) {
+    console.log('data received: ' + data);
+  });  
+  serialPort.write("ls\n", function(err, results) {
+    console.log('err ' + err);
+    console.log('results ' + results);
+  });  
+});
+</pre>
+
+You can also call the open function, in this case instanciate the serialport with an additional flag.
+
+<pre>
+var SerialPort = require("serialport").SerialPort
+var serialPort = new SerialPort("/dev/tty-usbserial1", {
+  baudrate: 57600
+}, false); // this is the openImmediately flag [default is true]
+
+serialPort.open(function () {
   console.log('open');
   serialPort.on('data', function(data) {
     console.log('data received: ' + data);

@@ -49,9 +49,12 @@ var _options = {
   buffersize: 255,
   parser: parsers.raw
 };
-function SerialPort (path, options) {
+function SerialPort (path, options, openImmediately) {
   options = options || {};
   options.__proto__ = _options;
+  openImmediately = (openImmediately === undefined || openImmediately === null) ? true : openImmediately;
+
+  var self = this;
 
   if (BAUDRATES.indexOf(options.baudrate) == -1) {
     throw new Error('Invalid "baudrate": ' + options.baudrate);
@@ -74,58 +77,68 @@ function SerialPort (path, options) {
 
   stream.Stream.call(this);
 
-  var self = this;
-  process.nextTick(function () {
-    options = options || {};
-    options.baudRate = options.baudRate || options.baudrate || 9600;
-    options.dataBits = options.dataBits || options.databits || 8;
-    options.parity = options.parity || 'none';
-    options.stopBits = options.stopBits || options.stopbits || 1;
-    options.bufferSize = options.bufferSize || options.buffersize || 100;
-    if (!('flowControl' in options)) {
-      options.flowControl = false;
+  options = options || {};
+  options.baudRate = options.baudRate || options.baudrate || 9600;
+  options.dataBits = options.dataBits || options.databits || 8;
+  options.parity = options.parity || 'none';
+  options.stopBits = options.stopBits || options.stopbits || 1;
+  options.bufferSize = options.bufferSize || options.buffersize || 100;
+  if (!('flowControl' in options)) {
+    options.flowControl = false;
+  }
+  options.dataCallback = function (data) {
+    options.parser(self, data);
+  };
+  options.errorCallback = function (err) {
+    self.emit('error', err);
+  };
+  options.disconnectedCallback = function () {
+    if (self.closing) {
+      return;
     }
-    options.dataCallback = function (data) {
-      options.parser(self, data);
-    };
-    options.errorCallback = function (err) {
-      self.emit('error', err);
-    };
-    options.disconnectedCallback = function () {
-      if (self.closing) {
-        return;
-      }
-      self.emit('error', new Error("Disconnected"));
-      self.close();
-    };
+    self.emit('error', new Error("Disconnected"));
+    self.close();
+  };
 
-    if (process.platform == 'win32') {
-      path = '\\\\.\\' + path;
-    }
+  if (process.platform == 'win32') {
+    path = '\\\\.\\' + path;
+  }
 
-    SerialPortBinding.open(path, options, function (err, fd) {
-      self.fd = fd;
-      if (err) {
-        return self.emit('error', err);
-      }
-      if (process.platform !== 'win32') {
-        self.readStream = fs.createReadStream(path, { bufferSize: options.bufferSize, fd: fd });
-        self.readStream.on("data", options.dataCallback);
-        self.readStream.on("error", options.errorCallback);
-        self.readStream.on("close", function () {
-          self.close();
-        });
-        self.readStream.on("end", function () {
-          self.emit('end');
-        });
-      }
+  this.options = options;
+  this.path = path;
 
-      self.emit('open');
+  if (openImmediately) {
+    process.nextTick(function () {
+      self.open();
     });
-  });
+  }
 }
 
 util.inherits(SerialPort, stream.Stream);
+
+SerialPort.prototype.open = function (callback) {
+  var self = this;
+  SerialPortBinding.open(this.path, this.options, function (err, fd) {
+    self.fd = fd;
+    if (err) {
+      return self.emit('error', err);
+    }
+    if (process.platform !== 'win32') {
+      self.readStream = fs.createReadStream(self.path, { bufferSize: self.options.bufferSize, fd: fd });
+      self.readStream.on("data", self.options.dataCallback);
+      self.readStream.on("error", self.options.errorCallback);
+      self.readStream.on("close", function () {
+        self.close();
+      });
+      self.readStream.on("end", function () {
+        self.emit('end');
+      });
+    }
+
+    self.emit('open');
+    if (callback) { callback(err); }
+  });
+};
 
 SerialPort.prototype.write = function (buffer, callback) {
   var self = this;
