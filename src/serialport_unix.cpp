@@ -186,6 +186,7 @@ void EIO_Open(uv_work_t* req) {
   options.c_cc[VMIN]=1;
   options.c_cc[VTIME]=0;
 
+  sleep(1);
   tcflush(fd, TCIFLUSH);
   tcsetattr(fd, TCSANOW, &options);
 
