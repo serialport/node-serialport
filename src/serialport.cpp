@@ -232,6 +232,9 @@ void EIO_AfterList(uv_work_t* req) {
       item->Set(v8::String::New("comName"), v8::String::New((*it)->comName.c_str()));
       item->Set(v8::String::New("manufacturer"), v8::String::New((*it)->manufacturer.c_str()));
       item->Set(v8::String::New("pnpId"), v8::String::New((*it)->pnpId.c_str()));
+      item->Set(v8::String::New("locationId"), v8::String::New((*it)->locationId.c_str()));
+      item->Set(v8::String::New("vendorId"), v8::String::New((*it)->vendorId.c_str()));
+      item->Set(v8::String::New("productId"), v8::String::New((*it)->productId.c_str()));
       results->Set(i, item);
     }
     argv[0] = v8::Undefined();

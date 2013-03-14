@@ -7,13 +7,21 @@
 
 #ifdef __APPLE__
 #include <AvailabilityMacros.h>
+#include <sys/param.h>
+#include <IOKit/IOKitLib.h>
+#include <IOKit/IOCFPlugIn.h>
+#include <IOKit/usb/IOUSBLib.h>
+#include <IOKit/serial/IOSerialKeys.h>
+
+uv_mutex_t list_mutex;
+Boolean lockInitialised = FALSE;
+
 #endif
 #if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
 #include <sys/ioctl.h>
 #include <IOKit/serial/ioss.h>
 #include <errno.h>
 #endif
-
 
 int ToBaudConstant(int baudRate);
 int ToDataBitsConstant(int dataBits);
@@ -62,6 +70,21 @@ int ToBaudConstant(int baudRate) {
   }
   return -1;
 }
+
+#ifdef __APPLE__
+typedef struct SerialDevice {
+    char port[MAXPATHLEN];
+    char locationId[MAXPATHLEN];
+    char vendorId[MAXPATHLEN];
+    char productId[MAXPATHLEN];
+} stSerialDevice;
+
+typedef struct DeviceListItem {
+    struct SerialDevice value;
+    struct DeviceListItem *next;
+    int* length;
+} stDeviceListItem;
+#endif
 
 int ToDataBitsConstant(int dataBits) {
   switch (dataBits) {
@@ -192,7 +215,7 @@ void EIO_Open(uv_work_t* req) {
 
 #if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
     speed_t speed = data->baudRate;
-    if ( ioctl( fd,	 IOSSIOSPEED, &speed ) == -1 )
+    if ( ioctl( fd,  IOSSIOSPEED, &speed ) == -1 )
     {
       printf( "Error %d calling ioctl( ..., IOSSIOSPEED, ... )\n", errno );
     }
@@ -217,8 +240,271 @@ void EIO_Close(uv_work_t* req) {
   close(data->fd);
 }
 
+#ifdef __APPLE__
+
+// Function prototypes
+static kern_return_t FindModems(io_iterator_t *matchingServices);
+static io_registry_entry_t GetUsbDevice(char *pathName);
+static stDeviceListItem* GetSerialDevices();
+
+
+static kern_return_t FindModems(io_iterator_t *matchingServices)
+{
+    kern_return_t     kernResult; 
+    CFMutableDictionaryRef  classesToMatch;
+    classesToMatch = IOServiceMatching(kIOSerialBSDServiceValue);
+    if (classesToMatch != NULL)
+    {
+        CFDictionarySetValue(classesToMatch,
+                             CFSTR(kIOSerialBSDTypeKey),
+                             CFSTR(kIOSerialBSDAllTypes));
+    }
+    
+    kernResult = IOServiceGetMatchingServices(kIOMasterPortDefault, classesToMatch, matchingServices);    
+    
+    return kernResult;
+}
+
+static io_registry_entry_t GetUsbDevice(char* pathName)
+{
+    io_registry_entry_t device = 0;
+            
+    CFMutableDictionaryRef classesToMatch = IOServiceMatching(kIOUSBDeviceClassName);
+    if (classesToMatch != NULL)
+    {
+        io_iterator_t matchingServices;
+        kern_return_t kernResult = IOServiceGetMatchingServices(kIOMasterPortDefault, classesToMatch, &matchingServices);
+        if (KERN_SUCCESS == kernResult)
+        {
+            io_service_t service;
+            Boolean deviceFound = false;
+            
+            while ((service = IOIteratorNext(matchingServices)) && !deviceFound)
+            {
+                CFStringRef bsdPathAsCFString = (CFStringRef) IORegistryEntrySearchCFProperty(service, kIOServicePlane, CFSTR(kIOCalloutDeviceKey), kCFAllocatorDefault, kIORegistryIterateRecursively);
+
+                if (bsdPathAsCFString)
+                {
+                    Boolean result;
+                    char    bsdPath[MAXPATHLEN];
+                    
+                    // Convert the path from a CFString to a C (NUL-terminated)
+                    result = CFStringGetCString(bsdPathAsCFString,
+                                                bsdPath,
+                                                sizeof(bsdPath),
+                                                kCFStringEncodingUTF8);
+                    
+                    CFRelease(bsdPathAsCFString);
+                    
+                    if (result && (strcmp(bsdPath, pathName) == 0))
+                    {
+                        deviceFound = true;
+                        //memset(bsdPath, 0, sizeof(bsdPath));
+                        device = service;
+                    }
+                    else
+                    {
+                       // Release the object which are no longer needed
+                       (void) IOObjectRelease(service);
+                    }
+                }
+            }
+            // Release the iterator.
+            IOObjectRelease(matchingServices); 
+        }
+    }
+    
+    return device;
+}
+
+static void ExtractUsbInformation(stSerialDevice *serialDevice, IOUSBDeviceInterface  **deviceInterface)
+{
+    kern_return_t kernResult = KERN_FAILURE;
+    UInt32 locationID;
+    kernResult = (*deviceInterface)->GetLocationID(deviceInterface, &locationID);
+    if (KERN_SUCCESS == kernResult)
+    {
+        snprintf(serialDevice->locationId, 11, "0x%08x", locationID);
+    }
+
+    UInt16 vendorID;
+    kernResult = (*deviceInterface)->GetDeviceVendor(deviceInterface, &vendorID);
+    if (KERN_SUCCESS == kernResult)
+    {
+        snprintf(serialDevice->vendorId, 7, "0x%04x", vendorID);
+    }
+
+    UInt16 productID;
+    kernResult = (*deviceInterface)->GetDeviceProduct(deviceInterface, &productID);
+    if (KERN_SUCCESS == kernResult)
+    {
+        snprintf(serialDevice->productId, 7, "0x%04x", productID);
+    }
+}
+
+static stDeviceListItem* GetSerialDevices()
+{
+    kern_return_t kernResult = KERN_FAILURE;
+    io_iterator_t serialPortIterator;
+    char bsdPath[MAXPATHLEN];
+    
+    kernResult = FindModems(&serialPortIterator);
+    
+    io_service_t modemService;
+    kernResult = KERN_FAILURE;
+    Boolean modemFound = false;
+    
+    // Initialize the returned path
+    *bsdPath = '\0';
+    
+    stDeviceListItem* devices = NULL;
+    stDeviceListItem* lastDevice = NULL;
+    int length = 0;
+    
+    while ((modemService = IOIteratorNext(serialPortIterator)))
+    {
+        CFTypeRef bsdPathAsCFString;
+  
+        bsdPathAsCFString = IORegistryEntrySearchCFProperty(modemService, kIOServicePlane, CFSTR(kIOCalloutDeviceKey), kCFAllocatorDefault, kIORegistryIterateRecursively);
+        
+        if (bsdPathAsCFString)
+        {
+            Boolean result;
+            
+            // Convert the path from a CFString to a C (NUL-terminated)
+      
+            result = CFStringGetCString((CFStringRef) bsdPathAsCFString,
+                                        bsdPath,
+                                        sizeof(bsdPath), 
+                                        kCFStringEncodingUTF8);
+            CFRelease(bsdPathAsCFString);
+            
+            if (result)
+            {
+                stDeviceListItem *deviceListItem = (stDeviceListItem*) malloc(sizeof(stDeviceListItem));
+                stSerialDevice *serialDevice = &(deviceListItem->value);
+                strcpy(serialDevice->port, bsdPath);
+                memset(serialDevice->locationId, 0, sizeof(serialDevice->locationId));
+                memset(serialDevice->vendorId, 0, sizeof(serialDevice->vendorId));
+                memset(serialDevice->productId, 0, sizeof(serialDevice->productId));
+                deviceListItem->next = NULL;
+                deviceListItem->length = &length;
+                                
+                if (devices == NULL) {
+                    devices = deviceListItem;
+                }
+                else {
+                    lastDevice->next = deviceListItem;
+                }
+                
+                lastDevice = deviceListItem;
+                length++;
+                
+                modemFound = true;
+                kernResult = KERN_SUCCESS;
+                
+                uv_mutex_lock(&list_mutex);
+
+                io_registry_entry_t device = GetUsbDevice(bsdPath);
+        
+                if (device) {
+                    IOCFPlugInInterface **plugInInterface = NULL;
+                    SInt32        score;
+                    HRESULT       res;
+                    
+                    IOUSBDeviceInterface  **deviceInterface = NULL;
+                    
+                    kernResult = IOCreatePlugInInterfaceForService(device, kIOUSBDeviceUserClientTypeID, kIOCFPlugInInterfaceID,
+                                                           &plugInInterface, &score);
+                    
+                    if ((kIOReturnSuccess != kernResult) || !plugInInterface) {
+                        continue;
+                    }
+                    
+                    // Use the plugin interface to retrieve the device interface.
+                    res = (*plugInInterface)->QueryInterface(plugInInterface, CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID),
+                                                             (LPVOID*) &deviceInterface);
+                    
+                    // Now done with the plugin interface.
+                    (*plugInInterface)->Release(plugInInterface);
+              
+                    if (res || deviceInterface == NULL) {
+                        continue;
+                    }
+
+                    // Extract the desired Information
+                    ExtractUsbInformation(serialDevice, deviceInterface);
+
+                    // Release the Interface
+                    (*deviceInterface)->Release(deviceInterface);
+
+                    // Release the device
+                    (void) IOObjectRelease(device);
+                }
+                
+                uv_mutex_unlock(&list_mutex);
+            }
+        }
+
+        // Release the io_service_t now that we are done with it.
+        (void) IOObjectRelease(modemService);
+    }
+    
+    IOObjectRelease(serialPortIterator);  // Release the iterator.
+    
+    return devices;
+}
+
+#endif
+
 void EIO_List(uv_work_t* req) {
   // This code exists in javascript for unix platforms
+
+#ifdef __APPLE__
+  if(!lockInitialised)
+  {
+    uv_mutex_init(&list_mutex);
+    lockInitialised = TRUE;
+  }
+
+  ListBaton* data = static_cast<ListBaton*>(req->data);
+
+  stDeviceListItem* devices = GetSerialDevices();
+
+  if (*(devices->length) > 0)
+  {    
+    stDeviceListItem* next = devices;
+    
+    for (int i = 0, len = *(devices->length); i < len; i++) {
+        stSerialDevice device = (* next).value;
+
+        ListResultItem* resultItem = new ListResultItem();
+        resultItem->comName = device.port;
+
+        if (device.locationId != NULL) {
+          resultItem->locationId = device.locationId;
+        }
+        if (device.vendorId != NULL) {
+          resultItem->vendorId = device.vendorId;
+        }
+        if (device.productId != NULL) {
+          resultItem->productId = device.productId;
+        }
+        data->results.push_back(resultItem);
+
+        stDeviceListItem* current = next;
+
+        if (next->next != NULL)
+        {
+          next = next->next;
+        }
+
+        free(current);
+    }
+
+  }
+
+#endif
 }
 
 void EIO_Flush(uv_work_t* req) {

@@ -96,6 +96,9 @@ public:
   std::string comName;
   std::string manufacturer;
   std::string pnpId;
+  std::string locationId;
+  std::string vendorId;
+  std::string productId;
 };
 
 struct ListBaton {
