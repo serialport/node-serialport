@@ -194,6 +194,7 @@ SerialPort.prototype.close = function (callback) {
         callback(err);
       }
       self.emit('close');
+      self.removeAllListeners();
       self.closing = false;
     });
   } catch (ex) {
