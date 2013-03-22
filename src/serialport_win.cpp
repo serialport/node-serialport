@@ -262,7 +262,7 @@ void AfterOpenSuccess(int fd, v8::Handle<v8::Value> dataCallback, v8::Handle<v8:
   uv_work_t* req = new uv_work_t();
   req->data = baton;
 
-  uv_queue_work(uv_default_loop(), req, EIO_WatchPort, EIO_AfterWatchPort);
+  uv_queue_work(uv_default_loop(), req, EIO_WatchPort, (uv_after_work_cb)EIO_AfterWatchPort);
 }
 
 void EIO_Write(uv_work_t* req) {
