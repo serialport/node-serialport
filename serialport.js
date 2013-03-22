@@ -246,16 +246,15 @@ function listUnix (callback) {
     }, callback);
   });
 }
+  
 
-exports.list = function (callback) {
-  if (process.platform === 'win32') {
-    SerialPortBinding.list(callback);
-  } else if (process.platform === 'darwin') {
-    SerialPortBinding.list(callback);
-  } else {
-    listUnix(callback);
-  }
-};
+if (process.platform === 'win32') {
+  exports.list = SerialPortBinding.list
+} else if (process.platform === 'darwin') {
+  exports.list = SerialPortBinding.list;
+} else {
+  exports.list = listUnix;
+}
 
 SerialPort.prototype.flush = function (callback) {
   var self = this;
