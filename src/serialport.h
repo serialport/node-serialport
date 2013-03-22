@@ -95,6 +95,7 @@ struct ListResultItem {
 public:
   std::string comName;
   std::string manufacturer;
+  std::string serialNumber;
   std::string pnpId;
   std::string locationId;
   std::string vendorId;

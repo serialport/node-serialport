@@ -77,6 +77,8 @@ typedef struct SerialDevice {
     char locationId[MAXPATHLEN];
     char vendorId[MAXPATHLEN];
     char productId[MAXPATHLEN];
+    char manufacturer[MAXPATHLEN];
+    char serialNumber[MAXPATHLEN];
 } stSerialDevice;
 
 typedef struct DeviceListItem {
@@ -387,6 +389,8 @@ static stDeviceListItem* GetSerialDevices()
                 memset(serialDevice->locationId, 0, sizeof(serialDevice->locationId));
                 memset(serialDevice->vendorId, 0, sizeof(serialDevice->vendorId));
                 memset(serialDevice->productId, 0, sizeof(serialDevice->productId));
+                serialDevice->manufacturer[0] = '\0';
+                serialDevice->serialNumber[0] = '\0';
                 deviceListItem->next = NULL;
                 deviceListItem->length = &length;
                                 
@@ -408,6 +412,54 @@ static stDeviceListItem* GetSerialDevices()
                 io_registry_entry_t device = GetUsbDevice(bsdPath);
         
                 if (device) {
+                    CFStringRef manufacturerAsCFString = (CFStringRef) IORegistryEntrySearchCFProperty(device,
+                                          kIOServicePlane,
+                                          CFSTR(kUSBVendorString),
+                                          kCFAllocatorDefault,
+                                          kIORegistryIterateRecursively);
+
+                    if (manufacturerAsCFString)
+                    {
+                        Boolean result;
+                        char    manufacturer[MAXPATHLEN];
+                        
+                        // Convert from a CFString to a C (NUL-terminated)
+                        result = CFStringGetCString(manufacturerAsCFString,
+                                                    manufacturer,
+                                                    sizeof(manufacturer),
+                                                    kCFStringEncodingUTF8);
+
+                        if (result) {
+                          strcpy(serialDevice->manufacturer, manufacturer);
+                        }
+                        
+                        CFRelease(manufacturerAsCFString);
+                    }
+
+                    CFStringRef serialNumberAsCFString = (CFStringRef) IORegistryEntrySearchCFProperty(device,
+                                          kIOServicePlane,
+                                          CFSTR(kUSBSerialNumberString),
+                                          kCFAllocatorDefault,
+                                          kIORegistryIterateRecursively);
+
+                    if (serialNumberAsCFString)
+                    {
+                        Boolean result;
+                        char    serialNumber[MAXPATHLEN];
+                        
+                        // Convert from a CFString to a C (NUL-terminated)
+                        result = CFStringGetCString(serialNumberAsCFString,
+                                                    serialNumber,
+                                                    sizeof(serialNumber),
+                                                    kCFStringEncodingUTF8);
+
+                        if (result) {
+                          strcpy(serialDevice->serialNumber, serialNumber);
+                        }
+                        
+                        CFRelease(serialNumberAsCFString);
+                    }
+
                     IOCFPlugInInterface **plugInInterface = NULL;
                     SInt32        score;
                     HRESULT       res;
@@ -489,6 +541,12 @@ void EIO_List(uv_work_t* req) {
         }
         if (device.productId != NULL) {
           resultItem->productId = device.productId;
+        }
+        if (device.manufacturer != NULL) {
+          resultItem->manufacturer = device.manufacturer;
+        }
+        if (device.serialNumber != NULL) {
+          resultItem->serialNumber = device.serialNumber;
         }
         data->results.push_back(resultItem);
 
