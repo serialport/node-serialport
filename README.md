@@ -55,7 +55,7 @@ This assumes you have everything on your system necessary to compile ANY native 
 
 ### Windows:
 
-Ensure you have Visual Studio 2010 installed. If you have any version OTHER THAN VS 2010, please read this: https://github.com/TooTallNate/node-gyp/issues/44 
+Ensure you have Visual Studio 2010 (non-Express) installed. If you have any version OTHER THAN VS 2010, please read this: https://github.com/TooTallNate/node-gyp/issues/44 
 
 ### Mac OS X:
 
