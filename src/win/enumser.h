@@ -4,7 +4,7 @@ Purpose: Defines the interface for a class to enumerate the serial ports install
          using a number of different approaches
 Created: PJN / 03-11-1998
 
-Copyright (c) 1998 - 2012 by PJ Naughter (Web: www.naughter.com, Email: pjna@naughter.com)
+Copyright (c) 1998 - 2013 by PJ Naughter (Web: www.naughter.com, Email: pjna@naughter.com)
 
 All rights reserved.
 
@@ -42,8 +42,7 @@ to maintain a single distribution point for the source code.
   #include <string>
   #pragma message("To avoid this message, please put string in your pre compiled header (normally stdafx.h)")
 #endif  
-#endif
-
+#else
 #if defined _AFX
   #ifndef __AFXTEMPL_H__
     #include <afxtempl.h> 
@@ -54,6 +53,7 @@ to maintain a single distribution point for the source code.
     #include <atlstr.h>
     #pragma message("To avoid this message, please put atlstr.h in your pre compiled header (normally stdafx.h)")
   #endif  
+#endif
 #endif
 
 
@@ -170,82 +170,6 @@ public:
 #endif
 
 protected:
-
-//Helper class which supports auto closing of a handle via CloseHandle
-  class CAutoHandle
-  {
-  public:
-  //Constructors / Destructors
-    CAutoHandle() : m_hHandle(INVALID_HANDLE_VALUE)
-    {
-    }
-
-    explicit CAutoHandle(HANDLE hHandle) : m_hHandle(hHandle)
-    {
-    }
-
-    ~CAutoHandle()
-    {
-      if (m_hHandle != INVALID_HANDLE_VALUE)
-      {
-        CloseHandle(m_hHandle);
-        m_hHandle = INVALID_HANDLE_VALUE;
-      }
-    }
-
-  //Methods
-    operator HANDLE() 
-    {
-      return m_hHandle;
-    }
-
-  //Member variables
-    HANDLE m_hHandle;
-  };
-
-
-//Helper class which supports auto closing of a HMODULE via FreeLibrary and setting of the last Win32 error via SetLastError
-  class CAutoHModule
-  {
-  public:
-  //Constructors / Destructors
-    CAutoHModule() : m_hModule(NULL), 
-                     m_dwError(ERROR_SUCCESS)
-    {
-    }
-
-    explicit CAutoHModule(HMODULE hModule) : m_hModule(hModule), 
-                                             m_dwError(GetLastError())
-    {
-    }
-
-    explicit CAutoHModule(HMODULE hModule, DWORD dwError) : m_hModule(hModule), 
-                                                            m_dwError(dwError)
-    {
-    }
-
-    ~CAutoHModule()
-    {
-      if (m_hModule != NULL)
-      {
-        FreeLibrary(m_hModule);
-        m_hModule = NULL;
-      }
-      SetLastError(m_dwError);
-    }
-
-    operator HMODULE() 
-    {
-      return m_hModule;
-    }
-
-  //Member variables
-    HMODULE m_hModule;
-    DWORD m_dwError;
-  };
-
-
-
 //Methods
   static BOOL RegQueryValueString(HKEY kKey, LPCTSTR lpValueName, LPTSTR& pszValue);
   static BOOL QueryRegistryPortName(HKEY hDeviceKey, int& nPort);
