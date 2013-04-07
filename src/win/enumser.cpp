@@ -114,8 +114,16 @@ History: PJN / 23-02-1999 Code now uses QueryDosDevice if running on NT to deter
                           from raw Win32 API call RegQueryValueEx is null terminated before it is treated as such
                           in the code. Thanks to Jeffrey Walton for reporting this security issue.
                           5. Updated the code to clean compile on VC 2012
+         PJN / 10-01-2013 1. Updated copyright details
+                          2. Spun off CAutoHModule class into its own header file
+                          3. Spun off CAutoHandle class into its own header file
+                          4. Addition of a new CAutoHeapAlloc class which encapsulates HeapAlloc / HeapFree calls
+                          in a C++ class.
+                          5. Removed ATL usage completely from UsingQueryDevice, UsingSetupAPI2 and UsingEnumPorts.
+                          This should allow these methods to support compilers which do not have support for ATL such
+                          as VC Express SKUs.
          
-Copyright (c) 1998 - 2012 by PJ Naughter (Web: www.naughter.com, Email: pjna@naughter.com)
+Copyright (c) 1998 - 2013 by PJ Naughter (Web: www.naughter.com, Email: pjna@naughter.com)
 
 All rights reserved.
 
@@ -134,6 +142,9 @@ to maintain a single distribution point for the source code.
 
 #include "stdafx.h"
 #include "enumser.h"
+#include "AutoHModule.h"
+#include "AutoHandle.h"
+#include "AutoHeapAlloc.h"
 
 #ifndef NO_ENUMSERIAL_USING_WMI
 #ifndef __ATLBASE_H__
@@ -435,10 +446,11 @@ BOOL CEnumerateSerial::UsingQueryDosDevice(CSimpleArray<UINT>& ports)
     BOOL bWantStop = FALSE;
     while (nChars && !bWantStop)
     {
-      ATL::CHeapPtr<TCHAR> szDevices;
-      if (szDevices.Allocate(nChars))
+      CAutoHeapAlloc devices;
+      if (devices.Allocate(nChars * sizeof(TCHAR)))
       {
-        DWORD dwChars = QueryDosDevice(NULL, szDevices, nChars);
+        LPTSTR pszDevices = static_cast<LPTSTR>(devices.m_pData);
+        DWORD dwChars = QueryDosDevice(NULL, pszDevices, nChars);
         if (dwChars == 0)
         {
           DWORD dwError = GetLastError();
@@ -455,10 +467,11 @@ BOOL CEnumerateSerial::UsingQueryDosDevice(CSimpleArray<UINT>& ports)
           bSuccess = TRUE;
           bWantStop = TRUE;
           size_t i=0;
-          while (szDevices[i] != _T('\0'))
+          
+          while (pszDevices[i] != _T('\0'))
           {
             //Get the current device name
-            TCHAR* pszCurrentDevice = &(szDevices[i]);
+            TCHAR* pszCurrentDevice = &(pszDevices[i]);
 
             //If it looks like "COMX" then
             //add it to the array which will be returned
@@ -727,8 +740,8 @@ BOOL CEnumerateSerial::UsingSetupAPI2(CSimpleArray<UINT>& ports, CSimpleArray<CS
   }
 
   //Allocate the needed memory
-  ATL::CHeapPtr<GUID> pGuids;
-  if (!pGuids.Allocate(dwGuids))
+  CAutoHeapAlloc guids;
+  if (!guids.Allocate(dwGuids * sizeof(GUID)))
   {
     //Set the error to report
     setupAPI.m_dwError = ERROR_OUTOFMEMORY;
@@ -737,6 +750,7 @@ BOOL CEnumerateSerial::UsingSetupAPI2(CSimpleArray<UINT>& ports, CSimpleArray<CS
   }
 
   //Call the function again
+  GUID* pGuids = static_cast<GUID*>(guids.m_pData);
   if (!lpfnSETUPDICLASSGUIDSFROMNAME(_T("Ports"), pGuids, dwGuids, &dwGuids))
   {
     //Set the error to report
@@ -850,13 +864,14 @@ BOOL CEnumerateSerial::UsingEnumPorts(CSimpleArray<UINT>& ports)
   BOOL bSuccess = FALSE;
 
   //Allocate the buffer and recall
-  ATL::CHeapPtr<BYTE> pPorts;
-  if (pPorts.Allocate(cbNeeded))
+  CAutoHeapAlloc portsBuffer;
+  if (portsBuffer.Allocate(cbNeeded))
   {
+    BYTE* pPorts = static_cast<BYTE*>(portsBuffer.m_pData);
     bSuccess = EnumPorts(NULL, 1, pPorts, cbNeeded, &cbNeeded, &dwPorts);
     if (bSuccess)
     {
-      PORT_INFO_1* pPortInfo = reinterpret_cast<PORT_INFO_1*>(pPorts.m_pData);
+      PORT_INFO_1* pPortInfo = reinterpret_cast<PORT_INFO_1*>(pPorts);
       for (DWORD i=0; i<dwPorts; i++)
       {
         //If it looks like "COMX" then
@@ -1032,16 +1047,18 @@ BOOL CEnumerateSerial::UsingComDB(CSimpleArray<UINT>& ports)
       if (dwPortUsage == ERROR_SUCCESS)
       {
         //Allocate some heap space and recall the function
-        ATL::CHeapPtr<BYTE> portBytes;
+        CAutoHeapAlloc portBytes;
         if (portBytes.Allocate(dwMaxPortsReported))
         {
           bSuccess = TRUE;
-          if (lpfnCOMDBGETCURRENTPORTUSAGE(hComDB, portBytes, dwMaxPortsReported, CDB_REPORT_BYTES, &dwMaxPortsReported) == ERROR_SUCCESS)
+
+          PBYTE pPortBytes = static_cast<PBYTE>(portBytes.m_pData);
+          if (lpfnCOMDBGETCURRENTPORTUSAGE(hComDB, pPortBytes, dwMaxPortsReported, CDB_REPORT_BYTES, &dwMaxPortsReported) == ERROR_SUCCESS)
           {
             //Work thro the byte bit array for ports which are in use
             for (DWORD i=0; i<dwMaxPortsReported; i++)
             {
-              if (portBytes[i])
+              if (pPortBytes[i])
               {
               #if defined CENUMERATESERIAL_USE_STL
                 ports.push_back(i + 1);
@@ -1109,9 +1126,9 @@ BOOL CEnumerateSerial::UsingRegistry(CSimpleArray<CString>& ports)
 			DWORD dwMaxValueDataSizeInBytes = dwMaxValueDataSizeInChars * sizeof(TCHAR);
 		
 			//Allocate some space for the value name and value data			
-      ATL::CHeapPtr<TCHAR> szValueName;
-      ATL::CHeapPtr<BYTE> byValue;
-      if (szValueName.Allocate(dwMaxValueNameSizeInChars) && byValue.Allocate(dwMaxValueDataSizeInBytes))
+      CAutoHeapAlloc valueName;
+      CAutoHeapAlloc valueData;
+      if (valueName.Allocate(dwMaxValueNameSizeInBytes) && valueData.Allocate(dwMaxValueDataSizeInBytes))
       {
 				bSuccess = TRUE;
 
@@ -1120,15 +1137,17 @@ BOOL CEnumerateSerial::UsingRegistry(CSimpleArray<CString>& ports)
 				DWORD dwType;
 				DWORD dwValueNameSize = dwMaxValueNameSizeInChars;
 				DWORD dwDataSize = dwMaxValueDataSizeInBytes;
-				memset(szValueName.m_pData, 0, dwMaxValueNameSizeInBytes);
-				memset(byValue.m_pData, 0, dwMaxValueDataSizeInBytes);
+				memset(valueName.m_pData, 0, dwMaxValueNameSizeInBytes);
+				memset(valueData.m_pData, 0, dwMaxValueDataSizeInBytes);
+        TCHAR* szValueName = static_cast<TCHAR*>(valueName.m_pData);
+        BYTE* byValue = static_cast<BYTE*>(valueData.m_pData);
 				LONG nEnum = RegEnumValue(hSERIALCOMM, dwIndex, szValueName, &dwValueNameSize, NULL, &dwType, byValue, &dwDataSize);
 				while (nEnum == ERROR_SUCCESS)
 				{
 					//If the value is of the correct type, then add it to the array
 					if (dwType == REG_SZ)
 					{
-						TCHAR* szPort = reinterpret_cast<TCHAR*>(byValue.m_pData);
+						TCHAR* szPort = reinterpret_cast<TCHAR*>(byValue);
           #if defined CENUMERATESERIAL_USE_STL
             ports.push_back(szPort);
           #else
@@ -1139,8 +1158,8 @@ BOOL CEnumerateSerial::UsingRegistry(CSimpleArray<CString>& ports)
 					//Prepare for the next time around
 					dwValueNameSize = dwMaxValueNameSizeInChars;
 					dwDataSize = dwMaxValueDataSizeInBytes;
-					memset(szValueName.m_pData, 0, dwMaxValueNameSizeInBytes);
-					memset(byValue.m_pData, 0, dwMaxValueDataSizeInBytes);
+					memset(valueName.m_pData, 0, dwMaxValueNameSizeInBytes);
+					memset(valueData.m_pData, 0, dwMaxValueDataSizeInBytes);
 					++dwIndex;
 					nEnum = RegEnumValue(hSERIALCOMM, dwIndex, szValueName, &dwValueNameSize, NULL, &dwType, byValue, &dwDataSize);
 				}
