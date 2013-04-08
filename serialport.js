@@ -121,7 +121,9 @@ SerialPort.prototype.open = function (callback) {
   SerialPortBinding.open(this.path, this.options, function (err, fd) {
     self.fd = fd;
     if (err) {
-      return self.emit('error', err);
+      self.emit('error', err);
+      if (callback) { callback(err); }
+      return;
     }
     if (process.platform !== 'win32') {
       self.readStream = fs.createReadStream(self.path, { bufferSize: self.options.bufferSize, fd: fd });
