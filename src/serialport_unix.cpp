@@ -321,7 +321,7 @@ static io_registry_entry_t GetUsbDevice(char* pathName)
 
 static void ExtractUsbInformation(stSerialDevice *serialDevice, IOUSBDeviceInterface  **deviceInterface)
 {
-    kern_return_t kernResult = KERN_FAILURE;
+    kern_return_t kernResult;
     UInt32 locationID;
     kernResult = (*deviceInterface)->GetLocationID(deviceInterface, &locationID);
     if (KERN_SUCCESS == kernResult)
@@ -346,11 +346,11 @@ static void ExtractUsbInformation(stSerialDevice *serialDevice, IOUSBDeviceInter
 
 static stDeviceListItem* GetSerialDevices()
 {
-    kern_return_t kernResult = KERN_FAILURE;
+    kern_return_t kernResult;
     io_iterator_t serialPortIterator;
     char bsdPath[MAXPATHLEN];
     
-    kernResult = FindModems(&serialPortIterator);
+    FindModems(&serialPortIterator);
     
     io_service_t modemService;
     kernResult = KERN_FAILURE;

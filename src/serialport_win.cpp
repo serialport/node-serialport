@@ -211,7 +211,7 @@ void EIO_WatchPort(uv_work_t* req) {
 }
 
 bool IsClosingHandle(int fd) {
-  for(std::list<int>::iterator it=g_closingHandles.begin(); it!=g_closingHandles.end(); it++) {
+  for(std::list<int>::iterator it=g_closingHandles.begin(); it!=g_closingHandles.end(); ++it) {
     if(fd == *it) {
       g_closingHandles.remove(fd);
       return true;
@@ -401,7 +401,7 @@ void EIO_List(uv_work_t* req) {
       char comname[64] = { 0 };
       sprintf(comname, "COM%u", ports[i]);
       bool bFound = false;
-      for (std::list<ListResultItem*>::iterator ri = data->results.begin(); ri != data->results.end(); ri++)
+      for (std::list<ListResultItem*>::iterator ri = data->results.begin(); ri != data->results.end(); ++ri)
       {
         if (stricmp((*ri)->comName.c_str(), comname) == 0)
         {
