@@ -853,12 +853,11 @@ inline const Type& SSMAX(const Type& arg1, const Type& arg2)
 		{
 			PCSTR pNextSrcA			= pSrcA;
 			PWSTR pNextDstW			= pDstW;
-			SSCodeCvt::result res	= SSCodeCvt::ok;
 			const SSCodeCvt& conv	= SS_USE_FACET(loc, SSCodeCvt);
 			SSCodeCvt::state_type st= { 0 };
-			res						= conv.in(st,
-										pSrcA, pSrcA + nSrc, pNextSrcA,
-										pDstW, pDstW + nDst, pNextDstW);
+			SSCodeCvt::result res	= conv.in(st,
+                                      pSrcA, pSrcA + nSrc, pNextSrcA,
+                                      pDstW, pDstW + nDst, pNextDstW);
 
 			ASSERT(SSCodeCvt::ok == res);
 			ASSERT(SSCodeCvt::error != res);
@@ -892,12 +891,11 @@ inline const Type& SSMAX(const Type& arg1, const Type& arg2)
 		{
 			PSTR pNextDstA			= pDstA;
 			PCWSTR pNextSrcW		= pSrcW;
-			SSCodeCvt::result res	= SSCodeCvt::ok;
 			const SSCodeCvt& conv	= SS_USE_FACET(loc, SSCodeCvt);
 			SSCodeCvt::state_type st= { 0 };
-			res						= conv.out(st,
-										pSrcW, pSrcW + nSrc, pNextSrcW,
-										pDstA, pDstA + nDst, pNextDstA);
+			SSCodeCvt::result res	= conv.out(st,
+                                       pSrcW, pSrcW + nSrc, pNextSrcW,
+                                       pDstA, pDstA + nDst, pNextDstA);
 
 			ASSERT(SSCodeCvt::error != res);
 			ASSERT(SSCodeCvt::ok == res);	// strict, comment out for sanity
@@ -3478,7 +3476,7 @@ public:
 	{
 		int nReplaced	= 0;
 
-		for ( MYITER iter=this->begin(); iter != this->end(); iter++ )
+		for ( MYITER iter=this->begin(); iter != this->end(); ++iter )
 		{
 			if ( *iter == chOld )
 			{
