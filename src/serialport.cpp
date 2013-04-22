@@ -227,7 +227,7 @@ void EIO_AfterList(uv_work_t* req) {
   } else {
     v8::Local<v8::Array> results = v8::Array::New();
     int i = 0;
-    for(std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); it++, i++) {
+    for(std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it, i++) {
       v8::Local<v8::Object> item = v8::Object::New();
       item->Set(v8::String::New("comName"), v8::String::New((*it)->comName.c_str()));
       item->Set(v8::String::New("manufacturer"), v8::String::New((*it)->manufacturer.c_str()));
@@ -244,7 +244,7 @@ void EIO_AfterList(uv_work_t* req) {
   v8::Function::Cast(*data->callback)->Call(v8::Context::GetCurrent()->Global(), 2, argv);
 
   data->callback.Dispose();
-  for(std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); it++) {
+  for(std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it) {
     delete *it;
   }
   delete data;

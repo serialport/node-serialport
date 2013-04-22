@@ -486,7 +486,7 @@ static HRESULT TraverseSubObjects(IDispatch ** ppDisp, LPWSTR * lpszMember, va_l
 		szTemp = szSeperator + 1;
 
 	}
-	while ( (szSeperator = wcschr(szTemp, L'.') ) != NULL);
+	while ( (wcschr(szTemp, L'.') ) != NULL);
 
 	*lpszMember = szTemp;
 
