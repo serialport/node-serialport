@@ -55,7 +55,7 @@ This assumes you have everything on your system necessary to compile ANY native 
 
 ### Windows:
 
-Ensure you have Visual Studio 2010+ (Express is fine) installed.
+Ensure you have Visual Studio 2010+ (Express is fine) installed. If you are hacking on an Arduino, be sure to install [the drivers](http://arduino.cc/en/Main/Software).
 
 ### Mac OS X:
 
