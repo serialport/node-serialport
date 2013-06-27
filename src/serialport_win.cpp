@@ -1,4 +1,3 @@
-
 #include "serialport.h"
 #include <list>
 #include "win/disphelper.h"
@@ -278,7 +277,7 @@ void EIO_Write(uv_work_t* req) {
 
   // Start write operation - synchrounous or asynchronous
   DWORD bytesWrittenSync = 0;
-  if(!WriteFile((HANDLE)data->fd, data->bufferData, data->bufferLength, &bytesWrittenSync, &ov)) {
+  if(!WriteFile((HANDLE)data->fd, data->bufferData, static_cast<DWORD>(data->bufferLength), &bytesWrittenSync, &ov)) {
     DWORD lastError = GetLastError();
     if(lastError != ERROR_IO_PENDING) {
       // Write operation error
