@@ -35,16 +35,15 @@
   #include <afxtempl.h>
   #include <atlbase.h>
 #else
-  #include <vector>
-  #include <string>
   #include "stdstring.h"
-  #define CString CStdString
   #define NO_ENUMSERIAL_USING_WMI
 #endif
 
-#include <setupapi.h>
-#include <malloc.h>
-#include <winspool.h>
-#include <Wbemcli.h>
-#include <comdef.h>
-#include <stdio.h>
+#define NO_ENUMSERIAL_USING_ENUMPORTS
+#define NO_ENUMSERIAL_USING_SETUPAPI1
+#define NO_ENUMSERIAL_USING_SETUPAPI2
+#define NO_ENUMSERIAL_USING_WMI
+#define NO_ENUMSERIAL_USING_COMDB
+#define NO_ENUMSERIAL_USING_CREATEFILE
+#define NO_ENUMSERIAL_USING_GETDEFAULTCOMMCONFIG
+#define NO_ENUMSERIAL_USING_REGISTRY
