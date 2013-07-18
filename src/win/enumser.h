@@ -171,9 +171,13 @@ public:
 
 protected:
 //Methods
+#if !defined(NO_ENUMSERIAL_USING_SETUPAPI1) || !defined(NO_ENUMSERIAL_USING_SETUPAPI2)
   static BOOL RegQueryValueString(HKEY kKey, LPCTSTR lpValueName, LPTSTR& pszValue);
   static BOOL QueryRegistryPortName(HKEY hDeviceKey, int& nPort);
+#endif
+#if !defined(NO_ENUMSERIAL_USING_SETUPAPI1) || !defined(NO_ENUMSERIAL_USING_SETUPAPI2) || !defined(NO_ENUMSERIAL_USING_COMDB)
   static HMODULE LoadLibraryFromSystem32(LPCTSTR lpFileName);
+#endif
   static BOOL IsNumeric(LPCSTR pszString, BOOL bIgnoreColon);
   static BOOL IsNumeric(LPCWSTR pszString, BOOL bIgnoreColon);
 };

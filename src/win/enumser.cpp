@@ -1,3 +1,4 @@
+
 /*
 Module : enumser.cpp
 Purpose: Implementation for a class to enumerate the serial ports installed on a PC using a number
@@ -172,6 +173,90 @@ to maintain a single distribution point for the source code.
   typedef BOOL (__stdcall SETUPDIENUMDEVICEINFO)(HDEVINFO, DWORD, PSP_DEVINFO_DATA);
   typedef HDEVINFO (__stdcall SETUPDIGETCLASSDEVS)(LPGUID, LPCTSTR, HWND, DWORD);
   typedef BOOL (__stdcall SETUPDIGETDEVICEREGISTRYPROPERTY)(HDEVINFO, PSP_DEVINFO_DATA, DWORD, PDWORD, PBYTE, DWORD, PDWORD);
+
+    BOOL CEnumerateSerial::QueryRegistryPortName(HKEY hDeviceKey, int& nPort)
+    {
+      //What will be the return value from the method (assume the worst)
+      BOOL bAdded = FALSE;
+
+      //Read in the name of the port
+      LPTSTR pszPortName = NULL;
+      if (RegQueryValueString(hDeviceKey, _T("PortName"), pszPortName))
+      {
+        //If it looks like "COMX" then
+        //add it to the array which will be returned
+        size_t nLen = _tcslen(pszPortName);
+        if (nLen > 3)
+        {
+          if ((_tcsnicmp(pszPortName, _T("COM"), 3) == 0) && IsNumeric((pszPortName + 3), FALSE))
+          {
+            //Work out the port number
+            nPort = _ttoi(pszPortName + 3);
+
+            bAdded = TRUE;
+          }
+        }
+        LocalFree(pszPortName);
+      }
+
+      return bAdded;
+    }
+
+    BOOL CEnumerateSerial::RegQueryValueString(HKEY kKey, LPCTSTR lpValueName, LPTSTR& pszValue)
+    {
+      //Initialize the output parameter
+      pszValue = NULL;
+
+      //First query for the size of the registry value 
+      DWORD dwType = 0;
+      DWORD dwDataSize = 0;
+      LONG nError = RegQueryValueEx(kKey, lpValueName, NULL, &dwType, NULL, &dwDataSize);
+      if (nError != ERROR_SUCCESS)
+      {
+        SetLastError(nError);
+        return FALSE;
+      }
+
+      //Ensure the value is a string
+      if (dwType != REG_SZ)
+      {
+        SetLastError(ERROR_INVALID_DATA);
+        return FALSE;
+      }
+
+      //Allocate enough bytes for the return value
+      DWORD dwAllocatedSize = dwDataSize + sizeof(TCHAR); //+sizeof(TCHAR) is to allow us to NULL terminate the data if it is not null terminated in the registry
+      pszValue = reinterpret_cast<LPTSTR>(LocalAlloc(LMEM_FIXED, dwAllocatedSize)); 
+      if (pszValue == NULL)
+        return FALSE;
+
+      //Recall RegQueryValueEx to return the data
+      pszValue[0] = _T('\0');
+      DWORD dwReturnedSize = dwAllocatedSize;
+      nError = RegQueryValueEx(kKey, lpValueName, NULL, &dwType, reinterpret_cast<LPBYTE>(pszValue), &dwReturnedSize);
+      if (nError != ERROR_SUCCESS)
+      {
+        LocalFree(pszValue);
+        pszValue = NULL;
+        SetLastError(nError);
+        return FALSE;
+      }
+
+      //Handle the case where the data just returned is the same size as the allocated size. This could occur where the data
+      //has been updated in the registry with a non null terminator between the two calls to ReqQueryValueEx above. Rather than
+      //return a potentially non-null terminated block of data, just fail the method call
+      if (dwReturnedSize >= dwAllocatedSize)
+      {
+        SetLastError(ERROR_INVALID_DATA);
+        return FALSE;
+      }
+
+      //NULL terminate the data if it was not returned NULL terminated because it is not stored null terminated in the registry
+      if (pszValue[dwReturnedSize/sizeof(TCHAR) - 1] != _T('\0'))
+        pszValue[dwReturnedSize/sizeof(TCHAR)] = _T('\0');
+
+      return TRUE;
+    }
 #endif  
 
 #ifndef NO_ENUMSERIAL_USING_ENUMPORTS
@@ -276,6 +361,7 @@ BOOL CEnumerateSerial::UsingCreateFile(CSimpleArray<UINT>& ports)
 }
 #endif
 
+#if !defined(NO_ENUMSERIAL_USING_SETUPAPI1) || !defined(NO_ENUMSERIAL_USING_SETUPAPI2) || !defined(NO_ENUMSERIAL_USING_COMDB)
 HMODULE CEnumerateSerial::LoadLibraryFromSystem32(LPCTSTR lpFileName)
 {
   //Get the Windows System32 directory
@@ -289,90 +375,7 @@ HMODULE CEnumerateSerial::LoadLibraryFromSystem32(LPCTSTR lpFileName)
   _tcscat_s(szFullPath, _countof(szFullPath), lpFileName);
   return LoadLibrary(szFullPath);
 }
-
-BOOL CEnumerateSerial::RegQueryValueString(HKEY kKey, LPCTSTR lpValueName, LPTSTR& pszValue)
-{
-  //Initialize the output parameter
-  pszValue = NULL;
-
-  //First query for the size of the registry value 
-  DWORD dwType = 0;
-  DWORD dwDataSize = 0;
-  LONG nError = RegQueryValueEx(kKey, lpValueName, NULL, &dwType, NULL, &dwDataSize);
-  if (nError != ERROR_SUCCESS)
-  {
-    SetLastError(nError);
-    return FALSE;
-  }
-
-  //Ensure the value is a string
-  if (dwType != REG_SZ)
-  {
-    SetLastError(ERROR_INVALID_DATA);
-    return FALSE;
-  }
-
-  //Allocate enough bytes for the return value
-  DWORD dwAllocatedSize = dwDataSize + sizeof(TCHAR); //+sizeof(TCHAR) is to allow us to NULL terminate the data if it is not null terminated in the registry
-  pszValue = reinterpret_cast<LPTSTR>(LocalAlloc(LMEM_FIXED, dwAllocatedSize)); 
-  if (pszValue == NULL)
-    return FALSE;
-
-  //Recall RegQueryValueEx to return the data
-  pszValue[0] = _T('\0');
-  DWORD dwReturnedSize = dwAllocatedSize;
-  nError = RegQueryValueEx(kKey, lpValueName, NULL, &dwType, reinterpret_cast<LPBYTE>(pszValue), &dwReturnedSize);
-  if (nError != ERROR_SUCCESS)
-  {
-    LocalFree(pszValue);
-    pszValue = NULL;
-    SetLastError(nError);
-    return FALSE;
-  }
-
-  //Handle the case where the data just returned is the same size as the allocated size. This could occur where the data
-  //has been updated in the registry with a non null terminator between the two calls to ReqQueryValueEx above. Rather than
-  //return a potentially non-null terminated block of data, just fail the method call
-  if (dwReturnedSize >= dwAllocatedSize)
-  {
-    SetLastError(ERROR_INVALID_DATA);
-    return FALSE;
-  }
-
-  //NULL terminate the data if it was not returned NULL terminated because it is not stored null terminated in the registry
-  if (pszValue[dwReturnedSize/sizeof(TCHAR) - 1] != _T('\0'))
-    pszValue[dwReturnedSize/sizeof(TCHAR)] = _T('\0');
-
-  return TRUE;
-}
-
-BOOL CEnumerateSerial::QueryRegistryPortName(HKEY hDeviceKey, int& nPort)
-{
-  //What will be the return value from the method (assume the worst)
-  BOOL bAdded = FALSE;
-
-  //Read in the name of the port
-  LPTSTR pszPortName = NULL;
-  if (RegQueryValueString(hDeviceKey, _T("PortName"), pszPortName))
-  {
-    //If it looks like "COMX" then
-    //add it to the array which will be returned
-    size_t nLen = _tcslen(pszPortName);
-    if (nLen > 3)
-    {
-      if ((_tcsnicmp(pszPortName, _T("COM"), 3) == 0) && IsNumeric((pszPortName + 3), FALSE))
-      {
-        //Work out the port number
-        nPort = _ttoi(pszPortName + 3);
-
-        bAdded = TRUE;
-      }
-    }
-    LocalFree(pszPortName);
-  }
-
-  return bAdded;
-}
+#endif
 
 BOOL CEnumerateSerial::IsNumeric(LPCSTR pszString, BOOL bIgnoreColon)
 {
