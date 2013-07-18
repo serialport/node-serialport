@@ -354,7 +354,7 @@ void EIO_List(uv_work_t* req) {
     DISPATCH_OBJ(colDevices);
 
     dhInitialize(TRUE);
-    dhToggleExceptions(TRUE);
+    dhToggleExceptions(FALSE);
    
     dhGetObject(L"winmgmts:{impersonationLevel=impersonate}!\\\\.\\root\\cimv2", NULL, &wmiSvc);
     dhGetValue(L"%o", &colDevices, wmiSvc, L".ExecQuery(%S)", L"Select * from Win32_PnPEntity");
@@ -369,7 +369,7 @@ void EIO_List(uv_work_t* req) {
       dhGetValue(L"%s", &name,  objDevice, L".Name");
       dhGetValue(L"%s", &pnpid, objDevice, L".PnPDeviceID");
                                                   
-      if( (match = strstr( name, "(COM" )) != NULL ) { // look for "(COM23)"
+      if( name != NULL && ((match = strstr( name, "(COM" )) != NULL) ) { // look for "(COM23)"
         // 'Manufacturuer' can be null, so only get it if we need it
         dhGetValue(L"%s", &manu, objDevice,  L".Manufacturer");
         port_count++;
