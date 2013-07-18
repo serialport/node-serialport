@@ -83,9 +83,8 @@ function SerialPort (path, options, openImmediately) {
   options.parity = options.parity || 'none';
   options.stopBits = options.stopBits || options.stopbits || 1;
   options.bufferSize = options.bufferSize || options.buffersize || 100;
-  if (!('flowControl' in options)) {
-    options.flowControl = false;
-  }
+  options.flowControl = options.flowControl || options.flowcontrol || false;
+
   options.dataCallback = function (data) {
     options.parser(self, data);
   };
