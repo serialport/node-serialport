@@ -218,7 +218,7 @@ void EIO_Open(uv_work_t* req) {
 #if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
     speed_t speed = data->baudRate;
     if (ioctl(fd,  IOSSIOSPEED, &speed) == -1) {
-      snprintf(data->errorString, sizeof(data->errorString), "Error %s calling ioctl( ..., IOSSIOSPEED, ... )\n", strerror(errno) );
+      snprintf(data->errorString, sizeof(data->errorString), "Error %s calling ioctl( ..., IOSSIOSPEED, ... )", strerror(errno) );
     }
 #endif 
 
@@ -230,7 +230,7 @@ void EIO_Write(uv_work_t* req) {
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
 
   if ((data->result = write(data->fd, data->bufferData, data->bufferLength)) == -1) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error %s calling write(...)\n", strerror(errno) );
+    snprintf(data->errorString, sizeof(data->errorString), "Error %s calling write(...)", strerror(errno) );
   }
 }
 
