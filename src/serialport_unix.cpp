@@ -231,9 +231,11 @@ void EIO_Write(uv_work_t* req) {
   QueuedWrite* queuedWrite = static_cast<QueuedWrite*>(req->data);
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
 
-  int bytesWritten = write(data->fd, data->bufferData, data->bufferLength);
+  data->result = write(data->fd, data->bufferData, data->bufferLength);
+  if ( data->result == -1 ) {
+    printf( "Error %d calling write(...)\n", errno );
+  }
 
-  data->result = bytesWritten;
 }
 
 void EIO_Close(uv_work_t* req) {
