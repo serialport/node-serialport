@@ -229,7 +229,7 @@ void EIO_Write(uv_work_t* req) {
   QueuedWrite* queuedWrite = static_cast<QueuedWrite*>(req->data);
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
 
-  if (data->result = write(data->fd, data->bufferData, data->bufferLength) == -1) {
+  if ((data->result = write(data->fd, data->bufferData, data->bufferLength)) == -1) {
     sprintf(data->errorString, "Error %d calling write(...)\n", errno );
   }
 }
