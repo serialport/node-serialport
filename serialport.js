@@ -22,6 +22,8 @@ var parsers = {
   raw: function (emitter, buffer) {
     emitter.emit("data", buffer);
   },
+  //encoding: ascii utf8 utf16le ucs2 base64 binary hex
+  //More: http://nodejs.org/api/buffer.html#buffer_buffer
   readline: function (delimiter, encoding) {
     if (typeof delimiter === "undefined" || delimiter === null) { delimiter = "\r"; }
     if (typeof encoding  === "undefined" || encoding  === null) { encoding  = "utf8"; }
