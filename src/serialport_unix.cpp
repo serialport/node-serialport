@@ -157,7 +157,7 @@ void EIO_Open(uv_work_t* req) {
   options.c_cflag |= dataBits;
 
   // Specify flow control
-  options.c_cflag &= ~flowControl;
+  options.c_cflag &= ~CRTSCTS;
   options.c_cflag |= flowControl;
 
   switch (data->parity)
