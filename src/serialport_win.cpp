@@ -18,19 +18,19 @@ int bufferSize;
 void ErrorCodeToString(const char* prefix, int errorCode, char *errorStr) {
   switch(errorCode) {
   case ERROR_FILE_NOT_FOUND:
-    sprintf(errorStr, "%s: File not found", prefix);
+    _snprintf(errorStr, sizeof(errorStr), "%s: File not found", prefix);
     break;
   case ERROR_INVALID_HANDLE:
-    sprintf(errorStr, "%s: Invalid handle", prefix);
+    _snprintf(errorStr, sizeof(errorStr), "%s: Invalid handle", prefix);
     break;
   case ERROR_ACCESS_DENIED:
-    sprintf(errorStr, "%s: Access denied", prefix);
+    _snprintf(errorStr, sizeof(errorStr), "%s: Access denied", prefix);
     break;
   case ERROR_OPERATION_ABORTED:
-    sprintf(errorStr, "%s: operation aborted", prefix);
+    _snprintf(errorStr, sizeof(errorStr), "%s: operation aborted", prefix);
     break;
   default:
-    sprintf(errorStr, "%s: Unknown error code %d", prefix, errorCode);
+    _snprintf(errorStr, sizeof(errorStr), "%s: Unknown error code %d", prefix, errorCode);
     break;
   }
 }
@@ -49,7 +49,7 @@ void EIO_Open(uv_work_t* req) {
   if (file == INVALID_HANDLE_VALUE) {
     DWORD errorCode = GetLastError();
     char temp[100];
-    sprintf(temp, "Opening %s", data->path);
+    _snprintf(temp, sizeof(temp), "Opening %s", data->path);
     ErrorCodeToString(temp, errorCode, data->errorString);
     return;
   }
@@ -398,7 +398,7 @@ void EIO_List(uv_work_t* req) {
     for (size_t i = 0; i < ports.size(); i++)
     {
       char comname[64] = { 0 };
-      sprintf(comname, "COM%u", ports[i]);
+      _snprintf(comname, sizeof(comname), "COM%u", ports[i]);
       bool bFound = false;
       for (std::list<ListResultItem*>::iterator ri = data->results.begin(); ri != data->results.end(); ++ri)
       {

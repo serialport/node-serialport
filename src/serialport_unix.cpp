@@ -108,19 +108,19 @@ void EIO_Open(uv_work_t* req) {
 #if not ( defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4) )
   int baudRate = ToBaudConstant(data->baudRate);
   if(baudRate == -1) {
-    sprintf(data->errorString, "Invalid baud rate setting %d", data->baudRate);
+    snprintf(data->errorString, sizeof(data->errorString), "Invalid baud rate setting %d", data->baudRate);
     return;
   }
 #endif
   int dataBits = ToDataBitsConstant(data->dataBits);
   if(dataBits == -1) {
-    sprintf(data->errorString, "Invalid data bits setting %d", data->dataBits);
+    snprintf(data->errorString, sizeof(data->errorString), "Invalid data bits setting %d", data->dataBits);
     return;
   }
 
   int flowControl = ToFlowControlConstant(data->flowControl);
   if(flowControl == -1) {
-    sprintf(data->errorString, "Invalid flow control setting %d", data->flowControl);
+    snprintf(data->errorString, sizeof(data->errorString), "Invalid flow control setting %d", data->flowControl);
     return;
   }
 
@@ -128,7 +128,7 @@ void EIO_Open(uv_work_t* req) {
   int fd = open(data->path, flags);
 
   if (fd == -1) {
-    sprintf(data->errorString, "Cannot open %s", data->path);
+    snprintf(data->errorString, sizeof(data->errorString), "Cannot open %s", data->path);
     return;
   }
 
@@ -183,7 +183,7 @@ void EIO_Open(uv_work_t* req) {
     options.c_cflag |= CS7;
     break;
   default:
-    sprintf(data->errorString, "Invalid parity setting %d", data->parity);
+    snprintf(data->errorString, sizeof(data->errorString), "Invalid parity setting %d", data->parity);
     close(fd);
     return;
   }
@@ -196,7 +196,7 @@ void EIO_Open(uv_work_t* req) {
     options.c_cflag |= CSTOPB;
     break;
   default:
-    sprintf(data->errorString, "Invalid stop bits setting %d", data->stopBits);
+    snprintf(data->errorString, sizeof(data->errorString), "Invalid stop bits setting %d", data->stopBits);
     close(fd);
     return;
   }
@@ -217,12 +217,10 @@ void EIO_Open(uv_work_t* req) {
 
 #if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
     speed_t speed = data->baudRate;
-    if ( ioctl( fd,  IOSSIOSPEED, &speed ) == -1 )
-    {
-      printf( "Error %d calling ioctl( ..., IOSSIOSPEED, ... )\n", errno );
+    if (ioctl(fd,  IOSSIOSPEED, &speed) == -1) {
+      snprintf(data->errorString, sizeof(data->errorString), "Error %s calling ioctl( ..., IOSSIOSPEED, ... )", strerror(errno) );
     }
 #endif 
-
 
   data->result = fd;
 }
@@ -231,9 +229,9 @@ void EIO_Write(uv_work_t* req) {
   QueuedWrite* queuedWrite = static_cast<QueuedWrite*>(req->data);
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
 
-  int bytesWritten = write(data->fd, data->bufferData, data->bufferLength);
-
-  data->result = bytesWritten;
+  if ((data->result = write(data->fd, data->bufferData, data->bufferLength)) == -1) {
+    snprintf(data->errorString, sizeof(data->errorString), "Error %s calling write(...)", strerror(errno) );
+  }
 }
 
 void EIO_Close(uv_work_t* req) {
