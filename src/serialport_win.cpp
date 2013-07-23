@@ -139,9 +139,9 @@ public:
   char errorString[1000];
   DWORD errorCode;
   bool disconnected;
-  v8::Persistent<v8::Value> dataCallback;
-  v8::Persistent<v8::Value> errorCallback;
-  v8::Persistent<v8::Value> disconnectedCallback;
+  NanCallback *dataCallback;
+  NanCallback *errorCallback;
+  NanCallback *disconnectedCallback;
 };
 
 void EIO_WatchPort(uv_work_t* req) {
@@ -222,30 +222,28 @@ bool IsClosingHandle(int fd) {
 void EIO_AfterWatchPort(uv_work_t* req) {
   WatchPortBaton* data = static_cast<WatchPortBaton*>(req->data);
   if(data->disconnected) {
-    v8::Handle<v8::Value> argv[1];
-    v8::Function::Cast(*data->disconnectedCallback)->Call(v8::Context::GetCurrent()->Global(), 0, argv);
+    v8::Local<v8::Value> argv[1];
+    data->disconnectedCallback->Call(0, argv);
     goto cleanup;
   }
 
   if(data->bytesRead > 0) {
-    v8::Handle<v8::Value> argv[1];
-    argv[0] = node::Buffer::New(data->buffer, data->bytesRead)->handle_;
-    v8::Function::Cast(*data->dataCallback)->Call(v8::Context::GetCurrent()->Global(), 1, argv);
+    v8::Local<v8::Value> argv[1];
+    argv[0] = NanNewBufferHandle(data->buffer, data->bytesRead);
+    data->dataCallback->Call(1, argv);
   } else if(data->errorCode > 0) {
     if(data->errorCode == ERROR_INVALID_HANDLE && IsClosingHandle((int)data->fd)) {
       goto cleanup;
     } else {
-      v8::Handle<v8::Value> argv[1];
+      v8::Local<v8::Value> argv[1];
       argv[0] = v8::Exception::Error(v8::String::New(data->errorString));
-      v8::Function::Cast(*data->errorCallback)->Call(v8::Context::GetCurrent()->Global(), 1, argv);
+      data->errorCallback->Call(1, argv);
       Sleep(100); // prevent the errors from occurring too fast
     }
   }
   AfterOpenSuccess((int)data->fd, data->dataCallback, data->disconnectedCallback, data->errorCallback);
 
 cleanup:
-  data->dataCallback.Dispose();
-  data->errorCallback.Dispose();
   delete data;
   delete req;
 }
