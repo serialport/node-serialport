@@ -11,6 +11,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "nan.h"
+
+#if (NODE_MODULE_VERSION > 0x000B)
+#include "ngx-queue.h"
+#endif
+
 enum SerialPortParity {
   SERIALPORT_PARITY_NONE = 1,
   SERIALPORT_PARITY_MARK = 2,
@@ -25,24 +31,24 @@ enum SerialPortStopBits {
   SERIALPORT_STOPBITS_TWO = 3
 };
 
-v8::Handle<v8::Value> List(const v8::Arguments& args);
+NAN_METHOD(List);
 void EIO_List(uv_work_t* req);
 void EIO_AfterList(uv_work_t* req);
 
-v8::Handle<v8::Value> Open(const v8::Arguments& args);
+NAN_METHOD(Open);
 void EIO_Open(uv_work_t* req);
 void EIO_AfterOpen(uv_work_t* req);
-void AfterOpenSuccess(int fd, v8::Handle<v8::Value> dataCallback, v8::Handle<v8::Value> disconnectedCallback, v8::Handle<v8::Value> errorCallback);
+void AfterOpenSuccess(int fd, NanCallback *dataCallback, NanCallback *disconnectedCallback, NanCallback *errorCallback);
 
-v8::Handle<v8::Value> Write(const v8::Arguments& args);
+NAN_METHOD(Write);
 void EIO_Write(uv_work_t* req);
 void EIO_AfterWrite(uv_work_t* req);
 
-v8::Handle<v8::Value> Close(const v8::Arguments& args);
+NAN_METHOD(Close);
 void EIO_Close(uv_work_t* req);
 void EIO_AfterClose(uv_work_t* req);
 
-v8::Handle<v8::Value> Flush(const v8::Arguments& args);
+NAN_METHOD(Flush);
 void EIO_Flush(uv_work_t* req);
 void EIO_AfterFlush(uv_work_t* req);
 
@@ -52,10 +58,10 @@ SerialPortStopBits ToStopBitEnum(double stopBits);
 struct OpenBaton {
 public:
   char path[1024];
-  v8::Persistent<v8::Value> callback;
-  v8::Persistent<v8::Value> dataCallback;
-  v8::Persistent<v8::Value> disconnectedCallback;
-  v8::Persistent<v8::Value> errorCallback;
+  NanCallback *callback;
+  NanCallback *dataCallback;
+  NanCallback *disconnectedCallback;
+  NanCallback *errorCallback;
   int result;
   int baudRate;
   int dataBits;
@@ -71,8 +77,8 @@ public:
   int fd;
   char* bufferData;
   size_t bufferLength;
-  v8::Persistent<v8::Object> buffer;
-  v8::Persistent<v8::Value> callback;
+  v8::Local<v8::Object> buffer;
+  NanCallback *callback;
   int result;
   char errorString[1024];
 };
@@ -87,7 +93,7 @@ public:
 struct CloseBaton {
 public:
   int fd;
-  v8::Persistent<v8::Value> callback;
+  NanCallback *callback;
   char errorString[1024];
 };
 
@@ -104,7 +110,7 @@ public:
 
 struct ListBaton {
 public:
-  v8::Persistent<v8::Value> callback;
+  NanCallback *callback;
   std::list<ListResultItem*> results;
   char errorString[1024];
 };
@@ -112,7 +118,7 @@ public:
 struct FlushBaton {
 public:
   int fd;
-  v8::Persistent<v8::Value> callback;
+  NanCallback *callback;
   int result;
   char errorString[1024];
 };

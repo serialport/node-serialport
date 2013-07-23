@@ -250,13 +250,13 @@ cleanup:
   delete req;
 }
 
-void AfterOpenSuccess(int fd, v8::Handle<v8::Value> dataCallback, v8::Handle<v8::Value> disconnectedCallback, v8::Handle<v8::Value> errorCallback) {
+void AfterOpenSuccess(int fd, NanCallback *dataCallback, NanCallback *disconnectedCallback, NanCallback *errorCallback) {
   WatchPortBaton* baton = new WatchPortBaton();
   memset(baton, 0, sizeof(WatchPortBaton));
   baton->fd = (HANDLE)fd;
-  baton->dataCallback = v8::Persistent<v8::Value>::New(dataCallback);
-  baton->errorCallback = v8::Persistent<v8::Value>::New(errorCallback);
-  baton->disconnectedCallback = v8::Persistent<v8::Value>::New(disconnectedCallback);
+  baton->dataCallback = dataCallback;
+  baton->errorCallback = errorCallback;
+  baton->disconnectedCallback = disconnectedCallback;
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
