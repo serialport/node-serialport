@@ -1,6 +1,12 @@
+Version 1.1.3
+-------------
+- Remove ATL dependency on Windows (added Visual Studio Pro requirement)
+- Update build instructions
+- Four small bugfixes
+
 Version 1.0.7
 -------------
-- Guaranteed in-order delivery of messages thanks to Jay Beaver and bnoordhuis
+- Guaranteed in-order delivery of messages thanks to Jay Beavers and bnoordhuis
 
 Version 1.0.6
 -------------
