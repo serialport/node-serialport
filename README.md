@@ -75,7 +75,7 @@ Ensure that you have at a minimum the xCode Command Line Tools installed appropr
 You know what you need for you system, basically your appropriate analog of build-essential. Keep rocking!
 
 
-```Shell
+```
    sudo apt-get install build-essential
    npm install serialport
 ```
@@ -85,23 +85,23 @@ You know what you need for you system, basically your appropriate analog of buil
  * Starting with a a vanilla New Out of the Box Software (NOOBS) Raspbian image (currently tested: 5/25/2013)
  * Log into your Raspberry Pi through whatever means works best and ensure you are on a terminal prompt for the remaining steps. This could be local or through an SSH (or a serial connection if you like).
  * Issue the following commands to ensure you are up to date:
-```Shell
+```
    sudo apt-get update
    sudo apt-get upgrade -y
 ```
  * Download and install node.js:
-```Shell
+```
    wget http://nodejs.org/dist/v0.10.12/node-v0.10.12-linux-arm-pi.tar.gz
    tar xvfz node-v0.10.12-linux-arm-pi.tar.gz
    sudo mv node-v0.10.12-linux-arm-pi /opt/node/
 ```
  * Set up your paths correctly:
-```Shell
+```
    echo 'export PATH="$PATH:/opt/node/bin"' >> ~/.bashrc
    source ~/.bashrc
 ```
  * Install using npm, note this will take a while as it is actually compiling code and that ARM processor is getting a workout.
-```Shell
+```
    npm install serialport
 ```
 
