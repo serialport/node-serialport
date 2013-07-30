@@ -32,6 +32,7 @@ This library is admittedly a base level toolkit for building amazing things with
 * [Arduino controlling popcorn.js](https://gist.github.com/968773) - Controlling a popcorn.js video with an Arduino kit.
 * [Robotic JavaScript](http://jsconf.eu/2010/speaker/livingroombindmotion_function.html) - The first live presentation of the node-serialport code set as presented at JSConf EU 2010.
 * [devicestack](https://github.com/adrai/devicestack) - This module helps you to represent a device and its protocol.
+* [reflecta](https://github.com/jbeavers/reflecta) A communication protocol that combines Arduino Libraries and NodeJS into an integrated system.
 
 For getting started with node-serialport, we recommend you begin with the following articles:
 
@@ -47,24 +48,62 @@ Using node-serialport is pretty easy because it is pretty basic. It provides you
 To Install
 ----------
 
-```
-  npm install serialport
-```
-
 This assumes you have everything on your system necessary to compile ANY native module for Node.js. This may not be the case, though, so please ensure the following are true for your system before filing an issue about "Does not install". For all operatings systems, please ensure you have Python 2.x installed AND not 3.0, node-gyp (what we use to compile) requires Python 2.x.
 
 ### Windows:
 
-Ensure you have Visual Studio 2010+ (Express is fine) installed. If you are hacking on an Arduino, be sure to install [the drivers](http://arduino.cc/en/Main/Software).
+ * Install Windows 7 or Windows 8.
+ * Install [Visual Studio Express 2013 Preview for Windows Desktop](http://www.microsoft.com/visualstudio/eng/2013-downloads#d-2013-express) or [Visual Studio Express 2012 for Windows Desktop](http://www.microsoft.com/visualstudio/eng/products/visual-studio-express-for-windows-desktop).
+ * If you are hacking on an Arduino, be sure to install [the drivers](http://arduino.cc/en/Guide/windows#toc4).
+ * Install [node.js 0.10.x](http://nodejs.org/) matching the bitness (32 or 64) of your operating system.
+ * Install [Python 2.7.5](http://www.python.org/download/releases/2.7.5/) matching the bitness of your operating system.  For any questions, please refer to their [FAQ](http://docs.python.org/2/faq/windows.html). Default settings are perfect.
+ * Open the 'Visual Studio Command Prompt' and add Python to the path.  When installing serialport, you need to tell the build system (known as node-gyp) that you are using a newer compiler by using:
+
+```Batchfile
+   set path=%path%;C:\Python27
+   npm install serialport --msvs_version=2012
+```
+
+This switch works for both Visual Studio Express 2012 and 2013.
 
 ### Mac OS X:
 
-Ensure that you have at a minimum the xCode Command Line Tools installed appropriate for your system configuration. If you recently upgrade OS, it probably removed your installation of Command Line Tools, please verify before submitting a ticket.
+Ensure that you have at a minimum the xCode Command Line Tools installed appropriate for your system configuration. If you recently upgraded the OS, it probably removed your installation of Command Line Tools, please verify before submitting a ticket.
 
-### Linux:
+### Desktop (Debian/Ubuntu) Linux:
 
 You know what you need for you system, basically your appropriate analog of build-essential. Keep rocking!
 
+
+```Shell
+   sudo apt-get install build-essential
+   npm install serialport
+```
+
+### Raspberry Pi Linux:
+
+ * Starting with a a vanilla New Out of the Box Software (NOOBS) Raspbian image (currently tested: 5/25/2013)
+ * Log into your Raspberry Pi through whatever means works best and ensure you are on a terminal prompt for the remaining steps. This could be local or through an SSH (or a serial connection if you like).
+ * Issue the following commands to ensure you are up to date:
+```Shell
+   sudo apt-get update
+   sudo apt-get upgrade -y
+```
+ * Download and install node.js:
+```Shell
+   wget http://nodejs.org/dist/v0.10.12/node-v0.10.12-linux-arm-pi.tar.gz
+   tar xvfz node-v0.10.12-linux-arm-pi.tar.gz
+   sudo mv node-v0.10.12-linux-arm-pi /opt/node/
+```
+ * Set up your paths correctly:
+```Shell
+   echo 'export PATH="$PATH:/opt/node/bin"' >> ~/.bashrc
+   source ~/.bashrc
+```
+ * Install using npm, note this will take a while as it is actually compiling code and that ARM processor is getting a workout.
+```Shell
+   npm install serialport
+```
 
 To Use
 ------
