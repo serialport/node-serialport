@@ -1,4 +1,3 @@
-
 /*
 Module : enumser.cpp
 Purpose: Implementation for a class to enumerate the serial ports installed on a PC using a number
@@ -123,6 +122,8 @@ History: PJN / 23-02-1999 Code now uses QueryDosDevice if running on NT to deter
                           5. Removed ATL usage completely from UsingQueryDevice, UsingSetupAPI2 and UsingEnumPorts.
                           This should allow these methods to support compilers which do not have support for ATL such
                           as VC Express SKUs.
+          PJN /28-07-2013 1. Did some very light cleanup of the code to reduce dependencies when #defining out parts of 
+                          the code. Thanks to Jay Beavers for providing this update.
          
 Copyright (c) 1998 - 2013 by PJ Naughter (Web: www.naughter.com, Email: pjna@naughter.com)
 
@@ -173,90 +174,6 @@ to maintain a single distribution point for the source code.
   typedef BOOL (__stdcall SETUPDIENUMDEVICEINFO)(HDEVINFO, DWORD, PSP_DEVINFO_DATA);
   typedef HDEVINFO (__stdcall SETUPDIGETCLASSDEVS)(LPGUID, LPCTSTR, HWND, DWORD);
   typedef BOOL (__stdcall SETUPDIGETDEVICEREGISTRYPROPERTY)(HDEVINFO, PSP_DEVINFO_DATA, DWORD, PDWORD, PBYTE, DWORD, PDWORD);
-
-    BOOL CEnumerateSerial::QueryRegistryPortName(HKEY hDeviceKey, int& nPort)
-    {
-      //What will be the return value from the method (assume the worst)
-      BOOL bAdded = FALSE;
-
-      //Read in the name of the port
-      LPTSTR pszPortName = NULL;
-      if (RegQueryValueString(hDeviceKey, _T("PortName"), pszPortName))
-      {
-        //If it looks like "COMX" then
-        //add it to the array which will be returned
-        size_t nLen = _tcslen(pszPortName);
-        if (nLen > 3)
-        {
-          if ((_tcsnicmp(pszPortName, _T("COM"), 3) == 0) && IsNumeric((pszPortName + 3), FALSE))
-          {
-            //Work out the port number
-            nPort = _ttoi(pszPortName + 3);
-
-            bAdded = TRUE;
-          }
-        }
-        LocalFree(pszPortName);
-      }
-
-      return bAdded;
-    }
-
-    BOOL CEnumerateSerial::RegQueryValueString(HKEY kKey, LPCTSTR lpValueName, LPTSTR& pszValue)
-    {
-      //Initialize the output parameter
-      pszValue = NULL;
-
-      //First query for the size of the registry value 
-      DWORD dwType = 0;
-      DWORD dwDataSize = 0;
-      LONG nError = RegQueryValueEx(kKey, lpValueName, NULL, &dwType, NULL, &dwDataSize);
-      if (nError != ERROR_SUCCESS)
-      {
-        SetLastError(nError);
-        return FALSE;
-      }
-
-      //Ensure the value is a string
-      if (dwType != REG_SZ)
-      {
-        SetLastError(ERROR_INVALID_DATA);
-        return FALSE;
-      }
-
-      //Allocate enough bytes for the return value
-      DWORD dwAllocatedSize = dwDataSize + sizeof(TCHAR); //+sizeof(TCHAR) is to allow us to NULL terminate the data if it is not null terminated in the registry
-      pszValue = reinterpret_cast<LPTSTR>(LocalAlloc(LMEM_FIXED, dwAllocatedSize)); 
-      if (pszValue == NULL)
-        return FALSE;
-
-      //Recall RegQueryValueEx to return the data
-      pszValue[0] = _T('\0');
-      DWORD dwReturnedSize = dwAllocatedSize;
-      nError = RegQueryValueEx(kKey, lpValueName, NULL, &dwType, reinterpret_cast<LPBYTE>(pszValue), &dwReturnedSize);
-      if (nError != ERROR_SUCCESS)
-      {
-        LocalFree(pszValue);
-        pszValue = NULL;
-        SetLastError(nError);
-        return FALSE;
-      }
-
-      //Handle the case where the data just returned is the same size as the allocated size. This could occur where the data
-      //has been updated in the registry with a non null terminator between the two calls to ReqQueryValueEx above. Rather than
-      //return a potentially non-null terminated block of data, just fail the method call
-      if (dwReturnedSize >= dwAllocatedSize)
-      {
-        SetLastError(ERROR_INVALID_DATA);
-        return FALSE;
-      }
-
-      //NULL terminate the data if it was not returned NULL terminated because it is not stored null terminated in the registry
-      if (pszValue[dwReturnedSize/sizeof(TCHAR) - 1] != _T('\0'))
-        pszValue[dwReturnedSize/sizeof(TCHAR)] = _T('\0');
-
-      return TRUE;
-    }
 #endif  
 
 #ifndef NO_ENUMSERIAL_USING_ENUMPORTS
@@ -376,6 +293,92 @@ HMODULE CEnumerateSerial::LoadLibraryFromSystem32(LPCTSTR lpFileName)
   return LoadLibrary(szFullPath);
 }
 #endif
+
+#if !defined(NO_ENUMSERIAL_USING_SETUPAPI1) || !defined(NO_ENUMSERIAL_USING_SETUPAPI2)
+BOOL CEnumerateSerial::RegQueryValueString(HKEY kKey, LPCTSTR lpValueName, LPTSTR& pszValue)
+{
+  //Initialize the output parameter
+  pszValue = NULL;
+
+  //First query for the size of the registry value 
+  DWORD dwType = 0;
+  DWORD dwDataSize = 0;
+  LONG nError = RegQueryValueEx(kKey, lpValueName, NULL, &dwType, NULL, &dwDataSize);
+  if (nError != ERROR_SUCCESS)
+  {
+    SetLastError(nError);
+    return FALSE;
+  }
+
+  //Ensure the value is a string
+  if (dwType != REG_SZ)
+  {
+    SetLastError(ERROR_INVALID_DATA);
+    return FALSE;
+  }
+
+  //Allocate enough bytes for the return value
+  DWORD dwAllocatedSize = dwDataSize + sizeof(TCHAR); //+sizeof(TCHAR) is to allow us to NULL terminate the data if it is not null terminated in the registry
+  pszValue = reinterpret_cast<LPTSTR>(LocalAlloc(LMEM_FIXED, dwAllocatedSize)); 
+  if (pszValue == NULL)
+    return FALSE;
+
+  //Recall RegQueryValueEx to return the data
+  pszValue[0] = _T('\0');
+  DWORD dwReturnedSize = dwAllocatedSize;
+  nError = RegQueryValueEx(kKey, lpValueName, NULL, &dwType, reinterpret_cast<LPBYTE>(pszValue), &dwReturnedSize);
+  if (nError != ERROR_SUCCESS)
+  {
+    LocalFree(pszValue);
+    pszValue = NULL;
+    SetLastError(nError);
+    return FALSE;
+  }
+
+  //Handle the case where the data just returned is the same size as the allocated size. This could occur where the data
+  //has been updated in the registry with a non null terminator between the two calls to ReqQueryValueEx above. Rather than
+  //return a potentially non-null terminated block of data, just fail the method call
+  if (dwReturnedSize >= dwAllocatedSize)
+  {
+    SetLastError(ERROR_INVALID_DATA);
+    return FALSE;
+  }
+
+  //NULL terminate the data if it was not returned NULL terminated because it is not stored null terminated in the registry
+  if (pszValue[dwReturnedSize/sizeof(TCHAR) - 1] != _T('\0'))
+    pszValue[dwReturnedSize/sizeof(TCHAR)] = _T('\0');
+
+  return TRUE;
+}
+
+BOOL CEnumerateSerial::QueryRegistryPortName(HKEY hDeviceKey, int& nPort)
+{
+  //What will be the return value from the method (assume the worst)
+  BOOL bAdded = FALSE;
+
+  //Read in the name of the port
+  LPTSTR pszPortName = NULL;
+  if (RegQueryValueString(hDeviceKey, _T("PortName"), pszPortName))
+  {
+    //If it looks like "COMX" then
+    //add it to the array which will be returned
+    size_t nLen = _tcslen(pszPortName);
+    if (nLen > 3)
+    {
+      if ((_tcsnicmp(pszPortName, _T("COM"), 3) == 0) && IsNumeric((pszPortName + 3), FALSE))
+      {
+        //Work out the port number
+        nPort = _ttoi(pszPortName + 3);
+
+        bAdded = TRUE;
+      }
+    }
+    LocalFree(pszPortName);
+  }
+
+  return bAdded;
+}
+#endif //#if !defined(NO_ENUMSERIAL_USING_SETUPAPI1) || !defined(NO_ENUMSERIAL_USING_SETUPAPI2)
 
 BOOL CEnumerateSerial::IsNumeric(LPCSTR pszString, BOOL bIgnoreColon)
 {
@@ -605,7 +608,7 @@ BOOL CEnumerateSerial::UsingSetupAPI1(CSimpleArray<UINT>& ports, CSimpleArray<CS
   HDEVINFO hDevInfoSet = lpfnSETUPDIGETCLASSDEVS(&guid, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
   if (hDevInfoSet == INVALID_HANDLE_VALUE)
   {
-		//Set the error to report
+    //Set the error to report
     setupAPI.m_dwError = GetLastError();
   
     return FALSE;
@@ -1082,7 +1085,7 @@ BOOL CEnumerateSerial::UsingComDB(CSimpleArray<UINT>& ports)
       lpfnLPCOMDBCLOSE(hComDB);
     }
     else
-			msPorts.m_dwError = dwComOpen;
+      msPorts.m_dwError = dwComOpen;
   }
   else
     msPorts.m_dwError = ERROR_CALL_NOT_IMPLEMENTED;
@@ -1117,67 +1120,67 @@ BOOL CEnumerateSerial::UsingRegistry(CSimpleArray<CString>& ports)
   HKEY hSERIALCOMM;
   if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, _T("HARDWARE\\DEVICEMAP\\SERIALCOMM"), 0, KEY_QUERY_VALUE, &hSERIALCOMM) == ERROR_SUCCESS)
   {
-		//Get the max value name and max value lengths
-		DWORD dwMaxValueNameLen;
-		DWORD dwMaxValueLen;
-		DWORD dwQueryInfo = RegQueryInfoKey(hSERIALCOMM, NULL, NULL, NULL, NULL, NULL, NULL, NULL, &dwMaxValueNameLen, &dwMaxValueLen, NULL, NULL);
-		if (dwQueryInfo == ERROR_SUCCESS)
-		{
-			DWORD dwMaxValueNameSizeInChars = dwMaxValueNameLen + 1; //Include space for the NULL terminator
-			DWORD dwMaxValueNameSizeInBytes = dwMaxValueNameSizeInChars * sizeof(TCHAR);
-			DWORD dwMaxValueDataSizeInChars = dwMaxValueLen/sizeof(TCHAR) + 1; //Include space for the NULL terminator
-			DWORD dwMaxValueDataSizeInBytes = dwMaxValueDataSizeInChars * sizeof(TCHAR);
-		
-			//Allocate some space for the value name and value data			
+    //Get the max value name and max value lengths
+    DWORD dwMaxValueNameLen;
+    DWORD dwMaxValueLen;
+    DWORD dwQueryInfo = RegQueryInfoKey(hSERIALCOMM, NULL, NULL, NULL, NULL, NULL, NULL, NULL, &dwMaxValueNameLen, &dwMaxValueLen, NULL, NULL);
+    if (dwQueryInfo == ERROR_SUCCESS)
+    {
+      DWORD dwMaxValueNameSizeInChars = dwMaxValueNameLen + 1; //Include space for the NULL terminator
+      DWORD dwMaxValueNameSizeInBytes = dwMaxValueNameSizeInChars * sizeof(TCHAR);
+      DWORD dwMaxValueDataSizeInChars = dwMaxValueLen/sizeof(TCHAR) + 1; //Include space for the NULL terminator
+      DWORD dwMaxValueDataSizeInBytes = dwMaxValueDataSizeInChars * sizeof(TCHAR);
+    
+      //Allocate some space for the value name and value data			
       CAutoHeapAlloc valueName;
       CAutoHeapAlloc valueData;
       if (valueName.Allocate(dwMaxValueNameSizeInBytes) && valueData.Allocate(dwMaxValueDataSizeInBytes))
       {
-				bSuccess = TRUE;
+        bSuccess = TRUE;
 
-				//Enumerate all the values underneath HKEY_LOCAL_MACHINE\HARDWARE\DEVICEMAP\SERIALCOMM
-				DWORD dwIndex = 0;
-				DWORD dwType;
-				DWORD dwValueNameSize = dwMaxValueNameSizeInChars;
-				DWORD dwDataSize = dwMaxValueDataSizeInBytes;
-				memset(valueName.m_pData, 0, dwMaxValueNameSizeInBytes);
-				memset(valueData.m_pData, 0, dwMaxValueDataSizeInBytes);
+        //Enumerate all the values underneath HKEY_LOCAL_MACHINE\HARDWARE\DEVICEMAP\SERIALCOMM
+        DWORD dwIndex = 0;
+        DWORD dwType;
+        DWORD dwValueNameSize = dwMaxValueNameSizeInChars;
+        DWORD dwDataSize = dwMaxValueDataSizeInBytes;
+        memset(valueName.m_pData, 0, dwMaxValueNameSizeInBytes);
+        memset(valueData.m_pData, 0, dwMaxValueDataSizeInBytes);
         TCHAR* szValueName = static_cast<TCHAR*>(valueName.m_pData);
         BYTE* byValue = static_cast<BYTE*>(valueData.m_pData);
-				LONG nEnum = RegEnumValue(hSERIALCOMM, dwIndex, szValueName, &dwValueNameSize, NULL, &dwType, byValue, &dwDataSize);
-				while (nEnum == ERROR_SUCCESS)
-				{
-					//If the value is of the correct type, then add it to the array
-					if (dwType == REG_SZ)
-					{
-						TCHAR* szPort = reinterpret_cast<TCHAR*>(byValue);
+        LONG nEnum = RegEnumValue(hSERIALCOMM, dwIndex, szValueName, &dwValueNameSize, NULL, &dwType, byValue, &dwDataSize);
+        while (nEnum == ERROR_SUCCESS)
+        {
+          //If the value is of the correct type, then add it to the array
+          if (dwType == REG_SZ)
+          {
+            TCHAR* szPort = reinterpret_cast<TCHAR*>(byValue);
           #if defined CENUMERATESERIAL_USE_STL
             ports.push_back(szPort);
           #else
             ports.Add(szPort);
           #endif  						
-					}
+          }
 
-					//Prepare for the next time around
-					dwValueNameSize = dwMaxValueNameSizeInChars;
-					dwDataSize = dwMaxValueDataSizeInBytes;
-					memset(valueName.m_pData, 0, dwMaxValueNameSizeInBytes);
-					memset(valueData.m_pData, 0, dwMaxValueDataSizeInBytes);
-					++dwIndex;
-					nEnum = RegEnumValue(hSERIALCOMM, dwIndex, szValueName, &dwValueNameSize, NULL, &dwType, byValue, &dwDataSize);
-				}
+          //Prepare for the next time around
+          dwValueNameSize = dwMaxValueNameSizeInChars;
+          dwDataSize = dwMaxValueDataSizeInBytes;
+          memset(valueName.m_pData, 0, dwMaxValueNameSizeInBytes);
+          memset(valueData.m_pData, 0, dwMaxValueDataSizeInBytes);
+          ++dwIndex;
+          nEnum = RegEnumValue(hSERIALCOMM, dwIndex, szValueName, &dwValueNameSize, NULL, &dwType, byValue, &dwDataSize);
+        }
       }
       else
-		    SetLastError(ERROR_OUTOFMEMORY);
-		}
-		
-		//Close the registry key now that we are finished with it    
+        SetLastError(ERROR_OUTOFMEMORY);
+    }
+    
+    //Close the registry key now that we are finished with it    
     RegCloseKey(hSERIALCOMM);
     
     if (dwQueryInfo != ERROR_SUCCESS)
-			SetLastError(dwQueryInfo);
+      SetLastError(dwQueryInfo);
   }
-	
-	return bSuccess;
+  
+  return bSuccess;
 }
 #endif
