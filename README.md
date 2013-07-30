@@ -1,4 +1,4 @@
-<pre>
+```
   eeeee eeeee eeeee eeee       e  eeeee 
   8   8 8  88 8   8 8          8  8   " 
   8e  8 8   8 8e  8 8eee       8e 8eeee 
@@ -10,7 +10,7 @@
   8eeee 8eee 8eee8e 8e 8eee8 8e    8eee8 8   8 8eee8e  8e  
      88 88   88   8 88 88  8 88    88    8   8 88   8  88  
   8ee88 88ee 88   8 88 88  8 88eee 88    8eee8 88   8  88
-</pre>
+```
 
 Version: 1.1.0 - Released August 24, 2012 - Now with Windows Support!!!
 
@@ -47,9 +47,9 @@ Using node-serialport is pretty easy because it is pretty basic. It provides you
 To Install
 ----------
 
-<pre>
+```
   npm install serialport
-</pre>
+```
 
 This assumes you have everything on your system necessary to compile ANY native module for Node.js. This may not be the case, though, so please ensure the following are true for your system before filing an issue about "Does not install". For all operatings systems, please ensure you have Python 2.x installed AND not 3.0, node-gyp (what we use to compile) requires Python 2.x.
 
@@ -71,12 +71,12 @@ To Use
 
 Opening a serial port:
 
-<pre>
-  var SerialPort = require("serialport").SerialPort
-  var serialPort = new SerialPort("/dev/tty-usbserial1", {
-    baudrate: 57600
-  });
-</pre>
+```js
+var SerialPort = require("serialport").SerialPort
+var serialPort = new SerialPort("/dev/tty-usbserial1", {
+  baudrate: 57600
+});
+```
   
 When opening a serial port, you can specify (in this order).
 
@@ -102,7 +102,7 @@ before the open event might result in... nothing at all.
 
 Assuming you are connected to a serial console, you would for example:
 
-<pre>
+```js
 serialPort.on("open", function () {
   console.log('open');
   serialPort.on('data', function(data) {
@@ -113,11 +113,11 @@ serialPort.on("open", function () {
     console.log('results ' + results);
   });  
 });
-</pre>
+```
 
 You can also call the open function, in this case instanciate the serialport with an additional flag.
 
-<pre>
+```js
 var SerialPort = require("serialport").SerialPort
 var serialPort = new SerialPort("/dev/tty-usbserial1", {
   baudrate: 57600
@@ -133,62 +133,63 @@ serialPort.open(function () {
     console.log('results ' + results);
   });  
 });
-</pre>
+```
 
 List Ports
 ----------
 
 You can also list the ports along with some metadata as well.
 
-<pre>
-  serialport.list(function (err, ports) {
-    ports.forEach(function(port) {
-      console.log(port.comName);
-      console.log(port.pnpId);
-      console.log(port.manufacturer);
-    });
+```js
+serialport.list(function (err, ports) {
+  ports.forEach(function(port) {
+    console.log(port.comName);
+    console.log(port.pnpId);
+    console.log(port.manufacturer);
   });
-</pre>
+});
+```
 
 Parsers
 -------
 
 Out of the box, node-serialport provides two parsers one that simply emits the raw buffer as a data event and the other which provides familiar "readline" style parsing. To use the readline parser, you must provide a delimiter as such:
 
-<pre>
-  var serialport = require("serialport");
-  var SerialPort = serialport.SerialPort; // localize object constructor
-  
-  var sp = new SerialPort("/dev/tty-usbserial1", { 
-    parser: serialport.parsers.readline("\n") 
-  });
-</pre>
+```js
+var serialport = require("serialport");
+var SerialPort = serialport.SerialPort; // localize object constructor
+
+var sp = new SerialPort("/dev/tty-usbserial1", { 
+  parser: serialport.parsers.readline("\n") 
+});
+```
 
 To use the raw parser, you just provide the function definition (or leave undefined):
 
-<pre>
-  var serialport = require("serialport");
-  var SerialPort = serialport.SerialPort; // localize object constructor
-  
-  var sp = new SerialPort("/dev/tty-usbserial1", { 
-    parser: serialport.parsers.raw
-  });
-</pre>
+```js
+var serialport = require("serialport");
+var SerialPort = serialport.SerialPort; // localize object constructor
+
+var sp = new SerialPort("/dev/tty-usbserial1", { 
+  parser: serialport.parsers.raw
+});
+```
 
 
 You can get updates of new data from the Serial Port as follows:
 
-<pre>
-  serialPort.on("data", function (data) {
-    sys.puts("here: "+data);
-  });
-</pre>
+```js
+serialPort.on("data", function (data) {
+  sys.puts("here: "+data);
+});
+```
 
 You can write to the serial port by sending a string or buffer to the write method as follows:
 
-<pre>
+```js
 serialPort.write("OMG IT WORKS\r");
-</pre>
+```
 
 Enjoy and do cool things with this code.
+
 
