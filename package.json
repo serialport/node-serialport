@@ -27,7 +27,7 @@
     }
   ],
   "dependencies": {
-    "bindings": "1.1.0",
+    "bindings": "1.1.1",
     "async": "0.1.18",
     "sf": "0.1.6",
     "optimist": "~0.3.4"
@@ -37,7 +37,7 @@
     "chai": "*"
   },
   "engines": {
-    "node": ">= 0.7.0"
+    "node": ">= 0.10.0"
   },
   "bin": {
     "serialportlist": "./bin/serialportList.js",
