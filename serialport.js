@@ -12,7 +12,8 @@ var path = require('path');
 var async = require('async');
 var child_process = require('child_process');
 
-var BAUDRATES = [500000, 230400, 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, 50];
+// Removing check for valid BaudRates due to ticket: #140
+// var BAUDRATES = [500000, 230400, 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, 50];
 var DATABITS = [8, 7, 6, 5];
 var STOPBITS = [1, 2, 1.5];
 var PARITY = ['none', 'even', 'mark', 'odd', 'space'];
@@ -59,9 +60,13 @@ function SerialPort (path, options, openImmediately) {
 
   var self = this;
 
-  if (BAUDRATES.indexOf(options.baudrate) == -1) {
-    throw new Error('Invalid "baudrate": ' + options.baudrate);
-  }
+  // Removing check for valid BaudRates due to ticket: #140
+  // if (BAUDRATES.indexOf(options.baudrate) == -1) {
+  //   throw new Error('Invalid "baudrate": ' + options.baudrate);
+  // }
+
+
+
   if (DATABITS.indexOf(options.databits) == -1) {
     throw new Error('Invalid "databits": ' + options.databits);
   }

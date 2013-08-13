@@ -106,11 +106,11 @@ void EIO_Open(uv_work_t* req) {
   OpenBaton* data = static_cast<OpenBaton*>(req->data);
 
 #if not ( defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4) )
-  int baudRate = ToBaudConstant(data->baudRate);
-  if(baudRate == -1) {
-    snprintf(data->errorString, sizeof(data->errorString), "Invalid baud rate setting %d", data->baudRate);
-    return;
-  }
+  int baudRate = data->baudRate;
+  // if(baudRate == -1) {
+  //   snprintf(data->errorString, sizeof(data->errorString), "Invalid baud rate setting %d", data->baudRate);
+  //   return;
+  // }
 #endif
   int dataBits = ToDataBitsConstant(data->dataBits);
   if(dataBits == -1) {
