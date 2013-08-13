@@ -34,7 +34,7 @@ var parsers = {
       // Collect data
       data += buffer.toString(encoding);
       // Split collected data by delimiter
-      var parts = data.split(delimiter)
+      var parts = data.split(delimiter);
       data = parts.pop();
       parts.forEach(function (part, i, array) {
         emitter.emit('data', part);
@@ -174,7 +174,7 @@ SerialPort.prototype.write = function (buffer, callback) {
 
 SerialPort.prototype.close = function (callback) {
   var self = this;
-  
+
   var fd = this.fd;
   this.fd = 0;
 
@@ -269,7 +269,7 @@ function listUnix (callback) {
     }, callback);
   });
 }
-  
+
 
 if (process.platform === 'win32') {
   exports.list = SerialPortBinding.list
@@ -278,6 +278,7 @@ if (process.platform === 'win32') {
 } else {
   exports.list = listUnix;
 }
+
 
 SerialPort.prototype.flush = function (callback) {
   var self = this;
