@@ -13,9 +13,4 @@ serial_port.on("data", function(d){
     util.puts(d); 
     serial_port.close(); 
 });
-
-
-
-
-
 */

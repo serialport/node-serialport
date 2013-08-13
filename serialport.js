@@ -46,16 +46,19 @@ var parsers = {
 // The default options, can be overwritten in the 'SerialPort' constructor
 var _options = {
   baudrate: 9600,
-  databits: 8,
-  stopbits: 1,
   parity: 'none',
+  rtscts: false,
+  xonxoff: false,
+  rts: 'none',
+  dtr: 'none',
+  databits: 8,
+  stopbits: 1,  
   flowcontrol: false,
   buffersize: 255,
   parser: parsers.raw
 };
 function SerialPort (path, options, openImmediately) {
   options = options || {};
-  options.__proto__ = _options;
   openImmediately = (openImmediately === undefined || openImmediately === null) ? true : openImmediately;
 
   var self = this;
@@ -85,13 +88,18 @@ function SerialPort (path, options, openImmediately) {
 
   stream.Stream.call(this);
 
-  options = options || {};
-  options.baudRate = options.baudRate || options.baudrate || 9600;
-  options.dataBits = options.dataBits || options.databits || 8;
-  options.parity = options.parity || 'none';
-  options.stopBits = options.stopBits || options.stopbits || 1;
-  options.bufferSize = options.bufferSize || options.buffersize || 100;
-  options.flowControl = options.flowControl || options.flowcontrol || false;
+  
+
+  options.baudRate = options.baudRate || options.baudrate || _options.baudrate;
+  options.parity = options.parity || _options.parity;
+  options.rtscts = options.rtscts || _options.rtscts;
+  options.xonxoff = options.xonxoff || _options.xonxoff;
+  options.rts = options.rts || _options.rts;
+  options.dtr = options.dtr || _options.dtr;
+  options.dataBits = options.dataBits || options.databits || _options.databits;
+  options.stopBits = options.stopBits || options.stopbits || _options.stopbits;
+  options.bufferSize = options.bufferSize || options.buffersize || _options.buffersize;
+  options.parser = options.parser || _options.parser;
 
   options.dataCallback = function (data) {
     options.parser(self, data);
