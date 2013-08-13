@@ -14,10 +14,15 @@ var child_process = require('child_process');
 
 // Removing check for valid BaudRates due to ticket: #140
 // var BAUDRATES = [500000, 230400, 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, 50];
-var DATABITS = [8, 7, 6, 5];
-var STOPBITS = [1, 2, 1.5];
+
+
+//  VALIDATION ARRAYS
+var DATABITS = [5, 6, 7, 8];
+var STOPBITS = [1, 1.5, 2];
 var PARITY = ['none', 'even', 'mark', 'odd', 'space'];
-var FLOWCONTROL = [false, true];
+var FLOWCONTROLS = ["XON", "XOFF", "XANY", "RTSCTS"];
+
+
 
 var parsers = {
   raw: function (emitter, buffer) {
@@ -48,13 +53,12 @@ var _options = {
   baudrate: 9600,
   parity: 'none',
   rtscts: false,
-  xonxoff: false,
-  rts: 'none',
-  dtr: 'none',
+  xon: false,
+  xoff: false,
+  xany: false,
   databits: 8,
   stopbits: 1,  
-  flowcontrol: false,
-  buffersize: 255,
+  buffersize: 256,
   parser: parsers.raw
 };
 function SerialPort (path, options, openImmediately) {
@@ -69,6 +73,9 @@ function SerialPort (path, options, openImmediately) {
   // }
 
 
+  stream.Stream.call(this);
+
+
 
   if (DATABITS.indexOf(options.databits) == -1) {
     throw new Error('Invalid "databits": ' + options.databits);
@@ -79,23 +86,43 @@ function SerialPort (path, options, openImmediately) {
   if (PARITY.indexOf(options.parity) == -1) {
     throw new Error('Invalid "parity": ' + options.parity);
   }
-  if (FLOWCONTROL.indexOf(options.flowcontrol) == -1) {
-    throw new Error('Invalid "flowcontrol": ' + options.flowcontrol);
-  }
   if (!path) {
     throw new Error('Invalid port specified: ' + path);
   }
 
-  stream.Stream.call(this);
-
+  // flush defaults, then update with provided details
+  options.rtscts = _options.rtscts;
+  options.xon = _options.xon;
+  options.xoff = _options.xoff;
+  options.xany = _options.xany;
   
+  if (options.flowControl || options.flowcontrol) {
+    var fc = options.flowControl || options.flowcontrol;
+
+    if (typeof fc == 'boolean') {
+      options.rtscts = true;
+    } else {
+      fc.forEach(function (flowControl) {
+        var fcup = flowControl.toUpperCase();
+        var idx = FLOWCONTROLS.indexOf(fcup);
+        if (idx < 0) {
+          throw new Error('Invalid "flowControl": ' + fcup + ". Valid options: "+FLOWCONTROLS.join(", "));
+        } else {
+
+          // "XON", "XOFF", "XANY", "DTRDTS", "RTSCTS"
+          switch (idx) {
+            case 0: options.xon = true; break;
+            case 1: options.xoff = true; break;
+            case 2: options.xany = true; break;
+            case 3: options.rtscts = true; break;
+          }
+        }
+      })
+    }
+  }
 
   options.baudRate = options.baudRate || options.baudrate || _options.baudrate;
   options.parity = options.parity || _options.parity;
-  options.rtscts = options.rtscts || _options.rtscts;
-  options.xonxoff = options.xonxoff || _options.xonxoff;
-  options.rts = options.rts || _options.rts;
-  options.dtr = options.dtr || _options.dtr;
   options.dataBits = options.dataBits || options.databits || _options.databits;
   options.stopBits = options.stopBits || options.stopbits || _options.stopbits;
   options.bufferSize = options.bufferSize || options.buffersize || _options.buffersize;

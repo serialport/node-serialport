@@ -26,7 +26,6 @@ Boolean lockInitialised = FALSE;
 int ToBaudConstant(int baudRate);
 int ToDataBitsConstant(int dataBits);
 int ToStopBitsConstant(SerialPortStopBits stopBits);
-int ToFlowControlConstant(bool flowControl);
 
 void AfterOpenSuccess(int fd, v8::Handle<v8::Value> dataCallback, v8::Handle<v8::Value> disconnectedCallback, v8::Handle<v8::Value> errorCallback) {
 
@@ -98,9 +97,6 @@ int ToDataBitsConstant(int dataBits) {
   return -1;
 }
 
-int ToFlowControlConstant(bool flowControl) {
-  return flowControl ? CRTSCTS : 0;
-}
 
 void EIO_Open(uv_work_t* req) {
   OpenBaton* data = static_cast<OpenBaton*>(req->data);
@@ -120,12 +116,7 @@ void EIO_Open(uv_work_t* req) {
     return;
   }
 
-  int flowControl = ToFlowControlConstant(data->flowControl);
-  if(flowControl == -1) {
-    snprintf(data->errorString, sizeof(data->errorString), "Invalid flow control setting %d", data->flowControl);
-    return;
-  }
-
+  
   int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_NDELAY);
   int fd = open(data->path, flags);
 
@@ -155,13 +146,47 @@ void EIO_Open(uv_work_t* req) {
 // Removing check for valid BaudRates due to ticket: #140
 // #endif 
 
+
+  /*
+    IGNPAR  : ignore bytes with parity errors
+    ICRNL   : map CR to NL (otherwise a CR input on the other computer
+              will not terminate input)
+    otherwise make device raw (no other input processing)
+  */
+  options.c_iflag = IGNPAR | ICRNL;
+
+
+
+
+
   // Specify data bits
   options.c_cflag &= ~CSIZE;
   options.c_cflag |= dataBits;
 
-  // Specify flow control
-  options.c_cflag &= ~CRTSCTS;
-  options.c_cflag |= flowControl;
+
+  if (data->rtscts) {
+    options.c_cflag &= ~CRTSCTS;
+    options.c_cflag |= 1;
+    // evaluate specific flow control options
+  } 
+  
+  if (data->xon) {
+    options.c_iflag &= ~IXON;
+    options.c_iflag |= 1;
+  }
+
+  if (data->xoff) {
+    options.c_iflag &= ~IXOFF;
+    options.c_iflag |= 1;
+  }
+
+  if (data->xany) {
+    options.c_iflag &= ~IXANY;
+    options.c_iflag |= 1;
+  }
+
+
+
 
   switch (data->parity)
   {
@@ -207,13 +232,17 @@ void EIO_Open(uv_work_t* req) {
   options.c_cflag |= CLOCAL; //ignore status lines
   options.c_cflag |= CREAD;  //enable receiver
   options.c_cflag |= HUPCL;  //drop DTR (i.e. hangup) on close
-  options.c_iflag = IGNPAR;
+  // options.c_iflag = IGNPAR;
+
+  // Raw output
   options.c_oflag = 0;
-  options.c_lflag = 0; //ICANON;
+
+  options.c_lflag = ICANON; //0;
   options.c_cc[VMIN]=1;
   options.c_cc[VTIME]=0;
 
-  sleep(1);
+  // removed this unneeded sleep.
+  // sleep(1);
   tcflush(fd, TCIFLUSH);
   tcsetattr(fd, TCSANOW, &options);
 

@@ -41,7 +41,12 @@ v8::Handle<v8::Value> Open(const v8::Arguments& args) {
   baton->bufferSize = options->Get(v8::String::New("bufferSize"))->ToInt32()->Int32Value();
   baton->parity = ToParityEnum(options->Get(v8::String::New("parity"))->ToString());
   baton->stopBits = ToStopBitEnum(options->Get(v8::String::New("stopBits"))->ToNumber()->NumberValue());
-  baton->flowControl = options->Get(v8::String::New("flowControl"))->ToBoolean()->BooleanValue();
+  baton->rtscts = options->Get(v8::String::New("rtscts"))->ToBoolean()->BooleanValue();
+  baton->xon = options->Get(v8::String::New("xon"))->ToBoolean()->BooleanValue();
+  baton->xoff = options->Get(v8::String::New("xoff"))->ToBoolean()->BooleanValue();
+  baton->xany = options->Get(v8::String::New("xany"))->ToBoolean()->BooleanValue();
+
+
   baton->callback = v8::Persistent<v8::Value>::New(callback);
   baton->dataCallback = v8::Persistent<v8::Value>::New(options->Get(v8::String::New("dataCallback")));
   baton->disconnectedCallback = v8::Persistent<v8::Value>::New(options->Get(v8::String::New("disconnectedCallback")));

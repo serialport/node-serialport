@@ -60,7 +60,11 @@ public:
   int baudRate;
   int dataBits;
   int bufferSize;
-  bool flowControl;
+  bool rtscts;
+  bool xon;
+  bool xoff;
+  bool xany;
+  bool dsrdtr;
   SerialPortParity parity;
   SerialPortStopBits stopBits;
   char errorString[1024];
