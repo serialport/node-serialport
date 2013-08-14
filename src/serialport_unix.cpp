@@ -163,29 +163,26 @@ void EIO_Open(uv_work_t* req) {
   options.c_cflag &= ~CSIZE;
   options.c_cflag |= dataBits;
 
+  options.c_cflag &= ~(CRTSCTS);
 
   if (data->rtscts) {
-    options.c_cflag &= ~CRTSCTS;
-    options.c_cflag |= 1;
+    options.c_cflag |= CRTSCTS;
     // evaluate specific flow control options
   } 
   
+  options.c_iflag &= ~(IXON | IXOFF | IXANY);
+
   if (data->xon) {
-    options.c_iflag &= ~IXON;
-    options.c_iflag |= 1;
+    options.c_iflag |= IXON;
   }
 
   if (data->xoff) {
-    options.c_iflag &= ~IXOFF;
-    options.c_iflag |= 1;
+    options.c_iflag |= IXOFF;
   }
 
   if (data->xany) {
-    options.c_iflag &= ~IXANY;
-    options.c_iflag |= 1;
+    options.c_iflag |= IXANY;
   }
-
-
 
 
   switch (data->parity)
