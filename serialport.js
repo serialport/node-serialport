@@ -67,22 +67,25 @@ function SerialPort (path, options, openImmediately) {
 
   var self = this;
 
+  stream.Stream.call(this);
+
+  options.baudRate = options.baudRate || options.baudrate || _options.baudrate;
   // Removing check for valid BaudRates due to ticket: #140
   // if (BAUDRATES.indexOf(options.baudrate) == -1) {
   //   throw new Error('Invalid "baudrate": ' + options.baudrate);
   // }
 
-
-  stream.Stream.call(this);
-
-
-
-  if (DATABITS.indexOf(options.databits) == -1) {
-    throw new Error('Invalid "databits": ' + options.databits);
+  options.dataBits = options.dataBits || options.databits || _options.databits;
+  if (DATABITS.indexOf(options.dataBits) == -1) {
+    throw new Error('Invalid "databits": ' + options.dataBits);
   }
-  if (STOPBITS.indexOf(options.stopbits) == -1) {
+ 
+  options.stopbits = options.stopBits || options.stopbits || _options.stopbits;
+  if (STOPBITS.indexOf(options.stopBits) == -1) {
     throw new Error('Invalid "stopbits": ' + options.stopbits);
   }
+  
+  options.parity = options.parity || _options.parity;
   if (PARITY.indexOf(options.parity) == -1) {
     throw new Error('Invalid "parity": ' + options.parity);
   }
@@ -113,7 +116,7 @@ function SerialPort (path, options, openImmediately) {
           switch (idx) {
             case 0: options.xon = true; break;
             case 1: options.xoff = true; break;
-            case 2: options.xany = true; break;
+            case 2: options.xany = true;  break;
             case 3: options.rtscts = true; break;
           }
         }
@@ -121,10 +124,6 @@ function SerialPort (path, options, openImmediately) {
     }
   }
 
-  options.baudRate = options.baudRate || options.baudrate || _options.baudrate;
-  options.parity = options.parity || _options.parity;
-  options.dataBits = options.dataBits || options.databits || _options.databits;
-  options.stopBits = options.stopBits || options.stopbits || _options.stopbits;
   options.bufferSize = options.bufferSize || options.buffersize || _options.buffersize;
   options.parser = options.parser || _options.parser;
 
