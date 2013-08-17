@@ -4,6 +4,8 @@
 
 #ifdef WIN32
 #define strcasecmp stricmp
+#else
+#include "serialport_poller.h"
 #endif
 
 uv_mutex_t write_queue_mutex;
@@ -341,6 +343,10 @@ extern "C" {
     NODE_SET_METHOD(target, "close", Close);
     NODE_SET_METHOD(target, "list", List);
     NODE_SET_METHOD(target, "flush", Flush);
+
+#ifndef WIN32
+    SerialportPoller::Init(target);
+#endif
   }
 }
 

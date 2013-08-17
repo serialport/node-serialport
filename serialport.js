@@ -5,12 +5,14 @@
 
 var Buffer = require('buffer').Buffer;
 var SerialPortBinding = require("bindings")("serialport.node");
+var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var fs = require('fs');
 var stream = require('stream');
 var path = require('path');
 var async = require('async');
 var child_process = require('child_process');
+
 
 // Removing check for valid BaudRates due to ticket: #140
 // var BAUDRATES = [500000, 230400, 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, 50];
@@ -22,6 +24,16 @@ var STOPBITS = [1, 1.5, 2];
 var PARITY = ['none', 'even', 'mark', 'odd', 'space'];
 var FLOWCONTROLS = ["XON", "XOFF", "XANY", "RTSCTS"];
 
+
+// Stuff from ReadStream, refactored for our usage:
+var kPoolSize = 40 * 1024;
+var kMinPoolSpace = 128;
+var pool;
+
+function allocNewPool() {
+  pool = new Buffer(kPoolSize);
+  pool.used = 0;
+}
 
 
 var parsers = {
@@ -80,7 +92,7 @@ function SerialPort (path, options, openImmediately) {
     throw new Error('Invalid "databits": ' + options.dataBits);
   }
  
-  options.stopbits = options.stopBits || options.stopbits || _options.stopbits;
+  options.stopBits = options.stopBits || options.stopbits || _options.stopbits;
   if (STOPBITS.indexOf(options.stopBits) == -1) {
     throw new Error('Invalid "stopbits": ' + options.stopbits);
   }
@@ -130,7 +142,13 @@ function SerialPort (path, options, openImmediately) {
   options.dataCallback = function (data) {
     options.parser(self, data);
   };
+
+  // options.dataReadyCallback = function () {
+  //   self.readStream._read(4024);
+  // };
+
   options.errorCallback = function (err) {
+    // console.log("err:", JSON.stringify(err));
     self.emit('error', err);
   };
   options.disconnectedCallback = function () {
@@ -138,11 +156,21 @@ function SerialPort (path, options, openImmediately) {
       return;
     }
     self.emit('error', new Error("Disconnected"));
-    self.close();
+    // self.close();
   };
 
   if (process.platform == 'win32') {
     path = '\\\\.\\' + path;
+  } else {
+    // All other platforms:
+    this.fd = null;
+    this.paused = true;
+    this.bufferSize = options.bufferSize || 64 * 1024;
+    this.readable = true;
+    this.reading = false;
+
+    if (options.encoding)
+      this.setEncoding(this.encoding);
   }
 
   this.options = options;
@@ -167,15 +195,20 @@ SerialPort.prototype.open = function (callback) {
       return;
     }
     if (process.platform !== 'win32') {
-      self.readStream = fs.createReadStream(self.path, { bufferSize: self.options.bufferSize, fd: fd });
-      self.readStream.on("data", self.options.dataCallback);
-      self.readStream.on("error", self.options.errorCallback);
-      self.readStream.on("close", function () {
-        self.close();
-      });
-      self.readStream.on("end", function () {
-        self.emit('end');
-      });
+      // self.readStream = new SerialStream(self.fd, { bufferSize: self.options.bufferSize });
+      // self.readStream.on("data", self.options.dataCallback);
+      // self.readStream.on("error", self.options.errorCallback);
+      // self.readStream.on("close", function () {
+      //   self.close();
+      // });
+      // self.readStream.on("end", function () {
+      //   console.log(">>END");
+      //   self.emit('end');
+      // });
+      // self.readStream.resume();
+      self.paused = false;
+      self.serialPoller = new SerialPortBinding.SerialportPoller(self.fd, function() {self._read();});
+      self.serialPoller.start();
     }
 
     self.emit('open');
@@ -206,11 +239,120 @@ SerialPort.prototype.write = function (buffer, callback) {
   });
 };
 
+if (process.platform !== 'win32') {
+  SerialPort.prototype._read = function() {
+    var self = this;
+
+    console.log(">>READ");
+    if (!self.readable || self.paused || self.reading) return;
+
+    self.reading = true;
+
+    if (!pool || pool.length - pool.used < kMinPoolSpace) {
+      // discard the old pool. Can't add to the free list because
+      // users might have refernces to slices on it.
+      pool = null;
+      allocNewPool();
+    }
+
+    // Grab another reference to the pool in the case that while we're in the
+    // thread pool another read() finishes up the pool, and allocates a new
+    // one.
+    var thisPool = pool;
+    var toRead = Math.min(pool.length - pool.used, ~~self.bufferSize);
+    var start = pool.used;
+
+    function afterRead(err, bytesRead, readPool, bytesRequested) {
+      self.reading = false;
+      if (err) {
+        if (err.code && err.code == 'EAGAIN') {
+          if (self.fd >= 0)
+            self.serialPoller.start();
+        } else {
+          self.fd = null;
+          self.options.errorCallback(err);
+          self.readable = false;
+          return;
+        }
+      }
+
+      // Since we will often not read the number of bytes requested,
+      // let's mark the ones we didn't need as available again.
+      pool.used -= bytesRequested - bytesRead;
+
+      console.log(">>ACTUALLY READ: ", bytesRead);
+
+      if (bytesRead === 0) {
+        if (self.fd >= 0)
+          self.serialPoller.start();
+      } else {
+        var b = thisPool.slice(start, start + bytesRead);
+
+        // do not emit events if the stream is paused
+        if (self.paused) {
+          self.buffer = Buffer.concat([self.buffer, b]);
+          return;
+        } else {
+          self._emitData(b);
+        }
+  
+        // do not emit events anymore after we declared the stream unreadable
+        if (!self.readable) return;
+  
+        self._read();
+      }
+    }
+
+    console.log(">>REQUEST READ: ", toRead);
+    fs.read(self.fd, pool, pool.used, toRead, self.pos, function(err, bytesRead){
+      var readPool = pool;
+      var bytesRequested = toRead;
+      afterRead(err, bytesRead, readPool, bytesRequested);}
+    );
+
+    pool.used += toRead;
+  };
+
+  
+  SerialPort.prototype._emitData = function(d) {
+    var self = this;
+    // if (self._decoder) {
+    //   var string = self._decoder.write(d);
+    //   if (string.length) self.options.dataCallback(string);
+    // } else {
+      self.options.dataCallback(d);
+    // }
+  };
+  
+  SerialPort.prototype.pause = function() {
+    var self = this;
+    self.paused = true;
+  };
+
+
+  SerialPort.prototype.resume = function() {
+    var self = this;
+    self.paused = false;
+
+    if (self.buffer) {
+      var buffer = self.buffer;
+      self.buffer = null;
+      self._emitData(buffer);
+    }
+
+    // No longer open?
+    if (null == self.fd)
+      return;
+
+    self._read();
+  };
+
+} // if !'win32'
+
 SerialPort.prototype.close = function (callback) {
   var self = this;
   
-  var fd = this.fd;
-  this.fd = 0;
+  var fd = self.fd;
 
   if (self.closing) {
     return;
@@ -226,6 +368,9 @@ SerialPort.prototype.close = function (callback) {
   self.closing = true;
   try {
     if (self.readStream) {
+      // Make sure we clear the readStream's fd, or it'll try to close() it.
+      // We already close()d it.
+      self.readStream.fd = null;
       self.readStream.destroy();
     }
 
@@ -239,6 +384,12 @@ SerialPort.prototype.close = function (callback) {
       self.emit('close');
       self.removeAllListeners();
       self.closing = false;
+      self.fd = 0;
+      
+      if (process.platform !== 'win32') {
+        self.readable = false;
+        self.serialPoller.close();
+      }
     });
   } catch (ex) {
     self.closing = false;
@@ -315,7 +466,7 @@ if (process.platform === 'win32') {
 
 SerialPort.prototype.flush = function (callback) {
   var self = this;
-  var fd = this.fd;
+  var fd = self.fd;
 
   if (!fd) {
     if (callback) {
