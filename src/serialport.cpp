@@ -109,6 +109,7 @@ v8::Handle<v8::Value> Write(const v8::Arguments& args) {
   baton->buffer = buffer;
   baton->bufferData = bufferData;
   baton->bufferLength = bufferLength;
+  // baton->offset = 0;
   baton->callback = v8::Persistent<v8::Value>::New(callback);
 
   QueuedWrite* queuedWrite = new QueuedWrite();
@@ -143,6 +144,13 @@ void EIO_AfterWrite(uv_work_t* req) {
     argv[1] = v8::Int32::New(data->result);
   }
   v8::Function::Cast(*data->callback)->Call(v8::Context::GetCurrent()->Global(), 2, argv);
+
+  if (data->offset < data->bufferLength) {
+    // We're not done with this baton, so throw it right back onto the queue.
+    // TODO: Add a uv_poll here for unix...
+    uv_queue_work(uv_default_loop(), req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
+    return;
+  }
 
   uv_mutex_lock(&write_queue_mutex);
   ngx_queue_remove(&queuedWrite->queue);

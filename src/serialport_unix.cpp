@@ -303,10 +303,33 @@ void EIO_Open(uv_work_t* req) {
 void EIO_Write(uv_work_t* req) {
   QueuedWrite* queuedWrite = static_cast<QueuedWrite*>(req->data);
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
+  
+  data->result = 0;
+  errno = 0;
 
-  if ((data->result = write(data->fd, data->bufferData, data->bufferLength)) == -1) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error %s calling write(...)", strerror(errno) );
-  }
+  // We carefully *DON'T* break out of this loop.
+  do {
+    if ((data->result = write(data->fd, data->bufferData + data->offset, data->bufferLength - data->offset)) == -1) {
+      if (errno == EAGAIN || errno == EWOULDBLOCK)
+        return;
+
+      // The write call might be interrupted, if it is we just try again immediately.
+      if (errno != EINTR) {
+        snprintf(data->errorString, sizeof(data->errorString), "Error %s calling write(...)", strerror(errno) );
+        return;
+      }
+
+      // try again...
+      continue;
+    }
+    // there wasn't an error, do the math on what we actually wrote...
+    else {
+      data->offset += data->result;
+    }
+
+    // if we get there, we really don't want to loop
+    // break;
+  } while (data->bufferLength > data->offset);
 }
 
 void EIO_Close(uv_work_t* req) {

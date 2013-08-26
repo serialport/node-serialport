@@ -75,6 +75,7 @@ public:
   int fd;
   char* bufferData;
   size_t bufferLength;
+  size_t offset;
   v8::Persistent<v8::Object> buffer;
   v8::Persistent<v8::Value> callback;
   int result;

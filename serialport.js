@@ -148,8 +148,8 @@ function SerialPort (path, options, openImmediately) {
   // };
 
   options.errorCallback = function (err) {
-    // console.log("err:", JSON.stringify(err));
-    self.emit('error', err);
+    console.log("sp err:", JSON.stringify(err));
+    self.emit('error', {spErr: err});
   };
   options.disconnectedCallback = function () {
     if (self.closing) {
@@ -190,7 +190,7 @@ SerialPort.prototype.open = function (callback) {
   SerialPortBinding.open(this.path, this.options, function (err, fd) {
     self.fd = fd;
     if (err) {
-      self.emit('error', err);
+      self.emit('error', {openErr: err});
       if (callback) { callback(err); }
       return;
     }
@@ -231,7 +231,7 @@ SerialPort.prototype.write = function (buffer, callback) {
   }
   SerialPortBinding.write(this.fd, buffer, function (err, results) {
     if (err) {
-      self.emit('error', err);
+      self.emit('error', {spWriteErr: err});
     }
     if (callback) {
       callback(err, results);
