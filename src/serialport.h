@@ -25,6 +25,8 @@ enum SerialPortStopBits {
   SERIALPORT_STOPBITS_TWO = 3
 };
 
+#define ERROR_STRING_SIZE 1024
+
 v8::Handle<v8::Value> List(const v8::Arguments& args);
 void EIO_List(uv_work_t* req);
 void EIO_AfterList(uv_work_t* req);
@@ -63,7 +65,7 @@ public:
   bool flowControl;
   SerialPortParity parity;
   SerialPortStopBits stopBits;
-  char errorString[1024];
+  char errorString[ERROR_STRING_SIZE];
 };
 
 struct WriteBaton {
@@ -74,7 +76,7 @@ public:
   v8::Persistent<v8::Object> buffer;
   v8::Persistent<v8::Value> callback;
   int result;
-  char errorString[1024];
+  char errorString[ERROR_STRING_SIZE];
 };
 
 struct QueuedWrite {
@@ -88,7 +90,7 @@ struct CloseBaton {
 public:
   int fd;
   v8::Persistent<v8::Value> callback;
-  char errorString[1024];
+  char errorString[ERROR_STRING_SIZE];
 };
 
 struct ListResultItem {
@@ -106,7 +108,7 @@ struct ListBaton {
 public:
   v8::Persistent<v8::Value> callback;
   std::list<ListResultItem*> results;
-  char errorString[1024];
+  char errorString[ERROR_STRING_SIZE];
 };
 
 struct FlushBaton {
@@ -114,7 +116,7 @@ public:
   int fd;
   v8::Persistent<v8::Value> callback;
   int result;
-  char errorString[1024];
+  char errorString[ERROR_STRING_SIZE];
 };
 
 #endif
