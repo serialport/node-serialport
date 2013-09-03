@@ -18,19 +18,19 @@ int bufferSize;
 void ErrorCodeToString(const char* prefix, int errorCode, char *errorStr) {
   switch(errorCode) {
   case ERROR_FILE_NOT_FOUND:
-    _snprintf(errorStr, sizeof(errorStr), "%s: File not found", prefix);
+    _snprintf(errorStr, ERROR_STRING_SIZE, "%s: File not found", prefix);
     break;
   case ERROR_INVALID_HANDLE:
-    _snprintf(errorStr, sizeof(errorStr), "%s: Invalid handle", prefix);
+    _snprintf(errorStr, ERROR_STRING_SIZE, "%s: Invalid handle", prefix);
     break;
   case ERROR_ACCESS_DENIED:
-    _snprintf(errorStr, sizeof(errorStr), "%s: Access denied", prefix);
+    _snprintf(errorStr, ERROR_STRING_SIZE, "%s: Access denied", prefix);
     break;
   case ERROR_OPERATION_ABORTED:
-    _snprintf(errorStr, sizeof(errorStr), "%s: operation aborted", prefix);
+    _snprintf(errorStr, ERROR_STRING_SIZE, "%s: operation aborted", prefix);
     break;
   default:
-    _snprintf(errorStr, sizeof(errorStr), "%s: Unknown error code %d", prefix, errorCode);
+    _snprintf(errorStr, ERROR_STRING_SIZE, "%s: Unknown error code %d", prefix, errorCode);
     break;
   }
 }
@@ -136,7 +136,7 @@ public:
   HANDLE fd;
   DWORD bytesRead;
   char buffer[MAX_BUFFER_SIZE];
-  char errorString[1000];
+  char errorString[ERROR_STRING_SIZE];
   DWORD errorCode;
   bool disconnected;
   v8::Persistent<v8::Value> dataCallback;
