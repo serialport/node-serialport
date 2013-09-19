@@ -64,7 +64,9 @@ This assumes you have everything on your system necessary to compile ANY native 
    npm install serialport --msvs_version=2012
 ```
 
-This switch works for both Visual Studio Express 2012 and 2013.
+This switch works for both Visual Studio Express 2012 and 2013. 
+
+Note: Make sure you've `cd`'d into the project directory -- the command prompt will open by default in `%SYSTEMROOT%`, and the install will fail there.
 
 ### Mac OS X:
 
