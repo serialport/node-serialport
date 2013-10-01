@@ -148,7 +148,7 @@ function SerialPort (path, options, openImmediately) {
   // };
 
   options.errorCallback = function (err) {
-    console.log("sp err:", JSON.stringify(err));
+    // console.log("sp err:", JSON.stringify(err));
     self.emit('error', {spErr: err});
   };
   options.disconnectedCallback = function () {
@@ -243,7 +243,7 @@ if (process.platform !== 'win32') {
   SerialPort.prototype._read = function() {
     var self = this;
 
-    console.log(">>READ");
+    // console.log(">>READ");
     if (!self.readable || self.paused || self.reading) return;
 
     self.reading = true;
@@ -280,7 +280,7 @@ if (process.platform !== 'win32') {
       // let's mark the ones we didn't need as available again.
       pool.used -= bytesRequested - bytesRead;
 
-      console.log(">>ACTUALLY READ: ", bytesRead);
+      // console.log(">>ACTUALLY READ: ", bytesRead);
 
       if (bytesRead === 0) {
         if (self.fd >= 0)
@@ -303,7 +303,7 @@ if (process.platform !== 'win32') {
       }
     }
 
-    console.log(">>REQUEST READ: ", toRead);
+    // console.log(">>REQUEST READ: ", toRead);
     fs.read(self.fd, pool, pool.used, toRead, self.pos, function(err, bytesRead){
       var readPool = pool;
       var bytesRequested = toRead;
