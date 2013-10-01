@@ -4,6 +4,8 @@
 
 #ifdef WIN32
 #define strcasecmp stricmp
+#else
+#include "serialport_poller.h"
 #endif
 
 uv_mutex_t write_queue_mutex;
@@ -41,7 +43,12 @@ v8::Handle<v8::Value> Open(const v8::Arguments& args) {
   baton->bufferSize = options->Get(v8::String::New("bufferSize"))->ToInt32()->Int32Value();
   baton->parity = ToParityEnum(options->Get(v8::String::New("parity"))->ToString());
   baton->stopBits = ToStopBitEnum(options->Get(v8::String::New("stopBits"))->ToNumber()->NumberValue());
-  baton->flowControl = options->Get(v8::String::New("flowControl"))->ToBoolean()->BooleanValue();
+  baton->rtscts = options->Get(v8::String::New("rtscts"))->ToBoolean()->BooleanValue();
+  baton->xon = options->Get(v8::String::New("xon"))->ToBoolean()->BooleanValue();
+  baton->xoff = options->Get(v8::String::New("xoff"))->ToBoolean()->BooleanValue();
+  baton->xany = options->Get(v8::String::New("xany"))->ToBoolean()->BooleanValue();
+
+
   baton->callback = v8::Persistent<v8::Value>::New(callback);
   baton->dataCallback = v8::Persistent<v8::Value>::New(options->Get(v8::String::New("dataCallback")));
   baton->disconnectedCallback = v8::Persistent<v8::Value>::New(options->Get(v8::String::New("disconnectedCallback")));
@@ -102,6 +109,7 @@ v8::Handle<v8::Value> Write(const v8::Arguments& args) {
   baton->buffer = buffer;
   baton->bufferData = bufferData;
   baton->bufferLength = bufferLength;
+  // baton->offset = 0;
   baton->callback = v8::Persistent<v8::Value>::New(callback);
 
   QueuedWrite* queuedWrite = new QueuedWrite();
@@ -136,6 +144,13 @@ void EIO_AfterWrite(uv_work_t* req) {
     argv[1] = v8::Int32::New(data->result);
   }
   v8::Function::Cast(*data->callback)->Call(v8::Context::GetCurrent()->Global(), 2, argv);
+
+  if (data->offset < data->bufferLength) {
+    // We're not done with this baton, so throw it right back onto the queue.
+    // TODO: Add a uv_poll here for unix...
+    uv_queue_work(uv_default_loop(), req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
+    return;
+  }
 
   uv_mutex_lock(&write_queue_mutex);
   ngx_queue_remove(&queuedWrite->queue);
@@ -336,6 +351,10 @@ extern "C" {
     NODE_SET_METHOD(target, "close", Close);
     NODE_SET_METHOD(target, "list", List);
     NODE_SET_METHOD(target, "flush", Flush);
+
+#ifndef WIN32
+    SerialportPoller::Init(target);
+#endif
   }
 }
 
