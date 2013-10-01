@@ -4,7 +4,6 @@
       'target_name': 'serialport',
       'sources': [
         'src/serialport.cpp',
-        'src/serialport_unix.cpp',
       ],
       'conditions': [
         ['OS=="win"',
@@ -20,6 +19,7 @@
           {
             'sources': [
               'src/serialport_unix.cpp',
+              'src/serialport_poller.cpp',
             ],
           }
         ],

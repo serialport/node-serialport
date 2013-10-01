@@ -1,5 +1,6 @@
 #ifndef WIN32
 #include "serialport.h"
+#include "serialport_poller.h"
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -15,18 +16,22 @@
 
 uv_mutex_t list_mutex;
 Boolean lockInitialised = FALSE;
-
 #endif
+
 #if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
 #include <sys/ioctl.h>
 #include <IOKit/serial/ioss.h>
 #include <errno.h>
 #endif
 
+#if defined(__linux__)
+#include <sys/ioctl.h>
+#include <linux/serial.h>
+#endif
+
 int ToBaudConstant(int baudRate);
 int ToDataBitsConstant(int dataBits);
 int ToStopBitsConstant(SerialPortStopBits stopBits);
-int ToFlowControlConstant(bool flowControl);
 
 void AfterOpenSuccess(int fd, v8::Handle<v8::Value> dataCallback, v8::Handle<v8::Value> disconnectedCallback, v8::Handle<v8::Value> errorCallback) {
 
@@ -98,32 +103,27 @@ int ToDataBitsConstant(int dataBits) {
   return -1;
 }
 
-int ToFlowControlConstant(bool flowControl) {
-  return flowControl ? CRTSCTS : 0;
-}
+
 
 void EIO_Open(uv_work_t* req) {
   OpenBaton* data = static_cast<OpenBaton*>(req->data);
 
-#if not ( defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4) )
-  int baudRate = data->baudRate;
-  // if(baudRate == -1) {
-  //   snprintf(data->errorString, sizeof(data->errorString), "Invalid baud rate setting %d", data->baudRate);
-  //   return;
-  // }
-#endif
+  int baudRate = ToBaudConstant(data->baudRate);
+
+// #if not ( defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4) )
+//   if(baudRate == -1) {
+//     snprintf(data->errorString, sizeof(data->errorString), "Invalid baud rate setting %d", data->baudRate);
+//     return;
+//   }
+// #endif
+
   int dataBits = ToDataBitsConstant(data->dataBits);
   if(dataBits == -1) {
     snprintf(data->errorString, sizeof(data->errorString), "Invalid data bits setting %d", data->dataBits);
     return;
   }
 
-  int flowControl = ToFlowControlConstant(data->flowControl);
-  if(flowControl == -1) {
-    snprintf(data->errorString, sizeof(data->errorString), "Invalid flow control setting %d", data->flowControl);
-    return;
-  }
-
+  
   int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_NDELAY);
   int fd = open(data->path, flags);
 
@@ -131,34 +131,102 @@ void EIO_Open(uv_work_t* req) {
     snprintf(data->errorString, sizeof(data->errorString), "Cannot open %s", data->path);
     return;
   }
+  
+
+  // struct sigaction saio;
+  // saio.sa_handler = sigio_handler;
+  // sigemptyset(&saio.sa_mask);
+  // saio.sa_flags = 0;
+  // sigaction(SIGIO, &saio, NULL);
+
+  // //all process to receive SIGIO
+  // fcntl(fd, F_SETOWN, getpid());
+  // int flflags = fcntl(fd, F_GETFL);
+  // fcntl(fd, F_SETFL, flflags | FNONBLOCK);
 
   struct termios options;
-  struct sigaction saio;
-  saio.sa_handler = SIG_IGN;
-  sigemptyset(&saio.sa_mask);
-  saio.sa_flags = 0;
-  sigaction(SIGIO, &saio, NULL);
-
-  //all process to receive SIGIO
-  fcntl(fd, F_SETOWN, getpid());
-  fcntl(fd, F_SETFL, FASYNC);
-
   // Set baud and other configuration.
   tcgetattr(fd, &options);
 
-#if not ( defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4) )
+// Removing check for valid BaudRates due to ticket: #140
+// #if not ( defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4) )
   // Specify the baud rate
-  cfsetispeed(&options, baudRate);
-  cfsetospeed(&options, baudRate);
-#endif 
+
+
+  // On linux you can alter the meaning of B38400 to mean a custom baudrate...  
+#if defined(__linux__) && defined(ASYNC_SPD_CUST)
+  if (baudRate == -1) {
+    struct serial_struct serinfo;
+    serinfo.reserved_char[0] = 0;
+    if (ioctl(fd, TIOCGSERIAL, &serinfo) != -1) {
+      serinfo.flags &= ~ASYNC_SPD_MASK;
+      serinfo.flags |= ASYNC_SPD_CUST;
+      serinfo.custom_divisor = (serinfo.baud_base + (data->baudRate / 2)) / data->baudRate;
+      if (serinfo.custom_divisor < 1) 
+        serinfo.custom_divisor = 1;
+
+      ioctl(fd, TIOCSSERIAL, &serinfo);
+      ioctl(fd, TIOCGSERIAL, &serinfo);
+      // if (serinfo.custom_divisor * rate != serinfo.baud_base) {
+      //   warnx("actual baudrate is %d / %d = %f",
+      //     serinfo.baud_base, serinfo.custom_divisor,
+      //     (float)serinfo.baud_base / serinfo.custom_divisor);
+      // }
+    }
+
+    // Now we use "B38400" to trigger the special baud rate.
+    baudRate = B38400;
+  }
+#endif  
+
+  if (baudRate != -1) {
+    cfsetispeed(&options, baudRate);
+    cfsetospeed(&options, baudRate);
+  }
+
+// Removing check for valid BaudRates due to ticket: #140
+// #endif 
+
+  /*
+    IGNPAR  : ignore bytes with parity errors
+  */
+  options.c_iflag = IGNPAR;
+
+  /*
+    ICRNL   : map CR to NL (otherwise a CR input on the other computer
+              will not terminate input)
+  */
+  // Pulling this for now. It should be an option, however. -Giseburt
+  //options.c_iflag = ICRNL;
+
+  //  otherwise make device raw (no other input processing)
+
 
   // Specify data bits
   options.c_cflag &= ~CSIZE;
   options.c_cflag |= dataBits;
 
-  // Specify flow control
-  options.c_cflag &= ~CRTSCTS;
-  options.c_cflag |= flowControl;
+  options.c_cflag &= ~(CRTSCTS);
+
+  if (data->rtscts) {
+    options.c_cflag |= CRTSCTS;
+    // evaluate specific flow control options
+  } 
+  
+  options.c_iflag &= ~(IXON | IXOFF | IXANY);
+
+  if (data->xon) {
+    options.c_iflag |= IXON;
+  }
+
+  if (data->xoff) {
+    options.c_iflag |= IXOFF;
+  }
+
+  if (data->xany) {
+    options.c_iflag |= IXANY;
+  }
+
 
   switch (data->parity)
   {
@@ -204,23 +272,30 @@ void EIO_Open(uv_work_t* req) {
   options.c_cflag |= CLOCAL; //ignore status lines
   options.c_cflag |= CREAD;  //enable receiver
   options.c_cflag |= HUPCL;  //drop DTR (i.e. hangup) on close
-  options.c_iflag = IGNPAR;
+
+  // Raw output
   options.c_oflag = 0;
+
+  // ICANON makes partial lines not readable. It should be otional.
+  // It works with ICRNL. -Giseburt
   options.c_lflag = 0; //ICANON;
   options.c_cc[VMIN]=1;
   options.c_cc[VTIME]=0;
 
-  sleep(1);
+  // removed this unneeded sleep.
+  // sleep(1);
   tcflush(fd, TCIFLUSH);
   tcsetattr(fd, TCSANOW, &options);
 
-
+  // On OS X, starting in Tiger, we can set a custom baud rate, as follows:
 #if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
+  if (baudRate == -1) {
     speed_t speed = data->baudRate;
     if (ioctl(fd,  IOSSIOSPEED, &speed) == -1) {
-      snprintf(data->errorString, sizeof(data->errorString), "Error %s calling ioctl( ..., IOSSIOSPEED, ... )", strerror(errno) );
-    }
-#endif 
+      snprintf(data->errorString, sizeof(data->errorString), "Error %s calling ioctl( ..., IOSSIOSPEED, %ld )", strerror(errno), speed );
+    }      
+  }
+#endif
 
   data->result = fd;
 }
@@ -228,16 +303,50 @@ void EIO_Open(uv_work_t* req) {
 void EIO_Write(uv_work_t* req) {
   QueuedWrite* queuedWrite = static_cast<QueuedWrite*>(req->data);
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
+  
+  data->result = 0;
+  errno = 0;
 
-  if ((data->result = write(data->fd, data->bufferData, data->bufferLength)) == -1) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error %s calling write(...)", strerror(errno) );
-  }
+  // We carefully *DON'T* break out of this loop.
+  do {
+    if ((data->result = write(data->fd, data->bufferData + data->offset, data->bufferLength - data->offset)) == -1) {
+      if (errno == EAGAIN || errno == EWOULDBLOCK)
+        return;
+
+      // The write call might be interrupted, if it is we just try again immediately.
+      if (errno != EINTR) {
+        snprintf(data->errorString, sizeof(data->errorString), "Error %s calling write(...)", strerror(errno) );
+        return;
+      }
+
+      // try again...
+      continue;
+    }
+    // there wasn't an error, do the math on what we actually wrote...
+    else {
+      data->offset += data->result;
+    }
+
+    // if we get there, we really don't want to loop
+    // break;
+  } while (data->bufferLength > data->offset);
 }
 
 void EIO_Close(uv_work_t* req) {
   CloseBaton* data = static_cast<CloseBaton*>(req->data);
 
-  close(data->fd);
+  // printf(">>>> close fd %d\n", data->fd);
+
+  // fcntl(data->fd, F_SETFL, FNONBLOCK);
+
+  ssize_t r;
+
+  r = close(data->fd);
+
+  // printf(">>>> closed fd %d (err: %d)\n", data->fd, errno);
+
+  if (r && r != EBADF)
+    snprintf(data->errorString, sizeof(data->errorString), "Unable to close fd %d, errno: %d", data->fd, errno);
 }
 
 #ifdef __APPLE__

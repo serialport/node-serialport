@@ -62,7 +62,11 @@ public:
   int baudRate;
   int dataBits;
   int bufferSize;
-  bool flowControl;
+  bool rtscts;
+  bool xon;
+  bool xoff;
+  bool xany;
+  bool dsrdtr;
   SerialPortParity parity;
   SerialPortStopBits stopBits;
   char errorString[ERROR_STRING_SIZE];
@@ -73,6 +77,7 @@ public:
   int fd;
   char* bufferData;
   size_t bufferLength;
+  size_t offset;
   v8::Persistent<v8::Object> buffer;
   v8::Persistent<v8::Value> callback;
   int result;
