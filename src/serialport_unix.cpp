@@ -123,7 +123,7 @@ void EIO_Open(uv_work_t* req) {
     return;
   }
 
-  
+
   int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_NDELAY);
   int fd = open(data->path, flags);
 
@@ -131,7 +131,7 @@ void EIO_Open(uv_work_t* req) {
     snprintf(data->errorString, sizeof(data->errorString), "Cannot open %s", data->path);
     return;
   }
-  
+
 
   // struct sigaction saio;
   // saio.sa_handler = sigio_handler;
@@ -153,7 +153,7 @@ void EIO_Open(uv_work_t* req) {
   // Specify the baud rate
 
 
-  // On linux you can alter the meaning of B38400 to mean a custom baudrate...  
+  // On linux you can alter the meaning of B38400 to mean a custom baudrate...
 #if defined(__linux__) && defined(ASYNC_SPD_CUST)
   if (baudRate == -1) {
     struct serial_struct serinfo;
@@ -162,7 +162,7 @@ void EIO_Open(uv_work_t* req) {
       serinfo.flags &= ~ASYNC_SPD_MASK;
       serinfo.flags |= ASYNC_SPD_CUST;
       serinfo.custom_divisor = (serinfo.baud_base + (data->baudRate / 2)) / data->baudRate;
-      if (serinfo.custom_divisor < 1) 
+      if (serinfo.custom_divisor < 1)
         serinfo.custom_divisor = 1;
 
       ioctl(fd, TIOCSSERIAL, &serinfo);
@@ -177,7 +177,7 @@ void EIO_Open(uv_work_t* req) {
     // Now we use "B38400" to trigger the special baud rate.
     baudRate = B38400;
   }
-#endif  
+#endif
 
   if (baudRate != -1) {
     cfsetispeed(&options, baudRate);
@@ -185,7 +185,7 @@ void EIO_Open(uv_work_t* req) {
   }
 
 // Removing check for valid BaudRates due to ticket: #140
-// #endif 
+// #endif
 
   /*
     IGNPAR  : ignore bytes with parity errors
@@ -211,8 +211,8 @@ void EIO_Open(uv_work_t* req) {
   if (data->rtscts) {
     options.c_cflag |= CRTSCTS;
     // evaluate specific flow control options
-  } 
-  
+  }
+
   options.c_iflag &= ~(IXON | IXOFF | IXANY);
 
   if (data->xon) {
@@ -234,18 +234,21 @@ void EIO_Open(uv_work_t* req) {
     options.c_cflag &= ~PARENB;
     options.c_cflag &= ~CSTOPB;
     options.c_cflag &= ~CSIZE;
+    options.c_cflag |= CS8;
     break;
   case SERIALPORT_PARITY_ODD:
     options.c_cflag |= PARENB;
     options.c_cflag |= PARODD;
     options.c_cflag &= ~CSTOPB;
     options.c_cflag &= ~CSIZE;
+    options.c_cflag |= CS7;
     break;
   case SERIALPORT_PARITY_EVEN:
     options.c_cflag |= PARENB;
     options.c_cflag &= ~PARODD;
     options.c_cflag &= ~CSTOPB;
     options.c_cflag &= ~CSIZE;
+    options.c_cflag |= CS7;
     break;
   default:
     snprintf(data->errorString, sizeof(data->errorString), "Invalid parity setting %d", data->parity);
@@ -290,7 +293,7 @@ void EIO_Open(uv_work_t* req) {
     speed_t speed = data->baudRate;
     if (ioctl(fd,  IOSSIOSPEED, &speed) == -1) {
       snprintf(data->errorString, sizeof(data->errorString), "Error %s calling ioctl( ..., IOSSIOSPEED, %ld )", strerror(errno), speed );
-    }      
+    }
   }
 #endif
 
@@ -300,7 +303,7 @@ void EIO_Open(uv_work_t* req) {
 void EIO_Write(uv_work_t* req) {
   QueuedWrite* queuedWrite = static_cast<QueuedWrite*>(req->data);
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
-  
+
   data->result = 0;
   errno = 0;
 
@@ -356,7 +359,7 @@ static stDeviceListItem* GetSerialDevices();
 
 static kern_return_t FindModems(io_iterator_t *matchingServices)
 {
-    kern_return_t     kernResult; 
+    kern_return_t     kernResult;
     CFMutableDictionaryRef  classesToMatch;
     classesToMatch = IOServiceMatching(kIOSerialBSDServiceValue);
     if (classesToMatch != NULL)
@@ -365,16 +368,16 @@ static kern_return_t FindModems(io_iterator_t *matchingServices)
                              CFSTR(kIOSerialBSDTypeKey),
                              CFSTR(kIOSerialBSDAllTypes));
     }
-    
-    kernResult = IOServiceGetMatchingServices(kIOMasterPortDefault, classesToMatch, matchingServices);    
-    
+
+    kernResult = IOServiceGetMatchingServices(kIOMasterPortDefault, classesToMatch, matchingServices);
+
     return kernResult;
 }
 
 static io_registry_entry_t GetUsbDevice(char* pathName)
 {
     io_registry_entry_t device = 0;
-            
+
     CFMutableDictionaryRef classesToMatch = IOServiceMatching(kIOUSBDeviceClassName);
     if (classesToMatch != NULL)
     {
@@ -384,7 +387,7 @@ static io_registry_entry_t GetUsbDevice(char* pathName)
         {
             io_service_t service;
             Boolean deviceFound = false;
-            
+
             while ((service = IOIteratorNext(matchingServices)) && !deviceFound)
             {
                 CFStringRef bsdPathAsCFString = (CFStringRef) IORegistryEntrySearchCFProperty(service, kIOServicePlane, CFSTR(kIOCalloutDeviceKey), kCFAllocatorDefault, kIORegistryIterateRecursively);
@@ -393,15 +396,15 @@ static io_registry_entry_t GetUsbDevice(char* pathName)
                 {
                     Boolean result;
                     char    bsdPath[MAXPATHLEN];
-                    
+
                     // Convert the path from a CFString to a C (NUL-terminated)
                     result = CFStringGetCString(bsdPathAsCFString,
                                                 bsdPath,
                                                 sizeof(bsdPath),
                                                 kCFStringEncodingUTF8);
-                    
+
                     CFRelease(bsdPathAsCFString);
-                    
+
                     if (result && (strcmp(bsdPath, pathName) == 0))
                     {
                         deviceFound = true;
@@ -416,10 +419,10 @@ static io_registry_entry_t GetUsbDevice(char* pathName)
                 }
             }
             // Release the iterator.
-            IOObjectRelease(matchingServices); 
+            IOObjectRelease(matchingServices);
         }
     }
-    
+
     return device;
 }
 
@@ -453,38 +456,38 @@ static stDeviceListItem* GetSerialDevices()
     kern_return_t kernResult;
     io_iterator_t serialPortIterator;
     char bsdPath[MAXPATHLEN];
-    
+
     FindModems(&serialPortIterator);
-    
+
     io_service_t modemService;
     kernResult = KERN_FAILURE;
     Boolean modemFound = false;
-    
+
     // Initialize the returned path
     *bsdPath = '\0';
-    
+
     stDeviceListItem* devices = NULL;
     stDeviceListItem* lastDevice = NULL;
     int length = 0;
-    
+
     while ((modemService = IOIteratorNext(serialPortIterator)))
     {
         CFTypeRef bsdPathAsCFString;
-  
+
         bsdPathAsCFString = IORegistryEntrySearchCFProperty(modemService, kIOServicePlane, CFSTR(kIOCalloutDeviceKey), kCFAllocatorDefault, kIORegistryIterateRecursively);
-        
+
         if (bsdPathAsCFString)
         {
             Boolean result;
-            
+
             // Convert the path from a CFString to a C (NUL-terminated)
-      
+
             result = CFStringGetCString((CFStringRef) bsdPathAsCFString,
                                         bsdPath,
-                                        sizeof(bsdPath), 
+                                        sizeof(bsdPath),
                                         kCFStringEncodingUTF8);
             CFRelease(bsdPathAsCFString);
-            
+
             if (result)
             {
                 stDeviceListItem *deviceListItem = (stDeviceListItem*) malloc(sizeof(stDeviceListItem));
@@ -497,24 +500,24 @@ static stDeviceListItem* GetSerialDevices()
                 serialDevice->serialNumber[0] = '\0';
                 deviceListItem->next = NULL;
                 deviceListItem->length = &length;
-                                
+
                 if (devices == NULL) {
                     devices = deviceListItem;
                 }
                 else {
                     lastDevice->next = deviceListItem;
                 }
-                
+
                 lastDevice = deviceListItem;
                 length++;
-                
+
                 modemFound = true;
                 kernResult = KERN_SUCCESS;
-                
+
                 uv_mutex_lock(&list_mutex);
 
                 io_registry_entry_t device = GetUsbDevice(bsdPath);
-        
+
                 if (device) {
                     CFStringRef manufacturerAsCFString = (CFStringRef) IORegistryEntrySearchCFProperty(device,
                                           kIOServicePlane,
@@ -526,7 +529,7 @@ static stDeviceListItem* GetSerialDevices()
                     {
                         Boolean result;
                         char    manufacturer[MAXPATHLEN];
-                        
+
                         // Convert from a CFString to a C (NUL-terminated)
                         result = CFStringGetCString(manufacturerAsCFString,
                                                     manufacturer,
@@ -536,7 +539,7 @@ static stDeviceListItem* GetSerialDevices()
                         if (result) {
                           strcpy(serialDevice->manufacturer, manufacturer);
                         }
-                        
+
                         CFRelease(manufacturerAsCFString);
                     }
 
@@ -550,7 +553,7 @@ static stDeviceListItem* GetSerialDevices()
                     {
                         Boolean result;
                         char    serialNumber[MAXPATHLEN];
-                        
+
                         // Convert from a CFString to a C (NUL-terminated)
                         result = CFStringGetCString(serialNumberAsCFString,
                                                     serialNumber,
@@ -560,30 +563,30 @@ static stDeviceListItem* GetSerialDevices()
                         if (result) {
                           strcpy(serialDevice->serialNumber, serialNumber);
                         }
-                        
+
                         CFRelease(serialNumberAsCFString);
                     }
 
                     IOCFPlugInInterface **plugInInterface = NULL;
                     SInt32        score;
                     HRESULT       res;
-                    
+
                     IOUSBDeviceInterface  **deviceInterface = NULL;
-                    
+
                     kernResult = IOCreatePlugInInterfaceForService(device, kIOUSBDeviceUserClientTypeID, kIOCFPlugInInterfaceID,
                                                            &plugInInterface, &score);
-                    
+
                     if ((kIOReturnSuccess != kernResult) || !plugInInterface) {
                         continue;
                     }
-                    
+
                     // Use the plugin interface to retrieve the device interface.
                     res = (*plugInInterface)->QueryInterface(plugInInterface, CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID),
                                                              (LPVOID*) &deviceInterface);
-                    
+
                     // Now done with the plugin interface.
                     (*plugInInterface)->Release(plugInInterface);
-              
+
                     if (res || deviceInterface == NULL) {
                         continue;
                     }
@@ -597,7 +600,7 @@ static stDeviceListItem* GetSerialDevices()
                     // Release the device
                     (void) IOObjectRelease(device);
                 }
-                
+
                 uv_mutex_unlock(&list_mutex);
             }
         }
@@ -605,9 +608,9 @@ static stDeviceListItem* GetSerialDevices()
         // Release the io_service_t now that we are done with it.
         (void) IOObjectRelease(modemService);
     }
-    
+
     IOObjectRelease(serialPortIterator);  // Release the iterator.
-    
+
     return devices;
 }
 
@@ -628,9 +631,9 @@ void EIO_List(uv_work_t* req) {
   stDeviceListItem* devices = GetSerialDevices();
 
   if (*(devices->length) > 0)
-  {    
+  {
     stDeviceListItem* next = devices;
-    
+
     for (int i = 0, len = *(devices->length); i < len; i++) {
         stSerialDevice device = (* next).value;
 
