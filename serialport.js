@@ -51,7 +51,7 @@ var parsers = {
       // Collect data
       data += buffer.toString(encoding);
       // Split collected data by delimiter
-      var parts = data.split(delimiter)
+      var parts = data.split(delimiter);
       data = parts.pop();
       parts.forEach(function (part, i, array) {
         emitter.emit('data', part);

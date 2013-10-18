@@ -38,7 +38,9 @@
   },
   "devDependencies": {
     "mocha": "*",
-    "chai": "*"
+    "chai": "*",
+    "sinon-chai": "~2.4.0",
+    "sinon": "~1.7.3"
   },
   "engines": {
     "node": ">= 0.10.0"
@@ -48,6 +50,6 @@
     "serialportterm": "./bin/serialportTerminal.js"
   },
   "scripts": {
-    "test": "mocha -R spec -t 60s -s 60s"
+    "test": "mocha -R spec -t 60s -s 60s tests/test_parsers.js"
   }
 }
