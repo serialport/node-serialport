@@ -269,44 +269,48 @@ void EIO_Write(uv_work_t* req) {
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
   data->result = 0;
 
-  OVERLAPPED ov = {0};
-  // Event used by GetOverlappedResult(..., TRUE) to wait for outgoing data or timeout
-  // Event MUST be used if program has several simultaneous asynchronous operations
-  // on the same handle (i.e. ReadFile and WriteFile)
-  ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+  do {
+	  OVERLAPPED ov = {0};
+	  // Event used by GetOverlappedResult(..., TRUE) to wait for outgoing data or timeout
+	  // Event MUST be used if program has several simultaneous asynchronous operations
+	  // on the same handle (i.e. ReadFile and WriteFile)
+	  ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
-  // Start write operation - synchrounous or asynchronous
-  DWORD bytesWrittenSync = 0;
-  if(!WriteFile((HANDLE)data->fd, data->bufferData, static_cast<DWORD>(data->bufferLength), &bytesWrittenSync, &ov)) {
-    DWORD lastError = GetLastError();
-    if(lastError != ERROR_IO_PENDING) {
-      // Write operation error
-      ErrorCodeToString("Writing to COM port (WriteFile)", lastError, data->errorString);
-    }
-    else {
-      // Write operation is asynchronous and is pending
-      // We MUST wait for operation completion before deallocation of OVERLAPPED struct
-      // or write data buffer
+	  // Start write operation - synchrounous or asynchronous
+	  DWORD bytesWrittenSync = 0;
+	  if(!WriteFile((HANDLE)data->fd, data->bufferData, static_cast<DWORD>(data->bufferLength), &bytesWrittenSync, &ov)) {
+		DWORD lastError = GetLastError();
+		if(lastError != ERROR_IO_PENDING) {
+		  // Write operation error
+		  ErrorCodeToString("Writing to COM port (WriteFile)", lastError, data->errorString);
+		}
+		else {
+		  // Write operation is asynchronous and is pending
+		  // We MUST wait for operation completion before deallocation of OVERLAPPED struct
+		  // or write data buffer
 
-      // Wait for async write operation completion or timeout
-      DWORD bytesWrittenAsync = 0;
-      if(!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesWrittenAsync, TRUE)) {
-        // Write operation error
-        DWORD lastError = GetLastError();
-        ErrorCodeToString("Writing to COM port (GetOverlappedResult)", lastError, data->errorString);
-      }
-      else {
-        // Write operation completed asynchronously
-        data->result = bytesWrittenAsync;
-      }
-    }
-  }
-  else {
-    // Write operation completed synchronously
-    data->result = bytesWrittenSync;
-  }
+		  // Wait for async write operation completion or timeout
+		  DWORD bytesWrittenAsync = 0;
+		  if(!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesWrittenAsync, TRUE)) {
+			// Write operation error
+			DWORD lastError = GetLastError();
+			ErrorCodeToString("Writing to COM port (GetOverlappedResult)", lastError, data->errorString);
+		  }
+		  else {
+			// Write operation completed asynchronously
+			data->result = bytesWrittenAsync;
+		  }
+		}
+	  }
+	  else {
+		// Write operation completed synchronously
+		data->result = bytesWrittenSync;
+	  }
 
-  CloseHandle(ov.hEvent);
+	  data->offset += data->result;
+	  CloseHandle(ov.hEvent);
+  } while (data->bufferLength > data->offset);
+
 }
 
 void EIO_Close(uv_work_t* req) {
