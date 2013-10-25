@@ -1,5 +1,6 @@
+/*jslint node: true */
+/*global describe, it */
 "use strict";
-/*global describe it require */
 
 var parsers = require("../serialport").parsers;
 var chai = require("chai");
@@ -14,7 +15,7 @@ describe("parsers", function () {
   describe("#raw", function () {
     it("emits data exactly as it's written", function () {
       var mockEmitter = { emit: sinon.spy() };
-      var data = Buffer("BOGUS");
+      var data = new Buffer("BOGUS");
       parsers.raw(mockEmitter, data);
       mockEmitter.emit.should.have.been.calledWith("data", data);
     });
@@ -23,7 +24,7 @@ describe("parsers", function () {
   describe("#readline", function () {
     it("emits data events split on a delimiter", function () {
       var parser = parsers.readline();
-      var data = Buffer("I love robots\rEach and Every One\r");
+      var data = new Buffer("I love robots\rEach and Every One\r");
       var mockEmitter = { emit: sinon.spy() };
       parser(mockEmitter, data);
       mockEmitter.emit.should.have.been.calledWith("data", "I love robots");
