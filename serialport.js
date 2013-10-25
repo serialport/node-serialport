@@ -431,7 +431,9 @@ SerialPort.prototype.close = function (callback) {
         self.serialPoller.close();
       }
 
-      callback();
+      if (callback) {
+        callback();
+      }
     });
   } catch (ex) {
     self.closing = false;
