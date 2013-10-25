@@ -82,4 +82,37 @@ describe ('basics', function() {
 			});
 		});
 	});
+
+	describe('test error handling', function() {
+
+		it('creates a new SerialPort with invalid name, opens it, and looks for error callback', function(done) {
+
+			var errorCallback = function(err) {
+				chai.assert.isDefined(err);
+				done();
+			};
+
+			var port = new serialPort.SerialPort('johnJacobJingleheimerSchmidt', null, true, errorCallback);
+		});
+
+		it('creates a new SerialPort with invalid name, opens it, and looks for error event', function(done) {
+
+			serialPort.on('error', function(err) {
+				chai.assert.isDefined(err);
+				done();
+			});
+
+			var port = new serialPort.SerialPort('johnJacobJingleheimerSchmidt', null, true);
+		});
+
+		it('creates a new SerialPort with invalid databits and looks for error callback', function(done) {
+
+			var errorCallback = function(err) {
+				chai.assert.isDefined(err);
+				done();
+			};
+
+			var port = new serialPort.SerialPort('johnJacobJingleheimerSchmidt', { databits : 19 }, false, errorCallback);
+		});
+	});
 });
