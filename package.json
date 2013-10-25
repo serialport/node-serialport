@@ -50,6 +50,6 @@
     "serialportterm": "./bin/serialportTerminal.js"
   },
   "scripts": {
-    "test": "mocha -R spec -t 60s -s 60s"
+    "test": "mocha -R spec"
   }
 }
