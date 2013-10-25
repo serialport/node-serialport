@@ -234,7 +234,7 @@ function SerialPortFactory() {
       }
 
       self.emit('open');
-      if (callback) { callback(err); }
+      if (callback) { callback(); }
     });
   };
 
