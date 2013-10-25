@@ -1,9 +1,8 @@
+/*jslint node: true */
 "use strict";
-/*global process require exports console */
 
 // Copyright 2011 Chris Williams <chris@iterativedesigns.com>
 
-var Buffer = require('buffer').Buffer;
 var SerialPortBinding = require("bindings")("serialport.node");
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
@@ -34,7 +33,6 @@ function allocNewPool() {
   pool = new Buffer(kPoolSize);
   pool.used = 0;
 }
-
 
 var parsers = {
   raw: function (emitter, buffer) {
@@ -73,13 +71,23 @@ var _options = {
   buffersize: 256,
   parser: parsers.raw
 };
-function SerialPort (path, options, openImmediately) {
+
+function SerialPort (path, options, openImmediately, callback) {
+
+  var args = Array.prototype.slice.call(arguments);
+  callback = args.pop();
+  if (typeof(callback) !== 'function') {
+    callback = null;
+  }
+
   options = options || {};
   openImmediately = (openImmediately === undefined || openImmediately === null) ? true : openImmediately;
 
   var self = this;
 
   stream.Stream.call(this);
+
+  var err;
 
   options.baudRate = options.baudRate || options.baudrate || _options.baudrate;
   // Removing check for valid BaudRates due to ticket: #140
@@ -89,20 +97,42 @@ function SerialPort (path, options, openImmediately) {
 
   options.dataBits = options.dataBits || options.databits || _options.databits;
   if (DATABITS.indexOf(options.dataBits) == -1) {
-    throw new Error('Invalid "databits": ' + options.dataBits);
+    err = new Error('Invalid "databits": ' + options.dataBits);
+    if (callback) {
+      callback(err);
+    } else {
+      // TODO: emit error event
+    }
   }
  
   options.stopBits = options.stopBits || options.stopbits || _options.stopbits;
   if (STOPBITS.indexOf(options.stopBits) == -1) {
-    throw new Error('Invalid "stopbits": ' + options.stopbits);
+    err = new Error('Invalid "stopbits": ' + options.stopbits);
+    if (callback) {
+      callback(err);
+    } else {
+      // TODO: emit error event
+    }
+
   }
   
   options.parity = options.parity || _options.parity;
   if (PARITY.indexOf(options.parity) == -1) {
-    throw new Error('Invalid "parity": ' + options.parity);
+    err = new Error('Invalid "parity": ' + options.parity);
+    if (callback) {
+      callback(err);
+    } else {
+      // TODO: emit error event
+    }
+
   }
   if (!path) {
-    throw new Error('Invalid port specified: ' + path);
+    err = new Error('Invalid port specified: ' + path);
+    if (callback) {
+      callback(err);
+    } else {
+      // TODO: emit error event
+    }
   }
 
   // flush defaults, then update with provided details
@@ -121,7 +151,12 @@ function SerialPort (path, options, openImmediately) {
         var fcup = flowControl.toUpperCase();
         var idx = FLOWCONTROLS.indexOf(fcup);
         if (idx < 0) {
-          throw new Error('Invalid "flowControl": ' + fcup + ". Valid options: "+FLOWCONTROLS.join(", "));
+          var err = new Error('Invalid "flowControl": ' + fcup + ". Valid options: "+FLOWCONTROLS.join(", "));
+          if (callback) {
+            callback(err);
+          } else {
+            // TODO: emit error event
+          }
         } else {
 
           // "XON", "XOFF", "XANY", "DTRDTS", "RTSCTS"
@@ -132,7 +167,7 @@ function SerialPort (path, options, openImmediately) {
             case 3: options.rtscts = true; break;
           }
         }
-      })
+      });
     }
   }
 
@@ -148,14 +183,14 @@ function SerialPort (path, options, openImmediately) {
   // };
 
   options.errorCallback = function (err) {
-    // console.log("sp err:", JSON.stringify(err));
-    self.emit('error', {spErr: err});
+    self.emit('error', err);
   };
   options.disconnectedCallback = function () {
     if (self.closing) {
       return;
     }
-    self.emit('error', new Error("Disconnected"));
+    var err = new Error("Disconnected");
+    self.options.errorCallback(err);
     // self.close();
   };
 
@@ -190,7 +225,7 @@ SerialPort.prototype.open = function (callback) {
   SerialPortBinding.open(this.path, this.options, function (err, fd) {
     self.fd = fd;
     if (err) {
-      self.emit('error', {openErr: err});
+      self.options.errorCallback(err);
       if (callback) { callback(err); }
       return;
     }
@@ -219,11 +254,12 @@ SerialPort.prototype.open = function (callback) {
 SerialPort.prototype.write = function (buffer, callback) {
   var self = this;
   if (!this.fd) {
+    var err = new Error("Serialport not open.");
+    self.options.errorCallback(err);
     if (callback) {
-      return callback(new Error("Serialport not open."));
-    } else {
-      return;
+      callback(err);
     }
+    return;
   }
 
   if (!Buffer.isBuffer(buffer)) {
@@ -231,7 +267,7 @@ SerialPort.prototype.write = function (buffer, callback) {
   }
   SerialPortBinding.write(this.fd, buffer, function (err, results) {
     if (err) {
-      self.emit('error', {spWriteErr: err});
+      self.options.errorCallback(err);
     }
     if (callback) {
       callback(err, results);
@@ -341,7 +377,7 @@ if (process.platform !== 'win32') {
     }
 
     // No longer open?
-    if (null == self.fd)
+    if (null === self.fd)
       return;
 
     self._read();
@@ -358,11 +394,12 @@ SerialPort.prototype.close = function (callback) {
     return;
   }
   if (!fd) {
+    var err = new Error("Serialport not open.");
+    self.options.errorCallback(err);
     if (callback) {
-      return callback(new Error("Serialport not open."));
-    } else {
-      return;
+      callback(err);
     }
+    return;
   }
 
   self.closing = true;
@@ -375,12 +412,15 @@ SerialPort.prototype.close = function (callback) {
     }
 
     SerialPortBinding.close(fd, function (err) {
+  
       if (err) {
-        self.emit('error', err);
+        self.options.errorCallback(err);
+        if (callback) {
+          callback(err);
+        }
+        return;
       }
-      if (callback) {
-        callback(err);
-      }
+  
       self.emit('close');
       self.removeAllListeners();
       self.closing = false;
@@ -390,10 +430,17 @@ SerialPort.prototype.close = function (callback) {
         self.readable = false;
         self.serialPoller.close();
       }
+
+      if (callback) {
+        callback();
+      }
     });
   } catch (ex) {
     self.closing = false;
-    throw ex;
+    self.options.errorCallback(ex);
+    if (callback) {
+      callback(ex);
+    }
   }
 };
 
@@ -404,15 +451,26 @@ function listUnix (callback) {
       if (err.errno === 34) {
         return callback(null, []);
       }
-      return console.log(err);
+
+      // TODO: emit error event
+      if (callback) {
+        callback(err);
+      }
+      return;
     }
+
     var dirName = "/dev/serial/by-id";
     async.map(files, function (file, callback) {
       var fileName = path.join(dirName, file);
       fs.readlink(fileName, function (err, link) {
         if (err) {
-          return callback(err);
+          // TODO: emit error event
+          if (callback) {
+            callback(err);
+          }
+          return;
         }
+
         link = path.resolve(dirName, link);
         callback(null, {
           comName: link,
@@ -457,7 +515,7 @@ function listUnix (callback) {
   
 
 if (process.platform === 'win32') {
-  exports.list = SerialPortBinding.list
+  exports.list = SerialPortBinding.list;
 } else if (process.platform === 'darwin') {
   exports.list = SerialPortBinding.list;
 } else {
@@ -469,16 +527,16 @@ SerialPort.prototype.flush = function (callback) {
   var fd = self.fd;
 
   if (!fd) {
+    var err = new Error("Serialport not open.");
+    self.options.errorCallback(err);
     if (callback) {
-      return callback(new Error("Serialport not open."));
-    } else {
-      return;
+      callback(err);
     }
   }
 
   SerialPortBinding.flush(fd, function (err, result) {
     if (err) {
-      self.emit('error', err);
+      self.options.errorCallback(err);
     }
     if (callback) {
       callback(err, result);
