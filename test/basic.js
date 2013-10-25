@@ -25,6 +25,7 @@ describe ('error handling', function() {
 
 			serialPort.on('error', function(err) {
 				chai.assert.isDefined(err);
+				serialPort.removeAllListeners('error');
 				done();
 			});
 
