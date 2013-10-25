@@ -54,6 +54,6 @@
     "serialportterm": "./bin/serialportTerminal.js"
   },
   "scripts": {
-    "test": "mocha --slow 500 -R spec arduinoTest/**/*.js test/**/*.js"
+    "test": "grunt --verbose"
   }
 }
