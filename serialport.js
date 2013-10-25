@@ -1,10 +1,8 @@
 /*jslint node: true */
 "use strict";
-/*global process require exports console */
 
 // Copyright 2011 Chris Williams <chris@iterativedesigns.com>
 
-var Buffer = require('buffer').Buffer;
 var SerialPortBinding = require("bindings")("serialport.node");
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
@@ -432,6 +430,8 @@ SerialPort.prototype.close = function (callback) {
         self.readable = false;
         self.serialPoller.close();
       }
+
+      callback();
     });
   } catch (ex) {
     self.closing = false;
