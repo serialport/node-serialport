@@ -2,84 +2,69 @@
 /*global describe, it */
 "use strict";
 
-var chai = require('chai');
 var serialPort = require('../serialport');
+var chai = require('chai');
+var sinonChai = require("sinon-chai");
+var sinon = require("sinon");
 
-describe ('basics', function() {
+describe ('error handling', function() {
 	
-	describe('echo hello', function() {
-		it('sends hello to the last port and validates that it is received back (see arduinoEcho.ino for echo sketch)', function(done) {
-			serialPort.list(function(err, ports) {
+	describe('test SerialPort ctor errors', function() {
 
-				chai.assert.isUndefined(err);
-				chai.assert.isDefined(ports);
-				chai.assert.isTrue(ports.length > 0);
+		it('creates a new SerialPort with invalid name, opens it, and looks for error callback', function(done) {
 
-				var data = new Buffer("hello");
+			var errorCallback = function(err) {
+				chai.assert.isDefined(err);
+				done();
+			};
 
-				var port = new serialPort.SerialPort(ports.slice(-1)[0].comName, null, false);
-				port.on('error', function(err) { chai.assert.fail(err); });
+			var port = new serialPort.SerialPort('johnJacobJingleheimerSchmidt', null, true, errorCallback);
+		});
 
-				port.on('data', function(d) {
-					chai.assert.equal(data.toString(), d.toString());
-					port.close(function(err) {
-						chai.assert.isUndefined(err);
-						done();
-					});
-				});
+		it('creates a new SerialPort with invalid name, opens it, and looks for error event', function(done) {
 
-				port.open(function(err) {
-					chai.assert.isUndefined(err);
-					port.write(data);
-				});
+			serialPort.on('error', function(err) {
+				chai.assert.isDefined(err);
+				done();
 			});
+
+			var port = new serialPort.SerialPort('johnJacobJingleheimerSchmidt', null, true);
+		});
+
+		it('creates a new SerialPort with invalid databits and looks for error callback', function(done) {
+
+			var errorCallback = function(err) {
+				chai.assert.isDefined(err);
+				done();
+			};
+
+			var port = new serialPort.SerialPort('johnJacobJingleheimerSchmidt', { databits : 19 }, false, errorCallback);
 		});
 	});
+});
 
-	describe('relaxed baud rate', function() {
-		it('opens a port with a non-standard baud rate', function(done) {
-			serialPort.list(function(err, ports) {
+var parsers = serialPort.parsers;
 
-				chai.assert.isUndefined(err);
-				chai.assert.isDefined(ports);
-				chai.assert.isTrue(ports.length > 0);
+describe("parsers", function () {
 
-				var port = new serialPort.SerialPort(ports.slice(-1)[0].comName, {baudrate: 5}, false);
-				port.on('error', function(err) { chai.assert.fail(err); });
+  describe("#raw", function () {
+    it("emits data exactly as it's written", function () {
+      var mockEmitter = { emit: sinon.spy() };
+      var data = new Buffer("BOGUS");
+      parsers.raw(mockEmitter, data);
+      mockEmitter.emit.should.have.been.calledWith("data", data);
+    });
+  });
 
-				port.open(function(err) {
-					chai.assert.isUndefined(err);
-					port.close(function(err) {
-						chai.assert.isUndefined(err);
-						done();
-					});
-				});
-			});
-		});
-	});
+  describe("#readline", function () {
+    it("emits data events split on a delimiter", function () {
+      var parser = parsers.readline();
+      var data = new Buffer("I love robots\rEach and Every One\r");
+      var mockEmitter = { emit: sinon.spy() };
+      parser(mockEmitter, data);
+      mockEmitter.emit.should.have.been.calledWith("data", "I love robots");
+      mockEmitter.emit.should.have.been.calledWith("data", "Each and Every One");
+    });
+  });
 
-	describe('simple write', function() {
-		it('opens a port and sends data without encountering error', function(done) {
-			serialPort.list(function(err, ports) {
-
-				chai.assert.isUndefined(err);
-				chai.assert.isDefined(ports);
-				chai.assert.isTrue(ports.length > 0);
-
-				var data = new Buffer("hello");
-
-				var port = new serialPort.SerialPort(ports.slice(-1)[0].comName, null, false);
-				port.on('error', function(err) { chai.assert.fail(err); });
-
-				port.open(function(err) {
-					chai.assert.isUndefined(err);
-					port.write(data);
-					port.close(function(err) {
-						chai.assert.isUndefined(err);
-						done();
-					});
-				});
-			});
-		});
-	});
 });

@@ -4,5 +4,5 @@ node_js:
 compiler: clang
 
 "scripts": {
-  "test": "mocha -R spec"
+  "test": "grunt --verbose"
 }

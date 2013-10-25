@@ -40,7 +40,11 @@
     "mocha": "*",
     "chai": "*",
     "sinon-chai": "~2.4.0",
-    "sinon": "~1.7.3"
+    "sinon": "~1.7.3",
+    "grunt": "*",
+    "grunt-cli": "*",
+    "grunt-mocha-test": "*",
+    "grunt-contrib-jshint": "*"
   },
   "engines": {
     "node": ">= 0.10.0"
@@ -50,6 +54,6 @@
     "serialportterm": "./bin/serialportTerminal.js"
   },
   "scripts": {
-    "test": "mocha -R spec"
+    "test": "mocha --slow 500 -R spec arduinoTest/**/*.js test/**/*.js"
   }
 }
