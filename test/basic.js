@@ -52,7 +52,7 @@ describe("parsers", function () {
       var mockEmitter = { emit: sinon.spy() };
       var data = new Buffer("BOGUS");
       parsers.raw(mockEmitter, data);
-      mockEmitter.emit.should.have.been.calledWith("data", data);
+      mockEmitter.emit.calledWith("data", data);
     });
   });
 
@@ -62,8 +62,8 @@ describe("parsers", function () {
       var data = new Buffer("I love robots\rEach and Every One\r");
       var mockEmitter = { emit: sinon.spy() };
       parser(mockEmitter, data);
-      mockEmitter.emit.should.have.been.calledWith("data", "I love robots");
-      mockEmitter.emit.should.have.been.calledWith("data", "Each and Every One");
+      mockEmitter.emit.calledWith("data", "I love robots");
+      mockEmitter.emit.calledWith("data", "Each and Every One");
     });
   });
 

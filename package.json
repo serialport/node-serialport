@@ -39,15 +39,15 @@
   "devDependencies": {
     "mocha": "*",
     "chai": "*",
-    "sinon-chai": "~2.4.0",
-    "sinon": "~1.7.3",
+    "sinon-chai": "*",
+    "sinon": "*",
     "grunt": "*",
     "grunt-cli": "*",
     "grunt-mocha-test": "*",
     "grunt-contrib-jshint": "*"
   },
   "engines": {
-    "node": ">= 0.10.0"
+    "node": "0.10.x"
   },
   "bin": {
     "serialportlist": "./bin/serialportList.js",
