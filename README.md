@@ -12,7 +12,9 @@
   8ee88 88ee 88   8 88 88  8 88eee 88    8eee8 88   8  88
 ```
 
-Version: 1.1.3 - Released July 29, 2013
+[![Build Status](https://travis-ci.org/voodootikigod/node-serialport.png?branch=master)](https://travis-ci.org/voodootikigod/node-serialport)
+
+Version: 1.2.3 - Released October 25, 2013
 
 *****
 
