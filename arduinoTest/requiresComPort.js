@@ -89,4 +89,32 @@ describe ('requiresComPort', function() {
       });
     });
   });
+
+    describe('validate close event', function() {
+    it('opens a port then closes it using events', function(done) {
+      serialPort.list(function(err, ports) {
+
+        chai.assert.isUndefined(err, util.inspect(err));
+        chai.assert.isDefined(ports, 'ports is not defined');
+        chai.assert.isTrue(ports.length > 0, 'no ports found');
+
+        var port = new serialPort.SerialPort(ports.slice(-1)[0].comName, null, false);
+
+        port.on('error', function(err) {
+          chai.assert.fail(util.inspect(err));
+        });
+
+        port.on('open', function() {
+          port.close();
+        });
+
+        port.on('close', function() {
+          done();
+        });
+
+        port.open();
+      });
+    });
+  });
+
 });
