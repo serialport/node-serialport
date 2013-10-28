@@ -8,40 +8,40 @@ var sinonChai = require("sinon-chai");
 var sinon = require("sinon");
 
 describe ('error handling', function() {
-	
-	describe('test SerialPort ctor errors', function() {
+  
+  describe('test SerialPort ctor errors', function() {
 
-		it('creates a new SerialPort with invalid name, opens it, and looks for error callback', function(done) {
+    it('creates a new SerialPort with invalid name, opens it, and looks for error callback', function(done) {
 
-			var errorCallback = function(err) {
-				chai.assert.isDefined(err);
-				done();
-			};
+      var errorCallback = function(err) {
+        chai.assert.isDefined(err, 'err is not defined');
+        done();
+      };
 
-			var port = new serialPort.SerialPort('johnJacobJingleheimerSchmidt', null, true, errorCallback);
-		});
+      var port = new serialPort.SerialPort('johnJacobJingleheimerSchmidt', null, true, errorCallback);
+    });
 
-		it('creates a new SerialPort with invalid name, opens it, and looks for error event', function(done) {
+    it('creates a new SerialPort with invalid name, opens it, and looks for error event', function(done) {
 
-			serialPort.on('error', function(err) {
-				chai.assert.isDefined(err);
-				serialPort.removeAllListeners('error');
-				done();
-			});
+      serialPort.on('error', function(err) {
+        chai.assert.isDefined(err, 'err is not defined');
+        serialPort.removeAllListeners('error');
+        done();
+      });
 
-			var port = new serialPort.SerialPort('johnJacobJingleheimerSchmidt', null, true);
-		});
+      var port = new serialPort.SerialPort('johnJacobJingleheimerSchmidt', null, true);
+    });
 
-		it('creates a new SerialPort with invalid databits and looks for error callback', function(done) {
+    it('creates a new SerialPort with invalid databits and looks for error callback', function(done) {
 
-			var errorCallback = function(err) {
-				chai.assert.isDefined(err);
-				done();
-			};
+      var errorCallback = function(err) {
+        chai.assert.isDefined(err, 'err is not defined');
+        done();
+      };
 
-			var port = new serialPort.SerialPort('johnJacobJingleheimerSchmidt', { databits : 19 }, false, errorCallback);
-		});
-	});
+      var port = new serialPort.SerialPort('johnJacobJingleheimerSchmidt', { databits : 19 }, false, errorCallback);
+    });
+  });
 });
 
 var parsers = serialPort.parsers;
@@ -69,36 +69,36 @@ describe("parsers", function () {
   });
 
 
-	describe('test error handling', function() {
+  describe('test error handling', function() {
 
-		it('creates a new SerialPort with invalid name, opens it, and looks for error callback', function(done) {
+    it('creates a new SerialPort with invalid name, opens it, and looks for error callback', function(done) {
 
-			var errorCallback = function(err) {
-				chai.assert.isDefined(err);
-				done();
-			};
+      var errorCallback = function(err) {
+        chai.assert.isDefined(err, 'err is not defined');
+        done();
+      };
 
-			var port = new serialPort.SerialPort('johnJacobJingleheimerSchmidt', null, true, errorCallback);
-		});
+      var port = new serialPort.SerialPort('johnJacobJingleheimerSchmidt', null, true, errorCallback);
+    });
 
-		it('creates a new SerialPort with invalid name, opens it, and looks for error event', function(done) {
+    it('creates a new SerialPort with invalid name, opens it, and looks for error event', function(done) {
 
-			serialPort.on('error', function(err) {
-				chai.assert.isDefined(err);
-				done();
-			});
+      serialPort.on('error', function(err) {
+        chai.assert.isDefined(err, 'err is not defined');
+        done();
+      });
 
-			var port = new serialPort.SerialPort('johnJacobJingleheimerSchmidt', null, true);
-		});
+      var port = new serialPort.SerialPort('johnJacobJingleheimerSchmidt', null, true);
+    });
 
-		it('creates a new SerialPort with invalid databits and looks for error callback', function(done) {
+    it('creates a new SerialPort with invalid databits and looks for error callback', function(done) {
 
-			var errorCallback = function(err) {
-				chai.assert.isDefined(err);
-				done();
-			};
+      var errorCallback = function(err) {
+        chai.assert.isDefined(err, 'err is not defined');
+        done();
+      };
 
-			var port = new serialPort.SerialPort('johnJacobJingleheimerSchmidt', { databits : 19 }, false, errorCallback);
-		});
-	});
+      var port = new serialPort.SerialPort('johnJacobJingleheimerSchmidt', { databits : 19 }, false, errorCallback);
+    });
+  });
 });

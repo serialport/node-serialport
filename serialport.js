@@ -212,8 +212,11 @@ function SerialPortFactory() {
     SerialPortBinding.open(this.path, this.options, function (err, fd) {
       self.fd = fd;
       if (err) {
-        
-        if (callback) { callback(err); } else { self.emit('error', err); }
+        if (callback) {
+          callback(err);
+        } else {
+          self.emit('error', err);
+        }
         return;
       }
       if (process.platform !== 'win32') {
@@ -242,9 +245,10 @@ function SerialPortFactory() {
     var self = this;
     if (!this.fd) {
       var err = new Error("Serialport not open.");
-      self.options.errorCallback(err);
       if (callback) {
         callback(err);
+      } else {
+        self.emit('error', err);
       }
       return;
     }
@@ -253,11 +257,12 @@ function SerialPortFactory() {
       buffer = new Buffer(buffer);
     }
     SerialPortBinding.write(this.fd, buffer, function (err, results) {
-      if (err) {
-        self.options.errorCallback(err);
-      }
       if (callback) {
         callback(err, results);
+      } else {
+        if (err) {
+          self.emit('error', err);
+        }
       }
     });
   };
@@ -293,9 +298,8 @@ function SerialPortFactory() {
               self.serialPoller.start();
           } else {
             self.fd = null;
-            self.options.errorCallback(err);
+            self.emit('error', err);
             self.readable = false;
-            return;
           }
         }
 
@@ -382,9 +386,10 @@ function SerialPortFactory() {
     }
     if (!fd) {
       var err = new Error("Serialport not open.");
-      self.options.errorCallback(err);
       if (callback) {
         callback(err);
+      } else {
+        self.emit('error', err);
       }
       return;
     }
@@ -401,9 +406,10 @@ function SerialPortFactory() {
       SerialPortBinding.close(fd, function (err) {
     
         if (err) {
-          self.options.errorCallback(err);
           if (callback) {
             callback(err);
+          } else {
+            self.emit('error', err);
           }
           return;
         }
@@ -424,9 +430,10 @@ function SerialPortFactory() {
       });
     } catch (ex) {
       self.closing = false;
-      self.options.errorCallback(ex);
       if (callback) {
         callback(ex);
+      } else {
+        self.emit('error', ex);
       }
     }
   };
@@ -439,7 +446,11 @@ function SerialPortFactory() {
           return callback(null, []);
         }
 
-        if (callback) { callback(err); } else { factory.emit('error', err); }
+        if (callback) {
+          callback(err);
+        } else {
+          factory.emit('error', err);
+        }
         return;
       }
 
@@ -448,7 +459,11 @@ function SerialPortFactory() {
         var fileName = path.join(dirName, file);
         fs.readlink(fileName, function (err, link) {
           if (err) {
-            if (callback) { callback(err); } else { factory.emit('error', err); }
+            if (callback) {
+              callback(err);
+            } else {
+              factory.emit('error', err);
+            }
             return;
           }
 
@@ -500,18 +515,21 @@ function SerialPortFactory() {
 
     if (!fd) {
       var err = new Error("Serialport not open.");
-      self.options.errorCallback(err);
       if (callback) {
         callback(err);
+      } else {
+        self.emit('error', err);
       }
+      return;
     }
 
     SerialPortBinding.flush(fd, function (err, result) {
       if (err) {
-        self.options.errorCallback(err);
-      }
-      if (callback) {
-        callback(err, result);
+        if (callback) {
+          callback(err, result);
+        } else {
+          self.emit('error', err);
+        }
       }
     });
   };
