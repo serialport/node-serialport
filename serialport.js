@@ -242,7 +242,7 @@ function SerialPortFactory() {
     var self = this;
     if (!this.fd) {
       var err = new Error("Serialport not open.");
-      self.options.errorCallback(err);
+      if (self.options.errorCallback) { self.options.errorCallback(err); }
       if (callback) {
         callback(err);
       }
@@ -254,7 +254,7 @@ function SerialPortFactory() {
     }
     SerialPortBinding.write(this.fd, buffer, function (err, results) {
       if (err) {
-        self.options.errorCallback(err);
+        if (self.options.errorCallback) { self.options.errorCallback(err); }
       }
       if (callback) {
         callback(err, results);
@@ -293,7 +293,7 @@ function SerialPortFactory() {
               self.serialPoller.start();
           } else {
             self.fd = null;
-            self.options.errorCallback(err);
+            if (self.options.errorCallback) { self.options.errorCallback(err); }
             self.readable = false;
             return;
           }
@@ -382,7 +382,7 @@ function SerialPortFactory() {
     }
     if (!fd) {
       var err = new Error("Serialport not open.");
-      self.options.errorCallback(err);
+      if (self.options.errorCallback) { self.options.errorCallback(err); }
       if (callback) {
         callback(err);
       }
@@ -401,7 +401,7 @@ function SerialPortFactory() {
       SerialPortBinding.close(fd, function (err) {
     
         if (err) {
-          self.options.errorCallback(err);
+          if (self.options.errorCallback) { self.options.errorCallback(err); }
           if (callback) {
             callback(err);
           }
@@ -424,7 +424,7 @@ function SerialPortFactory() {
       });
     } catch (ex) {
       self.closing = false;
-      self.options.errorCallback(ex);
+      if (self.options.errorCallback) { self.options.errorCallback(ex); }
       if (callback) {
         callback(ex);
       }
@@ -500,7 +500,7 @@ function SerialPortFactory() {
 
     if (!fd) {
       var err = new Error("Serialport not open.");
-      self.options.errorCallback(err);
+      if (self.options.errorCallback) { self.options.errorCallback(err); }
       if (callback) {
         callback(err);
       }
@@ -508,7 +508,7 @@ function SerialPortFactory() {
 
     SerialPortBinding.flush(fd, function (err, result) {
       if (err) {
-        self.options.errorCallback(err);
+        if (self.options.errorCallback) { self.options.errorCallback(err); }
       }
       if (callback) {
         callback(err, result);
