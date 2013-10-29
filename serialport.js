@@ -70,7 +70,7 @@ function SerialPortFactory() {
     xoff: false,
     xany: false,
     databits: 8,
-    stopbits: 1,  
+    stopbits: 1,
     buffersize: 256,
     parser: parsers.raw
   };
@@ -108,14 +108,14 @@ function SerialPortFactory() {
       callback(err);
       return;
     }
-   
+
     options.stopBits = options.stopBits || options.stopbits || _options.stopbits;
     if (STOPBITS.indexOf(options.stopBits) == -1) {
       err = new Error('Invalid "stopbits": ' + options.stopbits);
       callback(err);
       return;
     }
-    
+
     options.parity = options.parity || _options.parity;
     if (PARITY.indexOf(options.parity) == -1) {
       err = new Error('Invalid "parity": ' + options.parity);
@@ -133,7 +133,7 @@ function SerialPortFactory() {
     options.xon = _options.xon;
     options.xoff = _options.xoff;
     options.xany = _options.xany;
-    
+
     if (options.flowControl || options.flowcontrol) {
       var fc = options.flowControl || options.flowcontrol;
 
@@ -209,7 +209,7 @@ function SerialPortFactory() {
 
   SerialPort.prototype.open = function (callback) {
     var self = this;
-    SerialPortBinding.open(this.path, this.options, function (err, fd) {
+    factory.SerialPortBinding.open(this.path, this.options, function (err, fd) {
       self.fd = fd;
       if (err) {
         if (callback) {
@@ -232,7 +232,7 @@ function SerialPortFactory() {
         // });
         // self.readStream.resume();
         self.paused = false;
-        self.serialPoller = new SerialPortBinding.SerialportPoller(self.fd, function() {self._read();});
+        self.serialPoller = new factory.SerialPortBinding.SerialportPoller(self.fd, function() {self._read();});
         self.serialPoller.start();
       }
 
@@ -256,7 +256,7 @@ function SerialPortFactory() {
     if (!Buffer.isBuffer(buffer)) {
       buffer = new Buffer(buffer);
     }
-    SerialPortBinding.write(this.fd, buffer, function (err, results) {
+    factory.SerialPortBinding.write(this.fd, buffer, function (err, results) {
       if (callback) {
         callback(err, results);
       } else {
@@ -322,10 +322,10 @@ function SerialPortFactory() {
           } else {
             self._emitData(b);
           }
-    
+
           // do not emit events anymore after we declared the stream unreadable
           if (!self.readable) return;
-    
+
           self._read();
         }
       }
@@ -340,7 +340,7 @@ function SerialPortFactory() {
       pool.used += toRead;
     };
 
-    
+
     SerialPort.prototype._emitData = function(d) {
       var self = this;
       // if (self._decoder) {
@@ -350,7 +350,7 @@ function SerialPortFactory() {
         self.options.dataCallback(d);
       // }
     };
-    
+
     SerialPort.prototype.pause = function() {
       var self = this;
       self.paused = true;
@@ -378,7 +378,7 @@ function SerialPortFactory() {
 
   SerialPort.prototype.close = function (callback) {
     var self = this;
-    
+
     var fd = self.fd;
 
     if (self.closing) {
@@ -403,8 +403,8 @@ function SerialPortFactory() {
         self.readStream.destroy();
       }
 
-      SerialPortBinding.close(fd, function (err) {
-    
+      factory.SerialPortBinding.close(fd, function (err) {
+
         if (err) {
           if (callback) {
             callback(err);
@@ -413,12 +413,12 @@ function SerialPortFactory() {
           }
           return;
         }
-    
+
         self.emit('close');
         self.removeAllListeners();
         self.closing = false;
         self.fd = 0;
-        
+
         if (process.platform !== 'win32') {
           self.readable = false;
           self.serialPoller.close();
@@ -508,7 +508,7 @@ function SerialPortFactory() {
       }, callback);
     });
   }
-    
+
   SerialPort.prototype.flush = function (callback) {
     var self = this;
     var fd = self.fd;
@@ -523,7 +523,7 @@ function SerialPortFactory() {
       return;
     }
 
-    SerialPortBinding.flush(fd, function (err, result) {
+    factory.SerialPortBinding.flush(fd, function (err, result) {
       if (err) {
         if (callback) {
           callback(err, result);
@@ -536,6 +536,7 @@ function SerialPortFactory() {
 
   factory.SerialPort = SerialPort;
   factory.parsers = parsers;
+  factory.SerialPortBinding = SerialPortBinding;
 
   if (process.platform === 'win32') {
     factory.list = SerialPortBinding.list;
