@@ -209,7 +209,7 @@ function SerialPortFactory() {
 
   SerialPort.prototype.open = function (callback) {
     var self = this;
-    SerialPortBinding.open(this.path, this.options, function (err, fd) {
+    factory.SerialPortBinding.open(this.path, this.options, function (err, fd) {
       self.fd = fd;
       if (err) {
         if (callback) {
@@ -232,7 +232,7 @@ function SerialPortFactory() {
         // });
         // self.readStream.resume();
         self.paused = false;
-        self.serialPoller = new SerialPortBinding.SerialportPoller(self.fd, function() {self._read();});
+        self.serialPoller = new factory.SerialPortBinding.SerialportPoller(self.fd, function() {self._read();});
         self.serialPoller.start();
       }
 
@@ -256,7 +256,7 @@ function SerialPortFactory() {
     if (!Buffer.isBuffer(buffer)) {
       buffer = new Buffer(buffer);
     }
-    SerialPortBinding.write(this.fd, buffer, function (err, results) {
+    factory.SerialPortBinding.write(this.fd, buffer, function (err, results) {
       if (callback) {
         callback(err, results);
       } else {
@@ -403,8 +403,8 @@ function SerialPortFactory() {
         self.readStream.destroy();
       }
 
-      SerialPortBinding.close(fd, function (err) {
-    
+      factory.SerialPortBinding.close(fd, function (err) {
+
         if (err) {
           if (callback) {
             callback(err);
@@ -523,7 +523,7 @@ function SerialPortFactory() {
       return;
     }
 
-    SerialPortBinding.flush(fd, function (err, result) {
+    factory.SerialPortBinding.flush(fd, function (err, result) {
       if (err) {
         if (callback) {
           callback(err, result);
@@ -536,6 +536,7 @@ function SerialPortFactory() {
 
   factory.SerialPort = SerialPort;
   factory.parsers = parsers;
+  factory.SerialPortBinding = SerialPortBinding;
 
   if (process.platform === 'win32') {
     factory.list = SerialPortBinding.list;
