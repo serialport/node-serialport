@@ -1,5 +1,3 @@
-/*jslint node: true */
-/*global describe, it */
 "use strict";
 
 var serialPort = require('../serialport');

@@ -28,7 +28,7 @@ describe('SerialPort', function () {
 
       // finish the test on error
       serialPort.once('error', function (err) {
-        chai.assert.isDefined(err, "didn't get an erorr");
+        chai.assert.isDefined(err, "didn't get an error");
         stubOpen.restore();
         done();
       });
@@ -36,7 +36,7 @@ describe('SerialPort', function () {
       var port = new SerialPort('johnJacobJingleheimerSchmidt');
     });
 
-    it('erorrs whith invalid databits', function (done) {
+    it('errors with invalid databits', function (done) {
 
       var errorCallback = function (err) {
         chai.assert.isDefined(err, 'err is not defined');
@@ -54,6 +54,7 @@ describe('SerialPort', function () {
       var openSpy = sinon.spy(mockBinding, 'open');
       var port = new SerialPort('/dev/happyPort', {}, false);
       port.open(function (err) {
+        expect(err).to.not.be.ok;
         expect(openSpy.calledWith('/dev/happyPort'));
         openSpy.restore();
         done();
@@ -61,7 +62,7 @@ describe('SerialPort', function () {
 
     });
 
-    it('calls back an erorr when opening an invalid port', function (done) {
+    it('calls back an error when opening an invalid port', function (done) {
       var stubOpen = sinon.stub(mockBinding, 'open', function (path, opt, cb) {
         cb('fakeErrr!');
       });
