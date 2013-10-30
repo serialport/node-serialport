@@ -4,14 +4,40 @@
 
 "use strict";
 
-module.exports = {
+var serialPortBinding;
+module.exports = serialPortBinding = {
   open: function (path, opt, cb) {
     this.path = path;
+    this.options = opt;
+    this.readable = true;
     cb(null, 'fakeFileDescriptor');
   },
   write: function (fd, buffer, cb) {
     this.lastWrite = buffer;
-    cb(null, undefined);
+    cb(null, buffer.length);
+  },
+  _read: function() {
+
+    var echo = this.lastWrite;
+
+    if (!this.readable || this.paused || this.reading) return;
+
+    this.reading = true;
+
+    this.reading = false;
+
+    if (echo && echo.length > 0) {
+      this.lastWrite = null;
+      this.options.dataCallback(echo);
+    }
+
+    // do not emit events anymore after we declared the stream unreadable
+    if (!this.readable) return;
+
+    var self = this;
+    setTimeout(function() {
+      self._read();
+    }, 20);
   },
   close: function (fd, cb) {
     cb(null);
@@ -32,7 +58,9 @@ module.exports = {
     cb(null, undefined);
   },
   SerialportPoller: function (fd, cb) {
-    this.start = function () {};
+    serialPortBinding.currentSerialPoller = this;
+    this.start = function () { serialPortBinding._read(); };
+    this.close = function () { };
     this.cb = cb;
   },
   path: ''
