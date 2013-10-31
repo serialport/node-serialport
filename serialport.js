@@ -533,6 +533,8 @@ function SerialPortFactory() {
         } else {
           self.emit('error', err);
         }
+      } else {
+        callback(err, result);
       }
     });
   };
