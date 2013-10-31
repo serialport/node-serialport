@@ -209,6 +209,9 @@ function SerialPortFactory() {
 
   SerialPort.prototype.open = function (callback) {
     var self = this;
+    this.paused = true;
+    this.readable = true;
+    this.reading = false;
     factory.SerialPortBinding.open(this.path, this.options, function (err, fd) {
       self.fd = fd;
       if (err) {
