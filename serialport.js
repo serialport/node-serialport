@@ -91,7 +91,9 @@ function SerialPortFactory() {
     stream.Stream.call(this);
 
     callback = callback || function (err) {
-      factory.emit('error', err);
+      if (err) {
+        factory.emit('error', err);
+      }
     };
 
     var err;
