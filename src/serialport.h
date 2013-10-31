@@ -48,6 +48,10 @@ v8::Handle<v8::Value> Flush(const v8::Arguments& args);
 void EIO_Flush(uv_work_t* req);
 void EIO_AfterFlush(uv_work_t* req);
 
+v8::Handle<v8::Value> Drain(const v8::Arguments& args);
+void EIO_Drain(uv_work_t* req);
+void EIO_AfterDrain(uv_work_t* req);
+
 SerialPortParity ToParityEnum(const v8::Handle<v8::String>& str);
 SerialPortStopBits ToStopBitEnum(double stopBits);
 
@@ -117,6 +121,14 @@ public:
 };
 
 struct FlushBaton {
+public:
+  int fd;
+  v8::Persistent<v8::Value> callback;
+  int result;
+  char errorString[ERROR_STRING_SIZE];
+};
+
+struct DrainBaton {
 public:
   int fd;
   v8::Persistent<v8::Value> callback;

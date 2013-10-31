@@ -433,4 +433,13 @@ void EIO_Flush(uv_work_t* req) {
   }
 }
 
+void EIO_Drain(uv_work_t* req) {
+  DrainBaton* data = static_cast<DrainBaton*>(req->data);
+
+  if(!FlushFileBuffers((HANDLE)data->fd)) {
+    ErrorCodeToString("draining connection", GetLastError(), data->errorString);
+    return;
+  }
+}
+
 #endif

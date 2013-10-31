@@ -312,6 +312,52 @@ void EIO_AfterFlush(uv_work_t* req) {
   delete req;
 }
 
+v8::Handle<v8::Value> Drain(const v8::Arguments& args) {
+  v8::HandleScope scope;
+
+  // file descriptor
+  if(!args[0]->IsInt32()) {
+    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("First argument must be an int"))));
+  }
+  int fd = args[0]->ToInt32()->Int32Value();
+
+  // callback
+  if(!args[1]->IsFunction()) {
+    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("Second argument must be a function"))));
+  }
+  v8::Local<v8::Value> callback = args[1];
+
+  DrainBaton* baton = new DrainBaton();
+  memset(baton, 0, sizeof(DrainBaton));
+  baton->fd = fd;
+  baton->callback = v8::Persistent<v8::Value>::New(callback);
+
+  uv_work_t* req = new uv_work_t();
+  req->data = baton;
+  uv_queue_work(uv_default_loop(), req, EIO_Drain, (uv_after_work_cb)EIO_AfterDrain);
+
+  return scope.Close(v8::Undefined());
+}
+
+void EIO_AfterDrain(uv_work_t* req) {
+  DrainBaton* data = static_cast<DrainBaton*>(req->data);
+
+  v8::Handle<v8::Value> argv[2];
+
+  if(data->errorString[0]) {
+    argv[0] = v8::Exception::Error(v8::String::New(data->errorString));
+    argv[1] = v8::Undefined();
+  } else {
+    argv[0] = v8::Undefined();
+    argv[1] = v8::Int32::New(data->result);
+  }
+  v8::Function::Cast(*data->callback)->Call(v8::Context::GetCurrent()->Global(), 2, argv);
+
+  data->callback.Dispose();
+  delete data;
+  delete req;
+}
+
 SerialPortParity ToParityEnum(const v8::Handle<v8::String>& v8str) {
   v8::String::AsciiValue str(v8str);
   if(!strcasecmp(*str, "none")) {
@@ -351,6 +397,7 @@ extern "C" {
     NODE_SET_METHOD(target, "close", Close);
     NODE_SET_METHOD(target, "list", List);
     NODE_SET_METHOD(target, "flush", Flush);
+    NODE_SET_METHOD(target, "drain", Drain);
 
 #ifndef WIN32
     SerialportPoller::Init(target);

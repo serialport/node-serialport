@@ -678,4 +678,10 @@ void EIO_Flush(uv_work_t* req) {
   data->result = tcflush(data->fd, TCIFLUSH);
 }
 
+void EIO_Drain(uv_work_t* req) {
+  DrainBaton* data = static_cast<DrainBaton*>(req->data);
+
+  data->result = tcdrain(data->fd);
+}
+
 #endif
