@@ -1,3 +1,8 @@
+Version 1.2.4
+-------------
+- Resolved parity error under linux as reported here: https://github.com/voodootikigod/node-serialport/issues/219
+
+
 Version 1.1.3
 -------------
 - Remove ATL dependency on Windows (added Visual Studio Pro requirement)
