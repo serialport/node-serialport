@@ -232,23 +232,23 @@ void EIO_Open(uv_work_t* req) {
   {
   case SERIALPORT_PARITY_NONE:
     options.c_cflag &= ~PARENB;
-    options.c_cflag &= ~CSTOPB;
-    options.c_cflag &= ~CSIZE;
-    options.c_cflag |= CS8;
+    // options.c_cflag &= ~CSTOPB;
+    // options.c_cflag &= ~CSIZE;
+    // options.c_cflag |= CS8;
     break;
   case SERIALPORT_PARITY_ODD:
     options.c_cflag |= PARENB;
     options.c_cflag |= PARODD;
-    options.c_cflag &= ~CSTOPB;
-    options.c_cflag &= ~CSIZE;
-    options.c_cflag |= CS7;
+    // options.c_cflag &= ~CSTOPB;
+    // options.c_cflag &= ~CSIZE;
+    // options.c_cflag |= CS7;
     break;
   case SERIALPORT_PARITY_EVEN:
     options.c_cflag |= PARENB;
     options.c_cflag &= ~PARODD;
-    options.c_cflag &= ~CSTOPB;
-    options.c_cflag &= ~CSIZE;
-    options.c_cflag |= CS7;
+    // options.c_cflag &= ~CSTOPB;
+    // options.c_cflag &= ~CSIZE;
+    // options.c_cflag |= CS7;
     break;
   default:
     snprintf(data->errorString, sizeof(data->errorString), "Invalid parity setting %d", data->parity);
