@@ -34,7 +34,7 @@ This library is admittedly a base level toolkit for building amazing things with
 * [Arduino controlling popcorn.js](https://gist.github.com/968773) - Controlling a popcorn.js video with an Arduino kit.
 * [Robotic JavaScript](http://jsconf.eu/2010/speaker/livingroombindmotion_function.html) - The first live presentation of the node-serialport code set as presented at JSConf EU 2010.
 * [devicestack](https://github.com/adrai/devicestack) - This module helps you to represent a device and its protocol.
-* [reflecta](https://github.com/jbeavers/reflecta) A communication protocol that combines Arduino Libraries and NodeJS into an integrated system.
+* [reflecta](https://github.com/JayBeavers/Reflecta) A communication protocol that combines Arduino Libraries and NodeJS into an integrated system.
 
 For getting started with node-serialport, we recommend you begin with the following articles:
 
