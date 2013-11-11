@@ -1,20 +1,20 @@
 ```
-  eeeee eeeee eeeee eeee       e  eeeee 
-  8   8 8  88 8   8 8          8  8   " 
-  8e  8 8   8 8e  8 8eee       8e 8eeee 
-  88  8 8   8 88  8 88      e  88    88 
+  eeeee eeeee eeeee eeee       e  eeeee
+  8   8 8  88 8   8 8          8  8   "
+  8e  8 8   8 8e  8 8eee       8e 8eeee
+  88  8 8   8 88  8 88      e  88    88
   88  8 8eee8 88ee8 88ee 88 8ee88 8ee88
 
-  eeeee eeee eeeee  e  eeeee e     eeeee eeeee eeeee eeeee 
-  8   " 8    8   8  8  8   8 8     8   8 8  88 8   8   8   
-  8eeee 8eee 8eee8e 8e 8eee8 8e    8eee8 8   8 8eee8e  8e  
-     88 88   88   8 88 88  8 88    88    8   8 88   8  88  
+  eeeee eeee eeeee  e  eeeee e     eeeee eeeee eeeee eeeee
+  8   " 8    8   8  8  8   8 8     8   8 8  88 8   8   8
+  8eeee 8eee 8eee8e 8e 8eee8 8e    8eee8 8   8 8eee8e  8e
+     88 88   88   8 88 88  8 88    88    8   8 88   8  88
   8ee88 88ee 88   8 88 88  8 88eee 88    8eee8 88   8  88
 ```
 
 [![Build Status](https://travis-ci.org/voodootikigod/node-serialport.png?branch=master)](https://travis-ci.org/voodootikigod/node-serialport)
 
-Version: 1.2.4 - Released November 5, 2013
+Version: 1.2.5 - Released November 11, 2013
 
 *****
 
@@ -118,7 +118,7 @@ var serialPort = new SerialPort("/dev/tty-usbserial1", {
   baudrate: 57600
 });
 ```
-  
+
 When opening a serial port, you can specify (in this order).
 
 1. Path to Serial Port - required.
@@ -138,7 +138,7 @@ The options object allows you to pass named options to the serial port during in
 open event
 ----------
 
-You MUST wait for the open event to be emitted before reading/writing to the serial port. The open happens asynchronously so installing 'data' listeners and writing 
+You MUST wait for the open event to be emitted before reading/writing to the serial port. The open happens asynchronously so installing 'data' listeners and writing
 before the open event might result in... nothing at all.
 
 Assuming you are connected to a serial console, you would for example:
@@ -148,11 +148,11 @@ serialPort.on("open", function () {
   console.log('open');
   serialPort.on('data', function(data) {
     console.log('data received: ' + data);
-  });  
+  });
   serialPort.write("ls\n", function(err, results) {
     console.log('err ' + err);
     console.log('results ' + results);
-  });  
+  });
 });
 ```
 
@@ -168,11 +168,11 @@ serialPort.open(function () {
   console.log('open');
   serialPort.on('data', function(data) {
     console.log('data received: ' + data);
-  });  
+  });
   serialPort.write("ls\n", function(err, results) {
     console.log('err ' + err);
     console.log('results ' + results);
-  });  
+  });
 });
 ```
 
@@ -200,8 +200,8 @@ Out of the box, node-serialport provides two parsers one that simply emits the r
 var serialport = require("serialport");
 var SerialPort = serialport.SerialPort; // localize object constructor
 
-var sp = new SerialPort("/dev/tty-usbserial1", { 
-  parser: serialport.parsers.readline("\n") 
+var sp = new SerialPort("/dev/tty-usbserial1", {
+  parser: serialport.parsers.readline("\n")
 });
 ```
 
@@ -211,7 +211,7 @@ To use the raw parser, you just provide the function definition (or leave undefi
 var serialport = require("serialport");
 var SerialPort = serialport.SerialPort; // localize object constructor
 
-var sp = new SerialPort("/dev/tty-usbserial1", { 
+var sp = new SerialPort("/dev/tty-usbserial1", {
   parser: serialport.parsers.raw
 });
 ```

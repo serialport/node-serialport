@@ -1,3 +1,8 @@
+Version 1.2.5
+-------------
+- Fixed an issue with pool handlers being global instead of instance isolation (Issue #252 and #255 thanks: foobarth !!! )
+
+
 Version 1.2.4
 -------------
 - Resolved parity error under linux as reported here: https://github.com/voodootikigod/node-serialport/issues/219
@@ -61,7 +66,7 @@ Version 0.2.7
 
 Version 0.2.5 - Version 0.2.6
 -----------------------------
-- Debugging issue with IOWatcher not holding in the event loop in node.js. 
+- Debugging issue with IOWatcher not holding in the event loop in node.js.
 - Converted to ReadStream instead of IOWatcher.
 
 Version 0.2.4
