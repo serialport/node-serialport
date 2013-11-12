@@ -1,7 +1,8 @@
-// This takes a serial-port factory and mocks the shit out of it in complete isolation
+// This takes a serial-port factory and mocks the shit out of it in complete isolation per require of this file
+
 "use strict";
 var rewire = require('rewire');
-var serialPort = require('../serialport');
+var serialPort = rewire('../serialport');
 
 var mockSerialportPoller = function (hardware) {
   var Poller = function (path, cb) {
@@ -111,5 +112,25 @@ Hardware.prototype.flush = function (path, cb) {
 var hardware = new Hardware();
 serialPort.hardware = hardware;
 serialPort.SerialPortBinding = hardware.mockBinding;
+
+serialPort.__set__('fs', {
+  read: function (path, buffer, offset, length, position, cb) {
+    var port = hardware.ports[path];
+    if (!port) {
+      return cb(new Error(path + " does not exist - please call hardware.createPort(path) first"));
+    }
+    if (port.data.length === 0) {
+      return cb(null, 0, buffer);
+    }
+    if ((offset + length) > buffer.length) {
+      throw new Error("Length extends beyond buffer");
+    }
+    var read = port.data.slice(0, length);
+    port.data = port.data.slice(length);
+    read.copy(buffer, offset);
+    cb(null, read.length, buffer);
+  }
+});
+
 
 module.exports = serialPort;
