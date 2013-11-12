@@ -2,6 +2,7 @@
 
 "use strict";
 var rewire = require('rewire');
+process.platform = 'darwin';
 var serialPort = rewire('../serialport');
 
 var mockSerialportPoller = function (hardware) {
