@@ -177,9 +177,7 @@ function SerialPortFactory() {
       // self.close();
     };
 
-    if (process.platform == 'win32') {
-      path = '\\\\.\\' + path;
-    } else {
+    if (process.platform !== 'win32') {
       // All other platforms:
       this.fd = null;
       this.paused = true;
