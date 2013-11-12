@@ -10,8 +10,6 @@ var fs = require('fs');
 var stream = require('stream');
 var path = require('path');
 var async = require('async');
-var child_process = require('child_process');
-
 
 function SerialPortFactory() {
 
@@ -201,6 +199,7 @@ function SerialPortFactory() {
 
   util.inherits(SerialPort, stream.Stream);
 
+
   SerialPort.prototype.open = function (callback) {
     var self = this;
     this.paused = true;
@@ -334,7 +333,7 @@ function SerialPortFactory() {
       // console.log(self.path + ' >> POOL OFFSET: ', self.pool.used);
 
       // console.log(">>REQUEST READ: ", toRead);
-      fs.read(self.fd, self.pool, self.pool.used, toRead, self.pos, function(err, bytesRead){
+      fs.read(self.fd, self.pool, self.pool.used, toRead, 0, function(err, bytesRead){
         var readPool = self.pool;
         var bytesRequested = toRead;
         afterRead(err, bytesRead, readPool, bytesRequested);}
