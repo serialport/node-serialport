@@ -38,6 +38,12 @@ void ErrorCodeToString(const char* prefix, int errorCode, char *errorStr) {
 void EIO_Open(uv_work_t* req) {
   OpenBaton* data = static_cast<OpenBaton*>(req->data);
 
+  // data->path is char[1024] but on Windows it has the form "COMx\0" or "COMxx\0"
+  // We want to prepend "\\\\.\\" to it before we call CreateFile
+  strncpy(data->path + 20, data->path, 10);
+  strncpy(data->path, "\\\\.\\", 4);
+  strncpy(data->path + 4, data->path + 20, 10);
+
   HANDLE file = CreateFile(
     data->path,
     GENERIC_READ | GENERIC_WRITE,
