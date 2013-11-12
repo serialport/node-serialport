@@ -51,6 +51,36 @@ describe('SerialPort', function () {
 
   });
 
+  describe('reading data', function () {
+
+    it('emits data events by default', function (done) {
+      hardware.createPort('/dev/exists'); // clears out any previously written data
+      var testData = new Buffer("I am a really short string");
+      var port = new SerialPort('/dev/exists', function () {
+        port.once('data', function(recvData) {
+          expect(recvData).to.eql(testData);
+          done();
+        });
+        hardware.emitData('/dev/exists', testData);
+      });
+    });
+
+    it('calls the dataCallback if set', function (done) {
+      hardware.createPort('/dev/exists'); // clears out any previously written data
+      var testData = new Buffer("I am a really short string");
+      var opt = {
+        dataCallback: function (recvData) {
+          expect(recvData).to.eql(testData);
+          done();
+        }
+      };
+      var port = new SerialPort('/dev/exists', opt, function () {
+        hardware.emitData('/dev/exists', testData);
+      });
+    });
+
+  });
+
   describe('#open', function () {
 
     it('passes the port to the bindings', function (done) {
