@@ -54,19 +54,24 @@ This assumes you have everything on your system necessary to compile ANY native 
 
 ### Windows:
 
- * Install Windows 7 or Windows 8.
- * Install [Visual Studio Express 2013 Preview for Windows Desktop](http://www.microsoft.com/visualstudio/eng/2013-downloads#d-2013-express) or [Visual Studio Express 2012 for Windows Desktop](http://www.microsoft.com/visualstudio/eng/products/visual-studio-express-for-windows-desktop).
+ * Windows 7 or Windows 8.1 are supported.
+ * Install [Visual Studio Express 2013 for Windows Desktop](http://www.microsoft.com/visualstudio/eng/2013-downloads#d-2013-express).
  * If you are hacking on an Arduino, be sure to install [the drivers](http://arduino.cc/en/Guide/windows#toc4).
  * Install [node.js 0.10.x](http://nodejs.org/) matching the bitness (32 or 64) of your operating system.
- * Install [Python 2.7.5](http://www.python.org/download/releases/2.7.5/) matching the bitness of your operating system.  For any questions, please refer to their [FAQ](http://docs.python.org/2/faq/windows.html). Default settings are perfect.
- * Open the 'Visual Studio Command Prompt' and add Python to the path.  When installing serialport, you need to tell the build system (known as node-gyp) that you are using a newer compiler by using:
+ * Install [Python 2.7.6](http://www.python.org/download/releases/2.7.6/) matching the bitness of your operating system.  For any questions, please refer to their [FAQ](http://docs.python.org/2/faq/windows.html). Default settings are perfect.
+ * Open the 'Visual Studio Command Prompt' and add Python to the path.
+
+Visual Studio 2013 is not yet supported by node 0.10.x but the latest version of node-gyp on npm does support it.  Use the
+below workaround until node 0.10.x is updated.
 
 ```Batchfile
    set path=%path%;C:\Python27
-   npm install serialport --msvs_version=2012
+   npm install node-gyp -g
+   git clone https://github.com/voodootikigod/node-serialport.git
+   cd node-serialport
+   node-gyp configure
+   node-gyp build
 ```
-
-This switch works for both Visual Studio Express 2012 and 2013.
 
 ### Mac OS X:
 
