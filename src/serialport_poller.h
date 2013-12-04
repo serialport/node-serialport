@@ -5,7 +5,7 @@
 #ifndef SERIALPORT_POLLER_H
 #define SERIALPORT_POLLER_H
 
-#include <node.h>
+#include <nan.h>
 
 class SerialportPoller : public node::ObjectWrap {
  public:
@@ -20,14 +20,14 @@ class SerialportPoller : public node::ObjectWrap {
   SerialportPoller();
   ~SerialportPoller();
 
-  static v8::Handle<v8::Value> New(const v8::Arguments& args);
-  static v8::Handle<v8::Value> Close(const v8::Arguments& args);
-  static v8::Handle<v8::Value> Start(const v8::Arguments& args);
+  static NAN_METHOD(New);
+  static NAN_METHOD(Close);
+  static NAN_METHOD(Start);
   
   uv_poll_t poll_handle_;
   int fd_;
 
-  v8::Persistent<v8::Function> callback_;
+  NanCallback* callback_;
 };
 
 #endif

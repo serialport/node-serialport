@@ -2,14 +2,13 @@
 #ifndef _serialport_h_
 #define _serialport_h_
 
-#include <node.h>
-#include <v8.h>
-#include <node_buffer.h>
+#include <nan.h>
 #include <list>
 #include <string>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "queue.h"
 
 enum SerialPortParity {
   SERIALPORT_PARITY_NONE = 1,
@@ -27,28 +26,28 @@ enum SerialPortStopBits {
 
 #define ERROR_STRING_SIZE 1024
 
-v8::Handle<v8::Value> List(const v8::Arguments& args);
+NAN_METHOD(List);
 void EIO_List(uv_work_t* req);
 void EIO_AfterList(uv_work_t* req);
 
-v8::Handle<v8::Value> Open(const v8::Arguments& args);
+NAN_METHOD(Open);
 void EIO_Open(uv_work_t* req);
 void EIO_AfterOpen(uv_work_t* req);
-void AfterOpenSuccess(int fd, v8::Handle<v8::Value> dataCallback, v8::Handle<v8::Value> disconnectedCallback, v8::Handle<v8::Value> errorCallback);
+void AfterOpenSuccess(int fd, NanCallback* dataCallback, NanCallback* disconnectedCallback, NanCallback* errorCallback);
 
-v8::Handle<v8::Value> Write(const v8::Arguments& args);
+NAN_METHOD(Write);
 void EIO_Write(uv_work_t* req);
 void EIO_AfterWrite(uv_work_t* req);
 
-v8::Handle<v8::Value> Close(const v8::Arguments& args);
+NAN_METHOD(Close);
 void EIO_Close(uv_work_t* req);
 void EIO_AfterClose(uv_work_t* req);
 
-v8::Handle<v8::Value> Flush(const v8::Arguments& args);
+NAN_METHOD(Flush);
 void EIO_Flush(uv_work_t* req);
 void EIO_AfterFlush(uv_work_t* req);
 
-v8::Handle<v8::Value> Drain(const v8::Arguments& args);
+NAN_METHOD(Drain);
 void EIO_Drain(uv_work_t* req);
 void EIO_AfterDrain(uv_work_t* req);
 
@@ -58,10 +57,10 @@ SerialPortStopBits ToStopBitEnum(double stopBits);
 struct OpenBaton {
 public:
   char path[1024];
-  v8::Persistent<v8::Value> callback;
-  v8::Persistent<v8::Value> dataCallback;
-  v8::Persistent<v8::Value> disconnectedCallback;
-  v8::Persistent<v8::Value> errorCallback;
+  NanCallback* callback;
+  NanCallback* dataCallback;
+  NanCallback* disconnectedCallback;
+  NanCallback* errorCallback;
   int result;
   int baudRate;
   int dataBits;
@@ -83,7 +82,7 @@ public:
   size_t bufferLength;
   size_t offset;
   v8::Persistent<v8::Object> buffer;
-  v8::Persistent<v8::Value> callback;
+  NanCallback* callback;
   int result;
   char errorString[ERROR_STRING_SIZE];
 };
@@ -91,14 +90,14 @@ public:
 struct QueuedWrite {
 public:
   uv_work_t req;
-  ngx_queue_t queue;
+  QUEUE queue;
   WriteBaton* baton;
 };
 
 struct CloseBaton {
 public:
   int fd;
-  v8::Persistent<v8::Value> callback;
+  NanCallback* callback;
   char errorString[ERROR_STRING_SIZE];
 };
 
@@ -115,7 +114,7 @@ public:
 
 struct ListBaton {
 public:
-  v8::Persistent<v8::Value> callback;
+  NanCallback* callback;
   std::list<ListResultItem*> results;
   char errorString[ERROR_STRING_SIZE];
 };
@@ -123,7 +122,7 @@ public:
 struct FlushBaton {
 public:
   int fd;
-  v8::Persistent<v8::Value> callback;
+  NanCallback* callback;
   int result;
   char errorString[ERROR_STRING_SIZE];
 };
@@ -131,7 +130,7 @@ public:
 struct DrainBaton {
 public:
   int fd;
-  v8::Persistent<v8::Value> callback;
+  NanCallback* callback;
   int result;
   char errorString[ERROR_STRING_SIZE];
 };

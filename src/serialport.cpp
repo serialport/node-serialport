@@ -1,6 +1,7 @@
 
 
 #include "serialport.h"
+#include "queue.h"
 
 #ifdef WIN32
 #define strcasecmp stricmp
@@ -9,31 +10,34 @@
 #endif
 
 uv_mutex_t write_queue_mutex;
-ngx_queue_t write_queue;
+QUEUE write_queue;
 
-v8::Handle<v8::Value> Open(const v8::Arguments& args) {
-  v8::HandleScope scope;
+NAN_METHOD(Open) {
+  NanScope();
 
   uv_mutex_init(&write_queue_mutex);
-  ngx_queue_init(&write_queue);
+  QUEUE_INIT(&write_queue);
 
   // path
   if(!args[0]->IsString()) {
-    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("First argument must be a string"))));
+    NanThrowTypeError("First argument must be a string");
+    NanReturnUndefined();
   }
   v8::String::Utf8Value path(args[0]->ToString());
 
   // options
   if(!args[1]->IsObject()) {
-    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("Second argument must be an object"))));
+    NanThrowTypeError("Second argument must be an object");
+    NanReturnUndefined();
   }
   v8::Local<v8::Object> options = args[1]->ToObject();
 
   // callback
   if(!args[2]->IsFunction()) {
-    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("Third argument must be a function"))));
+    NanThrowTypeError("Third argument must be a function");
+    NanReturnUndefined();
   }
-  v8::Local<v8::Value> callback = args[2];
+  v8::Local<v8::Function> callback = args[2].As<v8::Function>();
 
   OpenBaton* baton = new OpenBaton();
   memset(baton, 0, sizeof(OpenBaton));
@@ -48,90 +52,102 @@ v8::Handle<v8::Value> Open(const v8::Arguments& args) {
   baton->xoff = options->Get(v8::String::New("xoff"))->ToBoolean()->BooleanValue();
   baton->xany = options->Get(v8::String::New("xany"))->ToBoolean()->BooleanValue();
 
-
-  baton->callback = v8::Persistent<v8::Value>::New(callback);
-  baton->dataCallback = v8::Persistent<v8::Value>::New(options->Get(v8::String::New("dataCallback")));
-  baton->disconnectedCallback = v8::Persistent<v8::Value>::New(options->Get(v8::String::New("disconnectedCallback")));
-  baton->errorCallback = v8::Persistent<v8::Value>::New(options->Get(v8::String::New("errorCallback")));
+  baton->callback = new NanCallback(callback);
+  baton->dataCallback = new NanCallback(options->Get(NanSymbol("dataCallback")).As<v8::Function>());
+  baton->disconnectedCallback = new NanCallback(options->Get(NanSymbol("disconnectedCallback")).As<v8::Function>());
+  baton->errorCallback = new NanCallback(options->Get(NanSymbol("errorCallback")).As<v8::Function>());
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
+
   uv_queue_work(uv_default_loop(), req, EIO_Open, (uv_after_work_cb)EIO_AfterOpen);
 
-  return scope.Close(v8::Undefined());
+  NanReturnUndefined();
 }
 
 void EIO_AfterOpen(uv_work_t* req) {
+  NanScope();
+
   OpenBaton* data = static_cast<OpenBaton*>(req->data);
 
   v8::Handle<v8::Value> argv[2];
   if(data->errorString[0]) {
     argv[0] = v8::Exception::Error(v8::String::New(data->errorString));
     argv[1] = v8::Undefined();
+    // not needed for AfterOpenSuccess
+    delete data->dataCallback;
+    delete data->errorCallback;
+    delete data->disconnectedCallback;
   } else {
     argv[0] = v8::Undefined();
     argv[1] = v8::Int32::New(data->result);
     AfterOpenSuccess(data->result, data->dataCallback, data->disconnectedCallback, data->errorCallback);
   }
-  v8::Function::Cast(*data->callback)->Call(v8::Context::GetCurrent()->Global(), 2, argv);
 
-  data->callback.Dispose();
+  data->callback->Call(2, argv);
+
+  delete data->callback;
   delete data;
   delete req;
 }
 
-v8::Handle<v8::Value> Write(const v8::Arguments& args) {
-  v8::HandleScope scope;
+NAN_METHOD(Write) {
+  NanScope();
 
   // file descriptor
   if(!args[0]->IsInt32()) {
-    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("First argument must be an int"))));
+    NanThrowTypeError("First argument must be an int");
+    NanReturnUndefined();
   }
   int fd = args[0]->ToInt32()->Int32Value();
 
   // buffer
   if(!args[1]->IsObject() || !node::Buffer::HasInstance(args[1])) {
-    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("Second argument must be a buffer"))));
+    NanThrowTypeError("Second argument must be a buffer");
+    NanReturnUndefined();
   }
-  v8::Persistent<v8::Object> buffer = v8::Persistent<v8::Object>::New(args[1]->ToObject());
+  v8::Local<v8::Object> buffer = args[1]->ToObject();
   char* bufferData = node::Buffer::Data(buffer);
   size_t bufferLength = node::Buffer::Length(buffer);
 
   // callback
   if(!args[2]->IsFunction()) {
-    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("Third argument must be a function"))));
+    NanThrowTypeError("Third argument must be a function");
+    NanReturnUndefined();
   }
-  v8::Local<v8::Value> callback = args[2];
+  v8::Local<v8::Function> callback = args[2].As<v8::Function>();
 
   WriteBaton* baton = new WriteBaton();
   memset(baton, 0, sizeof(WriteBaton));
   baton->fd = fd;
-  baton->buffer = buffer;
+  NanAssignPersistent(v8::Object, baton->buffer, buffer);
   baton->bufferData = bufferData;
   baton->bufferLength = bufferLength;
   // baton->offset = 0;
-  baton->callback = v8::Persistent<v8::Value>::New(callback);
+  baton->callback = new NanCallback(callback);
 
   QueuedWrite* queuedWrite = new QueuedWrite();
   memset(queuedWrite, 0, sizeof(QueuedWrite));
-  ngx_queue_init(&queuedWrite->queue);
+  QUEUE_INIT(&queuedWrite->queue);
   queuedWrite->baton = baton;
   queuedWrite->req.data = queuedWrite;
 
   uv_mutex_lock(&write_queue_mutex);
-  bool empty = ngx_queue_empty(&write_queue);
+  bool empty = QUEUE_EMPTY(&write_queue);
 
-  ngx_queue_insert_tail(&write_queue, &queuedWrite->queue);
+  QUEUE_INSERT_TAIL(&write_queue, &queuedWrite->queue);
 
   if (empty) {
     uv_queue_work(uv_default_loop(), &queuedWrite->req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
-  }   
+  }
   uv_mutex_unlock(&write_queue_mutex);
 
-  return scope.Close(v8::Undefined());
+  NanReturnUndefined();
 }
 
 void EIO_AfterWrite(uv_work_t* req) {
+  NanScope();
+
   QueuedWrite* queuedWrite = static_cast<QueuedWrite*>(req->data);
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
 
@@ -143,7 +159,7 @@ void EIO_AfterWrite(uv_work_t* req) {
     argv[0] = v8::Undefined();
     argv[1] = v8::Int32::New(data->result);
   }
-  v8::Function::Cast(*data->callback)->Call(v8::Context::GetCurrent()->Global(), 2, argv);
+  data->callback->Call(2, argv);
 
   if (data->offset < data->bufferLength) {
     // We're not done with this baton, so throw it right back onto the queue.
@@ -153,50 +169,54 @@ void EIO_AfterWrite(uv_work_t* req) {
   }
 
   uv_mutex_lock(&write_queue_mutex);
-  ngx_queue_remove(&queuedWrite->queue);
+  QUEUE_REMOVE(&queuedWrite->queue);
 
-  if (!ngx_queue_empty(&write_queue)) {
+  if (!QUEUE_EMPTY(&write_queue)) {
     // Always pull the next work item from the head of the queue
-    ngx_queue_t* head = ngx_queue_head(&write_queue);
-    QueuedWrite* nextQueuedWrite = ngx_queue_data(head, QueuedWrite, queue);
+    QUEUE* head = QUEUE_HEAD(&write_queue);
+    QueuedWrite* nextQueuedWrite = QUEUE_DATA(head, QueuedWrite, queue);
     uv_queue_work(uv_default_loop(), &nextQueuedWrite->req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
   }
   uv_mutex_unlock(&write_queue_mutex);
 
-  data->buffer.Dispose();
-  data->callback.Dispose();
+  NanDispose(data->buffer);
+  delete data->callback;
   delete data;
   delete queuedWrite;
 }
 
-v8::Handle<v8::Value> Close(const v8::Arguments& args) {
-  v8::HandleScope scope;
+NAN_METHOD(Close) {
+  NanScope();
 
   // file descriptor
   if(!args[0]->IsInt32()) {
-    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("First argument must be an int"))));
+    NanThrowTypeError("First argument must be an int");
+    NanReturnUndefined();
   }
   int fd = args[0]->ToInt32()->Int32Value();
 
   // callback
   if(!args[1]->IsFunction()) {
-    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("Second argument must be a function"))));
+    NanThrowTypeError("Second argument must be a function");
+    NanReturnUndefined();
   }
-  v8::Local<v8::Value> callback = args[1];
+  v8::Local<v8::Function> callback = args[1].As<v8::Function>();
 
   CloseBaton* baton = new CloseBaton();
   memset(baton, 0, sizeof(CloseBaton));
   baton->fd = fd;
-  baton->callback = v8::Persistent<v8::Value>::New(callback);
+  baton->callback = new NanCallback(callback);
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
   uv_queue_work(uv_default_loop(), req, EIO_Close, (uv_after_work_cb)EIO_AfterClose);
 
-  return scope.Close(v8::Undefined());
+  NanReturnUndefined();
 }
 
 void EIO_AfterClose(uv_work_t* req) {
+  NanScope();
+
   CloseBaton* data = static_cast<CloseBaton*>(req->data);
 
   v8::Handle<v8::Value> argv[1];
@@ -205,34 +225,37 @@ void EIO_AfterClose(uv_work_t* req) {
   } else {
     argv[0] = v8::Undefined();
   }
-  v8::Function::Cast(*data->callback)->Call(v8::Context::GetCurrent()->Global(), 1, argv);
+  data->callback->Call(1, argv);
 
-  data->callback.Dispose();
+  delete data->callback;
   delete data;
   delete req;
 }
 
-v8::Handle<v8::Value> List(const v8::Arguments& args) {
-  v8::HandleScope scope;
+NAN_METHOD(List) {
+  NanScope();
 
   // callback
   if(!args[0]->IsFunction()) {
-    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("First argument must be a function"))));
+    NanThrowTypeError("First argument must be a function");
+    NanReturnUndefined();
   }
-  v8::Local<v8::Value> callback = args[0];
+  v8::Local<v8::Function> callback = args[0].As<v8::Function>();
 
   ListBaton* baton = new ListBaton();
   strcpy(baton->errorString, "");
-  baton->callback = v8::Persistent<v8::Value>::New(callback);
+  baton->callback = new NanCallback(callback);
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
   uv_queue_work(uv_default_loop(), req, EIO_List, (uv_after_work_cb)EIO_AfterList);
 
-  return scope.Close(v8::Undefined());
+  NanReturnUndefined();
 }
 
 void EIO_AfterList(uv_work_t* req) {
+  NanScope();
+
   ListBaton* data = static_cast<ListBaton*>(req->data);
 
   v8::Handle<v8::Value> argv[2];
@@ -256,9 +279,9 @@ void EIO_AfterList(uv_work_t* req) {
     argv[0] = v8::Undefined();
     argv[1] = results;
   }
-  v8::Function::Cast(*data->callback)->Call(v8::Context::GetCurrent()->Global(), 2, argv);
+  data->callback->Call(2, argv);
 
-  data->callback.Dispose();
+  delete data->callback;
   for(std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it) {
     delete *it;
   }
@@ -266,34 +289,38 @@ void EIO_AfterList(uv_work_t* req) {
   delete req;
 }
 
-v8::Handle<v8::Value> Flush(const v8::Arguments& args) {
-  v8::HandleScope scope;
+NAN_METHOD(Flush) {
+  NanScope();
 
   // file descriptor
   if(!args[0]->IsInt32()) {
-    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("First argument must be an int"))));
+    NanThrowTypeError("First argument must be an int");
+    NanReturnUndefined();
   }
   int fd = args[0]->ToInt32()->Int32Value();
 
   // callback
   if(!args[1]->IsFunction()) {
-    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("Second argument must be a function"))));
+    NanThrowTypeError("Second argument must be a function");
+    NanReturnUndefined();
   }
-  v8::Local<v8::Value> callback = args[1];
+  v8::Local<v8::Function> callback = args[1].As<v8::Function>();
 
   FlushBaton* baton = new FlushBaton();
   memset(baton, 0, sizeof(FlushBaton));
   baton->fd = fd;
-  baton->callback = v8::Persistent<v8::Value>::New(callback);
+  baton->callback = new NanCallback(callback);
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
   uv_queue_work(uv_default_loop(), req, EIO_Flush, (uv_after_work_cb)EIO_AfterFlush);
 
-  return scope.Close(v8::Undefined());
+  NanReturnUndefined();
 }
 
 void EIO_AfterFlush(uv_work_t* req) {
+  NanScope();
+
   FlushBaton* data = static_cast<FlushBaton*>(req->data);
 
   v8::Handle<v8::Value> argv[2];
@@ -305,41 +332,45 @@ void EIO_AfterFlush(uv_work_t* req) {
     argv[0] = v8::Undefined();
     argv[1] = v8::Int32::New(data->result);
   }
-  v8::Function::Cast(*data->callback)->Call(v8::Context::GetCurrent()->Global(), 2, argv);
+  data->callback->Call(2, argv);
 
-  data->callback.Dispose();
+  delete data->callback;
   delete data;
   delete req;
 }
 
-v8::Handle<v8::Value> Drain(const v8::Arguments& args) {
-  v8::HandleScope scope;
+NAN_METHOD(Drain) {
+  NanScope();
 
   // file descriptor
   if(!args[0]->IsInt32()) {
-    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("First argument must be an int"))));
+    NanThrowTypeError("First argument must be an int");
+    NanReturnUndefined();
   }
   int fd = args[0]->ToInt32()->Int32Value();
 
   // callback
   if(!args[1]->IsFunction()) {
-    return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("Second argument must be a function"))));
+    NanThrowTypeError("Second argument must be a function");
+    NanReturnUndefined();
   }
-  v8::Local<v8::Value> callback = args[1];
+  v8::Local<v8::Function> callback = args[1].As<v8::Function>();
 
   DrainBaton* baton = new DrainBaton();
   memset(baton, 0, sizeof(DrainBaton));
   baton->fd = fd;
-  baton->callback = v8::Persistent<v8::Value>::New(callback);
+  baton->callback = new NanCallback(callback);
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
   uv_queue_work(uv_default_loop(), req, EIO_Drain, (uv_after_work_cb)EIO_AfterDrain);
 
-  return scope.Close(v8::Undefined());
+  NanReturnUndefined();
 }
 
 void EIO_AfterDrain(uv_work_t* req) {
+  NanScope();
+
   DrainBaton* data = static_cast<DrainBaton*>(req->data);
 
   v8::Handle<v8::Value> argv[2];
@@ -351,14 +382,16 @@ void EIO_AfterDrain(uv_work_t* req) {
     argv[0] = v8::Undefined();
     argv[1] = v8::Int32::New(data->result);
   }
-  v8::Function::Cast(*data->callback)->Call(v8::Context::GetCurrent()->Global(), 2, argv);
+  data->callback->Call(2, argv);
 
-  data->callback.Dispose();
+  delete data->callback;
   delete data;
   delete req;
 }
 
-SerialPortParity ToParityEnum(const v8::Handle<v8::String>& v8str) {
+SerialPortParity NAN_INLINE(ToParityEnum(const v8::Handle<v8::String>& v8str)) {
+  NanScope();
+
   v8::String::AsciiValue str(v8str);
   if(!strcasecmp(*str, "none")) {
     return SERIALPORT_PARITY_NONE;
@@ -378,7 +411,7 @@ SerialPortParity ToParityEnum(const v8::Handle<v8::String>& v8str) {
   return SERIALPORT_PARITY_NONE;
 }
 
-SerialPortStopBits ToStopBitEnum(double stopBits) {
+SerialPortStopBits NAN_INLINE(ToStopBitEnum(double stopBits)) {
   if(stopBits > 1.4 && stopBits < 1.6) {
     return SERIALPORT_STOPBITS_ONE_FIVE;
   }
@@ -391,7 +424,7 @@ SerialPortStopBits ToStopBitEnum(double stopBits) {
 extern "C" {
   void init (v8::Handle<v8::Object> target) 
   {
-    v8::HandleScope scope;
+    NanScope();
     NODE_SET_METHOD(target, "open", Open);
     NODE_SET_METHOD(target, "write", Write);
     NODE_SET_METHOD(target, "close", Close);
