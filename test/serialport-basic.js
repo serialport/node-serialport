@@ -8,14 +8,15 @@ var MockedSerialPort = require('../test_mocks/linux-hardware');
 var SerialPort = MockedSerialPort.SerialPort;
 var hardware = MockedSerialPort.hardware;
 
-// Create a port for fun and profit
-hardware.createPort('/dev/exists');
-
 describe('SerialPort', function () {
   var sandbox;
 
   beforeEach(function () {
     sandbox = sinon.sandbox.create();
+
+    // Create a port for fun and profit
+    hardware.reset();
+    hardware.createPort('/dev/exists');
   });
 
   afterEach(function () {
@@ -54,7 +55,6 @@ describe('SerialPort', function () {
   describe('reading data', function () {
 
     it('emits data events by default', function (done) {
-      hardware.createPort('/dev/exists'); // clears out any previously written data
       var testData = new Buffer("I am a really short string");
       var port = new SerialPort('/dev/exists', function () {
         port.once('data', function(recvData) {
@@ -66,7 +66,6 @@ describe('SerialPort', function () {
     });
 
     it('calls the dataCallback if set', function (done) {
-      hardware.createPort('/dev/exists'); // clears out any previously written data
       var testData = new Buffer("I am a really short string");
       var opt = {
         dataCallback: function (recvData) {
@@ -94,7 +93,6 @@ describe('SerialPort', function () {
     });
 
     it('calls back an error when opening an invalid port', function (done) {
-
       var port = new SerialPort('/dev/unhappy', {}, false);
       port.open(function (err) {
         expect(err).to.be.ok;
@@ -103,21 +101,32 @@ describe('SerialPort', function () {
     });
 
     it("emits data after being reopened", function (done) {
-      hardware.createPort('/dev/fun');
-
       var data = new Buffer("Howdy!");
-      var port = new SerialPort('/dev/fun', function () {
+      var port = new SerialPort('/dev/exists', function () {
         port.close();
         port.open(function () {
           port.once('data', function (res) {
             expect(res).to.eql(data);
             done();
           });
-          hardware.emitData('/dev/fun', data);
+          hardware.emitData('/dev/exists', data);
         });
       });
     });
 
+  });
+
+  describe('disconnect', function (done) {
+    it("fires a disconnect event", function (done) {
+      var port = new SerialPort('/dev/exists', {
+        disconnectedCallback: function (err) {
+          expect(err).to.not.be.ok;
+          done();
+        }
+      }, function () {
+        hardware.disconnect('/dev/exists');
+      });
+    });
   });
 
 });
