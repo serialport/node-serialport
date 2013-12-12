@@ -67,7 +67,7 @@ function SerialPortFactory() {
     parser: parsers.raw
   };
 
-  function SerialPort (path, options, openImmediately, callback) {
+  function SerialPort(path, options, openImmediately, callback) {
 
     var self = this;
 
@@ -91,27 +91,23 @@ function SerialPortFactory() {
     var err;
 
     options.baudRate = options.baudRate || options.baudrate || _options.baudrate;
-    // Removing check for valid BaudRates due to ticket: #140
-    // if (BAUDRATES.indexOf(options.baudrate) == -1) {
-    //   throw new Error('Invalid "baudrate": ' + options.baudrate);
-    // }
 
     options.dataBits = options.dataBits || options.databits || _options.databits;
-    if (DATABITS.indexOf(options.dataBits) == -1) {
+    if (DATABITS.indexOf(options.dataBits) === -1) {
       err = new Error('Invalid "databits": ' + options.dataBits);
       callback(err);
       return;
     }
 
     options.stopBits = options.stopBits || options.stopbits || _options.stopbits;
-    if (STOPBITS.indexOf(options.stopBits) == -1) {
+    if (STOPBITS.indexOf(options.stopBits) === -1) {
       err = new Error('Invalid "stopbits": ' + options.stopbits);
       callback(err);
       return;
     }
 
     options.parity = options.parity || _options.parity;
-    if (PARITY.indexOf(options.parity) == -1) {
+    if (PARITY.indexOf(options.parity) === -1) {
       err = new Error('Invalid "parity": ' + options.parity);
       callback(err);
       return;
@@ -131,14 +127,14 @@ function SerialPortFactory() {
     if (options.flowControl || options.flowcontrol) {
       var fc = options.flowControl || options.flowcontrol;
 
-      if (typeof fc == 'boolean') {
+      if (typeof fc === 'boolean') {
         options.rtscts = true;
       } else {
         fc.forEach(function (flowControl) {
           var fcup = flowControl.toUpperCase();
           var idx = FLOWCONTROLS.indexOf(fcup);
           if (idx < 0) {
-            var err = new Error('Invalid "flowControl": ' + fcup + ". Valid options: "+FLOWCONTROLS.join(", "));
+            var err = new Error('Invalid "flowControl": ' + fcup + ". Valid options: " + FLOWCONTROLS.join(", "));
             callback(err);
             return;
           } else {
@@ -162,17 +158,12 @@ function SerialPortFactory() {
       options.parser(self, data);
     };
 
-    // options.dataReadyCallback = function () {
-    //   self.readStream._read(4024);
-    // };
-
     options.disconnectedCallback = options.disconnectedCallback || function () {
       if (self.closing) {
         return;
       }
       var err = new Error("Disconnected");
       callback(err);
-      // self.close();
     };
 
     if (process.platform !== 'win32') {
@@ -183,8 +174,9 @@ function SerialPortFactory() {
       this.readable = true;
       this.reading = false;
 
-      if (options.encoding)
+      if (options.encoding) {
         this.setEncoding(this.encoding);
+      }
     }
 
     this.options = options;
@@ -216,19 +208,8 @@ function SerialPortFactory() {
         return;
       }
       if (process.platform !== 'win32') {
-        // self.readStream = new SerialStream(self.fd, { bufferSize: self.options.bufferSize });
-        // self.readStream.on("data", self.options.dataCallback);
-        // self.readStream.on("error", self.options.errorCallback);
-        // self.readStream.on("close", function () {
-        //   self.close();
-        // });
-        // self.readStream.on("end", function () {
-        //   console.log(">>END");
-        //   self.emit('end');
-        // });
-        // self.readStream.resume();
         self.paused = false;
-        self.serialPoller = new factory.SerialPortBinding.SerialportPoller(self.fd, function() {self._read();});
+        self.serialPoller = new factory.SerialPortBinding.SerialportPoller(self.fd, function () { self._read(); });
         self.serialPoller.start();
       }
 
@@ -264,11 +245,13 @@ function SerialPortFactory() {
   };
 
   if (process.platform !== 'win32') {
-    SerialPort.prototype._read = function() {
+    SerialPort.prototype._read = function () {
       var self = this;
 
       // console.log(">>READ");
-      if (!self.readable || self.paused || self.reading) return;
+      if (!self.readable || self.paused || self.reading) {
+        return;
+      }
 
       self.reading = true;
 
@@ -292,9 +275,10 @@ function SerialPortFactory() {
       function afterRead(err, bytesRead, readPool, bytesRequested) {
         self.reading = false;
         if (err) {
-          if (err.code && err.code == 'EAGAIN') {
-            if (self.fd >= 0)
+          if (err.code && err.code === 'EAGAIN') {
+            if (self.fd >= 0) {
               self.serialPoller.start();
+            }
           } else {
             self.fd = null;
             self.emit('error', err);
@@ -306,11 +290,10 @@ function SerialPortFactory() {
         // let's mark the ones we didn't need as available again.
         self.pool.used -= bytesRequested - bytesRead;
 
-        // console.log(">>ACTUALLY READ: ", bytesRead);
-
         if (bytesRead === 0) {
-          if (self.fd >= 0)
+          if (self.fd >= 0) {
             self.serialPoller.start();
+          }
         } else {
           var b = self.pool.slice(start, start + bytesRead);
 
@@ -323,43 +306,33 @@ function SerialPortFactory() {
           }
 
           // do not emit events anymore after we declared the stream unreadable
-          if (!self.readable) return;
-
+          if (!self.readable) {
+            return;
+          }
           self._read();
         }
       }
 
-      // debug this device's pool offset
-      // console.log(self.path + ' >> POOL OFFSET: ', self.pool.used);
-
-      // console.log(">>REQUEST READ: ", toRead);
-      fs.read(self.fd, self.pool, self.pool.used, toRead, null, function(err, bytesRead){
+      fs.read(self.fd, self.pool, self.pool.used, toRead, null, function (err, bytesRead) {
         var readPool = self.pool;
         var bytesRequested = toRead;
-        afterRead(err, bytesRead, readPool, bytesRequested);}
-      );
+        afterRead(err, bytesRead, readPool, bytesRequested);
+      });
 
       self.pool.used += toRead;
     };
 
 
-    SerialPort.prototype._emitData = function(d) {
-      var self = this;
-      // if (self._decoder) {
-      //   var string = self._decoder.write(d);
-      //   if (string.length) self.options.dataCallback(string);
-      // } else {
-        self.options.dataCallback(d);
-      // }
+    SerialPort.prototype._emitData = function (data) {
+      this.options.dataCallback(data);
     };
 
-    SerialPort.prototype.pause = function() {
+    SerialPort.prototype.pause = function () {
       var self = this;
       self.paused = true;
     };
 
-
-    SerialPort.prototype.resume = function() {
+    SerialPort.prototype.resume = function () {
       var self = this;
       self.paused = false;
 
@@ -370,8 +343,9 @@ function SerialPortFactory() {
       }
 
       // No longer open?
-      if (null === self.fd)
+      if (null === self.fd) {
         return;
+      }
 
       self._read();
     };
@@ -440,7 +414,7 @@ function SerialPortFactory() {
     }
   };
 
-  function listUnix (callback) {
+  function listUnix(callback) {
     fs.readdir("/dev/serial/by-id", function (err, files) {
       if (err) {
         // if this directory is not found this could just be because it's not plugged in
@@ -476,37 +450,6 @@ function SerialPortFactory() {
             pnpId: file
           });
         });
-      // Suspect code per ticket: #104 removed for deeper inspection.
-      // fs.readdir("/dev/serial/by-path", function(err_path, paths) {
-      //   if (err_path) {
-      //     if (err.errno === 34) return callback(null, []);
-      //     return console.log(err);
-      //   }
-
-      //   var dirName, items;
-      //   //check if multiple devices of the same id are connected
-      //   if (files.length !== paths.length) {
-      //     dirName = "/dev/serial/by-path";
-      //     items = paths;
-      //   } else {
-      //     dirName = "/dev/serial/by-id";
-      //     items = files;
-      //   }
-
-      //   async.map(items, function (file, callback) {
-      //     var fileName = path.join(dirName, file);
-      //     fs.readlink(fileName, function (err, link) {
-      //       if (err) {
-      //         return callback(err);
-      //       }
-      //       link = path.resolve(dirName, link);
-      //       callback(null, {
-      //         comName: link,
-      //         manufacturer: undefined,
-      //         pnpId: file
-      //       });
-      //     });
-      //   }, callback);
       }, callback);
     });
   }
