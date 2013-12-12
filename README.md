@@ -237,3 +237,117 @@ serialPort.write("OMG IT WORKS\r");
 ```
 
 Enjoy and do cool things with this code.
+
+Reference Guide
+---------------
+
+## Methods
+
+### SerialPort (path, options, openImmediately, callback)
+
+Create a new serial port on `path`.
+
+**_path_**
+
+The system path of the serial port to open. For example, `/dev/tty` on Mac/Linux or `COM1` on Windows.
+
+**_options (optional)_**
+
+Port configuration options.
+
+* `baudRate`
+* `dataBits`
+* `stopBits`
+* `parity`
+* `rtscts`
+* `xon`
+* `xoff`
+* `xany`
+* `flowControl`
+* `bufferSize`
+* `parser`
+* `encoding`
+* `dataCallback`
+* `disconnectedCallback`
+
+**_openImmediately (optional)_**
+
+Attempts to open a connection to the serial port on `process.nextTick`. The default is `true`. Set to `false` to manually call `open()` at a later time.
+
+**_callback (optional)_**
+
+Called when a connection has been opened. The callback should be a function that looks like: `function (error) { ... }`
+
+### .open (callback)
+
+Opens a connection to the given serial port.
+
+**_callback (optional)_**
+
+Called when a connection has been opened. The callback should be a function that looks like: `function (error) { ... }`
+
+### .write (buffer, callback)
+
+Writes data to the given serial port.
+
+**_buffer_**
+
+The `buffer` parameter accepts a [`Buffer` ](http://nodejs.org/api/buffer.html) object, or a type that is accepted by the `Buffer` constructor (ex. an array of bytes or a string).
+
+**_callback (optional)_**
+
+Called once the write operation returns. The callback should be a function that looks like: `function (error) { ... }` _Note: The write operation is non-blocking. When it returns, data may still have not actually been written to the serial port. See `drain()`._
+
+### .pause ()
+
+Pauses an open connection.
+
+### .resume ()
+
+Resumes a paused connection.
+
+### .flush (callback)
+
+Flushes data received but not read. See [`tcflush()`](http://linux.die.net/man/3/tcflush) for Mac/Linux and [`FlushFileBuffers`](http://msdn.microsoft.com/en-us/library/windows/desktop/aa364439) for Windows.
+
+**_callback (optional)_**
+
+Called once the flush operation returns. The callback should be a function that looks like: `function (error) { ... }`
+
+### .drain (callback)
+
+Waits until all output data has been transmitted to the serial port. See [`tcdrain()`](http://linux.die.net/man/3/tcdrain) for more information.
+
+**_callback (optional)_**
+
+Called once the drain operation returns. The callback should be a function that looks like: `function (error) { ... }`
+
+**Example**
+
+Writes `data` and waits until it has finish transmitting to the target serial port before calling the callback.
+
+```
+function writeAndDrain (data, callback) {
+  sp.write(data, function () {
+    sp.drain(callback);
+  });
+}
+```
+
+### .close (callback)
+
+Closes an open connection.
+
+**_callback (optional)_**
+
+Called once a connection is closed. Closing a connection will also remove all event listeners. The callback should be a function that looks like: `function (error) { ... }`
+
+## Events
+
+### .on('open', callback)
+
+### .on('data', callback)
+
+### .on('close', callback)
+
+### .on('error', callback)
