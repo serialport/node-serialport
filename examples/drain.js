@@ -1,8 +1,8 @@
 var SerialPort = require("serialport").SerialPort;
 
 var sp = new SerialPort("/dev/cu.Cubelet-RGB", {
-    baudrate: 38400
-  });
+  baudrate: 38400
+});
 
 sp.on('open',function() {
   sp.on('data', function(data) {
@@ -39,7 +39,7 @@ sp.on('open',function() {
   };
 
   // Stuff starts happening here
-  writeThenDrainThenWait();
-  //writeThenWait();
+  writeThenDrainThenWait(1000);
+  //writeThenWait(1000);
 
 });
