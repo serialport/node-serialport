@@ -39,6 +39,10 @@ var Hardware = function () {
   };
 };
 
+Hardware.prototype.reset = function () {
+  this.ports = {};
+};
+
 Hardware.prototype.createPort = function (path) {
   this.ports[path] = {
     data: new Buffer(0),
@@ -64,6 +68,14 @@ Hardware.prototype.emitData = function (path, data) {
   }
   port.data = Buffer.concat([port.data, data]);
   port.poller && port.poller.detectRead();
+};
+
+Hardware.prototype.disconnect = function (path) {
+  var port = this.ports[path];
+  if (!port) {
+    throw new Error(path + " does not exist - please call hardware.createPort(path) first");
+  }
+  port.openOpt.disconnectedCallback();
 };
 
 Hardware.prototype.list = function (cb) {
