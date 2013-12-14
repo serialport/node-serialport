@@ -372,13 +372,6 @@ function SerialPortFactory() {
 
     self.closing = true;
     try {
-      if (self.readStream) {
-        // Make sure we clear the readStream's fd, or it'll try to close() it.
-        // We already close()d it.
-        self.readStream.fd = null;
-        self.readStream.destroy();
-      }
-
       factory.SerialPortBinding.close(fd, function (err) {
 
         if (err) {
