@@ -77,7 +77,8 @@ function SerialPortFactory() {
       callback = null;
     }
 
-    options = options || {};
+    options = (typeof options !== 'function') && options || {};
+
     openImmediately = (openImmediately === undefined || openImmediately === null) ? true : openImmediately;
 
     stream.Stream.call(this);
