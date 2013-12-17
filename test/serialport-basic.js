@@ -50,6 +50,13 @@ describe('SerialPort', function () {
       var port = new SerialPort('/dev/exists', { databits : 19 }, false, errorCallback);
     });
 
+    it('allows optional options', function (done) {
+      var cb = function () {};
+      var port = new SerialPort('/dev/exists', cb);
+      expect(typeof port.options).to.eq('object');
+      done();
+    });
+
   });
 
   describe('reading data', function () {
