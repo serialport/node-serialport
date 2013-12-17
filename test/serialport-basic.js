@@ -116,7 +116,31 @@ describe('SerialPort', function () {
 
   });
 
-  describe('disconnect', function (done) {
+  describe('close', function () {
+    it("fires a close event when it's closed", function (done) {
+      var port = new SerialPort('/dev/exists', function () {
+        var closeSpy = sandbox.spy();
+        port.on('close', closeSpy);
+        port.close();
+        expect(closeSpy.calledOnce);
+        done();
+      });
+    });
+
+    it("fires a close event after being reopened", function (done) {
+      var port = new SerialPort('/dev/exists', function () {
+        var closeSpy = sandbox.spy();
+        port.on('close', closeSpy);
+        port.close();
+        port.open();
+        port.close();
+        expect(closeSpy.calledTwice);
+        done();
+      });
+    });
+  });
+
+  describe('disconnect', function () {
     it("fires a disconnect event", function (done) {
       var port = new SerialPort('/dev/exists', {
         disconnectedCallback: function (err) {
