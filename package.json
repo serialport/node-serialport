@@ -45,7 +45,7 @@
     "grunt-cli": "*",
     "grunt-mocha-test": "*",
     "grunt-contrib-jshint": "*",
-    "rewire": "~2.0.0"
+    "sandboxed-module": "~0.3.0"
   },
   "engines": {
     "node": "0.10.x"

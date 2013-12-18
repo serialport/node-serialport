@@ -1,8 +1,6 @@
 // This takes a serial-port factory and mocks the shit out of it in complete isolation per require of this file
 
 "use strict";
-var rewire = require('rewire');
-var serialPort = rewire('../serialport');
 
 var mockSerialportPoller = function (hardware) {
   var Poller = function (path, cb) {
@@ -121,32 +119,43 @@ Hardware.prototype.flush = function (path, cb) {
   cb && cb(null, undefined);
 };
 
-var hardware = new Hardware();
-serialPort.hardware = hardware;
-serialPort.SerialPortBinding = hardware.mockBinding;
+Hardware.prototype.fakeRead = function (path, buffer, offset, length, position, cb) {
+  var port = this.ports[path];
+  if (!port) {
+    return cb(new Error(path + " does not exist - please call hardware.createPort(path) first"));
+  }
+  if (port.data.length === 0) {
+    return cb(null, 0, buffer);
+  }
+  if ((offset + length) > buffer.length) {
+    throw new Error("Length extends beyond buffer");
+  }
+  var read = port.data.slice(0, length);
+  port.data = port.data.slice(length);
+  read.copy(buffer, offset);
+  cb(null, read.length, buffer);
+};
 
-serialPort.__set__('fs', {
-  read: function (path, buffer, offset, length, position, cb) {
-    var port = hardware.ports[path];
-    if (!port) {
-      return cb(new Error(path + " does not exist - please call hardware.createPort(path) first"));
+var hardware = new Hardware();
+
+
+var SandboxedModule = require('sandboxed-module');
+
+var serialPort = SandboxedModule.require('../serialport', {
+  requires: {
+    fs: {
+      read: hardware.fakeRead.bind(hardware)
     }
-    if (port.data.length === 0) {
-      return cb(null, 0, buffer);
+  },
+  globals: {
+    process: {
+      platform: 'darwin',
+      nextTick: process.nextTick
     }
-    if ((offset + length) > buffer.length) {
-      throw new Error("Length extends beyond buffer");
-    }
-    var read = port.data.slice(0, length);
-    port.data = port.data.slice(length);
-    read.copy(buffer, offset);
-    cb(null, read.length, buffer);
   }
 });
 
-serialPort.__set__('process', {
-  platform: 'darwin',
-  nextTick: process.nextTick
-});
+serialPort.hardware = hardware;
+serialPort.SerialPortBinding = hardware.mockBinding;
 
 module.exports = serialPort;
