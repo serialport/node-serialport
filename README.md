@@ -187,8 +187,8 @@ List Ports
 You can also list the ports along with some metadata as well.
 
 ```js
-var SerialPort = require("serialport");
-SerialPort.list(function (err, ports) {
+var serialPort = require("serialport");
+serialPort.list(function (err, ports) {
   ports.forEach(function(port) {
     console.log(port.comName);
     console.log(port.pnpId);
