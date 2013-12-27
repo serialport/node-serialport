@@ -1,11 +1,10 @@
 "use strict";
 
-var serialPort = require('../serialport');
 var chai = require('chai');
 var sinonChai = require("sinon-chai");
 var sinon = require("sinon");
 
-var parsers = serialPort.parsers;
+var parsers = require('../parsers');
 
 describe("parsers", function () {
 
