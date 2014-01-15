@@ -1,3 +1,7 @@
+Version 1.3.0
+-------------
+- Merged NAN integration for Node 0.8->0.11+ compatibility (#270)
+
 Version 1.2.5
 -------------
 - Fixed an issue with pool handlers being global instead of instance isolation (Issue #252 and #255 thanks: foobarth !!! )
