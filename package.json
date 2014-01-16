@@ -53,7 +53,7 @@
     "sandboxed-module": "~0.3.0"
   },
   "engines": {
-    "node": "0.10.x"
+    "node": ">= 0.8.0"
   },
   "bin": {
     "serialportlist": "./bin/serialportList.js",
