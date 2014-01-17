@@ -61,18 +61,6 @@ This assumes you have everything on your system necessary to compile ANY native 
  * Install [Python 2.7.6](http://www.python.org/download/releases/2.7.6/) matching the bitness of your operating system.  For any questions, please refer to their [FAQ](http://docs.python.org/2/faq/windows.html). Default settings are perfect.
  * Open the 'Visual Studio Command Prompt' and add Python to the path.
 
-Visual Studio 2013 is not yet supported by node 0.10.x but the latest version of node-gyp on npm does support it.  Use the
-below workaround until node 0.10.x is updated.
-
-```Batchfile
-   set path=%path%;C:\Python27
-   npm install node-gyp -g
-   git clone https://github.com/voodootikigod/node-serialport.git
-   cd node-serialport
-   node-gyp configure
-   node-gyp build
-```
-
 ### Mac OS X:
 
 Ensure that you have at a minimum the xCode Command Line Tools installed appropriate for your system configuration. If you recently upgraded the OS, it probably removed your installation of Command Line Tools, please verify before submitting a ticket.
