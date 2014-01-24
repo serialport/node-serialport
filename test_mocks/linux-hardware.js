@@ -130,6 +130,9 @@ Hardware.prototype.fakeRead = function (path, buffer, offset, length, position, 
   if ((offset + length) > buffer.length) {
     throw new Error("Length extends beyond buffer");
   }
+
+  // node v0.8 doesn't like a slice that is bigger then available data
+  length = port.data.length < length ? port.data.length : length;
   var read = port.data.slice(0, length);
   port.data = port.data.slice(length);
   read.copy(buffer, offset);
@@ -137,7 +140,6 @@ Hardware.prototype.fakeRead = function (path, buffer, offset, length, position, 
 };
 
 var hardware = new Hardware();
-
 
 var SandboxedModule = require('sandboxed-module');
 
