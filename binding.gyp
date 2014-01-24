@@ -24,6 +24,19 @@
             },
           },
         ],
+        ['OS=="mac"',
+          {
+            'sources': [
+              'src/serialport_unix.cpp',
+              'src/serialport_poller.cpp',
+            ],
+            'xcode_settings': {
+              'OTHER_LDFLAGS': [
+                '-framework CoreFoundation -framework IOKit'
+              ]
+            }
+          }
+        ],
         ['OS!="win"',
           {
             'sources': [
