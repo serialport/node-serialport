@@ -535,7 +535,7 @@ function SerialPortFactory() {
           }
 
           link = path.resolve(dirName, link);
-          exec('udevadm info --query=property -p $(udevadm info -q path -n ' + link + ')', function (err, stdout) {
+          exec('/sbin/udevadm info --query=property -p $(/sbin/udevadm info -q path -n ' + link + ')', function (err, stdout) {
             if (err) {
               if (callback) {
                 callback(err);
