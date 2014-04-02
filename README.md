@@ -67,12 +67,20 @@ Ensure that you have at a minimum the xCode Command Line Tools installed appropr
 
 ### Desktop (Debian/Ubuntu) Linux:
 
-You know what you need for you system, basically your appropriate analog of build-essential. Keep rocking!
+You know what you need for you system, basically your appropriate analog of build-essential. Keep rocking! Ubuntu renamed the `node` binary `nodejs` which can cause problems building `node-serialport`. The fix is simple, install the [nodejs-legacy package](https://packages.debian.org/sid/nodejs-legacy) that symlinks `/usr/bin/nodejs => /usr/bin/node` or install the more up to date nodejs package from [Chris Lea's PPA](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager#ubuntu-mint-elementary-os). 
 
 
 ```
-   sudo apt-get install build-essential
-   npm install serialport
+# Ubuntu node
+sudo apt-get install nodejs nodejs-legacy 
+
+# Or Chris Lea's PPA Node (more up to date)
+sudo add-apt-repository ppa:chris-lea/node.js
+sudo apt-get update
+sudo apt-get install nodejs
+
+sudo apt-get install build-essential
+npm install serialport
 ```
 
 ### Raspberry Pi Linux:
