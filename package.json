@@ -69,7 +69,7 @@
     "serialportterm": "./bin/serialportTerminal.js"
   },
   "scripts": {
-    "install": "node-pre-gyp install",
+    "install": "node-pre-gyp install --fallback-to-build",
     "test": "grunt --verbose"
   }
 }
