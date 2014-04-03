@@ -7,6 +7,13 @@
     "email": "voodootikigod@gmail.com",
     "url": "http://www.voodootikigod.com"
   },
+  "binary": {
+    "module_name" : "serialport",
+    "module_path" : "./build/{module_name}/v{version}/{configuration}/{node_abi}-{platform}-{arch}/",
+    "remote_path" : "./{module_name}/v{version}/{configuration}/",
+    "package_name": "{node_abi}-{platform}-{arch}.tar.gz",
+    "host"        : "https://node-pre-gyp-tests.s3-us-west-1.amazonaws.com"
+  },
   "main": "./serialport",
   "repository": {
     "type": "git",
@@ -35,11 +42,16 @@
     }
   ],
   "dependencies": {
+    "node-pre-gyp": "0.5.x",
     "bindings": "1.1.1",
     "async": "0.1.18",
     "sf": "0.1.6",
     "optimist": "~0.3.4",
     "nan": "~0.7.0"
+  },
+  "bundledDependencies":["node-pre-gyp"],
+  "scripts": {
+    "install": "node-pre-gyp install --fallback-to-build"
   },
   "devDependencies": {
     "mocha": "*",
