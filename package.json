@@ -12,7 +12,7 @@
     "module_path" : "./build/{module_name}/v{version}/{configuration}/{node_abi}-{platform}-{arch}/",
     "remote_path" : "./{module_name}/v{version}/{configuration}/",
     "package_name": "{node_abi}-{platform}-{arch}.tar.gz",
-    "host"        : "https://node-pre-gyp-tests.s3-us-west-1.amazonaws.com"
+    "host"        : "https://node-serialport.s3.amazonaws.com"
   },
   "main": "./serialport",
   "repository": {
@@ -50,9 +50,6 @@
     "nan": "~0.7.0"
   },
   "bundledDependencies":["node-pre-gyp"],
-  "scripts": {
-    "install": "node-pre-gyp install --fallback-to-build"
-  },
   "devDependencies": {
     "mocha": "*",
     "chai": "*",
@@ -72,6 +69,7 @@
     "serialportterm": "./bin/serialportTerminal.js"
   },
   "scripts": {
+    "install": "node-pre-gyp install",
     "test": "grunt --verbose"
   }
 }
