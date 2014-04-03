@@ -1,7 +1,53 @@
 language: node_js
 node_js:
-  - "0.8"
-  - "0.9"
-  - "0.10"
-  - "0.11"
+- '0.8'
+- '0.9'
+- '0.10'
+- '0.11'
 compiler: clang
+env:
+  global:
+  - secure: pjR92yPVMzujM8ZvnK9Al7IRmkLAhp73kJSabBtu1KanVWQBwp9W/+ieWRBEOjSc2EQOfjkhJtAIyG2yjAZd+I+U0BNGiBgGtHGq1kIUMCCuG4RC7EK4lTc372AHeVwYrnUHpmBk4QTN2XoQyQgzLVICbMpUNcyvD8OkiXraxEw=
+  - secure: 0bb49WhgH7Kcqn6IsySUh7JnaXaZF9w8dM7v25xer3ydMgADktSPdNTpBAhoXaCaMWDZ4aj3Mh535QF2pklyBBa+pIeI7/De5B2c59wU8bMDZxC6HP8BRVaoD4gMy1XSOtMau4DQ2DElPbOBGryqCIvkut8XRsDQFmL2aMRVW00=
+
+before_install:
+# get commit message
+- COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
+# put local node-pre-gyp on PATH
+- export PATH=./node_modules/.bin/:$PATH
+# put global node-gyp on PATH
+- npm install node-gyp -g
+# install aws-sdk so it is available for publishing
+- npm install aws-sdk
+# figure out if we should publish
+- PUBLISH_BINARY=false
+# if we are building a tag then publish
+- if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then PUBLISH_BINARY=true; fi;
+# or if we put [publish binary] in the commit message
+- if test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"; then PUBLISH_BINARY=true; fi;
+
+install:
+# ensure source install works
+- npm install --build-from-source
+# test our module
+- node index.js
+
+before_script:
+# if publishing, do it
+- if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package publish; fi;
+# cleanup
+- node-pre-gyp clean
+- node-gyp clean
+
+script:
+# if publishing, test installing from remote
+- INSTALL_RESULT=0
+- if [[ $PUBLISH_BINARY == true ]]; then INSTALL_RESULT=$(npm install --fallback-to-build=false > /dev/null)$? || true; fi;
+# if install returned non zero (errored) then we first unpublish and then call false so travis will bail at this line
+- if [[ $INSTALL_RESULT != 0 ]]; then echo "returned $INSTALL_RESULT";node-pre-gyp unpublish;false; fi
+# If success then we arrive here so lets clean up
+- node-pre-gyp clean
+
+after_success:
+# if success then query and display all published binaries
+- node-pre-gyp info
