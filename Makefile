@@ -27,4 +27,4 @@ release:
 	@git checkout master
 
 	@echo "Publishing to NPM"
-	@npm push ./
+	@npm publish ./
