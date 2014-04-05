@@ -22,3 +22,9 @@ release:
 
 	@echo "Pushing osx-node-pre-gyp"
 	@git push
+
+	@echo "Switching to master branch"
+	@git checkout master
+
+	@echo "Publishing to NPM"
+	@npm push ./
