@@ -7,7 +7,7 @@ environment:
 
 # to add several platforms to build matrix:
 platform:
-  - x86
+  - x64
 
 install:
   - cmd: ECHO "INSTALL:"
@@ -30,20 +30,36 @@ install:
   - cmd: IF not x%COMMIT_MSG:[publish binary]=%==x%COMMIT_MSG% SET PUBLISH_BINARY=true
   - cmd: ECHO "Env Var PUBLISH_BINARY:"
   - cmd: ECHO %PUBLISH_BINARY%
-  - cmd: git clone https://github.com/BergWerkGIS/nodist.git c:\nodist 2>&1
+  - cmd: git clone https://github.com/marcelklehr/nodist.git c:\nodist 2>&1
   - cmd: SET NODIST_X64=0
-  - cmd: call nodist update 2>&1
-  - cmd: call nodist stable 2>&1
+  - cmd: call nodist update
+  - cmd: call nodist stable
   - cmd: npm install node-gyp -g
   - cmd: npm install aws-sdk
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
-  - cmd: ECHO "BUILDING:"
+  - cmd: ECHO "BUILDING ia32 version:"
   - cmd: npm install --build-from-source
-  - cmd: SET PATH=%APPVEYOR_BUILD_FOLDER%\node_modules\.bin\;%PATH%
+  - cmd: SET PATH=%cd%\node_modules\.bin\;%PATH%
   - cmd: node serialport.js
+  - cmd: ECHO "PUBLISH ia32 package:"
+  - cmd: npm install aws-sdk
+  - cmd: IF %PUBLISH_BINARY%==true node-pre-gyp package publish
+  - cmd: node-pre-gyp clean
+  - cmd: node-gyp clean
+  - cmd: rmdir /q /s node_modules
+  - cmd: ECHO "INSTALLING x64 node.js:"
+  # We add newest MSBuild so we can use the correct libs for the x64 version
+  - cmd: SET PATH=C:\Program Files (x86)\MSBuild\12.0\bin\;%PATH%
+  - cmd: SET PATH=c:\python27;%PATH%
+  - cmd: set NODIST_X64=1
+  - cmd: call nodist stable 2>&1
+  - cmd: npm install -g node-gyp
+  - cmd: ECHO "BUILDING x64 version:"
+  - cmd: npm install --build-from-source --msvs_version=2013
   - cmd: ECHO "PUBLISH package:"
+  - cmd: npm install aws-sdk
   - cmd: IF %PUBLISH_BINARY%==true node-pre-gyp package publish
   - cmd: node-pre-gyp clean
   - cmd: node-gyp clean
@@ -54,10 +70,10 @@ on_success:
   - cmd: ECHO "Try installing from binary:"
   - cmd: IF %PUBLISH_BINARY%==true npm install --fallback-to-build=false
   # Clean Directories.
-  - cmd: node-pre-gyp clean 2>&1
+  - cmd: node-pre-gyp clean
   # Print Available Binaries
-  - cmd: node-pre-gyp info 2>&1
+  - cmd: node-pre-gyp info
 
 test: OFF
 
-deploy: OFF
+deploy: OFF       
