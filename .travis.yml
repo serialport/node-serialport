@@ -27,7 +27,7 @@ before_install:
 - if test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"; then PUBLISH_BINARY=true; fi;
 - platform=$(uname -s | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/")
 - echo "TRAVIS_NODE_VERSION -->" $TRAVIS_NODE_VERSION
-- if [[ $TRAVIS_NODE_VERSION == '0.9']]; then PUBLISH_BINARY=true; fi;
+- if [[ "$TRAVIS_NODE_VERSION" == '0.9' ]]; then PUBLISH_BINARY=false; fi;
 
 install:
 # ensure source install works
