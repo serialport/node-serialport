@@ -18,7 +18,7 @@ release:
 	@git checkout osx-node-pre-gyp
 
 	@echo "Merging master into osx-node-pre-gyp"
-	@git merge master
+	@git merge --no-ff --commit -m "Merge master into osx-node-pre-gyp [publish binary]" master
 
 	@echo "Pushing osx-node-pre-gyp"
 	@git push
