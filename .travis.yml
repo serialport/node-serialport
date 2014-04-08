@@ -1,16 +1,19 @@
-language: node_js
-node_js:
-- '0.8'
-- '0.9'
-- '0.10'
-- '0.11'
+language: objective-c
 compiler: clang
+
 env:
+  matrix:
+   - export NODE_VERSION="0.8"
+   - export NODE_VERSION="0.10"
   global:
     - secure: "UVXTR2miHYhPNn167iOrAxlr7KY7qhskoj2jdZiBkcRXeCp0Kh+yvGs60T57bGC0Op/PmV9zHYnstjaGhDVsw/k9eBbn6TLtl8np14luuozBWU72j1JhuPTbJsSzjuKojWNhiZ1mJdMrIG99r7qhPn86esRmVSZYEeaP5LcyyiY="
     - secure: "cYIqIv8qba4HUN6ezwzObyw9Jp3DnsZAUWTu11F7j3c/K/cyMJ/ImoDhB9FwzosWswRIxkz5XqO/9QKJLXHuDni6HePfltfc+BOIoFoF2BI6jGSjjuQRotXZqqlBuV/wRNf4TrjPLLIAYnPjl4o4YUBylmZ6RpolC+0fntCY1FI="
 
 before_install:
+- git clone https://github.com/creationix/nvm.git ./.nvm
+- source ./.nvm/nvm.sh
+- nvm install $NODE_VERSION
+- nvm use $NODE_VERSION
 # get commit message
 - COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
 # put local node-pre-gyp on PATH
