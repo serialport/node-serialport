@@ -1,9 +1,10 @@
 # environment variables
 environment:
   node_pre_gyp_secretAccessKey:
-    secure: ZOsWmB5rxfiPgPW5bCuvkK1UUEupssSoHfK5jWcJBJsPuPWQHEWOr1lUteVbx2NV
+    secure: wJRlPhmqDgwxllTxhhG5JJosBf3nKYxcXO6NfGnrUUnxmECHeNTsBrldqW8+EjyK
   node_pre_gyp_accessKeyId:
-    secure: hTQMi31kndQOPU0AZVkVXgH7Vc3EjJmvThFwMYhkno4=
+    secure: cgGBaLa6xiPo5duak1/xU5hxPCn1aUQqkQQZf27QQp0=
+
 
 # to add several platforms to build matrix:
 platform:
