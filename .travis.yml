@@ -7,8 +7,8 @@ node_js:
 compiler: clang
 env:
   global:
-    - secure: "UVXTR2miHYhPNn167iOrAxlr7KY7qhskoj2jdZiBkcRXeCp0Kh+yvGs60T57bGC0Op/PmV9zHYnstjaGhDVsw/k9eBbn6TLtl8np14luuozBWU72j1JhuPTbJsSzjuKojWNhiZ1mJdMrIG99r7qhPn86esRmVSZYEeaP5LcyyiY="
-    - secure: "cYIqIv8qba4HUN6ezwzObyw9Jp3DnsZAUWTu11F7j3c/K/cyMJ/ImoDhB9FwzosWswRIxkz5XqO/9QKJLXHuDni6HePfltfc+BOIoFoF2BI6jGSjjuQRotXZqqlBuV/wRNf4TrjPLLIAYnPjl4o4YUBylmZ6RpolC+0fntCY1FI="
+    - secure: "Zg7w8hTpgVfm6JeTScsMhaexFcVS5N2oI9O/6MLtsm3CUhb0Txq65y4y/a5DU3re6Pl1ryE21anVLdg4RGDeykCauQtg8nFzuGXBfNn9bRTnsIfkiS9LNkbSZ8h3c7EsyX0NJ7LVgnkPh/XXMqMj4Nh0ovbBCwZJ6k2ZvccvDvU="
+    - secure: "VS7JTJYfcCDOiWZH6g+Lm4y+QFuCB++4GnYvWqqaUljebuB2l8gZhDrmQtWKFPBEZP21ptjtpNWJC6hCUf07qJ81vVpb6wMUikfOOLN0nulED+AC5HtCxYnfwIu1i0z00YxaSfvozMXKk9TCLabE0ognoDV+XV1bQoYm8668z7E="
 
 before_install:
 # get commit message
