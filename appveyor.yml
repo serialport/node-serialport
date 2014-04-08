@@ -1,9 +1,10 @@
 # environment variables
 environment:
   node_pre_gyp_secretAccessKey:
-    secure: ZOsWmB5rxfiPgPW5bCuvkK1UUEupssSoHfK5jWcJBJsPuPWQHEWOr1lUteVbx2NV
+    secure: wJRlPhmqDgwxllTxhhG5JJosBf3nKYxcXO6NfGnrUUnxmECHeNTsBrldqW8+EjyK
   node_pre_gyp_accessKeyId:
-    secure: hTQMi31kndQOPU0AZVkVXgH7Vc3EjJmvThFwMYhkno4=
+    secure: cgGBaLa6xiPo5duak1/xU5hxPCn1aUQqkQQZf27QQp0=
+
 
 # to add several platforms to build matrix:
 platform:
@@ -45,7 +46,7 @@ build_script:
   - cmd: node serialport.js
   - cmd: ECHO "PUBLISH ia32 package:"
   - cmd: npm install aws-sdk
-  - cmd: IF %PUBLISH_BINARY%==true node-pre-gyp package publish
+  - cmd: IF %PUBLISH_BINARY%==true (node-pre-gyp package publish 2>&1)
   - cmd: node-pre-gyp clean
   - cmd: node-gyp clean
   - cmd: rmdir /q /s node_modules
@@ -54,13 +55,13 @@ build_script:
   - cmd: SET PATH=C:\Program Files (x86)\MSBuild\12.0\bin\;%PATH%
   - cmd: SET PATH=c:\python27;%PATH%
   - cmd: set NODIST_X64=1
-  - cmd: call nodist stable 2>&1
+  - cmd: call nodist stable
   - cmd: npm install -g node-gyp
   - cmd: ECHO "BUILDING x64 version:"
   - cmd: npm install --build-from-source --msvs_version=2013
   - cmd: ECHO "PUBLISH package:"
   - cmd: npm install aws-sdk
-  - cmd: IF %PUBLISH_BINARY%==true node-pre-gyp package publish
+  - cmd: IF %PUBLISH_BINARY%==true (node-pre-gyp package publish 2>&1)
   - cmd: node-pre-gyp clean
   - cmd: node-gyp clean
 
@@ -76,4 +77,4 @@ on_success:
 
 test: OFF
 
-deploy: OFF       
+deploy: OFF
