@@ -3,7 +3,14 @@
 
 // Copyright 2011 Chris Williams <chris@iterativedesigns.com>
 
-var SerialPortBinding = require("bindings")("serialport.node");
+// Require serialport binding from pre-compiled binaries using
+// node-pre-gyp, if something fails or package not available fallback
+// to regular build from source.
+var binary = require('node-pre-gyp');
+var path = require('path');
+var binding_path = binary.find(path.resolve(path.join(__dirname,'./package.json')));
+var SerialPortBinding = require(binding_path);
+
 var parsers = require('./parsers');
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');

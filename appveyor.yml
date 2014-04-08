@@ -1,0 +1,79 @@
+# environment variables
+environment:
+  node_pre_gyp_secretAccessKey:
+    secure: ZOsWmB5rxfiPgPW5bCuvkK1UUEupssSoHfK5jWcJBJsPuPWQHEWOr1lUteVbx2NV
+  node_pre_gyp_accessKeyId:
+    secure: hTQMi31kndQOPU0AZVkVXgH7Vc3EjJmvThFwMYhkno4=
+
+# to add several platforms to build matrix:
+platform:
+  - x64
+
+install:
+  - cmd: ECHO "INSTALL:"
+  - cmd: ECHO "APPVEYOR_REPO_COMMIT_MESSAGE ->"
+  - cmd: ECHO %APPVEYOR_REPO_COMMIT_MESSAGE%
+  - cmd: SET COMMIT_MSG="%APPVEYOR_REPO_COMMIT_MESSAGE%"
+  - cmd: SET PATH=c:\nodist\bin;%PATH%
+  - cmd: SET PUBLISH_BINARY=false
+  # Check to verify the branch is the same than latest tag, if so
+  # then we publish the binaries if everything else is successful.
+  - cmd: git describe --tags --always HEAD > _git_tag.tmp
+  - cmd: SET /p GIT_TAG=<_git_tag.tmp
+  - cmd: ECHO "LATEST LOCAL TAG:"
+  - cmd: ECHO %GIT_TAG%
+  - cmd: ECHO "APPVEYOR REPO BRANCH/TAG:"
+  - cmd: ECHO %APPVEYOR_REPO_BRANCH%
+  - cmd: DEL _git_tag.tmp
+  - cmd: IF x%APPVEYOR_REPO_BRANCH%==x%GIT_TAG% SET PUBLISH_BINARY=true
+  # Or look for commit message containing `[publish binary]`
+  - cmd: IF not x%COMMIT_MSG:[publish binary]=%==x%COMMIT_MSG% SET PUBLISH_BINARY=true
+  - cmd: ECHO "Env Var PUBLISH_BINARY:"
+  - cmd: ECHO %PUBLISH_BINARY%
+  - cmd: git clone https://github.com/marcelklehr/nodist.git c:\nodist 2>&1
+  - cmd: SET NODIST_X64=0
+  - cmd: call nodist update
+  - cmd: call nodist stable
+  - cmd: npm install node-gyp -g
+  - cmd: npm install aws-sdk
+
+# to run your custom scripts instead of automatic MSBuild
+build_script:
+  - cmd: ECHO "BUILDING ia32 version:"
+  - cmd: npm install --build-from-source
+  - cmd: SET PATH=%cd%\node_modules\.bin\;%PATH%
+  - cmd: node serialport.js
+  - cmd: ECHO "PUBLISH ia32 package:"
+  - cmd: npm install aws-sdk
+  - cmd: IF %PUBLISH_BINARY%==true node-pre-gyp package publish
+  - cmd: node-pre-gyp clean
+  - cmd: node-gyp clean
+  - cmd: rmdir /q /s node_modules
+  - cmd: ECHO "INSTALLING x64 node.js:"
+  # We add newest MSBuild so we can use the correct libs for the x64 version
+  - cmd: SET PATH=C:\Program Files (x86)\MSBuild\12.0\bin\;%PATH%
+  - cmd: SET PATH=c:\python27;%PATH%
+  - cmd: set NODIST_X64=1
+  - cmd: call nodist stable 2>&1
+  - cmd: npm install -g node-gyp
+  - cmd: ECHO "BUILDING x64 version:"
+  - cmd: npm install --build-from-source --msvs_version=2013
+  - cmd: ECHO "PUBLISH package:"
+  - cmd: npm install aws-sdk
+  - cmd: IF %PUBLISH_BINARY%==true node-pre-gyp package publish
+  - cmd: node-pre-gyp clean
+  - cmd: node-gyp clean
+
+on_success:
+  # test installing from binary package works
+  - cmd: ECHO "ON SUCCESS:"
+  - cmd: ECHO "Try installing from binary:"
+  - cmd: IF %PUBLISH_BINARY%==true npm install --fallback-to-build=false
+  # Clean Directories.
+  - cmd: node-pre-gyp clean
+  # Print Available Binaries
+  - cmd: node-pre-gyp info
+
+test: OFF
+
+deploy: OFF       
