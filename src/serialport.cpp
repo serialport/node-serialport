@@ -161,13 +161,15 @@ void EIO_AfterWrite(uv_work_t* req) {
   }
   data->callback->Call(2, argv);
 
-  if (data->offset < data->bufferLength) {
+  //Fix issue #302 (https://github.com/voodootikigod/node-serialport/issues/302) on ubuntu.
+  if (data->offset < data->bufferLength && !data->errorString[0]) {
     // We're not done with this baton, so throw it right back onto the queue.
+	  //Don't re-push the write in the event loop if there was an error; because same error will occur again!
     // TODO: Add a uv_poll here for unix...
     uv_queue_work(uv_default_loop(), req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
     return;
   }
-
+  
   uv_mutex_lock(&write_queue_mutex);
   QUEUE_REMOVE(&queuedWrite->queue);
 
