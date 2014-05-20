@@ -161,8 +161,9 @@ void EIO_AfterWrite(uv_work_t* req) {
   }
   data->callback->Call(2, argv);
 
-  if (data->offset < data->bufferLength) {
+  if (data->offset < data->bufferLength && !data->errorString[0]) {
     // We're not done with this baton, so throw it right back onto the queue.
+	  // Don't re-push the write in the event loop if there was an error; because same error could occur again!
     // TODO: Add a uv_poll here for unix...
     uv_queue_work(uv_default_loop(), req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
     return;
@@ -422,7 +423,7 @@ SerialPortStopBits NAN_INLINE(ToStopBitEnum(double stopBits)) {
 }
 
 extern "C" {
-  void init (v8::Handle<v8::Object> target) 
+  void init (v8::Handle<v8::Object> target)
   {
     NanScope();
     NODE_SET_METHOD(target, "open", Open);
