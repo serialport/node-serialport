@@ -3,7 +3,7 @@
 
 // Copyright 2011 Chris Williams <chris@iterativedesigns.com>
 
-var parsers = module.exports = {
+module.exports = {
   raw: function (emitter, buffer) {
     emitter.emit("data", buffer);
   },
@@ -20,7 +20,7 @@ var parsers = module.exports = {
       // Split collected data by delimiter
       var parts = data.split(delimiter);
       data = parts.pop();
-      parts.forEach(function (part, i, array) {
+      parts.forEach(function (part) {
         emitter.emit('data', part);
       });
     };

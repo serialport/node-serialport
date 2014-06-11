@@ -6,6 +6,7 @@
 // Require serialport binding from pre-compiled binaries using
 // node-pre-gyp, if something fails or package not available fallback
 // to regular build from source.
+
 var binary = require('node-pre-gyp');
 var path = require('path');
 var binding_path = binary.find(path.resolve(path.join(__dirname,'./package.json')));
@@ -253,7 +254,6 @@ function SerialPortFactory() {
       // Grab another reference to the pool in the case that while we're in the
       // thread pool another read() finishes up the pool, and allocates a new
       // one.
-      var thisPool = self.pool;
       var toRead = Math.min(self.pool.length - self.pool.used, ~~self.bufferSize);
       var start = self.pool.used;
 
