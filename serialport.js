@@ -149,7 +149,7 @@ function SerialPortFactory() {
         return;
       }
       var err = new Error("Disconnected");
-      callback(err);
+      self.emit("disconnect",err);
     };
 
     if (process.platform !== 'win32') {
@@ -189,6 +189,7 @@ function SerialPortFactory() {
         if (callback) {
           callback(err);
         } else {
+          console.log("open");
           self.emit('error', err);
         }
         return;
@@ -211,6 +212,7 @@ function SerialPortFactory() {
       if (callback) {
         callback(err);
       } else {
+        console.log("write-fd");
         self.emit('error', err);
       }
       return;
@@ -224,6 +226,7 @@ function SerialPortFactory() {
         callback(err, results);
       } else {
         if (err) {
+          console.log("write");
           self.emit('error', err);
         }
       }
@@ -264,8 +267,11 @@ function SerialPortFactory() {
             if (self.fd >= 0) {
               self.serialPoller.start();
             }
+          } else if (err.code && err.code === 'ENXIO') {
+            self.disconnected();
           } else {
             self.fd = null;
+            console.log("afterRead");
             self.emit('error', err);
             self.readable = false;
           }
@@ -337,6 +343,46 @@ function SerialPortFactory() {
 
   } // if !'win32'
 
+
+  SerialPort.prototype.disconnected = function (callback) {
+    var self = this;
+    var fd = self.fd;
+
+    // send notification of disconnect
+    if (self.options.disconnectedCallback) {
+      self.options.disconnectedCallback();
+    } else {
+      self.emit("disconnect");
+    }
+    self.paused = true;
+    self.closing = true;
+
+    self.emit("close");
+
+    // clean up all other items
+    var fd = self.fd;
+    try {
+      factory.SerialPortBinding.close(fd, function (err) {
+      });
+    } catch (e) {
+      //handle silently as we are just cleaning up the OS.
+    }
+
+    self.removeAllListeners();
+    self.closing = false;
+    self.fd = 0;
+
+    if (process.platform !== 'win32') {
+      self.readable = false;
+      self.serialPoller.close();
+    }
+
+    if (callback) {
+      callback();
+    }
+  }
+
+
   SerialPort.prototype.close = function (callback) {
     var self = this;
 
@@ -350,6 +396,7 @@ function SerialPortFactory() {
       if (callback) {
         callback(err);
       } else {
+        console.log("sp not open");
         self.emit('error', err);
       }
       return;
@@ -363,6 +410,7 @@ function SerialPortFactory() {
           if (callback) {
             callback(err);
           } else {
+            console.log("doclose");
             self.emit('error', err);
           }
           return;
