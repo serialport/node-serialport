@@ -267,7 +267,7 @@ function SerialPortFactory() {
             if (self.fd >= 0) {
               self.serialPoller.start();
             }
-          } else if (err.code && err.code === 'ENXIO') {
+          } else if (err.code && (err.code === 'ENXIO' || err.code === 'UNKNOWN')) {    // handle edge case were mac/unix doesn't clearly know the error.
             self.disconnected();
           } else {
             self.fd = null;
