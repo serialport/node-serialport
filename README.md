@@ -14,7 +14,7 @@
 
 [![Build Status](https://travis-ci.org/voodootikigod/node-serialport.png?branch=master)](https://travis-ci.org/voodootikigod/node-serialport)
 
-Version: 1.4.0 - Released April 8, 2014
+Version: 1.4.1 - Released July 7, 2014
 
 *****
 
