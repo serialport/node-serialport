@@ -189,7 +189,7 @@ function SerialPortFactory() {
         if (callback) {
           callback(err);
         } else {
-          console.log("open");
+          // console.log("open");
           self.emit('error', err);
         }
         return;
@@ -212,7 +212,7 @@ function SerialPortFactory() {
       if (callback) {
         callback(err);
       } else {
-        console.log("write-fd");
+        // console.log("write-fd");
         self.emit('error', err);
       }
       return;
@@ -226,7 +226,7 @@ function SerialPortFactory() {
         callback(err, results);
       } else {
         if (err) {
-          console.log("write");
+          // console.log("write");
           self.emit('error', err);
         }
       }
@@ -272,7 +272,7 @@ function SerialPortFactory() {
             self.disconnected();
           } else {
             self.fd = null;
-            console.log("afterRead");
+            // console.log("afterRead");
             self.emit('error', err);
             self.readable = false;
           }
@@ -398,7 +398,7 @@ function SerialPortFactory() {
       if (callback) {
         callback(err);
       } else {
-        console.log("sp not open");
+        // console.log("sp not open");
         self.emit('error', err);
       }
       return;
@@ -412,7 +412,7 @@ function SerialPortFactory() {
           if (callback) {
             callback(err);
           } else {
-            console.log("doclose");
+            // console.log("doclose");
             self.emit('error', err);
           }
           return;
