@@ -264,9 +264,6 @@ function SerialPortFactory() {
         self.reading = false;
         if (err) {
 
-          console.log("send to chris --");
-          console.log("|",err.code,"|");
-          console.log("|",err.errno,"|");
           if (err.code && err.code === 'EAGAIN') {
             if (self.fd >= 0) {
               self.serialPoller.start();
