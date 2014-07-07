@@ -17,7 +17,7 @@
 
 For all discussions, designs, and clarifications, we recommend you join our Gitter Chat room: [https://gitter.im/voodootikigod/node-serialport](https://gitter.im/voodootikigod/node-serialport)
 
-Version: 1.4.0 - Released April 8, 2014
+Version: 1.4.1 - Released July 7, 2014
 
 *****
 

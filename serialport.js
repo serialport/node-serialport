@@ -149,7 +149,7 @@ function SerialPortFactory() {
         return;
       }
       var err = new Error("Disconnected");
-      callback(err);
+      self.emit("disconnect",err);
     };
 
     if (process.platform !== 'win32') {
@@ -189,6 +189,7 @@ function SerialPortFactory() {
         if (callback) {
           callback(err);
         } else {
+          console.log("open");
           self.emit('error', err);
         }
         return;
@@ -211,6 +212,7 @@ function SerialPortFactory() {
       if (callback) {
         callback(err);
       } else {
+        console.log("write-fd");
         self.emit('error', err);
       }
       return;
@@ -224,6 +226,7 @@ function SerialPortFactory() {
         callback(err, results);
       } else {
         if (err) {
+          console.log("write");
           self.emit('error', err);
         }
       }
@@ -260,42 +263,47 @@ function SerialPortFactory() {
       function afterRead(err, bytesRead, readPool, bytesRequested) {
         self.reading = false;
         if (err) {
+
           if (err.code && err.code === 'EAGAIN') {
             if (self.fd >= 0) {
               self.serialPoller.start();
             }
+          } else if (err.code && (err.code === 'ENXIO' || (err.errno===-1 || err.code === 'UNKNOWN'))) {    // handle edge case were mac/unix doesn't clearly know the error.
+            self.disconnected();
           } else {
             self.fd = null;
+            console.log("afterRead");
             self.emit('error', err);
             self.readable = false;
           }
-        }
-
-        // Since we will often not read the number of bytes requested,
-        // let's mark the ones we didn't need as available again.
-        self.pool.used -= bytesRequested - bytesRead;
-
-        if (bytesRead === 0) {
-          if (self.fd >= 0) {
-            self.serialPoller.start();
-          }
         } else {
-          var b = self.pool.slice(start, start + bytesRead);
+          // Since we will often not read the number of bytes requested,
+          // let's mark the ones we didn't need as available again.
+          self.pool.used -= bytesRequested - bytesRead;
 
-          // do not emit events if the stream is paused
-          if (self.paused) {
-            self.buffer = Buffer.concat([self.buffer, b]);
-            return;
+          if (bytesRead === 0) {
+            if (self.fd >= 0) {
+              self.serialPoller.start();
+            }
           } else {
-            self._emitData(b);
-          }
+            var b = self.pool.slice(start, start + bytesRead);
 
-          // do not emit events anymore after we declared the stream unreadable
-          if (!self.readable) {
-            return;
+            // do not emit events if the stream is paused
+            if (self.paused) {
+              self.buffer = Buffer.concat([self.buffer, b]);
+              return;
+            } else {
+              self._emitData(b);
+            }
+
+            // do not emit events anymore after we declared the stream unreadable
+            if (!self.readable) {
+              return;
+            }
+            self._read();
           }
-          self._read();
         }
+
       }
 
       fs.read(self.fd, self.pool, self.pool.used, toRead, null, function (err, bytesRead) {
@@ -337,6 +345,46 @@ function SerialPortFactory() {
 
   } // if !'win32'
 
+
+  SerialPort.prototype.disconnected = function (callback) {
+    var self = this;
+    var fd = self.fd;
+
+    // send notification of disconnect
+    if (self.options.disconnectedCallback) {
+      self.options.disconnectedCallback();
+    } else {
+      self.emit("disconnect");
+    }
+    self.paused = true;
+    self.closing = true;
+
+    self.emit("close");
+
+    // clean up all other items
+    var fd = self.fd;
+    try {
+      factory.SerialPortBinding.close(fd, function (err) {
+      });
+    } catch (e) {
+      //handle silently as we are just cleaning up the OS.
+    }
+
+    self.removeAllListeners();
+    self.closing = false;
+    self.fd = 0;
+
+    if (process.platform !== 'win32') {
+      self.readable = false;
+      self.serialPoller.close();
+    }
+
+    if (callback) {
+      callback();
+    }
+  }
+
+
   SerialPort.prototype.close = function (callback) {
     var self = this;
 
@@ -350,6 +398,7 @@ function SerialPortFactory() {
       if (callback) {
         callback(err);
       } else {
+        console.log("sp not open");
         self.emit('error', err);
       }
       return;
@@ -363,6 +412,7 @@ function SerialPortFactory() {
           if (callback) {
             callback(err);
           } else {
+            console.log("doclose");
             self.emit('error', err);
           }
           return;
