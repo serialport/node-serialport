@@ -362,7 +362,8 @@ function SerialPortFactory() {
     self.emit("close");
 
     // clean up all other items
-    var fd = self.fd;
+    fd = self.fd;
+
     try {
       factory.SerialPortBinding.close(fd, function (err) {
       });
@@ -382,7 +383,7 @@ function SerialPortFactory() {
     if (callback) {
       callback();
     }
-  }
+  };
 
 
   SerialPort.prototype.close = function (callback) {
