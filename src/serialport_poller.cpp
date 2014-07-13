@@ -35,24 +35,24 @@ void SerialportPoller::Init(Handle<Object> target) {
   NanScope();
 
   // Prepare constructor template
-  Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
-  tpl->SetClassName(String::NewSymbol("SerialportPoller"));
+  Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
+  tpl->SetClassName(NanNew<String>("SerialportPoller"));
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
 
   // Prototype
 
   // SerialportPoller.close()
-  tpl->PrototypeTemplate()->Set(String::NewSymbol("close"),
-      FunctionTemplate::New(Close)->GetFunction());
+  tpl->PrototypeTemplate()->Set(NanNew<String>("close"),
+      NanNew<FunctionTemplate>(Close)->GetFunction());
 
   // SerialportPoller.start()
-  tpl->PrototypeTemplate()->Set(String::NewSymbol("start"),
-      FunctionTemplate::New(Start)->GetFunction());
+  tpl->PrototypeTemplate()->Set(NanNew<String>("start"),
+      NanNew<FunctionTemplate>(Start)->GetFunction());
 
-  NanAssignPersistent(v8::FunctionTemplate, serialportpoller_constructor, tpl);
+  NanAssignPersistent<FunctionTemplate>(serialportpoller_constructor, tpl);
 
-  target->Set(String::NewSymbol("SerialportPoller"), tpl->GetFunction());
+  target->Set(NanNew<String>("SerialportPoller"), tpl->GetFunction());
 }
 
 NAN_METHOD(SerialportPoller::New) {
