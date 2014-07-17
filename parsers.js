@@ -7,6 +7,7 @@ module.exports = {
   raw: function (emitter, buffer) {
     emitter.emit("data", buffer);
   },
+
   //encoding: ascii utf8 utf16le ucs2 base64 binary hex
   //More: http://nodejs.org/api/buffer.html#buffer_buffer
   readline: function (delimiter, encoding) {
@@ -23,6 +24,19 @@ module.exports = {
       parts.forEach(function (part) {
         emitter.emit('data', part);
       });
+    };
+  },
+
+  // Emit a data event every `length` bytes
+  byteLength: function(length) {
+    var data = new Buffer(0);
+    return function(emitter, buffer){
+      data = Buffer.concat([data, buffer]);
+      while (data.length >= length) {
+        var out = data.slice(0,length);
+        data = data.slice(length);
+        emitter.emit('data', out);
+      }
     };
   }
 };
