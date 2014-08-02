@@ -410,7 +410,7 @@ SerialPortParity NAN_INLINE(ToParityEnum(const v8::Handle<v8::String>& v8str)) {
     parity = SERIALPORT_PARITY_SPACE;
   }
 
-  delete[] str;
+  // delete[] str;
 
   return parity;
 }
