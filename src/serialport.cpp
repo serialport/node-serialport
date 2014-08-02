@@ -392,8 +392,9 @@ void EIO_AfterDrain(uv_work_t* req) {
 SerialPortParity NAN_INLINE(ToParityEnum(const v8::Handle<v8::String>& v8str)) {
   NanScope();
 
-  size_t count;
-  char* str = NanCString(v8str, &count);
+
+  char* str = *NanUtf8String(v8str);
+  size_t count = strlen(str);
 
   SerialPortParity parity = SERIALPORT_PARITY_NONE;
 
@@ -425,7 +426,7 @@ SerialPortStopBits NAN_INLINE(ToStopBitEnum(double stopBits)) {
 }
 
 extern "C" {
-  void init (v8::Handle<v8::Object> target) 
+  void init (v8::Handle<v8::Object> target)
   {
     NanScope();
     NODE_SET_METHOD(target, "open", Open);
