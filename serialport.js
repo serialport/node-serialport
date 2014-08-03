@@ -9,7 +9,8 @@
 
 var binary = require('node-pre-gyp');
 var path = require('path');
-var binding_path = binary.find(path.resolve(path.join(__dirname,'./package.json')));
+var PACKAGE_JSON = path.join(__dirname,'package.json');
+var binding_path = binary.find(path.resolve(PACKAGE_JSON));
 var SerialPortBinding = require(binding_path);
 
 var parsers = require('./parsers');
@@ -163,7 +164,6 @@ function SerialPortFactory() {
 
     this.options = options;
     this.path = path;
-
     if (openImmediately) {
       process.nextTick(function () {
         self.open(callback);
