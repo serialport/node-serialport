@@ -20,7 +20,7 @@ describe('SerialPort', function () {
     if (process.version.indexOf("v0.11.") ===0) {
       it("does not currently work due to an issue with node unstable release, works in master.", function (done) {
         done();
-      })
+      });
     } else {
       it("Throws an error in callback when trying to open an invalid port", function (done) {
         var SerialPort = require('../').SerialPort;
