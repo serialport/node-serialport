@@ -50,12 +50,31 @@ How To Use
 
 Using node-serialport is pretty easy because it is pretty basic. It provides you with the building block to make great things, it is not a complete solution - just a cog in the (world domination) machine.
 
+**Special Notes**
+
+* Support for Node.js version 0.8.x has been removed. Version 1.4.0 is the last version that supported node.js version 0.8.x.
+* Currently support for Node.js version 0.11.x is dealing with an issue in the latest version of v. 0.11.13. We have confirmed things are fine with 0.11.10 and earlier, but not 0.11.11+.
+
+Good luck.
+
+
 To Install
 ----------
 
+For most "standard" use cases (node v0.10.x on mac, linux, windows on a x86 or x64 processor), node-serialport will install nice and easy with a simple
+
+```
+npm install serialport
+```
+
+We are using [node-pre-gyp](https://github.com/mapbox/node-pre-gyp) to compile and post binaries of the library for most common use cases (linux, mac, windows on standard processor platforms). If you are on a special case, node-serialport will work, but it will compile the binary when you install. Follow the instructions below for how that works.
+
+### Installation Special Cases
+
+
 This assumes you have everything on your system necessary to compile ANY native module for Node.js. This may not be the case, though, so please ensure the following are true for your system before filing an issue about "Does not install". For all operatings systems, please ensure you have Python 2.x installed AND not 3.0, node-gyp (what we use to compile) requires Python 2.x.
 
-### Windows:
+#### Windows:
 
  * Windows 7 or Windows 8.1 are supported.
  * Install [Visual Studio Express 2013 for Windows Desktop](http://www.microsoft.com/visualstudio/eng/2013-downloads#d-2013-express).
@@ -64,11 +83,11 @@ This assumes you have everything on your system necessary to compile ANY native 
  * Install [Python 2.7.6](http://www.python.org/download/releases/2.7.6/) matching the bitness of your operating system.  For any questions, please refer to their [FAQ](http://docs.python.org/2/faq/windows.html). Default settings are perfect.
  * Open the 'Visual Studio Command Prompt' and add Python to the path.
 
-### Mac OS X:
+#### Mac OS X:
 
 Ensure that you have at a minimum the xCode Command Line Tools installed appropriate for your system configuration. If you recently upgraded the OS, it probably removed your installation of Command Line Tools, please verify before submitting a ticket.
 
-### Desktop (Debian/Ubuntu) Linux:
+#### Desktop (Debian/Ubuntu) Linux:
 
 You know what you need for you system, basically your appropriate analog of build-essential. Keep rocking! Ubuntu renamed the `node` binary `nodejs` which can cause problems building `node-serialport`. The fix is simple, install the [nodejs-legacy package](https://packages.debian.org/sid/nodejs-legacy) that symlinks `/usr/bin/nodejs => /usr/bin/node` or install the more up to date nodejs package from [Chris Lea's PPA](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager#ubuntu-mint-elementary-os).
 
@@ -86,7 +105,7 @@ sudo apt-get install build-essential
 npm install serialport
 ```
 
-### Raspberry Pi Linux:
+#### Raspberry Pi Linux:
 
  * Starting with a a vanilla New Out of the Box Software (NOOBS) Raspbian image (currently tested: 5/25/2013)
  * Log into your Raspberry Pi through whatever means works best and ensure you are on a terminal prompt for the remaining steps. This could be local or through an SSH (or a serial connection if you like).
