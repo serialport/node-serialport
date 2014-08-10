@@ -71,7 +71,11 @@ function SerialPortFactory() {
 
     callback = callback || function (err) {
       if (err) {
-        factory.emit('error', err);
+        if (self._events.error) {
+          self.emit('error', err);
+        } else {
+          factory.emit('error', err);
+        }
       }
     };
 
