@@ -5,6 +5,8 @@
 #include "win/stdafx.h"
 #include "win/enumser.h"
 
+#include <nan.h>
+
 #ifdef WIN32
 
 #define MAX_BUFFER_SIZE 1000
@@ -131,7 +133,7 @@ void EIO_Open(uv_work_t* req) {
   }
 
   // Remove garbage data in RX/TX queues
-  PurgeComm(file, PURGE_RXCLEAR); 
+  PurgeComm(file, PURGE_RXCLEAR);
   PurgeComm(file, PURGE_TXCLEAR);
 
   data->result = (int)file;
@@ -251,7 +253,7 @@ void EIO_AfterWatchPort(uv_work_t* req) {
       goto cleanup;
     } else {
       v8::Handle<v8::Value> argv[1];
-      argv[0] = v8::Exception::Error(v8::String::New(data->errorString));
+      argv[0] = NanError(data->errorString);
       data->errorCallback->Call(1, argv);
       Sleep(100); // prevent the errors from occurring too fast
     }
@@ -359,7 +361,7 @@ void EIO_Close(uv_work_t* req) {
  *
  * Notable VIDs & PIDs combos:
  * VID 0403 - FTDI
- * 
+ *
  * VID 0403 / PID 6001 - Arduino Diecimila
  *
  */
@@ -372,7 +374,7 @@ void EIO_List(uv_work_t* req) {
 
     dhInitialize(TRUE);
     dhToggleExceptions(FALSE);
-   
+
     dhGetObject(L"winmgmts:{impersonationLevel=impersonate}!\\\\.\\root\\cimv2", NULL, &wmiSvc);
     dhGetValue(L"%o", &colDevices, wmiSvc, L".ExecQuery(%S)", L"Select * from Win32_PnPEntity");
 
@@ -385,7 +387,7 @@ void EIO_List(uv_work_t* req) {
 
       dhGetValue(L"%s", &name,  objDevice, L".Name");
       dhGetValue(L"%s", &pnpid, objDevice, L".PnPDeviceID");
-                                                  
+
       if( name != NULL && ((match = strstr( name, "(COM" )) != NULL) ) { // look for "(COM23)"
         // 'Manufacturuer' can be null, so only get it if we need it
         dhGetValue(L"%s", &manu, objDevice,  L".Manufacturer");
@@ -398,14 +400,14 @@ void EIO_List(uv_work_t* req) {
         data->results.push_back(resultItem);
         dhFreeString(manu);
       }
-          
+
       dhFreeString(name);
       dhFreeString(pnpid);
     } NEXT(objDevice);
-      
+
     SAFE_RELEASE(colDevices);
     SAFE_RELEASE(wmiSvc);
-      
+
     dhUninitialize(TRUE);
   }
 
