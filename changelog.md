@@ -1,3 +1,19 @@
+Version 1.4.6
+-------------
+ - Emit error on serialport when explicit handler present. Fixes gh-369
+ - Fix for windows and Node 0.11.13 (atom-shell)
+ - Fix for broken Travis-CI build.
+
+Version 1.4.5
+-------------
+ - Identified and report issue to node.js core about recent 0.11.x system.
+ - Removed support for 0.8.x
+ - Updated dependencies
+
+ Version 1.4.4
+ -------------
+ - Fix for delete error.
+
 Version 1.3.0
 -------------
 - Merged NAN integration for Node 0.8->0.11+ compatibility (#270)
