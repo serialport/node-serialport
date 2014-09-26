@@ -329,6 +329,10 @@ The `buffer` parameter accepts a [`Buffer` ](http://nodejs.org/api/buffer.html) 
 
 Called once the write operation returns. The callback should be a function that looks like: `function (error) { ... }` _Note: The write operation is non-blocking. When it returns, data may still have not actually been written to the serial port. See `drain()`._
 
+### .isOpen()
+
+returns `true` if the port is open, otherwise false.
+
 ### .pause ()
 
 Pauses an open connection.
