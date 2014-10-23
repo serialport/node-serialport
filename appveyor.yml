@@ -15,7 +15,7 @@ install:
   - cmd: ECHO "APPVEYOR_REPO_COMMIT_MESSAGE ->"
   - cmd: ECHO %APPVEYOR_REPO_COMMIT_MESSAGE%
   - cmd: SET COMMIT_MSG="%APPVEYOR_REPO_COMMIT_MESSAGE%"
-  - cmd: SET PATH=c:\nodist\bin;%PATH%
+  - cmd: SET PATH=C:\nodist\bin;%PATH%
   - cmd: SET PUBLISH_BINARY=false
   # Check to verify the branch is the same than latest tag, if so
   # then we publish the binaries if everything else is successful.
@@ -35,8 +35,7 @@ install:
   - cmd: SET NODIST_X64=0
   - cmd: call nodist update
   - cmd: call nodist stable
-  - cmd: npm install node-gyp -g
-  - cmd: npm install aws-sdk
+  - cmd: npm install -g node-gyp
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
@@ -53,8 +52,9 @@ build_script:
   - cmd: ECHO "INSTALLING x64 node.js:"
   # We add newest MSBuild so we can use the correct libs for the x64 version
   - cmd: SET PATH=C:\Program Files (x86)\MSBuild\12.0\bin\;%PATH%
-  - cmd: SET PATH=c:\python27;%PATH%
+  - cmd: SET PATH=C:\python27;%PATH%
   - cmd: set NODIST_X64=1
+  - cmd: call nodist update
   - cmd: call nodist stable
   - cmd: npm install -g node-gyp
   - cmd: ECHO "BUILDING x64 version:"

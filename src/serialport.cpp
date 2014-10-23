@@ -4,7 +4,7 @@
 #include "queue.h"
 
 #ifdef WIN32
-#define strcasecmp stricmp
+#define strncasecmp strnicmp
 #else
 #include "serialport_poller.h"
 #endif
@@ -42,20 +42,20 @@ NAN_METHOD(Open) {
   OpenBaton* baton = new OpenBaton();
   memset(baton, 0, sizeof(OpenBaton));
   strcpy(baton->path, *path);
-  baton->baudRate = options->Get(v8::String::New("baudRate"))->ToInt32()->Int32Value();
-  baton->dataBits = options->Get(v8::String::New("dataBits"))->ToInt32()->Int32Value();
-  baton->bufferSize = options->Get(v8::String::New("bufferSize"))->ToInt32()->Int32Value();
-  baton->parity = ToParityEnum(options->Get(v8::String::New("parity"))->ToString());
-  baton->stopBits = ToStopBitEnum(options->Get(v8::String::New("stopBits"))->ToNumber()->NumberValue());
-  baton->rtscts = options->Get(v8::String::New("rtscts"))->ToBoolean()->BooleanValue();
-  baton->xon = options->Get(v8::String::New("xon"))->ToBoolean()->BooleanValue();
-  baton->xoff = options->Get(v8::String::New("xoff"))->ToBoolean()->BooleanValue();
-  baton->xany = options->Get(v8::String::New("xany"))->ToBoolean()->BooleanValue();
+  baton->baudRate = options->Get(NanNew<v8::String>("baudRate"))->ToInt32()->Int32Value();
+  baton->dataBits = options->Get(NanNew<v8::String>("dataBits"))->ToInt32()->Int32Value();
+  baton->bufferSize = options->Get(NanNew<v8::String>("bufferSize"))->ToInt32()->Int32Value();
+  baton->parity = ToParityEnum(options->Get(NanNew<v8::String>("parity"))->ToString());
+  baton->stopBits = ToStopBitEnum(options->Get(NanNew<v8::String>("stopBits"))->ToNumber()->NumberValue());
+  baton->rtscts = options->Get(NanNew<v8::String>("rtscts"))->ToBoolean()->BooleanValue();
+  baton->xon = options->Get(NanNew<v8::String>("xon"))->ToBoolean()->BooleanValue();
+  baton->xoff = options->Get(NanNew<v8::String>("xoff"))->ToBoolean()->BooleanValue();
+  baton->xany = options->Get(NanNew<v8::String>("xany"))->ToBoolean()->BooleanValue();
 
   baton->callback = new NanCallback(callback);
-  baton->dataCallback = new NanCallback(options->Get(NanSymbol("dataCallback")).As<v8::Function>());
-  baton->disconnectedCallback = new NanCallback(options->Get(NanSymbol("disconnectedCallback")).As<v8::Function>());
-  baton->errorCallback = new NanCallback(options->Get(NanSymbol("errorCallback")).As<v8::Function>());
+  baton->dataCallback = new NanCallback(options->Get(NanNew<v8::String>("dataCallback")).As<v8::Function>());
+  baton->disconnectedCallback = new NanCallback(options->Get(NanNew<v8::String>("disconnectedCallback")).As<v8::Function>());
+  baton->errorCallback = new NanCallback(options->Get(NanNew<v8::String>("errorCallback")).As<v8::Function>());
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
@@ -72,15 +72,15 @@ void EIO_AfterOpen(uv_work_t* req) {
 
   v8::Handle<v8::Value> argv[2];
   if(data->errorString[0]) {
-    argv[0] = v8::Exception::Error(v8::String::New(data->errorString));
-    argv[1] = v8::Undefined();
+    argv[0] = v8::Exception::Error(NanNew<v8::String>(data->errorString));
+    argv[1] = NanUndefined();
     // not needed for AfterOpenSuccess
     delete data->dataCallback;
     delete data->errorCallback;
     delete data->disconnectedCallback;
   } else {
-    argv[0] = v8::Undefined();
-    argv[1] = v8::Int32::New(data->result);
+    argv[0] = NanUndefined();
+    argv[1] = NanNew<v8::Int32>(data->result);
     AfterOpenSuccess(data->result, data->dataCallback, data->disconnectedCallback, data->errorCallback);
   }
 
@@ -120,7 +120,7 @@ NAN_METHOD(Write) {
   WriteBaton* baton = new WriteBaton();
   memset(baton, 0, sizeof(WriteBaton));
   baton->fd = fd;
-  NanAssignPersistent(v8::Object, baton->buffer, buffer);
+  NanAssignPersistent<v8::Object>(baton->buffer, buffer);
   baton->bufferData = bufferData;
   baton->bufferLength = bufferLength;
   // baton->offset = 0;
@@ -153,16 +153,17 @@ void EIO_AfterWrite(uv_work_t* req) {
 
   v8::Handle<v8::Value> argv[2];
   if(data->errorString[0]) {
-    argv[0] = v8::Exception::Error(v8::String::New(data->errorString));
-    argv[1] = v8::Undefined();
+    argv[0] = v8::Exception::Error(NanNew<v8::String>(data->errorString));
+    argv[1] = NanUndefined();
   } else {
-    argv[0] = v8::Undefined();
-    argv[1] = v8::Int32::New(data->result);
+    argv[0] = NanUndefined();
+    argv[1] = NanNew<v8::Int32>(data->result);
   }
   data->callback->Call(2, argv);
 
-  if (data->offset < data->bufferLength) {
+  if (data->offset < data->bufferLength && !data->errorString[0]) {
     // We're not done with this baton, so throw it right back onto the queue.
+	  // Don't re-push the write in the event loop if there was an error; because same error could occur again!
     // TODO: Add a uv_poll here for unix...
     uv_queue_work(uv_default_loop(), req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
     return;
@@ -179,7 +180,7 @@ void EIO_AfterWrite(uv_work_t* req) {
   }
   uv_mutex_unlock(&write_queue_mutex);
 
-  NanDispose(data->buffer);
+  NanDisposePersistent(data->buffer);
   delete data->callback;
   delete data;
   delete queuedWrite;
@@ -221,9 +222,9 @@ void EIO_AfterClose(uv_work_t* req) {
 
   v8::Handle<v8::Value> argv[1];
   if(data->errorString[0]) {
-    argv[0] = v8::Exception::Error(v8::String::New(data->errorString));
+    argv[0] = v8::Exception::Error(NanNew<v8::String>(data->errorString));
   } else {
-    argv[0] = v8::Undefined();
+    argv[0] = NanUndefined();
   }
   data->callback->Call(1, argv);
 
@@ -260,23 +261,23 @@ void EIO_AfterList(uv_work_t* req) {
 
   v8::Handle<v8::Value> argv[2];
   if(data->errorString[0]) {
-    argv[0] = v8::Exception::Error(v8::String::New(data->errorString));
-    argv[1] = v8::Undefined();
+    argv[0] = v8::Exception::Error(NanNew<v8::String>(data->errorString));
+    argv[1] = NanUndefined();
   } else {
-    v8::Local<v8::Array> results = v8::Array::New();
+    v8::Local<v8::Array> results = NanNew<v8::Array>();
     int i = 0;
     for(std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it, i++) {
-      v8::Local<v8::Object> item = v8::Object::New();
-      item->Set(v8::String::New("comName"), v8::String::New((*it)->comName.c_str()));
-      item->Set(v8::String::New("manufacturer"), v8::String::New((*it)->manufacturer.c_str()));
-      item->Set(v8::String::New("serialNumber"), v8::String::New((*it)->serialNumber.c_str()));
-      item->Set(v8::String::New("pnpId"), v8::String::New((*it)->pnpId.c_str()));
-      item->Set(v8::String::New("locationId"), v8::String::New((*it)->locationId.c_str()));
-      item->Set(v8::String::New("vendorId"), v8::String::New((*it)->vendorId.c_str()));
-      item->Set(v8::String::New("productId"), v8::String::New((*it)->productId.c_str()));
+      v8::Local<v8::Object> item = NanNew<v8::Object>();
+      item->Set(NanNew<v8::String>("comName"), NanNew<v8::String>((*it)->comName.c_str()));
+      item->Set(NanNew<v8::String>("manufacturer"), NanNew<v8::String>((*it)->manufacturer.c_str()));
+      item->Set(NanNew<v8::String>("serialNumber"), NanNew<v8::String>((*it)->serialNumber.c_str()));
+      item->Set(NanNew<v8::String>("pnpId"), NanNew<v8::String>((*it)->pnpId.c_str()));
+      item->Set(NanNew<v8::String>("locationId"), NanNew<v8::String>((*it)->locationId.c_str()));
+      item->Set(NanNew<v8::String>("vendorId"), NanNew<v8::String>((*it)->vendorId.c_str()));
+      item->Set(NanNew<v8::String>("productId"), NanNew<v8::String>((*it)->productId.c_str()));
       results->Set(i, item);
     }
-    argv[0] = v8::Undefined();
+    argv[0] = NanUndefined();
     argv[1] = results;
   }
   data->callback->Call(2, argv);
@@ -326,11 +327,11 @@ void EIO_AfterFlush(uv_work_t* req) {
   v8::Handle<v8::Value> argv[2];
 
   if(data->errorString[0]) {
-    argv[0] = v8::Exception::Error(v8::String::New(data->errorString));
-    argv[1] = v8::Undefined();
+    argv[0] = v8::Exception::Error(NanNew<v8::String>(data->errorString));
+    argv[1] = NanUndefined();
   } else {
-    argv[0] = v8::Undefined();
-    argv[1] = v8::Int32::New(data->result);
+    argv[0] = NanUndefined();
+    argv[1] = NanNew<v8::Int32>(data->result);
   }
   data->callback->Call(2, argv);
 
@@ -376,11 +377,11 @@ void EIO_AfterDrain(uv_work_t* req) {
   v8::Handle<v8::Value> argv[2];
 
   if(data->errorString[0]) {
-    argv[0] = v8::Exception::Error(v8::String::New(data->errorString));
-    argv[1] = v8::Undefined();
+    argv[0] = v8::Exception::Error(NanNew<v8::String>(data->errorString));
+    argv[1] = NanUndefined();
   } else {
-    argv[0] = v8::Undefined();
-    argv[1] = v8::Int32::New(data->result);
+    argv[0] = NanUndefined();
+    argv[1] = NanNew<v8::Int32>(data->result);
   }
   data->callback->Call(2, argv);
 
@@ -392,23 +393,27 @@ void EIO_AfterDrain(uv_work_t* req) {
 SerialPortParity NAN_INLINE(ToParityEnum(const v8::Handle<v8::String>& v8str)) {
   NanScope();
 
-  v8::String::AsciiValue str(v8str);
-  if(!strcasecmp(*str, "none")) {
-    return SERIALPORT_PARITY_NONE;
+
+  char* str = *NanUtf8String(v8str);
+  size_t count = strlen(str);
+
+  SerialPortParity parity = SERIALPORT_PARITY_NONE;
+
+  if(!strncasecmp(str, "none", count)) {
+    parity = SERIALPORT_PARITY_NONE;
+  } else if(!strncasecmp(str, "even", count)) {
+    parity = SERIALPORT_PARITY_EVEN;
+  } else if(!strncasecmp(str, "mark", count)) {
+    parity = SERIALPORT_PARITY_MARK;
+  } else if(!strncasecmp(str, "odd", count)) {
+    parity = SERIALPORT_PARITY_ODD;
+  } else if(!strncasecmp(str, "space", count)) {
+    parity = SERIALPORT_PARITY_SPACE;
   }
-  if(!strcasecmp(*str, "even")) {
-    return SERIALPORT_PARITY_EVEN;
-  }
-  if(!strcasecmp(*str, "mark")) {
-    return SERIALPORT_PARITY_MARK;
-  }
-  if(!strcasecmp(*str, "odd")) {
-    return SERIALPORT_PARITY_ODD;
-  }
-  if(!strcasecmp(*str, "space")) {
-    return SERIALPORT_PARITY_SPACE;
-  }
-  return SERIALPORT_PARITY_NONE;
+
+  // delete[] str;
+
+  return parity;
 }
 
 SerialPortStopBits NAN_INLINE(ToStopBitEnum(double stopBits)) {
@@ -422,7 +427,7 @@ SerialPortStopBits NAN_INLINE(ToStopBitEnum(double stopBits)) {
 }
 
 extern "C" {
-  void init (v8::Handle<v8::Object> target) 
+  void init (v8::Handle<v8::Object> target)
   {
     NanScope();
     NODE_SET_METHOD(target, "open", Open);
