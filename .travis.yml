@@ -1,10 +1,9 @@
 language: objective-c
-compiler: clang
 
 env:
   matrix:
-   - export NODE_VERSION="0.8"
    - export NODE_VERSION="0.10"
+   - export NODE_VERSION="0.11"
   global:
     - secure: "Zg7w8hTpgVfm6JeTScsMhaexFcVS5N2oI9O/6MLtsm3CUhb0Txq65y4y/a5DU3re6Pl1ryE21anVLdg4RGDeykCauQtg8nFzuGXBfNn9bRTnsIfkiS9LNkbSZ8h3c7EsyX0NJ7LVgnkPh/XXMqMj4Nh0ovbBCwZJ6k2ZvccvDvU="
     - secure: "VS7JTJYfcCDOiWZH6g+Lm4y+QFuCB++4GnYvWqqaUljebuB2l8gZhDrmQtWKFPBEZP21ptjtpNWJC6hCUf07qJ81vVpb6wMUikfOOLN0nulED+AC5HtCxYnfwIu1i0z00YxaSfvozMXKk9TCLabE0ognoDV+XV1bQoYm8668z7E="
@@ -29,6 +28,9 @@ before_install:
 # or if we put [publish binary] in the commit message
 - if test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"; then PUBLISH_BINARY=true; fi;
 - platform=$(uname -s | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/")
+# If version is 0.9 do not publish to avoid duplicated binary error, caused by 0.9 and 0.10
+# returning same v number in node.js.
+- if [[ "$TRAVIS_NODE_VERSION" == '0.9' ]]; then PUBLISH_BINARY=false; fi;
 
 install:
 # ensure source install works
