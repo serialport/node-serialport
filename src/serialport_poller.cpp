@@ -16,20 +16,37 @@ SerialportPoller::~SerialportPoller() {
 };
 
 void _serialportReadable(uv_poll_t *req, int status, int events) {
-  SerialportPoller* obj = (SerialportPoller*) req->data;
-
+  SerialportPoller* sp = (SerialportPoller*) req->data;
   // We can stop polling until we have read all of the data...
-  obj->_stop();
-
-  obj->callCallback();
+  sp->_stop();
+  sp->callCallback(status);
 }
 
-void SerialportPoller::callCallback() {
+void SerialportPoller::callCallback(int status) {
   // uv_work_t* req = new uv_work_t;
 
   // Call the callback to go read more data...
-  callback_->Call(0, NULL); //2, argv
+
+  v8::Handle<v8::Value> argv[1];
+  if(status != 0) {
+    // error handling changed in libuv, see:
+    // https://github.com/joyent/libuv/commit/3ee4d3f183331
+    #ifdef UV_ERRNO_H_
+    const char* err_string = uv_strerror(status);
+    #else
+    uv_err_t errno = uv_last_error(uv_default_loop());
+    const char* err_string = uv_strerror(errno);
+    #endif
+    snprintf(this->errorString, sizeof(this->errorString), "Error %s on polling", err_string);
+    argv[0] = v8::Exception::Error(NanNew<v8::String>(this->errorString));
+  } else {
+    argv[0] = NanUndefined();
+  }
+
+  callback_->Call(1, argv);
 }
+
+
 
 void SerialportPoller::Init(Handle<Object> target) {
   NanScope();
