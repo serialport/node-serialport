@@ -151,14 +151,6 @@ void EIO_AfterWrite(uv_work_t* req) {
   QueuedWrite* queuedWrite = static_cast<QueuedWrite*>(req->data);
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
 
-  if (data->offset < data->bufferLength && !data->errorString[0]) {
-    // We're not done with this baton, so throw it right back onto the queue.
-    // Don't re-push the write in the event loop if there was an error; because same error could occur again!
-    // TODO: Add a uv_poll here for unix...
-    uv_queue_work(uv_default_loop(), req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
-    return;
-  }
-
   v8::Handle<v8::Value> argv[2];
   if(data->errorString[0]) {
     argv[0] = v8::Exception::Error(NanNew<v8::String>(data->errorString));
@@ -169,7 +161,6 @@ void EIO_AfterWrite(uv_work_t* req) {
   }
   data->callback->Call(2, argv);
 
-<<<<<<< HEAD
   if (data->offset < data->bufferLength && !data->errorString[0]) {
     // We're not done with this baton, so throw it right back onto the queue.
 	  // Don't re-push the write in the event loop if there was an error; because same error could occur again!
@@ -179,8 +170,6 @@ void EIO_AfterWrite(uv_work_t* req) {
     return;
   }
 
-=======
->>>>>>> 88966c405abe7490d87ea4f45854d3208dd34c5e
   uv_mutex_lock(&write_queue_mutex);
   QUEUE_REMOVE(&queuedWrite->queue);
 
