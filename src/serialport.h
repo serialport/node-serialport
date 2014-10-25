@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "queue.h"
 
 enum SerialPortParity {
   SERIALPORT_PARITY_NONE = 1,
@@ -90,8 +89,40 @@ public:
 struct QueuedWrite {
 public:
   uv_work_t req;
-  QUEUE queue;
+  QueuedWrite *prev;
+  QueuedWrite *next;
   WriteBaton* baton;
+
+  QueuedWrite() {
+    prev = this;
+    next = this;
+
+    baton = 0;
+  };
+
+  ~QueuedWrite() {
+    remove();
+  };
+
+  void remove() {
+    prev->next = next;
+    next->prev = prev;
+
+    next = this;
+    prev = this;
+  };
+
+  void insert_tail(QueuedWrite *qw) {
+    qw->next = this;
+    qw->prev = this->prev;
+    qw->prev->next = qw;
+    this->prev = qw;
+  };
+
+  bool empty() {
+    return next == this;
+  };
+
 };
 
 struct CloseBaton {

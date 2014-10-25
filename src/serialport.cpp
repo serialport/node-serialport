@@ -1,7 +1,6 @@
 
 
 #include "serialport.h"
-#include "queue.h"
 
 #ifdef WIN32
 #define strncasecmp strnicmp
@@ -10,13 +9,12 @@
 #endif
 
 uv_mutex_t write_queue_mutex;
-QUEUE write_queue;
+QueuedWrite write_queue;
 
 NAN_METHOD(Open) {
   NanScope();
 
   uv_mutex_init(&write_queue_mutex);
-  QUEUE_INIT(&write_queue);
 
   // path
   if(!args[0]->IsString()) {
@@ -123,19 +121,18 @@ NAN_METHOD(Write) {
   NanAssignPersistent<v8::Object>(baton->buffer, buffer);
   baton->bufferData = bufferData;
   baton->bufferLength = bufferLength;
-  // baton->offset = 0;
+  baton->offset = 0;
   baton->callback = new NanCallback(callback);
 
   QueuedWrite* queuedWrite = new QueuedWrite();
   memset(queuedWrite, 0, sizeof(QueuedWrite));
-  QUEUE_INIT(&queuedWrite->queue);
   queuedWrite->baton = baton;
   queuedWrite->req.data = queuedWrite;
 
   uv_mutex_lock(&write_queue_mutex);
-  bool empty = QUEUE_EMPTY(&write_queue);
+  bool empty = write_queue.empty();
 
-  QUEUE_INSERT_TAIL(&write_queue, &queuedWrite->queue);
+  write_queue.insert_tail(queuedWrite);
 
   if (empty) {
     uv_queue_work(uv_default_loop(), &queuedWrite->req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
@@ -171,12 +168,11 @@ void EIO_AfterWrite(uv_work_t* req) {
   }
 
   uv_mutex_lock(&write_queue_mutex);
-  QUEUE_REMOVE(&queuedWrite->queue);
+  queuedWrite->remove();
 
-  if (!QUEUE_EMPTY(&write_queue)) {
+  if (!write_queue.empty()) {
     // Always pull the next work item from the head of the queue
-    QUEUE* head = QUEUE_HEAD(&write_queue);
-    QueuedWrite* nextQueuedWrite = QUEUE_DATA(head, QueuedWrite, queue);
+    QueuedWrite* nextQueuedWrite = write_queue.next;
     uv_queue_work(uv_default_loop(), &nextQueuedWrite->req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
   }
   uv_mutex_unlock(&write_queue_mutex);
