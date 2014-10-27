@@ -29,6 +29,12 @@ Boolean lockInitialised = FALSE;
 #include <linux/serial.h>
 #endif
 
+struct UnixPlatformOptions {
+public:
+  uint8_t vmin;
+  uint8_t vtime;
+};
+
 int ToBaudConstant(int baudRate);
 int ToDataBitsConstant(int dataBits);
 int ToStopBitsConstant(SerialPortStopBits stopBits);
@@ -109,6 +115,12 @@ int ToDataBitsConstant(int dataBits) {
 
 void EIO_Open(uv_work_t* req) {
   OpenBaton* data = static_cast<OpenBaton*>(req->data);
+
+  // parse platform specific options
+  
+  UnixPlatformOptions platformOptions;
+  platformOptions.vmin = (uint8_t)(data->platformOptions->Get(NanNew<v8::String>("vmin"))->ToUint32()->Uint32Value());
+  platformOptions.vtime = (uint8_t)(data->platformOptions->Get(NanNew<v8::String>("vtime"))->ToUint32()->Uint32Value());
 
   int baudRate = ToBaudConstant(data->baudRate);
 
@@ -281,8 +293,9 @@ void EIO_Open(uv_work_t* req) {
   // ICANON makes partial lines not readable. It should be otional.
   // It works with ICRNL. -Giseburt
   options.c_lflag = 0; //ICANON;
-  options.c_cc[VMIN]=1;
-  options.c_cc[VTIME]=0;
+
+  options.c_cc[VMIN]= platformOptions.vmin;
+  options.c_cc[VTIME]= platformOptions.vtime;
 
   // removed this unneeded sleep.
   // sleep(1);

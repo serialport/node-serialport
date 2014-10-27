@@ -72,6 +72,7 @@ public:
   bool dsrdtr;
   SerialPortParity parity;
   SerialPortStopBits stopBits;
+  v8::Persistent<v8::Object> platformOptions;  
   char errorString[ERROR_STRING_SIZE];
 };
 
