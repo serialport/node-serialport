@@ -52,9 +52,9 @@ NAN_METHOD(Open) {
   baton->xoff = options->Get(NanNew<v8::String>("xoff"))->ToBoolean()->BooleanValue();
   baton->xany = options->Get(NanNew<v8::String>("xany"))->ToBoolean()->BooleanValue();
 
-  v8::Local<v8::Object> platformOptions = options->Get(NanNew<v8::String>("platformOptions")).As<v8::Object>();
-  NanAssignPersistent(baton->platformOptions, platformOptions);
-
+  v8::Local<v8::Object> platformOptions = options->Get(NanNew<v8::String>("platformOptions"))->ToObject();
+  baton->platformOptions = ParsePlatformOptions(platformOptions);
+    
   baton->callback = new NanCallback(callback);
   baton->dataCallback = new NanCallback(options->Get(NanNew<v8::String>("dataCallback")).As<v8::Function>());
   baton->disconnectedCallback = new NanCallback(options->Get(NanNew<v8::String>("disconnectedCallback")).As<v8::Function>());
@@ -89,7 +89,7 @@ void EIO_AfterOpen(uv_work_t* req) {
 
   data->callback->Call(2, argv);
 
-  NanDisposePersistent(data->platformOptions);
+  delete data->platformOptions;
   delete data->callback;
   delete data;
   delete req;
