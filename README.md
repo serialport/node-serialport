@@ -300,6 +300,14 @@ Port configuration options.
 * `encoding`
 * `dataCallback`
 * `disconnectedCallback`
+* `platformOptions` - sets platform specific options, see below. 
+
+#### Unix Platform Options
+
+An object with the following properties:
+
+* `vmin` (default: 1) - see [`man termios`](http://linux.die.net/man/3/termios)
+* `vtime` (default: 0) - see [`man termios`](http://linux.die.net/man/3/termios)
 
 **_openImmediately (optional)_**
 
