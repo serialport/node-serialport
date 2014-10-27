@@ -1,3 +1,9 @@
+Version 1.4.7
+-------------
+ - Fix for Issue #398 - Dropped sent characters on OSX and Linux
+ - Fix for double write callbacks.
+ - detect a serialport disconnect on linux.
+
 Version 1.4.6
 -------------
  - Emit error on serialport when explicit handler present. Fixes gh-369
