@@ -2,10 +2,9 @@ language: objective-c
 
 env:
   matrix:
-   - export NODE_VERSION="0.10"
-   - export NODE_VERSION="0.11"
-
- global:
+    - export NODE_VERSION="0.10"
+    - export NODE_VERSION="0.11"
+  global:
     - secure: "Zg7w8hTpgVfm6JeTScsMhaexFcVS5N2oI9O/6MLtsm3CUhb0Txq65y4y/a5DU3re6Pl1ryE21anVLdg4RGDeykCauQtg8nFzuGXBfNn9bRTnsIfkiS9LNkbSZ8h3c7EsyX0NJ7LVgnkPh/XXMqMj4Nh0ovbBCwZJ6k2ZvccvDvU="
     - secure: "VS7JTJYfcCDOiWZH6g+Lm4y+QFuCB++4GnYvWqqaUljebuB2l8gZhDrmQtWKFPBEZP21ptjtpNWJC6hCUf07qJ81vVpb6wMUikfOOLN0nulED+AC5HtCxYnfwIu1i0z00YxaSfvozMXKk9TCLabE0ognoDV+XV1bQoYm8668z7E="
 
