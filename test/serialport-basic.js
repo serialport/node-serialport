@@ -41,6 +41,15 @@ describe('SerialPort', function () {
       var port = new SerialPort('/dev/johnJacobJingleheimerSchmidt');
     });
 
+    it('emits an error on the serialport when explicit error handler present', function (done) {
+      var port = new SerialPort('/dev/johnJacobJingleheimerSchmidt');
+
+      port.once('error', function(err) {
+        chai.assert.isDefined(err);
+        done();
+      });
+    });
+
     it('errors with invalid databits', function (done) {
       var errorCallback = function (err) {
         chai.assert.isDefined(err, 'err is not defined');
