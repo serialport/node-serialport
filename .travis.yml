@@ -1,73 +1,75 @@
 language: objective-c
-compiler: clang
 
 env:
   matrix:
-   - export NODE_VERSION="0.8"
-   - export NODE_VERSION="0.10"
+    - export NODE_VERSION="0.10"
+    - export NODE_VERSION="0.11"
   global:
     - secure: "Zg7w8hTpgVfm6JeTScsMhaexFcVS5N2oI9O/6MLtsm3CUhb0Txq65y4y/a5DU3re6Pl1ryE21anVLdg4RGDeykCauQtg8nFzuGXBfNn9bRTnsIfkiS9LNkbSZ8h3c7EsyX0NJ7LVgnkPh/XXMqMj4Nh0ovbBCwZJ6k2ZvccvDvU="
     - secure: "VS7JTJYfcCDOiWZH6g+Lm4y+QFuCB++4GnYvWqqaUljebuB2l8gZhDrmQtWKFPBEZP21ptjtpNWJC6hCUf07qJ81vVpb6wMUikfOOLN0nulED+AC5HtCxYnfwIu1i0z00YxaSfvozMXKk9TCLabE0ognoDV+XV1bQoYm8668z7E="
 
 before_install:
-- git clone https://github.com/creationix/nvm.git ./.nvm
-- source ./.nvm/nvm.sh
-- nvm install $NODE_VERSION
-- nvm use $NODE_VERSION
-# get commit message
-- COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
-# put local node-pre-gyp on PATH
-- export PATH=./node_modules/.bin/:$PATH
-# put global node-gyp on PATH
-- npm install node-gyp -g
-# install aws-sdk so it is available for publishing
-- npm install aws-sdk
-# figure out if we should publish
-- PUBLISH_BINARY=false
-# if we are building a tag then publish
-- if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then PUBLISH_BINARY=true; fi;
-# or if we put [publish binary] in the commit message
-- if test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"; then PUBLISH_BINARY=true; fi;
-- platform=$(uname -s | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/")
+  - git clone https://github.com/creationix/nvm.git ./.nvm
+  - source ./.nvm/nvm.sh
+  - nvm install $NODE_VERSION
+  - nvm use $NODE_VERSION
+  # get commit message
+  - COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
+  # put local node-pre-gyp on PATH
+  - export PATH=./node_modules/.bin/:$PATH
+  # put global node-gyp on PATH
+  - npm install node-gyp -g
+  # install aws-sdk so it is available for publishing
+  - npm install aws-sdk
+  # figure out if we should publish
+  - PUBLISH_BINARY=false
+  # if we are building a tag then publish
+  - if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then PUBLISH_BINARY=true; fi;
+  # or if we put [publish binary] in the commit message
+  - if test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"; then PUBLISH_BINARY=true; fi;
+  - platform=$(uname -s | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/")
+  # If version is 0.9 do not publish to avoid duplicated binary error, caused by 0.9 and 0.10
+  # returning same v number in node.js.
+  - if [[ "$TRAVIS_NODE_VERSION" == '0.9' ]]; then PUBLISH_BINARY=false; fi;
 
 install:
-# ensure source install works
-- npm install --build-from-source
-# test our module
-- node serialport.js
+  # ensure source install works
+  - npm install --build-from-source
+  # test our module
+  - node serialport.js
 
 before_script:
-- echo "Publishing native platform Binary Package? ->" $PUBLISH_BINARY
-# if publishing, do it
-- if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package publish; fi;
-# cleanup
-- node-pre-gyp clean
-- node-gyp clean
+  - echo "Publishing native platform Binary Package? ->" $PUBLISH_BINARY
+  # if publishing, do it
+  - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package publish; fi;
+  # cleanup
+  - node-pre-gyp clean
+  - node-gyp clean
 
 script:
-# if publishing, test installing from remote
-- INSTALL_RESULT=0
-- if [[ $PUBLISH_BINARY == true ]]; then INSTALL_RESULT=$(npm install --fallback-to-build=false > /dev/null)$? || true; fi;
-# if install returned non zero (errored) then we first unpublish and then call false so travis will bail at this line
-- if [[ $INSTALL_RESULT != 0 ]]; then echo "returned $INSTALL_RESULT";node-pre-gyp unpublish;false; fi
-# If success then we arrive here so lets clean up
-- node-pre-gyp clean
-# node v0.8 and above provide pre-built 32 bit and 64 bit binaries
-# so here we use the 32 bit ones to also test 32 bit builds
-- NVER=`node -v`
-- wget http://nodejs.org/dist/${NVER}/node-${NVER}-${platform}-x86.tar.gz
-- tar xf node-${NVER}-${platform}-x86.tar.gz
-# enable 32 bit node
-- export PATH=$(pwd)/node-${NVER}-${platform}-x86/bin:$PATH
-# install 32 bit compiler toolchain and X11
-- if [[ "$platform" == 'linux' ]]; then sudo apt-get -y install gcc-multilib g++-multilib; fi
-# test source compile in 32 bit mode with internal libsqlite3
-- if [[ "$platform" == 'linux' ]]; then CC=gcc-4.6 CXX=g++-4.6 npm install --build-from-source; else npm install --build-from-source; fi
-- npm test
-# publish 32 bit build
-- echo "Publishing x86 32bit Binary Package? ->" $PUBLISH_BINARY
-- if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package publish; fi;
+  # if publishing, test installing from remote
+  - INSTALL_RESULT=0
+  - if [[ $PUBLISH_BINARY == true ]]; then INSTALL_RESULT=$(npm install --fallback-to-build=false > /dev/null)$? || true; fi;
+  # if install returned non zero (errored) then we first unpublish and then call false so travis will bail at this line
+  - if [[ $INSTALL_RESULT != 0 ]]; then echo "returned $INSTALL_RESULT";node-pre-gyp unpublish;false; fi
+  # If success then we arrive here so lets clean up
+  - node-pre-gyp clean
+  # node v0.8 and above provide pre-built 32 bit and 64 bit binaries
+  # so here we use the 32 bit ones to also test 32 bit builds
+  - NVER=`node -v`
+  - wget http://nodejs.org/dist/${NVER}/node-${NVER}-${platform}-x86.tar.gz
+  - tar xf node-${NVER}-${platform}-x86.tar.gz
+  # enable 32 bit node
+  - export PATH=$(pwd)/node-${NVER}-${platform}-x86/bin:$PATH
+  # install 32 bit compiler toolchain and X11
+  - if [[ "$platform" == 'linux' ]]; then sudo apt-get -y install gcc-multilib g++-multilib; fi
+  # test source compile in 32 bit mode with internal libsqlite3
+  - if [[ "$platform" == 'linux' ]]; then CC=gcc-4.6 CXX=g++-4.6 npm install --build-from-source; else npm install --build-from-source; fi
+  - npm test
+  # publish 32 bit build
+  - echo "Publishing x86 32bit Binary Package? ->" $PUBLISH_BINARY
+  - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package publish; fi;
 
 after_success:
-# if success then query and display all published binaries
-- node-pre-gyp info
+  # if success then query and display all published binaries
+  - node-pre-gyp info
