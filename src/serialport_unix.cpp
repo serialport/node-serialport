@@ -29,6 +29,22 @@ Boolean lockInitialised = FALSE;
 #include <linux/serial.h>
 #endif
 
+struct UnixPlatformOptions : OpenBatonPlatformOptions {
+public:
+  uint8_t vmin;
+  uint8_t vtime;
+};
+
+OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& options) {
+  NanScope();
+
+  UnixPlatformOptions* result = new UnixPlatformOptions();
+  result->vmin = options->Get(NanNew<v8::String>("vmin"))->ToInt32()->Int32Value();
+  result->vtime = options->Get(NanNew<v8::String>("vtime"))->ToInt32()->Int32Value();
+  
+  return result;
+}
+
 int ToBaudConstant(int baudRate);
 int ToDataBitsConstant(int dataBits);
 int ToStopBitsConstant(SerialPortStopBits stopBits);
@@ -108,8 +124,9 @@ int ToDataBitsConstant(int dataBits) {
 
 
 void EIO_Open(uv_work_t* req) {
-  OpenBaton* data = static_cast<OpenBaton*>(req->data);
-
+  OpenBaton* data = static_cast<OpenBaton*>(req->data);  
+  UnixPlatformOptions* platformOptions = static_cast<UnixPlatformOptions*>(data->platformOptions);  
+  
   int baudRate = ToBaudConstant(data->baudRate);
 
 // #if not ( defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4) )
@@ -281,8 +298,9 @@ void EIO_Open(uv_work_t* req) {
   // ICANON makes partial lines not readable. It should be otional.
   // It works with ICRNL. -Giseburt
   options.c_lflag = 0; //ICANON;
-  options.c_cc[VMIN]=1;
-  options.c_cc[VTIME]=0;
+
+  options.c_cc[VMIN]= platformOptions->vmin;
+  options.c_cc[VTIME]= platformOptions->vtime;
 
   // removed this unneeded sleep.
   // sleep(1);
