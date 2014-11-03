@@ -395,7 +395,7 @@ SerialPortParity NAN_INLINE(ToParityEnum(const v8::Handle<v8::String>& v8str)) {
   NanScope();
 
 
-  NanUtf8String *str = new nanUtf8String(v8str);
+  NanUtf8String *str = new NanUtf8String(v8str);
   size_t count = strlen(**str);
 
   SerialPortParity parity = SERIALPORT_PARITY_NONE;
