@@ -515,7 +515,9 @@ function SerialPortFactory() {
           self.emit('error', err);
         }
       } else {
-        callback(err, result);
+        if (callback) {
+          callback(err, result);
+        }
       }
     });
   };
@@ -542,7 +544,9 @@ function SerialPortFactory() {
           self.emit('error', err);
         }
       } else {
-        callback(err, result);
+        if (callback) {
+          callback(err, result);
+        }
       }
     });
   };
