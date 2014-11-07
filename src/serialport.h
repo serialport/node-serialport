@@ -53,6 +53,11 @@ void EIO_AfterDrain(uv_work_t* req);
 SerialPortParity ToParityEnum(const v8::Handle<v8::String>& str);
 SerialPortStopBits ToStopBitEnum(double stopBits);
 
+struct OpenBatonPlatformOptions
+{
+};
+OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& options);
+
 struct OpenBaton {
 public:
   char path[1024];
@@ -71,6 +76,7 @@ public:
   bool dsrdtr;
   SerialPortParity parity;
   SerialPortStopBits stopBits;
+  OpenBatonPlatformOptions* platformOptions;  
   char errorString[ERROR_STRING_SIZE];
 };
 

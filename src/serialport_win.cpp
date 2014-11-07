@@ -11,6 +11,17 @@
 
 #define MAX_BUFFER_SIZE 1000
 
+
+struct WindowsPlatformOptions : OpenBatonPlatformOptions
+{
+};
+
+OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& options){
+  // currently none
+  return new WindowsPlatformOptions();
+}
+
+
 // Declare type of pointer to CancelIoEx function
 typedef BOOL (WINAPI *CancelIoExType)(HANDLE hFile, LPOVERLAPPED lpOverlapped);
 
