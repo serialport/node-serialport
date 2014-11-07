@@ -387,31 +387,27 @@ void EIO_AfterDrain(uv_work_t* req) {
   delete req;
 }
 
+// Change request for ticket #401 - credit to @sguilly
 SerialPortParity NAN_INLINE(ToParityEnum(const v8::Handle<v8::String>& v8str)) {
   NanScope();
-
-
-  char* str = *NanUtf8String(v8str);
-  size_t count = strlen(str);
-
+  NanUtf8String *str = new NanUtf8String(v8str);
+  size_t count = strlen(**str);
   SerialPortParity parity = SERIALPORT_PARITY_NONE;
-
-  if(!strncasecmp(str, "none", count)) {
-    parity = SERIALPORT_PARITY_NONE;
-  } else if(!strncasecmp(str, "even", count)) {
-    parity = SERIALPORT_PARITY_EVEN;
-  } else if(!strncasecmp(str, "mark", count)) {
-    parity = SERIALPORT_PARITY_MARK;
-  } else if(!strncasecmp(str, "odd", count)) {
-    parity = SERIALPORT_PARITY_ODD;
-  } else if(!strncasecmp(str, "space", count)) {
-    parity = SERIALPORT_PARITY_SPACE;
+  if(!strncasecmp(**str, "none", count)) {
+  parity = SERIALPORT_PARITY_NONE;
+  } else if(!strncasecmp(**str, "even", count)) {
+  parity = SERIALPORT_PARITY_EVEN;
+  } else if(!strncasecmp(**str, "mark", count)) {
+  parity = SERIALPORT_PARITY_MARK;
+  } else if(!strncasecmp(**str, "odd", count)) {
+  parity = SERIALPORT_PARITY_ODD;
+  } else if(!strncasecmp(**str, "space", count)) {
+  parity = SERIALPORT_PARITY_SPACE;
   }
-
   // delete[] str;
-
   return parity;
 }
+
 
 SerialPortStopBits NAN_INLINE(ToStopBitEnum(double stopBits)) {
   if(stopBits > 1.4 && stopBits < 1.6) {
