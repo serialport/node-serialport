@@ -341,6 +341,67 @@ void EIO_AfterFlush(uv_work_t* req) {
   delete req;
 }
 
+NAN_METHOD(Set) {
+  NanScope();
+
+  // file descriptor
+  if(!args[0]->IsInt32()) {
+    NanThrowTypeError("First argument must be an int");
+    NanReturnUndefined();
+  }
+  int fd = args[0]->ToInt32()->Int32Value();
+
+  // options
+  if(!args[1]->IsObject()) {
+    NanThrowTypeError("Second argument must be an object");
+    NanReturnUndefined();
+  }
+  v8::Local<v8::Object> options = args[1]->ToObject();
+
+  // callback
+  if(!args[2]->IsFunction()) {
+    NanThrowTypeError("Third argument must be a function");
+    NanReturnUndefined();
+  }
+  v8::Local<v8::Function> callback = args[2].As<v8::Function>();
+
+  SetBaton* baton = new SetBaton();
+  memset(baton, 0, sizeof(SetBaton));
+  baton->fd = fd;
+  baton->callback = new NanCallback(callback);
+  baton->rts = options->Get(NanNew<v8::String>("rts"))->ToBoolean()->BooleanValue();
+  baton->cts = options->Get(NanNew<v8::String>("cts"))->ToBoolean()->BooleanValue();
+  baton->dtr = options->Get(NanNew<v8::String>("dtr"))->ToBoolean()->BooleanValue();
+  baton->dsr = options->Get(NanNew<v8::String>("dsr"))->ToBoolean()->BooleanValue();
+
+  uv_work_t* req = new uv_work_t();
+  req->data = baton;
+  uv_queue_work(uv_default_loop(), req, EIO_Set, (uv_after_work_cb)EIO_AfterSet);
+
+  NanReturnUndefined();
+}
+
+void EIO_AfterSet(uv_work_t* req) {
+  NanScope();
+
+  SetBaton* data = static_cast<SetBaton*>(req->data);
+
+  v8::Handle<v8::Value> argv[2];
+
+  if(data->errorString[0]) {
+    argv[0] = v8::Exception::Error(NanNew<v8::String>(data->errorString));
+    argv[1] = NanUndefined();
+  } else {
+    argv[0] = NanUndefined();
+    argv[1] = NanNew<v8::Int32>(data->result);
+  }
+  data->callback->Call(2, argv);
+
+  delete data->callback;
+  delete data;
+  delete req;
+}
+
 NAN_METHOD(Drain) {
   NanScope();
 
@@ -431,6 +492,7 @@ extern "C" {
   void init (v8::Handle<v8::Object> target)
   {
     NanScope();
+    NODE_SET_METHOD(target, "set", Set);
     NODE_SET_METHOD(target, "open", Open);
     NODE_SET_METHOD(target, "write", Write);
     NODE_SET_METHOD(target, "close", Close);

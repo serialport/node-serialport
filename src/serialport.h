@@ -47,6 +47,10 @@ NAN_METHOD(Flush);
 void EIO_Flush(uv_work_t* req);
 void EIO_AfterFlush(uv_work_t* req);
 
+NAN_METHOD(Set);
+void EIO_Set(uv_work_t* req);
+void EIO_AfterSet(uv_work_t* req);
+
 NAN_METHOD(Drain);
 void EIO_Drain(uv_work_t* req);
 void EIO_AfterDrain(uv_work_t* req);
@@ -125,6 +129,19 @@ public:
   NanCallback* callback;
   int result;
   char errorString[ERROR_STRING_SIZE];
+};
+
+struct SetBaton {
+public:
+  int fd;
+  NanCallback* callback;
+  int result;
+  char errorString[ERROR_STRING_SIZE];
+  bool rts;
+  bool cts;
+  bool dtr;
+  bool dsr;
+
 };
 
 struct DrainBaton {

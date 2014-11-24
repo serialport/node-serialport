@@ -33,6 +33,7 @@ function SerialPortFactory() {
   var STOPBITS = [1, 1.5, 2];
   var PARITY = ['none', 'even', 'mark', 'odd', 'space'];
   var FLOWCONTROLS = ["XON", "XOFF", "XANY", "RTSCTS"];
+  var SETS = ["rts", "cts", "dtr", "dts"];
 
 
   // Stuff from ReadStream, refactored for our usage:
@@ -47,6 +48,10 @@ function SerialPortFactory() {
     xon: false,
     xoff: false,
     xany: false,
+    rts: false,
+    cts: false,
+    dtr: false,
+    dts: false,
     databits: 8,
     stopbits: 1,
     buffersize: 256,
@@ -508,6 +513,41 @@ function SerialPortFactory() {
     }
 
     factory.SerialPortBinding.flush(fd, function (err, result) {
+      if (err) {
+        if (callback) {
+          callback(err, result);
+        } else {
+          self.emit('error', err);
+        }
+      } else {
+        callback(err, result);
+      }
+    });
+  };
+
+  SerialPort.prototype.set = function (options, callback) {
+    var self = this;
+    var fd = self.fd;
+
+    options = (typeof option !== 'function') && options || {};
+
+    // flush defaults, then update with provided details
+    options.rts = options.rts || options.rts || _options.rts;
+    options.cts = options.cts || options.cts || _options.cts;
+    options.dtr = options.dtr || options.dtr || _options.dtr;
+    options.dts = options.dts || options.dts || _options.dts;
+  
+    if (!fd) {
+      var err = new Error("Serialport not open.");
+      if (callback) {
+        callback(err);
+      } else {
+        self.emit('error', err);
+      }
+      return;
+    }
+
+    factory.SerialPortBinding.set(fd, options, function (err, result) {
       if (err) {
         if (callback) {
           callback(err, result);
