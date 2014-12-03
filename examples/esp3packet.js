@@ -29,7 +29,7 @@ tcm310.open(function (error) {
         "because serialport fires data events as soon as it gets data.\n\n" +
 
         "So you must use EnOcean parser to collect ESP3 packets together. \n" +
-        "To see how does it work, comment raw parser at line 16 and uncomment line 17. \n");
+        "To see how does it work, comment raw parser at line 14 and uncomment line 15. \n");
 
       tcm310.on('data', function(rawData) {
         console.log(rawData.toString("hex"));
