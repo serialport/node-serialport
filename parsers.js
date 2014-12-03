@@ -203,7 +203,6 @@ module.exports = {
           (currentESP3Packet.header.dataLength + currentESP3Packet.header.optionalLength)
         );
         if (getCrc8(datas) != byte) {
-          callbackForNextByte = waitForSyncByte;
           // todo : Log this fail
           return;
         }
