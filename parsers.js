@@ -93,19 +93,13 @@ module.exports = {
      * @constructor
      */
     function ESP3() {
-      var currentESP3Packet = undefined;
-      var emitter = undefined;
-
-      var tmp = {
-      }
 
       var callbackForNextByte = waitForSyncByte;
-      this.tryToFillPackets = function(emitter_U, buffer) {
-        emitter = emitter_U;
+      this.tryToFillPackets = function(emitter, buffer) {
         for (var offset = 0; offset < buffer.length; offset++) {
           callbackForNextByte(buffer[offset]);
         }
-      }
+      };
 
       /**
        * Waits for sync byte.
@@ -113,16 +107,16 @@ module.exports = {
        * @param byte
        */
       function waitForSyncByte(byte) {
-        if (!(byte === 0x55)) {
+        if (byte !== 0x55) {
           return;
         }
-        tmp = {
+	    var tmp = {
           "header": new Buffer(4),
           "headerOffset": 0,
           "dataOffset": 0,
           "optionalDataOffset": 0
         };
-        currentESP3Packet = new ESP3Packet();
+        var currentESP3Packet = new ESP3Packet();
         callbackForNextByte = fillHeader;
       }
 
@@ -211,7 +205,7 @@ module.exports = {
       }
 
       /**
-       *
+       * Emits fetched ESP3 packet on data event.
        *
        */
       function emitFetchedESP3Packet() {
