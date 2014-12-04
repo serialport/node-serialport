@@ -97,7 +97,7 @@ module.exports = {
       var emitter;
 
       var tmp = {
-      }
+      };
 
       var callbackForNextByte = waitForSyncByte;
       this.tryToFillPackets = function(emitterU, buffer) {
@@ -105,7 +105,7 @@ module.exports = {
         for (var offset = 0; offset < buffer.length; offset++) {
           callbackForNextByte(buffer[offset]);
         }
-      }
+      };
 
       /**
        * Waits for sync byte.
@@ -113,7 +113,7 @@ module.exports = {
        * @param byte
        */
       function waitForSyncByte(byte) {
-        if (!(byte === 0x55)) {
+        if (byte !== 0x55) {
           return;
         }
         tmp = {
