@@ -11,8 +11,8 @@ var parsers = require("../parsers");
  */
 tcm310 = new serialport.SerialPort('/dev/ttyAMA0', {
   baudrate: 57600,
-  parser: serialport.parsers.raw
-//  parser: serialport.parsers.esp3()
+//  parser: serialport.parsers.raw
+  parser: serialport.parsers.esp3()
 }, false);
 
 tcm310.open(function (error) {
@@ -43,7 +43,8 @@ tcm310.open(function (error) {
       tcm310.on('data', function(esp3Packet) {
         console.log(ESP3PacketRawAsString(esp3Packet) + " -> To see structure from ESP3Packet, comment line 44 and uncomment line 45.");
 //        console.log(ESP3PacketStructure(esp3Packet) + "\n-> To see description for ESP3Packet, comment line 45 and uncomment line 46.");
-//        console.log(ESP3PacketDescription(esp3Packet));
+//        console.log(ESP3PacketDescription(esp3Packet) + "-> if you have an EnOcean Rocker Switch(PTM200), comment line 46 and uncomment line 47 to see how to fetch events from.");
+//	      console.log(ESP3PacketFromRockerSwitch_PTMXXX(esp3Packet));
       });
     }
   }
@@ -63,16 +64,16 @@ function ESP3PacketRawAsString(data) {
 
 function ESP3PacketStructure(esp3Packet) {
   return "{\n" +
-    "  syncByte: 0x55,\n" +
+    "  syncByte:     0x55,\n" +
     "  header: {\n" +
-    "    dataLength: 0x" + (new Buffer([esp3Packet.header.dataLength]).toString("hex").length == 2 ? "00": "") + new Buffer([esp3Packet.header.dataLength]).toString("hex") + ", // decimal " + esp3Packet.header.dataLength + "\n" +
+    "    dataLength:     0x" + (new Buffer([esp3Packet.header.dataLength]).toString("hex").length == 2 ? "00": "") + new Buffer([esp3Packet.header.dataLength]).toString("hex") + ", // decimal " + esp3Packet.header.dataLength + "\n" +
     "    optionalLength: 0x" + new Buffer([esp3Packet.header.optionalLength]).toString("hex")+ ", // decimal " + esp3Packet.header.optionalLength + "\n" +
-    "    packetType: 0x" + new Buffer([esp3Packet.header.packetType]).toString("hex") + "\n" +
+    "    packetType:     0x" + new Buffer([esp3Packet.header.packetType]).toString("hex") + "\n" +
     "  },\n" +
-    "  crc8Header: 0x" + new Buffer([esp3Packet.crc8Header]).toString("hex") + ",\n" +
-    "  data = 0x" + esp3Packet.data.toString("hex") + ",\n" +
-    "  optionalData = 0x" + esp3Packet.optionalData.toString("hex") + ",\n" +
-    "  crc8Data = 0x" + new Buffer([esp3Packet.crc8Data]).toString("hex") + "\n" +
+    "  crc8Header:   0x" + new Buffer([esp3Packet.crc8Header]).toString("hex") + ",\n" +
+    "  data:         0x" + esp3Packet.data.toString("hex") + ",\n" +
+    "  optionalData: 0x" + esp3Packet.optionalData.toString("hex") + ",\n" +
+    "  crc8Data:     0x" + new Buffer([esp3Packet.crc8Data]).toString("hex") + "\n" +
     "}";
 };
 
@@ -120,3 +121,64 @@ function ESP3PacketDescription(esp3Packet) {
   '|  ' + crc8Datas+'                              |   > 1 byte    |\n' +
   '|_______________________________________________|_/           _/\n\n';
 };
+
+function ESP3PacketFromRockerSwitch_PTMXXX(esp3Packet) {
+
+	var telegram = {
+		"RORG": esp3Packet.data[0],
+		"data": esp3Packet.data[1],
+		"senderID": new Buffer([esp3Packet.data[2], esp3Packet.data[3], esp3Packet.data[4], esp3Packet.data[5]]),
+		"status": esp3Packet.data[6]
+	};
+
+	if (telegram.RORG !== 0xF6) {
+		return "I don't understand " + telegram.RORG.toString(16) + " this telegram, i can show only Rocker Switch telegrams!";
+	}
+
+	// see RPS Telegram in "EnOcean Equipment Profiles (EEP)"
+	var rockersFirstAction = (telegram.data >>> 5);          // 11100000 >> 5              | Shortcut : R1
+	var energyBow = ((telegram.data >> 4) & 1) ;             // 00010000                   | Shortcut : EB  -> 0 = released or 1 = pressed
+	var rockersSecondAction = ((telegram.data >> 1) & 0x07); // (00001110 >> 1) & 00000111 | Shortcut : R2
+	var secondActionIsPresent = ((telegram.data) & 1);       // 00000001                   | Shortcut : EB
+
+	// see Statusfield for RPS in "EnOcean Equipment Profiles (EEP)"
+	var T21 = (telegram.status & 0x20) == 0x20;              // 00100000                   | 0 = PTM1xx or 1 = PTM2xx
+	var NU = (telegram.status & 0x10) == 0x10;               // 00010000                   | 0 = unassigned or 1 = normal
+
+	var buttonName = {
+		0: "AI",
+		1: "A0",
+		2: "BI",
+		3: "B0",
+		4: "CI",
+		5: "C0",
+		6: "DI",
+		7: "D0"
+	};
+
+	var energyBowDescription = {
+		0: "on up", // released
+		1: "on down" // pressed
+	}
+
+	var pushedButtons = "";
+
+	if (NU == 1) {
+		pushedButtons += buttonName[rockersFirstAction];
+	} else {
+		pushedButtons += "no";
+	}
+	if (secondActionIsPresent == 1) {
+		pushedButtons += " & " + buttonName[rockersSecondAction];
+	}
+
+	var output = "{" + "\n" +
+		"  Sender ID:  " + telegram.senderID.toString("hex") + "\n" +
+		"  energy bow: " + energyBowDescription[energyBow] + "\n" +
+		"  button[s]:  " + pushedButtons + "\n" +
+		"}\n"
+	;
+
+	return output;
+
+}
