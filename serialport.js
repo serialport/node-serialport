@@ -217,6 +217,12 @@ function SerialPortFactory() {
       if (callback) { callback(); }
     });
   };
+  
+  
+  SerialPort.prototype.isOpen = function() {
+    if (this.fd) return true;
+    else return false;
+  }
 
   SerialPort.prototype.write = function (buffer, callback) {
     var self = this;
