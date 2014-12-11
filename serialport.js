@@ -45,9 +45,9 @@ function SerialPortFactory() {
     if (process.platform !== 'win32') {
       options.vmin = 1;
       options.vtime = 0;
-    }   
+    }
 
-    return options; 
+    return options;
   }
 
   // The default options, can be overwritten in the 'SerialPort' constructor
@@ -225,6 +225,11 @@ function SerialPortFactory() {
       if (callback) { callback(); }
     });
   };
+
+
+  SerialPort.prototype.isOpen = function() {
+    return (this.fd ? true : false);
+  }
 
   SerialPort.prototype.write = function (buffer, callback) {
     var self = this;
