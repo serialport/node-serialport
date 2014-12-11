@@ -1,6 +1,10 @@
 Version 1.4.7
 -------------
  - Fix for Issue #398 - Dropped sent characters on OSX and Linux
+ - Fix for Issue #387 - added isOpen
+ - removed a residual comment
+ - Added osx control signalling
+ - Fix for Issue #401
  - Fix for double write callbacks.
  - detect a serialport disconnect on linux.
 

@@ -20,7 +20,7 @@ For all discussions, designs, and clarifications, we recommend you join our Gitt
 
 
 
-Version: 1.4.6 - Released September 3, 2014
+Version: 1.4.7 - Released December 10, 2014
 
 *****
 
@@ -305,7 +305,7 @@ Port configuration options.
 * `encoding`
 * `dataCallback`
 * `disconnectedCallback`
-* `platformOptions` - sets platform specific options, see below. 
+* `platformOptions` - sets platform specific options, see below.
 
 #### Unix Platform Options
 
