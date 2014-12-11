@@ -698,6 +698,34 @@ void EIO_Flush(uv_work_t* req) {
   data->result = tcflush(data->fd, TCIFLUSH);
 }
 
+void EIO_Set(uv_work_t* req) {
+  SetBaton* data = static_cast<SetBaton*>(req->data);
+
+  int bits;
+  ioctl( data->fd, TIOCMGET, &bits );
+
+  bits &= ~(TIOCM_RTS | TIOCM_CTS | TIOCM_DTR | TIOCM_DSR);
+
+  if (data->rts) {
+    bits |= TIOCM_RTS;
+  }
+
+  if (data->cts) {
+    bits |= TIOCM_CTS;
+  }
+
+  if (data->dtr) {
+    bits |= TIOCM_DTR;
+  }
+
+  if (data->dsr) {
+    bits |= TIOCM_DSR;
+  }
+
+  data->result = ioctl( data->fd, TIOCMSET, &bits );
+
+}
+
 void EIO_Drain(uv_work_t* req) {
   DrainBaton* data = static_cast<DrainBaton*>(req->data);
 

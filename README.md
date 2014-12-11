@@ -14,8 +14,11 @@
 
 [![Build Status](https://travis-ci.org/voodootikigod/node-serialport.png?branch=master)](https://travis-ci.org/voodootikigod/node-serialport)
 [![Gitter chat](https://badges.gitter.im/voodootikigod/node-serialport.png)](https://gitter.im/voodootikigod/node-serialport)
+[![Dependency Status](https://david-dm.org/voodootikigod/node-serialport.png)
 
 For all discussions, designs, and clarifications, we recommend you join our Gitter Chat room: [https://gitter.im/voodootikigod/node-serialport](https://gitter.im/voodootikigod/node-serialport)
+
+
 
 Version: 1.4.6 - Released September 3, 2014
 
