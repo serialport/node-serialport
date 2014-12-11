@@ -1,3 +1,7 @@
+Version 1.4.8
+-------------
+- Simple bump for the binary.
+
 Version 1.4.7
 -------------
  - Fix for Issue #398 - Dropped sent characters on OSX and Linux
