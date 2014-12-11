@@ -234,7 +234,7 @@ function SerialPortFactory() {
 
   SerialPort.prototype.isOpen = function() {
     return (this.fd ? true : false);
-  }
+  };
 
   SerialPort.prototype.write = function (buffer, callback) {
     var self = this;
@@ -556,7 +556,7 @@ function SerialPortFactory() {
     options.cts = options.cts || options.cts || _options.cts;
     options.dtr = options.dtr || options.dtr || _options.dtr;
     options.dts = options.dts || options.dts || _options.dts;
-  
+
     if (!fd) {
       var err = new Error("Serialport not open.");
       if (callback) {
