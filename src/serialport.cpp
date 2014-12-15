@@ -325,18 +325,19 @@ void EIO_AfterClose(uv_work_t* req) {
     // We don't have an error, so clean up the write queu for that fd
 
     _WriteQueue *q = qForFD(data->fd);
-    if(q) {
-          q->lock();
-          QueuedWrite &write_queue = q->get();
-          QueuedWrite *del_q = write_queue.next;
-          while (del_q != NULL) {
-            del_q->remove();
-            NanDisposePersistent(del_q->baton->buffer);
-          }
-          q->lock();
+    if (q) {
+      q->lock();
+      QueuedWrite &write_queue = q->get();
+      QueuedWrite *del_q = write_queue.next;
+      while (del_q != NULL) {
+        del_q->remove();
+        NanDisposePersistent(del_q->baton->buffer);
+      }
+      q->unlock();
+
+      deleteQForFD(data->fd);
     }
 
-    deleteQForFD(data->fd);
   }
   data->callback->Call(1, argv);
 
