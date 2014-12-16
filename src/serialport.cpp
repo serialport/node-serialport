@@ -326,14 +326,16 @@ void EIO_AfterClose(uv_work_t* req) {
 
     _WriteQueue *q = qForFD(data->fd);
     if (q) {
-      q->lock();
-      QueuedWrite &write_queue = q->get();
-      QueuedWrite *del_q = write_queue.next;
-      while (del_q != NULL) {
-        del_q->remove();
-        NanDisposePersistent(del_q->baton->buffer);
-      }
-      q->unlock();
+      // q->lock();
+      // QueuedWrite &write_queue = q->get();
+      // QueuedWrite *del_q = write_queue.next;
+      // while (del_q != NULL) {
+      //   QueuedWrite *next_del_q = del_q->next;
+      //   del_q->remove();
+      //   // NanDisposePersistent(del_q->baton->buffer);
+      //   del_q = next_del_q;
+      // }
+      // q->unlock();
 
       deleteQForFD(data->fd);
     }
