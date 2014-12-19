@@ -14,7 +14,7 @@ struct _WriteQueue {
   uv_mutex_t _write_queue_mutex;
   _WriteQueue *_next;
 
-  _WriteQueue(const int fd) : _fd(fd), _write_queue() {
+  _WriteQueue(const int fd) : _fd(fd), _write_queue(), _next(NULL) {
     uv_mutex_init(&_write_queue_mutex);
   }
 
@@ -322,20 +322,18 @@ void EIO_AfterClose(uv_work_t* req) {
   } else {
     argv[0] = NanUndefined();
 
-    // We don't have an error, so clean up the write queu for that fd
+    // We don't have an error, so clean up the write queue for that fd
 
     _WriteQueue *q = qForFD(data->fd);
     if (q) {
-      // q->lock();
-      // QueuedWrite &write_queue = q->get();
-      // QueuedWrite *del_q = write_queue.next;
-      // while (del_q != NULL) {
-      //   QueuedWrite *next_del_q = del_q->next;
-      //   del_q->remove();
-      //   // NanDisposePersistent(del_q->baton->buffer);
-      //   del_q = next_del_q;
-      // }
-      // q->unlock();
+      q->lock();
+      QueuedWrite &write_queue = q->get();
+      while (!write_queue.empty()) {
+        QueuedWrite *del_q = write_queue.next;
+        NanDisposePersistent(del_q->baton->buffer);
+        del_q->remove();
+      }
+      q->unlock();
 
       deleteQForFD(data->fd);
     }
