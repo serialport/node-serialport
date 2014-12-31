@@ -9,7 +9,7 @@
 
 var binary = require('node-pre-gyp');
 var path = require('path');
-var PACKAGE_JSON = path.join(__dirname,'package.json');
+var PACKAGE_JSON = path.join(__dirname, 'package.json');
 var binding_path = binary.find(path.resolve(PACKAGE_JSON));
 var SerialPortBinding = require(binding_path);
 
@@ -20,6 +20,7 @@ var fs = require('fs');
 var stream = require('stream');
 var path = require('path');
 var async = require('async');
+var exec = require('child_process').exec;
 
 function SerialPortFactory() {
 
@@ -33,11 +34,23 @@ function SerialPortFactory() {
   var STOPBITS = [1, 1.5, 2];
   var PARITY = ['none', 'even', 'mark', 'odd', 'space'];
   var FLOWCONTROLS = ["XON", "XOFF", "XANY", "RTSCTS"];
+  var SETS = ["rts", "cts", "dtr", "dts"];
 
 
   // Stuff from ReadStream, refactored for our usage:
   var kPoolSize = 40 * 1024;
   var kMinPoolSpace = 128;
+
+  function makeDefaultPlatformOptions(){
+    var options = {};
+
+    if (process.platform !== 'win32') {
+      options.vmin = 1;
+      options.vtime = 0;
+    }
+
+    return options;
+  }
 
   // The default options, can be overwritten in the 'SerialPort' constructor
   var _options = {
@@ -47,10 +60,15 @@ function SerialPortFactory() {
     xon: false,
     xoff: false,
     xany: false,
+    rts: false,
+    cts: false,
+    dtr: false,
+    dts: false,
     databits: 8,
     stopbits: 1,
     buffersize: 256,
-    parser: parsers.raw
+    parser: parsers.raw,
+    platformOptions: makeDefaultPlatformOptions()
   };
 
   function SerialPort(path, options, openImmediately, callback) {
@@ -59,7 +77,7 @@ function SerialPortFactory() {
 
     var args = Array.prototype.slice.call(arguments);
     callback = args.pop();
-    if (typeof(callback) !== 'function') {
+    if (typeof (callback) !== 'function') {
       callback = null;
     }
 
@@ -144,6 +162,7 @@ function SerialPortFactory() {
 
     options.bufferSize = options.bufferSize || options.buffersize || _options.buffersize;
     options.parser = options.parser || _options.parser;
+    options.platformOptions = options.platformOptions || _options.platformOptions;
 
     options.dataCallback = options.dataCallback || function (data) {
       options.parser(self, data);
@@ -153,10 +172,10 @@ function SerialPortFactory() {
       if (self.closing) {
         return;
       }
-      if(!err) {
+      if (!err) {
         err = new Error("Disconnected");
       }
-      self.emit("disconnect",err);
+      self.emit("disconnect", err);
     };
 
     if (process.platform !== 'win32') {
@@ -199,8 +218,8 @@ function SerialPortFactory() {
       if (process.platform !== 'win32') {
         self.paused = false;
         self.serialPoller = new factory.SerialPortBinding.SerialportPoller(self.fd, function (err) {
-          if(!err) {
-            self._read(); 
+          if (!err) {
+            self._read();
           } else {
             self.disconnected(err);
           }
@@ -211,6 +230,11 @@ function SerialPortFactory() {
       self.emit('open');
       if (callback) { callback(); }
     });
+  };
+
+
+  SerialPort.prototype.isOpen = function() {
+    return (this.fd ? true : false);
   };
 
   SerialPort.prototype.write = function (buffer, callback) {
@@ -275,7 +299,7 @@ function SerialPortFactory() {
             if (self.fd >= 0) {
               self.serialPoller.start();
             }
-          } else if (err.code && (err.code === "EBADF" || err.code === 'ENXIO' || (err.errno===-1 || err.code === 'UNKNOWN'))) {    // handle edge case were mac/unix doesn't clearly know the error.
+          } else if (err.code && (err.code === "EBADF" || err.code === 'ENXIO' || (err.errno === -1 || err.code === 'UNKNOWN'))) { // handle edge case were mac/unix doesn't clearly know the error.
             self.disconnected(err);
           } else {
             self.fd = null;
@@ -372,7 +396,7 @@ function SerialPortFactory() {
 
     try {
       factory.SerialPortBinding.close(fd, function (err) {
-        if(err) {
+        if (err) {
           console.log('Disconnect completed with error:' + err);
         } else {
           console.log('Disconnect completed');
@@ -420,7 +444,7 @@ function SerialPortFactory() {
       self.readable = false;
       self.serialPoller.close();
     }
-    
+
     try {
       factory.SerialPortBinding.close(fd, function (err) {
 
@@ -454,6 +478,34 @@ function SerialPortFactory() {
   };
 
   function listUnix(callback) {
+    function udev_parser(udev_output, callback) {
+      function udev_output_to_json(output) {
+        var result = {};
+        var lines = output.split('\n');
+        for (var i = 0; i < lines.length; i++) {
+          var line = lines[i].trim();
+          if (line !== "") {
+            var line_parts = lines[i].split("=");
+            result[line_parts[0].trim()] = line_parts[1].trim();
+          }
+        }
+        return result;
+      }
+      var as_json = udev_output_to_json(udev_output);
+      var pnpId = as_json.DEVLINKS.split(" ")[0];
+      pnpId = pnpId.substring(pnpId.lastIndexOf("/") + 1);
+      var port = {
+        comName: as_json.DEVNAME,
+        manufacturer: as_json.ID_VENDOR,
+        serialNumber: as_json.ID_SERIAL,
+        pnpId: pnpId,
+        vendorId: "0x" + as_json.ID_VENDOR_ID,
+        productId: "0x" + as_json.ID_MODEL_ID
+      };
+
+      callback(null, port);
+    }
+
     fs.readdir("/dev/serial/by-id", function (err, files) {
       if (err) {
         // if this directory is not found this could just be because it's not plugged in
@@ -483,10 +535,17 @@ function SerialPortFactory() {
           }
 
           link = path.resolve(dirName, link);
-          callback(null, {
-            comName: link,
-            manufacturer: undefined,
-            pnpId: file
+          exec('/sbin/udevadm info --query=property -p $(/sbin/udevadm info -q path -n ' + link + ')', function (err, stdout) {
+            if (err) {
+              if (callback) {
+                callback(err);
+              } else {
+                factory.emit('error', err);
+              }
+              return;
+            }
+
+            udev_parser(stdout, callback);
           });
         });
       }, callback);
@@ -508,6 +567,43 @@ function SerialPortFactory() {
     }
 
     factory.SerialPortBinding.flush(fd, function (err, result) {
+      if (err) {
+        if (callback) {
+          callback(err, result);
+        } else {
+          self.emit('error', err);
+        }
+      } else {
+        if (callback) {
+          callback(err, result);
+        }
+      }
+    });
+  };
+
+  SerialPort.prototype.set = function (options, callback) {
+    var self = this;
+    var fd = self.fd;
+
+    options = (typeof option !== 'function') && options || {};
+
+    // flush defaults, then update with provided details
+    options.rts = options.rts || options.rts || _options.rts;
+    options.cts = options.cts || options.cts || _options.cts;
+    options.dtr = options.dtr || options.dtr || _options.dtr;
+    options.dts = options.dts || options.dts || _options.dts;
+
+    if (!fd) {
+      var err = new Error("Serialport not open.");
+      if (callback) {
+        callback(err);
+      } else {
+        self.emit('error', err);
+      }
+      return;
+    }
+
+    factory.SerialPortBinding.set(fd, options, function (err, result) {
       if (err) {
         if (callback) {
           callback(err, result);
@@ -542,7 +638,9 @@ function SerialPortFactory() {
           self.emit('error', err);
         }
       } else {
-        callback(err, result);
+        if (callback) {
+          callback(err, result);
+        }
       }
     });
   };

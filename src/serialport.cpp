@@ -1,7 +1,6 @@
 
 
 #include "serialport.h"
-#include "queue.h"
 
 #ifdef WIN32
 #define strncasecmp strnicmp
@@ -10,13 +9,12 @@
 #endif
 
 uv_mutex_t write_queue_mutex;
-QUEUE write_queue;
+QueuedWrite write_queue;
 
 NAN_METHOD(Open) {
   NanScope();
 
   uv_mutex_init(&write_queue_mutex);
-  QUEUE_INIT(&write_queue);
 
   // path
   if(!args[0]->IsString()) {
@@ -52,6 +50,9 @@ NAN_METHOD(Open) {
   baton->xoff = options->Get(NanNew<v8::String>("xoff"))->ToBoolean()->BooleanValue();
   baton->xany = options->Get(NanNew<v8::String>("xany"))->ToBoolean()->BooleanValue();
 
+  v8::Local<v8::Object> platformOptions = options->Get(NanNew<v8::String>("platformOptions"))->ToObject();
+  baton->platformOptions = ParsePlatformOptions(platformOptions);
+    
   baton->callback = new NanCallback(callback);
   baton->dataCallback = new NanCallback(options->Get(NanNew<v8::String>("dataCallback")).As<v8::Function>());
   baton->disconnectedCallback = new NanCallback(options->Get(NanNew<v8::String>("disconnectedCallback")).As<v8::Function>());
@@ -86,6 +87,7 @@ void EIO_AfterOpen(uv_work_t* req) {
 
   data->callback->Call(2, argv);
 
+  delete data->platformOptions;
   delete data->callback;
   delete data;
   delete req;
@@ -123,19 +125,18 @@ NAN_METHOD(Write) {
   NanAssignPersistent<v8::Object>(baton->buffer, buffer);
   baton->bufferData = bufferData;
   baton->bufferLength = bufferLength;
-  // baton->offset = 0;
+  baton->offset = 0;
   baton->callback = new NanCallback(callback);
 
   QueuedWrite* queuedWrite = new QueuedWrite();
   memset(queuedWrite, 0, sizeof(QueuedWrite));
-  QUEUE_INIT(&queuedWrite->queue);
   queuedWrite->baton = baton;
   queuedWrite->req.data = queuedWrite;
 
   uv_mutex_lock(&write_queue_mutex);
-  bool empty = QUEUE_EMPTY(&write_queue);
+  bool empty = write_queue.empty();
 
-  QUEUE_INSERT_TAIL(&write_queue, &queuedWrite->queue);
+  write_queue.insert_tail(queuedWrite);
 
   if (empty) {
     uv_queue_work(uv_default_loop(), &queuedWrite->req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
@@ -165,18 +166,17 @@ void EIO_AfterWrite(uv_work_t* req) {
     // We're not done with this baton, so throw it right back onto the queue.
 	  // Don't re-push the write in the event loop if there was an error; because same error could occur again!
     // TODO: Add a uv_poll here for unix...
-    fprintf(stderr, "Write again...\n");
+    //fprintf(stderr, "Write again...\n");
     uv_queue_work(uv_default_loop(), req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
     return;
   }
 
   uv_mutex_lock(&write_queue_mutex);
-  QUEUE_REMOVE(&queuedWrite->queue);
+  queuedWrite->remove();
 
-  if (!QUEUE_EMPTY(&write_queue)) {
+  if (!write_queue.empty()) {
     // Always pull the next work item from the head of the queue
-    QUEUE* head = QUEUE_HEAD(&write_queue);
-    QueuedWrite* nextQueuedWrite = QUEUE_DATA(head, QueuedWrite, queue);
+    QueuedWrite* nextQueuedWrite = write_queue.next;
     uv_queue_work(uv_default_loop(), &nextQueuedWrite->req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
   }
   uv_mutex_unlock(&write_queue_mutex);
@@ -341,6 +341,67 @@ void EIO_AfterFlush(uv_work_t* req) {
   delete req;
 }
 
+NAN_METHOD(Set) {
+  NanScope();
+
+  // file descriptor
+  if(!args[0]->IsInt32()) {
+    NanThrowTypeError("First argument must be an int");
+    NanReturnUndefined();
+  }
+  int fd = args[0]->ToInt32()->Int32Value();
+
+  // options
+  if(!args[1]->IsObject()) {
+    NanThrowTypeError("Second argument must be an object");
+    NanReturnUndefined();
+  }
+  v8::Local<v8::Object> options = args[1]->ToObject();
+
+  // callback
+  if(!args[2]->IsFunction()) {
+    NanThrowTypeError("Third argument must be a function");
+    NanReturnUndefined();
+  }
+  v8::Local<v8::Function> callback = args[2].As<v8::Function>();
+
+  SetBaton* baton = new SetBaton();
+  memset(baton, 0, sizeof(SetBaton));
+  baton->fd = fd;
+  baton->callback = new NanCallback(callback);
+  baton->rts = options->Get(NanNew<v8::String>("rts"))->ToBoolean()->BooleanValue();
+  baton->cts = options->Get(NanNew<v8::String>("cts"))->ToBoolean()->BooleanValue();
+  baton->dtr = options->Get(NanNew<v8::String>("dtr"))->ToBoolean()->BooleanValue();
+  baton->dsr = options->Get(NanNew<v8::String>("dsr"))->ToBoolean()->BooleanValue();
+
+  uv_work_t* req = new uv_work_t();
+  req->data = baton;
+  uv_queue_work(uv_default_loop(), req, EIO_Set, (uv_after_work_cb)EIO_AfterSet);
+
+  NanReturnUndefined();
+}
+
+void EIO_AfterSet(uv_work_t* req) {
+  NanScope();
+
+  SetBaton* data = static_cast<SetBaton*>(req->data);
+
+  v8::Handle<v8::Value> argv[2];
+
+  if(data->errorString[0]) {
+    argv[0] = v8::Exception::Error(NanNew<v8::String>(data->errorString));
+    argv[1] = NanUndefined();
+  } else {
+    argv[0] = NanUndefined();
+    argv[1] = NanNew<v8::Int32>(data->result);
+  }
+  data->callback->Call(2, argv);
+
+  delete data->callback;
+  delete data;
+  delete req;
+}
+
 NAN_METHOD(Drain) {
   NanScope();
 
@@ -391,31 +452,27 @@ void EIO_AfterDrain(uv_work_t* req) {
   delete req;
 }
 
+// Change request for ticket #401 - credit to @sguilly
 SerialPortParity NAN_INLINE(ToParityEnum(const v8::Handle<v8::String>& v8str)) {
   NanScope();
-
-
-  char* str = *NanUtf8String(v8str);
-  size_t count = strlen(str);
-
+  NanUtf8String *str = new NanUtf8String(v8str);
+  size_t count = strlen(**str);
   SerialPortParity parity = SERIALPORT_PARITY_NONE;
-
-  if(!strncasecmp(str, "none", count)) {
-    parity = SERIALPORT_PARITY_NONE;
-  } else if(!strncasecmp(str, "even", count)) {
-    parity = SERIALPORT_PARITY_EVEN;
-  } else if(!strncasecmp(str, "mark", count)) {
-    parity = SERIALPORT_PARITY_MARK;
-  } else if(!strncasecmp(str, "odd", count)) {
-    parity = SERIALPORT_PARITY_ODD;
-  } else if(!strncasecmp(str, "space", count)) {
-    parity = SERIALPORT_PARITY_SPACE;
+  if(!strncasecmp(**str, "none", count)) {
+  parity = SERIALPORT_PARITY_NONE;
+  } else if(!strncasecmp(**str, "even", count)) {
+  parity = SERIALPORT_PARITY_EVEN;
+  } else if(!strncasecmp(**str, "mark", count)) {
+  parity = SERIALPORT_PARITY_MARK;
+  } else if(!strncasecmp(**str, "odd", count)) {
+  parity = SERIALPORT_PARITY_ODD;
+  } else if(!strncasecmp(**str, "space", count)) {
+  parity = SERIALPORT_PARITY_SPACE;
   }
-
   // delete[] str;
-
   return parity;
 }
+
 
 SerialPortStopBits NAN_INLINE(ToStopBitEnum(double stopBits)) {
   if(stopBits > 1.4 && stopBits < 1.6) {
@@ -431,6 +488,7 @@ extern "C" {
   void init (v8::Handle<v8::Object> target)
   {
     NanScope();
+    NODE_SET_METHOD(target, "set", Set);
     NODE_SET_METHOD(target, "open", Open);
     NODE_SET_METHOD(target, "write", Write);
     NODE_SET_METHOD(target, "close", Close);

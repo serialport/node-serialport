@@ -14,10 +14,13 @@
 
 [![Build Status](https://travis-ci.org/voodootikigod/node-serialport.png?branch=master)](https://travis-ci.org/voodootikigod/node-serialport)
 [![Gitter chat](https://badges.gitter.im/voodootikigod/node-serialport.png)](https://gitter.im/voodootikigod/node-serialport)
+[![Dependency Status](https://david-dm.org/voodootikigod/node-serialport.png)
 
 For all discussions, designs, and clarifications, we recommend you join our Gitter Chat room: [https://gitter.im/voodootikigod/node-serialport](https://gitter.im/voodootikigod/node-serialport)
 
-Version: 1.4.6 - Released September 3, 2014
+
+
+Version: 1.4.10 - Released December 31, 2014
 
 *****
 
@@ -30,6 +33,8 @@ Robots, you say?
 
 This library is admittedly a base level toolkit for building amazing things with real world (including robots). Here are a couple of those amazing things that leverage node-serialport:
 
+* [Johnny-Five](https://github.com/rwaldron/johnny-five) - Firmata based Arduino Framework.
+* [Cylon.js](http://cylonjs.com/) - JavaScript Robotics, By Your Command.
 * [node-l8smartlight](http://jakobwesthoff.github.io/node-l8smartlight/) ([source](https://github.com/jakobwesthoff/node-l8smartlight)) A node library to control the L8 Smartlight via Bluetooth or USB port
 * [firmata](https://github.com/jgautier/firmata) Talk natively to Arduino using the firmata protocol.
 * [tmpad](http://tmpvar.com/project/tmpad/) [source](https://github.com/tmpvar/tmpad) - a DIY midi pad using infrared, arduino, and nodejs. [Video](http://vimeo.com/34575470)
@@ -39,6 +44,7 @@ This library is admittedly a base level toolkit for building amazing things with
 * [Robotic JavaScript](http://jsconf.eu/2010/speaker/livingroombindmotion_function.html) - The first live presentation of the node-serialport code set as presented at JSConf EU 2010.
 * [devicestack](https://github.com/adrai/devicestack) - This module helps you to represent a device and its protocol.
 * [reflecta](https://github.com/JayBeavers/Reflecta) A communication protocol that combines Arduino Libraries and NodeJS into an integrated system.
+* [rc4pt-node](https://github.com/comsolid/rc4pt-node) - Control Popcorntime with an Infrared receiver and Arduino.
 
 For getting started with node-serialport, we recommend you begin with the following articles:
 
@@ -300,6 +306,14 @@ Port configuration options.
 * `encoding`
 * `dataCallback`
 * `disconnectedCallback`
+* `platformOptions` - sets platform specific options, see below.
+
+#### Unix Platform Options
+
+An object with the following properties:
+
+* `vmin` (default: 1) - see [`man termios`](http://linux.die.net/man/3/termios)
+* `vtime` (default: 0) - see [`man termios`](http://linux.die.net/man/3/termios)
 
 **_openImmediately (optional)_**
 
@@ -382,3 +396,16 @@ Called once a connection is closed. Closing a connection will also remove all ev
 ### .on('close', callback)
 
 ### .on('error', callback)
+
+&nbsp;
+&nbsp;
+
+---
+
+&nbsp;
+&nbsp;
+
+
+# Credit
+
+A special thanks to [The Hybrid Group](http://hybridgroup.com) for helping create and hosting the precompiled binaries for OSX, Linux, & Windows. This makes installing node-serialport much easier and much simpler for individuals using those platforms. Thank you.

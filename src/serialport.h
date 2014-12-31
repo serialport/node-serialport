@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "queue.h"
 
 enum SerialPortParity {
   SERIALPORT_PARITY_NONE = 1,
@@ -47,12 +46,21 @@ NAN_METHOD(Flush);
 void EIO_Flush(uv_work_t* req);
 void EIO_AfterFlush(uv_work_t* req);
 
+NAN_METHOD(Set);
+void EIO_Set(uv_work_t* req);
+void EIO_AfterSet(uv_work_t* req);
+
 NAN_METHOD(Drain);
 void EIO_Drain(uv_work_t* req);
 void EIO_AfterDrain(uv_work_t* req);
 
 SerialPortParity ToParityEnum(const v8::Handle<v8::String>& str);
 SerialPortStopBits ToStopBitEnum(double stopBits);
+
+struct OpenBatonPlatformOptions
+{
+};
+OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& options);
 
 struct OpenBaton {
 public:
@@ -72,6 +80,7 @@ public:
   bool dsrdtr;
   SerialPortParity parity;
   SerialPortStopBits stopBits;
+  OpenBatonPlatformOptions* platformOptions;  
   char errorString[ERROR_STRING_SIZE];
 };
 
@@ -90,8 +99,40 @@ public:
 struct QueuedWrite {
 public:
   uv_work_t req;
-  QUEUE queue;
+  QueuedWrite *prev;
+  QueuedWrite *next;
   WriteBaton* baton;
+
+  QueuedWrite() {
+    prev = this;
+    next = this;
+
+    baton = 0;
+  };
+
+  ~QueuedWrite() {
+    remove();
+  };
+
+  void remove() {
+    prev->next = next;
+    next->prev = prev;
+
+    next = this;
+    prev = this;
+  };
+
+  void insert_tail(QueuedWrite *qw) {
+    qw->next = this;
+    qw->prev = this->prev;
+    qw->prev->next = qw;
+    this->prev = qw;
+  };
+
+  bool empty() {
+    return next == this;
+  };
+
 };
 
 struct CloseBaton {
@@ -125,6 +166,19 @@ public:
   NanCallback* callback;
   int result;
   char errorString[ERROR_STRING_SIZE];
+};
+
+struct SetBaton {
+public:
+  int fd;
+  NanCallback* callback;
+  int result;
+  char errorString[ERROR_STRING_SIZE];
+  bool rts;
+  bool cts;
+  bool dtr;
+  bool dsr;
+
 };
 
 struct DrainBaton {

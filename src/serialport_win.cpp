@@ -11,6 +11,17 @@
 
 #define MAX_BUFFER_SIZE 1000
 
+
+struct WindowsPlatformOptions : OpenBatonPlatformOptions
+{
+};
+
+OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& options){
+  // currently none
+  return new WindowsPlatformOptions();
+}
+
+
 // Declare type of pointer to CancelIoEx function
 typedef BOOL (WINAPI *CancelIoExType)(HANDLE hFile, LPOVERLAPPED lpOverlapped);
 
@@ -151,6 +162,35 @@ public:
   NanCallback* errorCallback;
   NanCallback* disconnectedCallback;
 };
+
+void EIO_Set(uv_work_t* req) {
+  // SetBaton* data = static_cast<SetBaton*>(req->data);
+
+  // int bits;
+  // ioctl( data->fd, TIOCMGET, &bits );
+
+  // bits &= ~(TIOCM_RTS | TIOCM_CTS | TIOCM_DTR | TIOCM_DSR);
+
+  // if (data->rts) {
+  //   bits |= TIOCM_RTS;
+  // }
+
+  // if (data->cts) {
+  //   bits |= TIOCM_CTS;
+  // }
+
+  // if (data->dtr) {
+  //   bits |= TIOCM_DTR;
+  // }
+
+  // if (data->dsr) {
+  //   bits |= TIOCM_DSR;
+  // }
+
+  // data->result = ioctl( data->fd, TIOCMSET, &bits );
+
+}
+
 
 void EIO_WatchPort(uv_work_t* req) {
   WatchPortBaton* data = static_cast<WatchPortBaton*>(req->data);
