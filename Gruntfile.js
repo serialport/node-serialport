@@ -1,4 +1,7 @@
+'use strict';
 module.exports = function(grunt) {
+
+  require('jit-grunt')(grunt, {});
 
   grunt.initConfig({
     mochaTest: {
@@ -10,22 +13,16 @@ module.exports = function(grunt) {
     jshint: {
       all: ['*.js', 'test/**/*.js', 'arduinoTest/**/*.js'],
       options: {
-        node: true,
-        '-W030': true, // to allow mocha expects syntax
-        globals: {
-          before: false,
-          after: false,
-          beforeEach: false,
-          afterEach: false,
-          describe: false,
-          it: false
-        }
+        jshintrc: true
+      }
+    },
+    watch: {
+      javascripts: {
+        files: [ '*.js', 'test/**/*.js' ],
+        tasks: ['jshint', 'mochaTest']
       }
     }
   });
 
-  grunt.loadNpmTasks('grunt-mocha-test');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.registerTask('default', ['jshint', 'mochaTest']);
-
 };

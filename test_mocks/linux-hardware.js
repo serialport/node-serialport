@@ -1,12 +1,12 @@
 // This takes a serial-port factory and mocks the shit out of it in complete isolation per require of this file
 
-"use strict";
+'use strict';
 
 var mockSerialportPoller = function (hardware) {
   var Poller = function (path, cb) {
     this.port = hardware.ports[path];
     if (!this.port) {
-      throw new Error(path + " does not exist - please call hardware.createPort(path) first");
+      throw new Error(path + ' does not exist - please call hardware.createPort(path) first');
     }
     this.port.poller = this;
     this.polling = null;
@@ -61,7 +61,7 @@ Hardware.prototype.createPort = function (path) {
 Hardware.prototype.emitData = function (path, data) {
   var port = this.ports[path];
   if(!port) {
-    throw new Error(path + " does not exist - please call hardware.createPort(path) first");
+    throw new Error(path + ' does not exist - please call hardware.createPort(path) first');
   }
   port.data = Buffer.concat([port.data, data]);
   port.poller && port.poller.detectRead();
@@ -70,7 +70,7 @@ Hardware.prototype.emitData = function (path, data) {
 Hardware.prototype.disconnect = function (path) {
   var port = this.ports[path];
   if (!port) {
-    throw new Error(path + " does not exist - please call hardware.createPort(path) first");
+    throw new Error(path + ' does not exist - please call hardware.createPort(path) first');
   }
   port.openOpt.disconnectedCallback();
 };
@@ -86,7 +86,7 @@ Hardware.prototype.list = function (cb) {
 Hardware.prototype.open = function (path, opt, cb) {
   var port = this.ports[path];
   if (!port) {
-    return cb(new Error(path + " does not exist - please call hardware.createPort(path) first"));
+    return cb(new Error(path + ' does not exist - please call hardware.createPort(path) first'));
   }
   port.open = true;
   port.openOpt = opt;
@@ -96,7 +96,7 @@ Hardware.prototype.open = function (path, opt, cb) {
 Hardware.prototype.write = function (path, buffer, cb) {
   var port = this.ports[path];
   if (!port) {
-    return cb(new Error(path + " does not exist - please call hardware.createPort(path) first"));
+    return cb(new Error(path + ' does not exist - please call hardware.createPort(path) first'));
   }
   port.lastWrite = new Buffer(buffer); //copy
   cb && cb(null, buffer.length);
@@ -105,7 +105,7 @@ Hardware.prototype.write = function (path, buffer, cb) {
 Hardware.prototype.close = function (path, cb) {
   var port = this.ports[path];
   if (!port) {
-    return cb(new Error(path + " does not exist - please call hardware.createPort(path) first"));
+    return cb(new Error(path + ' does not exist - please call hardware.createPort(path) first'));
   }
   port.open = false;
   cb && cb(null);
@@ -114,7 +114,7 @@ Hardware.prototype.close = function (path, cb) {
 Hardware.prototype.flush = function (path, cb) {
   var port = this.ports[path];
   if (!port) {
-    return cb(new Error(path + " does not exist - please call hardware.createPort(path) first"));
+    return cb(new Error(path + ' does not exist - please call hardware.createPort(path) first'));
   }
   cb && cb(null, undefined);
 };
@@ -122,13 +122,13 @@ Hardware.prototype.flush = function (path, cb) {
 Hardware.prototype.fakeRead = function (path, buffer, offset, length, position, cb) {
   var port = this.ports[path];
   if (!port) {
-    return cb(new Error(path + " does not exist - please call hardware.createPort(path) first"));
+    return cb(new Error(path + ' does not exist - please call hardware.createPort(path) first'));
   }
   if (port.data.length === 0) {
     return cb(null, 0, buffer);
   }
   if ((offset + length) > buffer.length) {
-    throw new Error("Length extends beyond buffer");
+    throw new Error('Length extends beyond buffer');
   }
 
   // node v0.8 doesn't like a slice that is bigger then available data
@@ -147,7 +147,11 @@ var serialPort = SandboxedModule.require('../serialport', {
   requires: {
     fs: {
       read: hardware.fakeRead.bind(hardware)
-    }
+    },
+    'node-pre-gyp': {
+      find: function() { return './serialbinding'; }
+    },
+    './serialbinding': hardware.mockBinding
   },
   globals: {
     process: {
@@ -158,6 +162,5 @@ var serialPort = SandboxedModule.require('../serialport', {
 });
 
 serialPort.hardware = hardware;
-serialPort.SerialPortBinding = hardware.mockBinding;
 
 module.exports = serialPort;

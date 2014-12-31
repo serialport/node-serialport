@@ -51,7 +51,7 @@
   // Whether automatic semicolon insertion should be allowed.
   "asi": false,
   // Whether line breaks should not be checked, e.g. `return [\n] x`.
-  "laxbreak": false,
+  "laxbreak": true,
   // Whether bitwise operators (&, |, ^, etc.) should be forbidden.
   "bitwise": false,
   // Whether assignments inside `if`, `for` and `while` should be allowed. Usually
@@ -151,5 +151,5 @@
   // Maximum number of statements per function.
   "maxstatements": 25,
   // Maximum cyclomatic complexity.
-  "maxcomplexity": 6
+  "maxcomplexity": 10
 }
