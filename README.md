@@ -409,3 +409,4 @@ Called once a connection is closed. Closing a connection will also remove all ev
 # Credit
 
 A special thanks to [The Hybrid Group](http://hybridgroup.com) for helping create and hosting the precompiled binaries for OSX, Linux, & Windows. This makes installing node-serialport much easier and much simpler for individuals using those platforms. Thank you.
+
