@@ -20,42 +20,19 @@ var parsers = require('./parsers'),
     util = require('util'),
     fs = B.promisifyAll(require('fs')),
     stream = require('readable-stream'),
-    async = require('async'),
     NOOP = function() {};
+
+var bindable = Function.bind.bind(Function.bind);
 
 var isWindows = process.platform === 'win32';
 
-// Deprecate global events
-var globalEmitter = module.exports = new EventEmitter();
-globalEmitter.on('newListener', util.deprecate(function() { },
-      'Global events are deprecated, listen to events on distinct SerialPort instances instead.'));
-
-var exports = module.exports = globalEmitter;
-
-function emitGlobalError(port, err) {
-  // Let's not emit if there are no subscribers
-  if(port.listeners('error') === 1 || globalEmitter.listeners('error') > 0) {
-    globalEmitter.emit('error', err);
-  }
-}
-
+//
 //  VALIDATION ARRAYS
 var DATABITS = [5, 6, 7, 8];
 var STOPBITS = [1, 1.5, 2];
 var PARITY = ['none', 'even', 'mark', 'odd', 'space'];
 var FLOWCONTROLS = ['xon', 'xoff', 'xany', 'rtscts'];
 var SETS = ['rts', 'cts', 'dtr', 'dts'];
-
-function makeDefaultPlatformOptions(){
-  var options = {};
-
-  if (!isWindows) {
-    options.vmin = 1;
-    options.vtime = 0;
-  }
-
-  return options;
-}
 
 // The default options, can be overwritten in the 'SerialPort' constructor
 var defaultOptions = {
@@ -71,23 +48,6 @@ var defaultOptions = {
   dts: false,
   databits: 8,
   stopbits: 1,
-  buffersize: 256,
-  parser: parsers.raw,
-  platformOptions: makeDefaultPlatformOptions(),
-
-  datacallback: function (data) {
-    this.options.parser(this, data);
-  },
-
-  disconnectedcallback: function (err) {
-    if (this.closing) {
-      return;
-    }
-    if (!err) {
-      err = new Error('Disconnected');
-    }
-    this.emit('disconnect', err);
-  }
 };
 
 function verifyEnumOption(value, name, enums) {
@@ -96,12 +56,12 @@ function verifyEnumOption(value, name, enums) {
   }
 }
 
-function openPort(path, options, callback) {
+exports.open = exports.openPort = function openPort(path, options, callback) {
   var s = new SerialPort(path, options, false);
   s.open(callback);
 
   return s;
-}
+};
 
 function processOptions(options) {
   options = (typeof options !== 'function') && options || {};
@@ -133,45 +93,21 @@ function processOptions(options) {
   return options;
 }
 
-function SerialPort(path, options, openImmediately, callback) {
+function SerialPort(path, options) {
   debug('construct');
 
   stream.Duplex.call(this);
 
-  // Chain instance errors to the global emitter
-  this.on('error', emitGlobalError.bind(undefined, this));
-
   if (!path) {
     throw new Error('Invalid port specified: ' + path);
   }
+
   this.path = path;
-
   this.options = processOptions(options);
-
-  callback = Array.prototype.pop.call(arguments);
-  callback = typeof callback === 'function'
-    ? callback
-    : function (err) {
-      if (err) {
-        globalEmitter.emit('error', err);
-      }
-    }.bind(this);
-
-
-  if (!isWindows) {
-    // All other platforms:
-    this.fd = null;
-  }
-
-  if (typeof openImmediately !== 'boolean' || openImmediately) {
-    util.deprecate(function() {
-      debug('construct: opening');
-      this.open(callback);
-    }.bind(this),
-    'Opening immediately from the constructor is deprecated, call the `open` instance function or use the `openPort` factory function');
-  }
+  this.fd = null;
 }
 util.inherits(SerialPort, stream.Duplex);
+exports.SerialPort = SerialPort;
 
 // Called by the Duplex Readable super class whenever data should
 // be read from the transport
@@ -525,69 +461,31 @@ SerialPort.prototype.drain = function (callback) {
   }
 };
 
-function listUnix(callback) {
+function listUnix() {
   var dirName = '/dev/serial/by-id';
-  fs.readdirAsync(dirName)
-    .map(path.join.bind(undefined, dirName))
+
+  var join = bindable(path.join);
+
+  return fs.readdirAsync(dirName)
+    .map(join(dirName))
     .map(fs.realpathAsync)
-    .map(function(path) {
-      callback(null, {
-        comName: path,
+    .map(function(realPath) {
+      return {
+        comName: realPath,
         manufactuer: undefined,
-        pnpId: '' 
-      });
+        pnpId: path.basename(realPath)
+      };
     });
-
-  fs.readdir(dirName, function (err, files) {
-    if (err) {
-      // if this directory is not found this could just be because it's not plugged in
-      if (err.errno === 34) {
-        callback(null, []);
-      } else if (callback) {
-        callback(err);
-      } else {
-        globalEmitter.emit('error', err);
-      }
-    }
-    
-    /*
-    _(files)
-      .map(path.join.bind(this, dirName)
-      .map(fs.readlink)
-      .map(path.resolve.bind(this, dirName))
-      .map(function(link) {
-          callback(null, {
-            comName: link,
-            manufacturer: undefined,
-            pnpId: 1
-          });
-      });
-      */
-
-    async.map(files, function (file, callback) {
-      var fileName = path.join(dirName, file);
-      fs.readlink(fileName, function (err, link) {
-        if (err) {
-          return callback(err);
-        }
-
-        link = path.resolve(dirName, link);
-        callback(null, {
-          comName: link,
-          manufacturer: undefined,
-          pnpId: file
-        });
-      });
-    }, callback);
-  });
 }
+
 // Patch in this javascript /dev list impl for Unix
 if(!isWindows && process.platform !== 'darwin') {
   SerialPortBinding.list = listUnix;
+} else {
+  // Promisify the native binding
+  SerialPortBinding.list = B.promisify(SerialPortBinding.list, SerialPortBinding);
 }
 
-exports.SerialPort = SerialPort;
-exports.open = exports.openPort = openPort;
-exports.parsers = parsers;
 exports.SerialPortBinding = SerialPortBinding;
 exports.list = SerialPortBinding.list;
+exports.transforms = require('./transforms');

@@ -11,14 +11,14 @@ module.exports = function(grunt) {
       }
     },
     jshint: {
-      all: ['*.js', 'test/**/*.js', 'arduinoTest/**/*.js'],
+      all: ['*.js', 'transforms/*.js', 'test/**/*.js', 'arduinoTest/**/*.js'],
       options: {
         jshintrc: true
       }
     },
     watch: {
       javascripts: {
-        files: [ '*.js', 'test/**/*.js' ],
+        files: [ '*.js', 'transforms/*.js', 'test/**/*.js' ],
         tasks: ['jshint', 'mochaTest']
       }
     }

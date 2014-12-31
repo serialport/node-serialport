@@ -32,6 +32,7 @@ describe('SerialPort', function () {
   describe('Constructor', function () {
     it('should be a Duplex stream', function() {
       var port = new SerialPort(existPath);
+      console.log(port instanceof stream.Duplex);
       port.should.be.an.instanceOf(stream.Duplex);
     });
 
@@ -41,6 +42,8 @@ describe('SerialPort', function () {
       new SerialPort(existPath);
 
       spy.should.have.been.calledOnce;
+
+      spy.restore();
     });
 
     it('throws when path is invalid', function() {
@@ -148,20 +151,6 @@ describe('SerialPort', function () {
       var stub = sinon.stub();
       
       port.on('error', stub);
-
-      port.open();
-
-      process.nextTick(function() {
-        stub.should.have.been.calledOnce;
-        done();
-      });
-    });
-
-    it('emits global error event when opening an invalid port', function(done) {
-      var port = new SerialPort('/dev/unhappy', {}, false);
-      var stub = sinon.stub();
-      
-      MockedSerialPort.on('error', stub);
 
       port.open();
 
