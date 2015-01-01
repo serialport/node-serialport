@@ -23,6 +23,7 @@ void _serialportReadable(uv_poll_t *req, int status, int events) {
 }
 
 void SerialportPoller::callCallback(int status) {
+  NanScope();
   // uv_work_t* req = new uv_work_t;
 
   // Call the callback to go read more data...
