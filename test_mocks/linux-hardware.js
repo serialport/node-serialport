@@ -2,7 +2,8 @@
 
 'use strict';
 
-var _ = require('lodash');
+var _ = require('lodash'),
+    proxyquire = require('proxyquire');
 
 var mockSerialportPoller = function (hardware) {
   var Poller = function (path, cb) {
@@ -151,10 +152,10 @@ Hardware.prototype.fakeRead = function (path, buffer, offset, length, position, 
 
 var hardware = new Hardware();
 
-var SandboxedModule = require('sandboxed-module');
+// This is not a real module, tell proxyquire not to call through
+hardware.mockBinding['@noCallThru'] = true;
 
-var serialPort = SandboxedModule.require('../serialport', {
-  requires: {
+var serialPort = proxyquire('../serialport', {
     fs: {
       read: hardware.fakeRead.bind(hardware)
     },
@@ -162,13 +163,20 @@ var serialPort = SandboxedModule.require('../serialport', {
       find: function() { return './serialbinding'; }
     },
     './serialbinding': hardware.mockBinding
-  },
-  globals: {
-    process: {
-      platform: 'darwin',
-      nextTick: process.nextTick
-    }
-  }
+});
+
+/*global before,after*/
+var origValues;
+before(function() {
+  origValues = {
+    platform: process.platform
+  };
+
+  process.platform = 'darwin';
+});
+
+after(function() {
+  process.platform = origValues.platform;
 });
 
 serialPort.hardware = hardware;

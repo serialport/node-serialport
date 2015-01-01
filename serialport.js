@@ -51,7 +51,9 @@ var defaultOptions = {
 };
 
 function verifyEnumOption(value, name, enums) {
+  debug('validating enum %s[%s](%s)', name, enums, value);
   if (enums.indexOf(value) === -1) {
+    debug('invalid enum value');
     throw new Error('Invalid "' + name + '": ' + value);
   }
 }
@@ -65,7 +67,7 @@ exports.open = exports.openPort = function openPort(options, cb) {
 function SerialPort(options) {
   debug('construct');
 
-  if(typeof options !== 'object') {
+  if(!_.isObject(options)) {
     options = {};
   }
 
@@ -144,13 +146,16 @@ SerialPort.prototype._write = function (chunk, encoding, callback) {
 
 
 function processOptions(options) {
+  debug('processing open options');
   // Lowercase all of the option properties to make them case insensitive
   options = _.transform(options, function(res, val, key) {
     res[key.toLowerCase()] = val;
   });
 
+  debug('options before merge', options);
   // Merge the default options
-  options = _.merge(options, defaultOptions);
+  options = _.defaults(options, defaultOptions);
+  debug('options after merge', options);
 
   // Validate inputs
   verifyEnumOption(options.databits, 'databits', DATABITS);
@@ -158,13 +163,16 @@ function processOptions(options) {
   verifyEnumOption(options.parity, 'parity', PARITY);
 
   if (options.flowcontrol) {
-    if (typeof options.flowcontrol === 'boolean') {
+    if (_.isBoolean(options.flowcontrol)) {
+      debug('enabled rtscts');
       options.rtscts = true;
     } else {
-      options.flowcontrol.forEach(function (flowControl) {
+      options.flowcontrol = _.isArray(options.flowcontrol) ? options.flowcontrol : [options.flowcontrol];
+      options.flowcontrol.forEach(function(flowControl) {
         flowControl = flowControl.toLowerCase();
         verifyEnumOption(flowControl, 'flowcontrol', FLOWCONTROLS);
         options[flowControl] = true;
+        debug('enabled ' + flowControl);
       });
     }
   }
@@ -174,13 +182,20 @@ function processOptions(options) {
 
 SerialPort.prototype.open = function(options, cb) {
   // Allow specifying comname as first param
-  if(typeof(options) !== 'object') {
+  if(!_.isObject(options)) {
     options = { comname: options };
   }
 
+  try {
   this.options = processOptions(options);
+  } catch(err) {
+    process.nextTick(function() {
+      this.emit('error', err);
+    }.bind(this));
+    return;
+  }
   
-  if(typeof cb === 'function') {
+  if(_.isFunction(cb)) {
     this.once('open', cb);
   }
 
@@ -418,7 +433,7 @@ SerialPort.prototype.flush = function (callback) {
 SerialPort.prototype.set = function (options, callback) {
   var self = this;
 
-  options = (typeof option !== 'function') && options || {};
+  options = (!_.isFunction(options)) && options || {};
   options = _.merge(options, defaultOptions);
 
   if (this.isOpen()) {

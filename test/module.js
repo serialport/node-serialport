@@ -10,12 +10,12 @@ describe('module', function() {
   beforeEach(function() {
     sandbox = sinon.sandbox.create();
 
-    serialModule.hardware.reset();
     hport = serialModule.hardware.createPort(existPath);
   });
 
   afterEach(function() {
     sandbox.restore();
+    serialModule.hardware.reset();
   });
 
   describe('interface', function() {
@@ -37,7 +37,8 @@ describe('module', function() {
     });
 
     it('should resolve port list', function() {
-      var list = serialModule.list().should.eventually.deep.equal(serialModule.hardware.getPortInfo());
+      var ports = serialModule.hardware.getPortInfo();
+      var list = serialModule.list().should.eventually.deep.equal(ports);
     });
 
     it('should reject with error', function() {

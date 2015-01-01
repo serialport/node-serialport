@@ -1,11 +1,14 @@
 'use strict';
 
-var serialModule = require('../test_mocks/linux-hardware');
-var SerialPort = serialModule.SerialPort;
-var hardware = serialModule.hardware;
-var stream = require('readable-stream');
-var B = require('bluebird');
+var serialModule = require('../test_mocks/linux-hardware'),
+    SerialPort = serialModule.SerialPort,
+    hardware = serialModule.hardware,
+    stream = require('readable-stream'),
+    _ = require('lodash'),
+    B = require('bluebird');
 
+// Wraps an act, assert with a promise that acts and then
+// asserts and resolves on the next tick
 function assertNextTick(act, assert) {
   return new B(function(resolve, reject) {
     act();
@@ -24,45 +27,39 @@ describe('SerialPort', function () {
     sandbox = sinon.sandbox.create();
 
     // Create a port for fun and profit
-    hardware.reset();
     hardware.createPort(existPath);
   });
 
   afterEach(function () {
     sandbox.restore();
+    hardware.reset();
   });
 
   describe('Constructor', function () {
-    // We have to require the module directly in some of these tests
-    // because of https://github.com/felixge/node-sandboxed-module/issues/13
     it('should be a Duplex stream', function() {
-      var port = new (require('../serialport').SerialPort)(existPath);
+      var port = new SerialPort(existPath);
 
       port.should.be.an.instanceOf(stream.Duplex);
     });
 
     it('should call the Duplex constructor with options', function() {
-      var ports = require('../serialport');
       sandbox.spy(stream, 'Duplex');
       var options = {};
 
-      new ports.SerialPort(options);
+      new SerialPort(options);
 
       stream.Duplex.should.have.been.calledOnce;
       stream.Duplex.should.have.been.calledWith(options);
     });
 
     it('options should be optional', function() {
-      var ports = require('../serialport');
       sandbox.spy(stream, 'Duplex');
 
-      new ports.SerialPort();
+      new SerialPort();
 
       stream.Duplex.should.have.been.calledOnce;
       stream.Duplex.firstCall.args[0].should.deep.equal({});
     });
-
-    
   });
 
   describe('reading data', function () {
@@ -106,6 +103,7 @@ describe('SerialPort', function () {
       return assertNextTick(function() {
         port.open();
       }, function() {
+        spy.should.have.been.calledOnce;
         spy.should.have.been.calledWith(sinon.match.instanceOf(Error));
       });
     });
@@ -149,9 +147,7 @@ describe('SerialPort', function () {
 
       var callOpts = serialModule.SerialPortBinding.open.firstCall.args[1];
       callOpts.should.contain(defaults);
-      expect(callOpts).to.contain(defaults);
     });
-
 
     it('should subscribe callback to open event', function() {
       var spy = sinon.spy();
@@ -159,6 +155,61 @@ describe('SerialPort', function () {
       port.open(existPath, spy);
 
       spy.should.have.been.calledOnce;
+    });
+
+    describe('processing options', function() {
+      function testEnumOptions(name, invalid, validValues) {
+        var options = { comName: existPath };
+        describe(name, function() {
+          it('should error on invalid ' + name, function() {
+            var spy = sinon.spy();
+            port.on('error', spy);
+            options[name] = invalid;
+
+            return assertNextTick(function() {
+              port.open(options);
+            }, function() {
+              spy.should.have.been.calledOnce;
+            });
+          });
+
+          validValues.forEach(function(value) {
+            it('should not error with ' + value + ' ' + name, function() {
+              options[name] = value;
+              port.open(options);
+            });
+          });
+        });
+      }
+
+      testEnumOptions('stopbits', 3, [1, 1.5, 2]);
+      testEnumOptions('parity', 'quantum', ['none', 'even', 'mark', 'odd', 'space']);
+      testEnumOptions('databits', 22, [5, 6, 7, 8]);
+      testEnumOptions('flowcontrol', ['smoke signal'], [false, true, 'xon', 'xoff', ['xany'], ['rtscts']]);
+
+      describe('flowcontrol flags', function() {
+        [['xon', 'xoff'], 'xon', 'xoff', 'xany', 'rtscts'].forEach(function(flag) {
+          it('should set option for ' + flag + ' flag', function() {
+            flag = _.isArray(flag) ? flag : [flag];
+            var expected = _.reduce(flag, function(r, f) { r[f] = true; return r; }, {});
+            sandbox.stub(serialModule.SerialPortBinding, 'open');
+
+            port.open({ comname: existPath, flowcontrol: flag });
+
+            var callOpts = serialModule.SerialPortBinding.open.firstCall.args[1];
+            callOpts.should.contain(expected);
+          });
+        });
+
+        it('should set rtscts with boolean true', function() {
+          sandbox.stub(serialModule.SerialPortBinding, 'open');
+
+          port.open({ comname: existPath, flowcontrol: true });
+
+          var callOpts = serialModule.SerialPortBinding.open.firstCall.args[1];
+          callOpts.should.contain({ rtscts: true });
+        });
+      });
     });
     
     /*
