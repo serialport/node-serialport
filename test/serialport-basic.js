@@ -1,17 +1,20 @@
 'use strict';
 
-var sinon = require('sinon');
-var chai = require('chai');
-var sinonChai = require('sinon-chai');
-var should = chai.should();
-var expect = chai.expect;
-
-chai.use(sinonChai);
-
-var MockedSerialPort = require('../test_mocks/linux-hardware');
-var SerialPort = MockedSerialPort.SerialPort;
-var hardware = MockedSerialPort.hardware;
+var serialModule = require('../test_mocks/linux-hardware');
+var SerialPort = serialModule.SerialPort;
+var hardware = serialModule.hardware;
 var stream = require('readable-stream');
+var B = require('bluebird');
+
+function assertNextTick(act, assert) {
+  return new B(function(resolve, reject) {
+    act();
+    process.nextTick(function() {
+      assert();
+      resolve();
+    });
+  });
+}
 
 describe('SerialPort', function () {
   var sandbox;
@@ -30,76 +33,40 @@ describe('SerialPort', function () {
   });
 
   describe('Constructor', function () {
+    // We have to require the module directly in some of these tests
+    // because of https://github.com/felixge/node-sandboxed-module/issues/13
     it('should be a Duplex stream', function() {
-      var port = new SerialPort(existPath);
-      console.log(port instanceof stream.Duplex);
+      var port = new (require('../serialport').SerialPort)(existPath);
+
       port.should.be.an.instanceOf(stream.Duplex);
     });
 
-    it('should call the Duplex constructor', function() {
-      var spy = sinon.spy(stream, 'Duplex');
+    it('should call the Duplex constructor with options', function() {
+      var ports = require('../serialport');
+      sandbox.spy(stream, 'Duplex');
+      var options = {};
 
-      new SerialPort(existPath);
+      new ports.SerialPort(options);
 
-      spy.should.have.been.calledOnce;
-
-      spy.restore();
+      stream.Duplex.should.have.been.calledOnce;
+      stream.Duplex.should.have.been.calledWith(options);
     });
 
-    it('throws when path is invalid', function() {
-      [undefined, null, ''].forEach(function(path) {
-        expect(function() {
-          new SerialPort(path);
-        }).to.throw(/Invalid port/);
-      });
+    it('options should be optional', function() {
+      var ports = require('../serialport');
+      sandbox.spy(stream, 'Duplex');
+
+      new ports.SerialPort();
+
+      stream.Duplex.should.have.been.calledOnce;
+      stream.Duplex.firstCall.args[0].should.deep.equal({});
     });
 
-    it('opens the port immediately', function (done) {
-      var port = new SerialPort(existPath, function (err) {
-        expect(err).to.not.exist;
-        done();
-      });
-    });
-
-    it('emits an error on the factory when erroring without a callback', function (done) {
-      // finish the test on error
-      MockedSerialPort.once('error', function (err) {
-        expect(err).to.exist;
-        done();
-      });
-
-      var port = new SerialPort('/dev/johnJacobJingleheimerSchmidt');
-    });
-
-    it('emits an error on the serialport when explicit error handler present', function (done) {
-      var port = new SerialPort('/dev/johnJacobJingleheimerSchmidt');
-
-      port.once('error', function(err) {
-        chai.assert.isDefined(err);
-        done();
-      });
-    });
-
-    it('errors with invalid databits', function (done) {
-      var errorCallback = function (err) {
-        chai.assert.isDefined(err, 'err is not defined');
-        done();
-      };
-
-      var port = new SerialPort(existPath, { databits : 19 }, false, errorCallback);
-    });
-
-    it('allows optional options', function (done) {
-      var cb = function () {};
-      var port = new SerialPort(existPath, cb);
-      expect(typeof port.options).to.eq('object');
-      done();
-    });
-
+    
   });
 
   describe('reading data', function () {
-
+/*
     it('emits data events by default', function (done) {
       var testData = new Buffer('I am a really short string');
       var port = new SerialPort(existPath, function () {
@@ -123,43 +90,78 @@ describe('SerialPort', function () {
         hardware.emitData(existPath, testData);
       });
     });
-
+*/
   });
 
-  describe('#open', function () {
+  describe('open', function () {
+    var port;
+    beforeEach(function() {
+      port = new SerialPort();
+    });
 
-    it('passes the port to the bindings', function (done) {
-      var openSpy = sandbox.spy(MockedSerialPort.SerialPortBinding, 'open');
-      var port = new SerialPort(existPath, {}, false);
-      port.open(function (err) {
-        expect(err).to.not.exist;
-        expect(openSpy.calledWith(existPath));
-        done();
+    it('should emit error with no parameters', function() {
+      var spy = sinon.spy();
+      port.on('error', spy);
+
+      return assertNextTick(function() {
+        port.open();
+      }, function() {
+        spy.should.have.been.calledWith(sinon.match.instanceOf(Error));
       });
     });
 
-    it('calls back an error when opening an invalid port', function (done) {
-      var port = new SerialPort('/dev/unhappy', {}, false);
-      port.open(function (err) {
-        expect(err).to.exits;
-        done();
-      });
+    it('should use comname from options', function() {
+      sandbox.stub(serialModule.SerialPortBinding, 'open');
+
+      port.open({ comname: existPath });
+
+      var comname = serialModule.SerialPortBinding.open.firstCall.args[0];
+      comname.should.equal(existPath);
     });
 
-    it('emits error event when opening an invalid port', function(done) {
-      var port = new SerialPort('/dev/unhappy', {}, false);
-      var stub = sinon.stub();
-      
-      port.on('error', stub);
+    it('should support comname string as first parameter', function() {
+      sandbox.stub(serialModule.SerialPortBinding, 'open');
 
-      port.open();
+      port.open(existPath);
 
-      process.nextTick(function() {
-        stub.should.have.been.calledOnce;
-        done();
-      });
+      var comname = serialModule.SerialPortBinding.open.firstCall.args[0];
+      comname.should.equal(existPath);
     });
 
+    it('should use default options', function() {
+      var defaults = {
+        baudrate: 9600,
+        parity: 'none',
+        rtscts: false,
+        xon: false,
+        xoff: false,
+        xany: false,
+        rts: false,
+        cts: false,
+        dtr: false,
+        dts: false,
+        databits: 8,
+        stopbits: 1,
+      };
+      sandbox.stub(serialModule.SerialPortBinding, 'open');
+
+      port.open({ comname: existPath });
+
+      var callOpts = serialModule.SerialPortBinding.open.firstCall.args[1];
+      callOpts.should.contain(defaults);
+      expect(callOpts).to.contain(defaults);
+    });
+
+
+    it('should subscribe callback to open event', function() {
+      var spy = sinon.spy();
+
+      port.open(existPath, spy);
+
+      spy.should.have.been.calledOnce;
+    });
+    
+    /*
     it('emits data after being reopened', function (done) {
       var data = new Buffer('Howdy!');
       var port = new SerialPort(existPath, function () {
@@ -173,9 +175,11 @@ describe('SerialPort', function () {
         });
       });
     });
+    */
 
   });
 
+  /*
   describe('close', function () {
     it('fires a close event when it is closed', function (done) {
       var port = new SerialPort(existPath, function () {
@@ -212,6 +216,7 @@ describe('SerialPort', function () {
       });
     });
   });
+  */
 
 });
 

@@ -56,73 +56,57 @@ function verifyEnumOption(value, name, enums) {
   }
 }
 
-exports.open = exports.openPort = function openPort(path, options, callback) {
-  var s = new SerialPort(path, options, false);
-  s.open(callback);
-
-  return s;
+exports.open = exports.openPort = function openPort(options, cb) {
+  var port = new SerialPort(options);
+  port.open(options, cb);
+  return port;
 };
 
-function processOptions(options) {
-  options = (typeof options !== 'function') && options || {};
-  // Lowercase all of the option properties to make them case insensitive
-  options = _.transform(options, function(res, val, key) {
-    res[key.toLowerCase()] = val;
-  });
-
-  // Merge the default options
-  options = _.merge(options, defaultOptions);
-
-  // Validate inputs
-  verifyEnumOption(options.databits, 'databits', DATABITS);
-  verifyEnumOption(options.stopbits, 'stopbits', STOPBITS);
-  verifyEnumOption(options.parity, 'parity', PARITY);
-
-  if (options.flowcontrol) {
-    if (typeof options.flowcontrol === 'boolean') {
-      options.rtscts = true;
-    } else {
-      options.flowcontrol.forEach(function (flowControl) {
-        flowControl = flowControl.toLowerCase();
-        verifyEnumOption(flowControl, 'flowcontrol', FLOWCONTROLS);
-        options[flowControl] = true;
-      });
-    }
-  }
-
-  return options;
-}
-
-function SerialPort(path, options) {
+function SerialPort(options) {
   debug('construct');
 
-  stream.Duplex.call(this);
-
-  if (!path) {
-    throw new Error('Invalid port specified: ' + path);
+  if(typeof options !== 'object') {
+    options = {};
   }
 
-  this.path = path;
-  this.options = processOptions(options);
+  stream.Duplex.call(this, options);
+
   this.fd = null;
 }
 util.inherits(SerialPort, stream.Duplex);
 exports.SerialPort = SerialPort;
+
+
+// On first read, start up the poller
+SerialPort.prototype.read = function(n) {
+  if (!isWindows) {
+    this.serialPoller = new SerialPortBinding.SerialportPoller(this.fd, function (err) {
+      if (err) {
+        this.disconnected(err);
+      } else {
+        this._read();
+      }
+    });
+    this.serialPoller.start();
+  }
+
+  this.read = stream.Readable.prototype.read;
+};
 
 // Called by the Duplex Readable super class whenever data should
 // be read from the transport
 //
 // This function MUST NOT be called directly.
 // 
-// Should `push(data)` where `data.length <= size`
-SerialPort.prototype._read = function(size) {
+// Should `push(data)` where `data.length <= n`
+SerialPort.prototype._read = function(n) {
   if(this._connecting || !this.isOpen()) {
     debug('_read after open');
     // If we're not open, start reading once we are
     // Readable logic will not call this again until previous read is fulfilled
-    this.once('open', this._read.bind(this, size));
+    this.once('open', this._read.bind(this, n));
   } else {
-    var buf = new Buffer(size);
+    var buf = new Buffer(n);
     fs.read(this.fd, buf, 0, buf.length, null, function (err, bytesRead) {
       // Push the number of bytes read into the stream
       if(this.push(buf.slice(bytesRead))) {
@@ -158,40 +142,63 @@ SerialPort.prototype._write = function (chunk, encoding, callback) {
   }
 };
 
-SerialPort.prototype.open = function (callback) {
-  this._opening = true;
-  
-  if(typeof callback === 'function') {
-    this.once('open', callback);
+
+function processOptions(options) {
+  // Lowercase all of the option properties to make them case insensitive
+  options = _.transform(options, function(res, val, key) {
+    res[key.toLowerCase()] = val;
+  });
+
+  // Merge the default options
+  options = _.merge(options, defaultOptions);
+
+  // Validate inputs
+  verifyEnumOption(options.databits, 'databits', DATABITS);
+  verifyEnumOption(options.stopbits, 'stopbits', STOPBITS);
+  verifyEnumOption(options.parity, 'parity', PARITY);
+
+  if (options.flowcontrol) {
+    if (typeof options.flowcontrol === 'boolean') {
+      options.rtscts = true;
+    } else {
+      options.flowcontrol.forEach(function (flowControl) {
+        flowControl = flowControl.toLowerCase();
+        verifyEnumOption(flowControl, 'flowcontrol', FLOWCONTROLS);
+        options[flowControl] = true;
+      });
+    }
   }
 
-  SerialPortBinding.open(this.path, this.options, function (err, fd) {
+  return options;
+}
+
+SerialPort.prototype.open = function(options, cb) {
+  // Allow specifying comname as first param
+  if(typeof(options) !== 'object') {
+    options = { comname: options };
+  }
+
+  this.options = processOptions(options);
+  
+  if(typeof cb === 'function') {
+    this.once('open', cb);
+  }
+
+  this._opening = true;
+  SerialPortBinding.open(this.options.comname, this.options, function (err, fd) {
     this._opening = false;
 
     if (err) {
       // When opened on the same tick as creation
-      // event handlers will not be attached yet
+      // event handlers at call-site will not be attached yet
       process.nextTick(function() {
         this.emit('error', err);
       }.bind(this));
       return;
+    } else {
+      this.fd = fd;
+      this.emit('open');
     }
-
-    this.fd = fd;
-
-    if (!isWindows) {
-      this.paused = false;
-      this.serialPoller = new SerialPortBinding.SerialportPoller(this.fd, function (err) {
-        if (!err) {
-          this._read();
-        } else {
-          this.disconnected(err);
-        }
-      });
-      this.serialPoller.start();
-    }
-
-    this.emit('open');
   }.bind(this));
 };
 
@@ -480,12 +487,11 @@ function listUnix() {
 
 // Patch in this javascript /dev list impl for Unix
 if(!isWindows && process.platform !== 'darwin') {
-  SerialPortBinding.list = listUnix;
+  exports.list = listUnix;
 } else {
   // Promisify the native binding
-  SerialPortBinding.list = B.promisify(SerialPortBinding.list, SerialPortBinding);
+  exports.list = B.promisify(SerialPortBinding.list, SerialPortBinding);
 }
 
 exports.SerialPortBinding = SerialPortBinding;
-exports.list = SerialPortBinding.list;
 exports.transforms = require('./transforms');

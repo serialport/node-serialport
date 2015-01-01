@@ -2,6 +2,8 @@
 
 'use strict';
 
+var _ = require('lodash');
+
 var mockSerialportPoller = function (hardware) {
   var Poller = function (path, cb) {
     this.port = hardware.ports[path];
@@ -38,10 +40,12 @@ var Hardware = function () {
 
 Hardware.prototype.reset = function () {
   this.ports = {};
+
+  this.listError = false;
 };
 
 Hardware.prototype.createPort = function (path) {
-  this.ports[path] = {
+  return this.ports[path] = {
     data: new Buffer(0),
     lastWrite: null,
     open: false,
@@ -56,6 +60,10 @@ Hardware.prototype.createPort = function (path) {
       productId: ''
     }
   };
+};
+
+Hardware.prototype.getPortInfo = function() {
+  return _.pluck(this.ports, 'info');
 };
 
 Hardware.prototype.emitData = function (path, data) {
@@ -76,11 +84,13 @@ Hardware.prototype.disconnect = function (path) {
 };
 
 Hardware.prototype.list = function (cb) {
-  var ports = this.ports;
-  var info = Object.keys(ports).map(function (path) {
-    return ports[path].info;
-  });
-  cb && cb(info);
+  if(typeof cb === 'function') {
+    if(this.listError) {
+      cb(this.listError);
+    } else {
+      cb(null, this.getPortInfo());
+    }
+  }
 };
 
 Hardware.prototype.open = function (path, opt, cb) {

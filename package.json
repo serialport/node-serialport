@@ -58,6 +58,7 @@
   ],
   "devDependencies": {
     "chai": "*",
+    "chai-as-promised": "^4.1.1",
     "grunt": "*",
     "grunt-cli": "*",
     "grunt-contrib-jshint": "*",
@@ -66,6 +67,7 @@
     "mocha": "*",
     "sandboxed-module": "~0.3.0",
     "sinon": "*",
+    "sinon-as-promised": "^2.0.3",
     "sinon-chai": "*"
   },
   "engines": {

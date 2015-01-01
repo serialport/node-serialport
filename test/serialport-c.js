@@ -1,9 +1,5 @@
 'use strict';
 
-var sinon = require('sinon');
-var chai = require('chai');
-var expect = chai.expect;
-
 describe('SerialPort', function () {
   var sandbox;
 
@@ -15,7 +11,7 @@ describe('SerialPort', function () {
     sandbox.restore();
   });
 
-
+  /*
   describe('Initialization', function () {
     if (process.version.indexOf('v0.11.') ===0) {
       it('does not currently work due to an issue with node unstable release, works in master.', function (done) {
@@ -31,5 +27,6 @@ describe('SerialPort', function () {
       });
     }
   });
+  */
 
 });

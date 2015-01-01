@@ -1,42 +1,11 @@
 {
-  // Whether the scan should stop on first error.
-  "passfail": false,
-  // Maximum errors before stopping.
-  "maxerr": 100,
-
-
-  // Predefined globals
-
-  // Whether the standard browser globals should be predefined.
-  "browser": false,
-  // Whether the Node.js environment globals should be predefined.
   "node": true,
-  // Whether the Rhino environment globals should be predefined.
-  "rhino": false,
-  // Whether CouchDB globals should be predefined.
-  "couch": false,
-  // Whether the Windows Scripting Host environment globals should be predefined.
-  "wsh": false,
-
-  // Whether jQuery globals should be predefined.
-  "jquery": false,
-  // Whether Prototype and Scriptaculous globals should be predefined.
-  "prototypejs": false,
-  // Whether MooTools globals should be predefined.
-  "mootools": false,
-  // Whether Dojo Toolkit globals should be predefined.
-  "dojo": false,
-
-  // Custom predefined globals.
-  "predef": [],
-
   // Development
 
   // Whether debugger statements should be allowed.
   "debug": false,
   // Whether logging globals should be predefined (console, alert, etc.).
   "devel": false,
-
 
   // ECMAScript 5
 
@@ -113,13 +82,13 @@
   // Whether only function scope should be used for scope tests.
   "funcscope": false,
   // Whether es.next specific syntax should be allowed.
-  "esnext": false,
+  "esnext": true,
 
 
   // Style preferences
 
   // Whether constructor names must be capitalized.
-  "newcap": false,
+  "newcap": true,
   // Whether empty blocks should be forbidden.
   "noempty": false,
   // Whether using `new` for side-effects should be forbidden.
