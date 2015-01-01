@@ -7,6 +7,7 @@
 // to regular build from source.
 
 var path = require('path'),
+    os = require('os'),
     B = require('bluebird'),
     binary = require('node-pre-gyp'),
     PACKAGE_JSON = path.join(__dirname, 'package.json'),
@@ -24,7 +25,7 @@ var parsers = require('./parsers'),
 
 var bindable = Function.bind.bind(Function.bind);
 
-var isWindows = process.platform === 'win32';
+var isWindows = os.platform() === 'win32';
 
 //
 //  VALIDATION ARRAYS
@@ -501,7 +502,7 @@ function listUnix() {
 }
 
 // Patch in this javascript /dev list impl for Unix
-if(!isWindows && process.platform !== 'darwin') {
+if(!isWindows && os.platform() !== 'darwin') {
   exports.list = listUnix;
 } else {
   // Promisify the native binding

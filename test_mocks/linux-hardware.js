@@ -156,27 +156,16 @@ var hardware = new Hardware();
 hardware.mockBinding['@noCallThru'] = true;
 
 var serialPort = proxyquire('../serialport', {
-    fs: {
-      read: hardware.fakeRead.bind(hardware)
-    },
-    'node-pre-gyp': {
-      find: function() { return './serialbinding'; }
-    },
-    './serialbinding': hardware.mockBinding
-});
-
-/*global before,after*/
-var origValues;
-before(function() {
-  origValues = {
-    platform: process.platform
-  };
-
-  process.platform = 'darwin';
-});
-
-after(function() {
-  process.platform = origValues.platform;
+  os: {
+    platform: function() { return 'darwin'; }
+  },
+  fs: {
+    read: hardware.fakeRead.bind(hardware)
+  },
+  'node-pre-gyp': {
+    find: function() { return './serialbinding'; }
+  },
+  './serialbinding': hardware.mockBinding
 });
 
 serialPort.hardware = hardware;
