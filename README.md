@@ -20,7 +20,7 @@ For all discussions, designs, and clarifications, we recommend you join our Gitt
 
 
 
-Version: 1.4.9 - Released December 10, 2014
+Version: 1.4.10 - Released December 31, 2014
 
 *****
 
@@ -44,6 +44,7 @@ This library is admittedly a base level toolkit for building amazing things with
 * [Robotic JavaScript](http://jsconf.eu/2010/speaker/livingroombindmotion_function.html) - The first live presentation of the node-serialport code set as presented at JSConf EU 2010.
 * [devicestack](https://github.com/adrai/devicestack) - This module helps you to represent a device and its protocol.
 * [reflecta](https://github.com/JayBeavers/Reflecta) A communication protocol that combines Arduino Libraries and NodeJS into an integrated system.
+* [rc4pt-node](https://github.com/comsolid/rc4pt-node) - Control Popcorntime with an Infrared receiver and Arduino.
 
 For getting started with node-serialport, we recommend you begin with the following articles:
 
