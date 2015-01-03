@@ -15,8 +15,7 @@ var path = require('path'),
     debug = require('debug')('serialport'),
     SerialPortBinding = require(binding_path);
 
-var parsers = require('./parsers'),
-    EventEmitter = require('events').EventEmitter,
+var EventEmitter = require('events').EventEmitter,
     _ = require('lodash'),
     util = require('util'),
     fs = B.promisifyAll(require('fs')),
