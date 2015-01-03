@@ -48,6 +48,10 @@ var defaultOptions = {
   dts: false,
   databits: 8,
   stopbits: 1,
+  platformOptions: {
+    vmin: 1,
+    vtime: 0
+  }
 };
 
 function verifyEnumOption(value, name, enums) {
@@ -81,16 +85,6 @@ exports.SerialPort = SerialPort;
 
 // On first read, start up the poller
 SerialPort.prototype.read = function(n) {
-  if (!isWindows) {
-    this.serialPoller = new SerialPortBinding.SerialportPoller(this.fd, function (err) {
-      if (err) {
-        this.disconnected(err);
-      } else {
-        this._read();
-      }
-    });
-    this.serialPoller.start();
-  }
 
   this.read = stream.Readable.prototype.read;
 };
@@ -200,10 +194,12 @@ SerialPort.prototype.open = function(options, cb) {
   }
 
   this._opening = true;
+  debug('opening port');
   SerialPortBinding.open(this.options.comname, this.options, function (err, fd) {
     this._opening = false;
 
     if (err) {
+      debug('native open fail');
       // When opened on the same tick as creation
       // event handlers at call-site will not be attached yet
       process.nextTick(function() {
@@ -211,6 +207,19 @@ SerialPort.prototype.open = function(options, cb) {
       }.bind(this));
       return;
     } else {
+      debug('native open succeed');
+      if (!isWindows) {
+        debug('starting serial poller');
+        this.serialPoller = new SerialPortBinding.SerialportPoller(fd, function (err) {
+          if (err) {
+            debug('serial poller err', err);
+          } else {
+            debug('serial poller started');
+          }
+        });
+        this.serialPoller.start();
+      }
+
       this.fd = fd;
       this.emit('open');
     }
