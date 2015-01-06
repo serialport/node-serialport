@@ -2,29 +2,27 @@
 
 // Copyright 2011 Chris Williams <chris@iterativedesigns.com>
 
-// Require serialport binding from pre-compiled binaries using
-// node-pre-gyp, if something fails or package not available fallback
-// to regular build from source.
-
 var path = require('path'),
     os = require('os'),
     B = require('bluebird'),
-    binary = require('node-pre-gyp'),
-    PACKAGE_JSON = path.join(__dirname, 'package.json'),
-    binding_path = binary.find(path.resolve(PACKAGE_JSON)),
     debug = require('debug')('serialport'),
-    SerialPortBinding = require(binding_path);
-
-var EventEmitter = require('events').EventEmitter,
+    EventEmitter = require('events').EventEmitter,
     _ = require('lodash'),
     util = require('util'),
     fs = B.promisifyAll(require('fs')),
-    stream = require('readable-stream'),
-    NOOP = function() {};
+    stream = require('readable-stream');
 
-var bindable = Function.bind.bind(Function.bind);
+// Require serialport binding from pre-compiled binaries using
+// node-pre-gyp, if something fails or package not available fallback
+// to regular build from source.
+var binary = require('node-pre-gyp'),
+    PACKAGE_JSON = path.join(__dirname, 'package.json'),
+    binding_path = binary.find(path.resolve(PACKAGE_JSON)),
+    SerialPortBinding = require(binding_path);
 
-var isWindows = os.platform() === 'win32';
+var NOOP = function() {},
+    bindable = Function.bind.bind(Function.bind),
+    isWindows = os.platform() === 'win32';
 
 //
 //  VALIDATION ARRAYS
@@ -82,13 +80,6 @@ function SerialPort(options) {
 util.inherits(SerialPort, stream.Duplex);
 exports.SerialPort = SerialPort;
 
-
-// On first read, start up the poller
-SerialPort.prototype.read = function(n) {
-
-  this.read = stream.Readable.prototype.read;
-};
-
 // Called by the Duplex Readable super class whenever data should
 // be read from the transport
 //
@@ -97,19 +88,13 @@ SerialPort.prototype.read = function(n) {
 // Should `push(data)` where `data.length <= n`
 SerialPort.prototype._read = function(n) {
   if(this._connecting || !this.isOpen()) {
-    debug('_read after open');
+    debug('queue _read after open');
     // If we're not open, start reading once we are
     // Readable logic will not call this again until previous read is fulfilled
     this.once('open', this._read.bind(this, n));
   } else {
-    var buf = new Buffer(n);
-    fs.read(this.fd, buf, 0, buf.length, null, function (err, bytesRead) {
-      // Push the number of bytes read into the stream
-      if(this.push(buf.slice(bytesRead))) {
-        // If push returns true; play it again, Sam.
-        this._read();
-      }
-    }.bind(this));
+    debug('_read', n);
+    this._source.readStart();
   }
 };
 
@@ -119,12 +104,12 @@ SerialPort.prototype._read = function(n) {
 // This function MUST NOT be called directly.
 // 
 SerialPort.prototype._write = function (chunk, encoding, callback) {
-  // If we aren't open yet, complet this write later
+  // If we aren't open yet, complete this write later
   // The Writable logic will buffer up any more writes while
   // waiting for this one to be done.
   if(this._connecting) {
     this.once('open', function() {
-      debug('_write after open');
+      debug('queue _write after open');
       this._write.apply(this, arguments);
     });
   } else {
@@ -181,7 +166,7 @@ SerialPort.prototype.open = function(options, cb) {
   }
 
   try {
-  this.options = processOptions(options);
+    this.options = processOptions(options);
   } catch(err) {
     process.nextTick(function() {
       this.emit('error', err);
@@ -208,17 +193,18 @@ SerialPort.prototype.open = function(options, cb) {
       return;
     } else {
       debug('native open succeed');
-      if (!isWindows) {
-        debug('starting serial poller');
-        this.serialPoller = new SerialPortBinding.SerialportPoller(fd, function (err) {
-          if (err) {
-            debug('serial poller err', err);
-          } else {
-            debug('serial poller started');
-          }
-        });
-        this.serialPoller.start();
+      if (isWindows) {
+        this._source = new WindowsSource(fd);
+        options.dataCallback = this._source._dataCallback;
+      } else {
+        this._source = new UnixSource(fd);
       }
+
+      this._source.ondata = function(buf) {
+        if(!this.push(buf)) {
+          this._source.readStop();
+        }
+      }.bind(this);
 
       this.fd = fd;
       this.emit('open');
@@ -226,94 +212,9 @@ SerialPort.prototype.open = function(options, cb) {
   }.bind(this));
 };
 
-
 SerialPort.prototype.isOpen = function() {
   return !!this.fd;
 };
-
-if (!isWindows) {
-  /*
-  SerialPort.prototype._read = function () {
-    var self = this;
-
-    // console.log(">>READ");
-    if (!self.readable || self.paused || self.reading) {
-      return;
-    }
-
-    self.reading = true;
-
-    if (!self.pool || self.pool.length - self.pool.used < kMinPoolSpace) {
-      // discard the old pool. Can't add to the free list because
-      // users might have refernces to slices on it.
-      self.pool = null;
-
-      // alloc new pool
-      self.pool = new Buffer(kPoolSize);
-      self.pool.used = 0;
-    }
-
-    // Grab another reference to the pool in the case that while we're in the
-    // thread pool another read() finishes up the pool, and allocates a new
-    // one.
-    var toRead = Math.min(self.pool.length - self.pool.used, ~~self.bufferSize);
-    var start = self.pool.used;
-
-    function afterRead(err, bytesRead, readPool, bytesRequested) {
-      self.reading = false;
-      if (err) {
-        if (err.code && err.code === 'EAGAIN') {
-          if (self.fd >= 0) {
-            self.serialPoller.start();
-          }
-        } else if (err.code && (err.code === 'EBADF' || err.code === 'ENXIO' || (err.errno === -1 || err.code === 'UNKNOWN'))) { // handle edge case were mac/unix doesn't clearly know the error.
-          self.disconnected(err);
-        } else {
-          self.fd = null;
-          self.emit('error', err);
-          self.readable = false;
-        }
-      } else {
-        // Since we will often not read the number of bytes requested,
-        // let's mark the ones we didn't need as available again.
-        self.pool.used -= bytesRequested - bytesRead;
-
-        if (bytesRead === 0) {
-          if (self.fd >= 0) {
-            self.serialPoller.start();
-          }
-        } else {
-          var b = self.pool.slice(start, start + bytesRead);
-
-          // do not emit events if the stream is paused
-          if (self.paused) {
-            self.buffer = Buffer.concat([self.buffer, b]);
-            return;
-          } else {
-            self._emitData(b);
-          }
-
-          // do not emit events anymore after we declared the stream unreadable
-          if (!self.readable) {
-            return;
-          }
-          self._read();
-        }
-      }
-
-    }
-
-    fs.read(self.fd, self.pool, self.pool.used, toRead, null, function (err, bytesRead) {
-      var readPool = self.pool;
-      var bytesRequested = toRead;
-      afterRead(err, bytesRead, readPool, bytesRequested);
-    });
-
-    self.pool.used += toRead;
-  };
-*/
-} // if !'win32'
-
 
 SerialPort.prototype.disconnected = function (err) {
   // send notification of disconnect
@@ -491,6 +392,148 @@ SerialPort.prototype.drain = function (callback) {
     }
   }
 };
+
+function BaseSource() {
+  this.buffer = new Buffer(16384);
+  this.totalRead = 0;
+  this.totalSent = 0;
+  this.reading = false;
+}
+
+/**
+ * Ensures the buffer isn't full
+ */
+BaseSource.prototype._ensureBuffer = function() {
+  debug('buffer freespace', this.buffer.length - this.totalRead);
+  // Cycle the buffer if it fills up
+  if(this.totalRead === this.buffer.length) {
+    debug('buffer full');
+    // If the buffer is more than half-full of unsent data, double the current buffer
+    // otherwise keep the same size
+    var watermark = this.totalRead - this.totalSent >= this.buffer.length / 2 ? this.buffer.length * 2 : this.buffer.length;
+    var oldbuf = this.buffer;
+    this.buffer = new Buffer(watermark);
+    debug('new buffer length', watermark);
+
+    // If we have unsent data, copy it from the old buffer
+    if(this.totalSent < this.totalRead) {
+      debug('copying leftover data to new buffer');
+      oldbuf.copy(this.buffer, this.totalSent, this.totalSent + this.totalRead);
+      this.totalRead = this.totalRead - this.totalSent;
+      this.totalSent = 0;
+    } else {
+      this.totalRead = 0;
+      this.totalSent = 0;
+    }
+  }
+};
+
+/**
+ * Dummy source object for windows
+ */
+function WindowsSource(options) {
+  BaseSource.call(this);
+
+  // The windows native code uses this to send serial
+  // data whenever it arrives
+  options.dataCallback = this._dataCallback;
+}
+util.inherits(WindowsSource, BaseSource);
+
+/**
+ * Callback to send to the native code to get stream data
+ */
+WindowsSource.prototype._dataCallback = function(data) {
+  if(this.ondata && this.reading) {
+    // If we're reading, send the data
+    // Send any unsent buffered data first
+    if(this.totalRead > this.totalSent) {
+      var buffered = this.buffer.slice(this.totalSent, this.totalSent + this.totalRead);
+      this.ondata(Buffer.concat([buffered, data]));
+      this.totalSent = this.totalRead;
+    } else {
+      // If we're reading, no sense in creating another buffer
+      this.ondata(data);
+    }
+  } else {
+    // If we're not reading, buffer the data
+    data.copy(this.buffer, data.length);
+    this.totalRead += data.length;
+  }
+  
+  this._ensureBuffer();
+};
+
+WindowsSource.prototype.startRead = function() {
+  this.reading = true;
+};
+
+WindowsSource.prototype.endRead = function() {
+  this.reading = false;
+};
+
+/**
+ * Object that represents a source of data coming from a Unix file descriptor
+ */
+function UnixSource(fd) {
+  BaseSource.call(this);
+
+  this.fd = fd;
+
+  debug('creating serial poller');
+  this.serialPoller = new SerialPortBinding.SerialportPoller(fd, function (err) {
+    if (err) {
+      debug('serial poller err', err);
+    } else {
+      debug('serial poller data available');
+      this.dataAvailable();
+    }
+  }.bind(this));
+}
+util.inherits(UnixSource, BaseSource);
+
+/**
+ * Callback to read data when it is available from the serial port
+ */
+UnixSource.prototype.dataAvailable = function() {
+    debug('data available');
+    fs.read(this.fd, this.buffer, this.totalRead, this.buffer.length - this.totalRead, null, function (err, bytesRead) {
+      if(err) {
+        debug('fd read failed', err);
+      } else {
+        debug('fd read succeed', bytesRead);
+        this.totalRead += bytesRead;
+        if(this.ondata && this.reading) {
+          this.ondata(this.buffer.slice(this.totalSent, this.totalSent + this.totalRead));
+          this.totalSent = this.totalRead;
+        }
+        
+        this._ensureBuffer();
+      }
+
+      if(this.reading) {
+        this.serialPoller.start();
+      }
+    }.bind(this));
+};
+
+/**
+ * Begins data flowing from the serial port
+ */
+UnixSource.prototype.readStart = function() {
+  if(!this.reading) {
+    this.reading = true;
+    this.serialPoller.start();
+  }
+};
+
+/**
+ * Ends data flowing from the serial port
+ */
+UnixSource.prototype.readStop = function() {
+  this.reading = false;
+};
+
 
 function listUnix() {
   var dirName = '/dev/serial/by-id';
