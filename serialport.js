@@ -34,7 +34,7 @@ var SETS = ['rts', 'cts', 'dtr', 'dts'];
 
 // The default options, can be overwritten in the 'SerialPort' constructor
 var defaultOptions = {
-  baudRate: 9600,
+  baudrate: 9600,
   parity: 'none',
   rtscts: false,
   xon: false,
@@ -44,10 +44,10 @@ var defaultOptions = {
   cts: false,
   dtr: false,
   dts: false,
-  dataBits: 8,
-  stopBits: 1,
-  bufferSize: 255,
-  platformOptions: {
+  databits: 8,
+  stopbits: 1,
+  buffersize: 255,
+  platformoptions: {
     vmin: 1,
     vtime: 0
   }
@@ -205,7 +205,7 @@ SerialPort.prototype.open = function(options, cb) {
       debug('native open succeed');
       if (isWindows) {
         this._source = new WindowsSource(fd);
-        options.dataCallback = this._source._dataCallback;
+        options.datacallback = this._source._dataCallback;
       } else {
         this._source = new UnixSource(fd);
       }
@@ -414,7 +414,7 @@ SerialPort.prototype.drain = function (callback) {
 function WindowsSource(options) {
   // The windows native code uses this to send serial
   // data whenever it arrives
-  options.dataCallback = function(data) {
+  options.datacallback = function(data) {
     // No buffering here, the readable superclass should handle that
     if(this.ondata) {
       this.ondata(data);
