@@ -51,7 +51,8 @@
     "node-pre-gyp": "0.5.x",
     "optimist": "~0.6.1",
     "readable-stream": "~1.0.0",
-    "sf": "0.1.7"
+    "sf": "0.1.7",
+    "through2": "^0.6.3"
   },
   "bundledDependencies": [
     "node-pre-gyp"
