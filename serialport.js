@@ -448,7 +448,7 @@ WindowsSource.prototype._dataCallback = function(data) {
     // If we're reading, send the data
     // Send any unsent buffered data first
     if(this.totalRead > this.totalSent) {
-      var buffered = this.buffer.slice(this.totalSent, this.totalSent + this.totalRead);
+      var buffered = this.buffer.slice(this.totalSent, this.totalRead);
       this.ondata(Buffer.concat([buffered, data]));
       this.totalSent = this.totalRead;
     } else {
@@ -504,7 +504,7 @@ UnixSource.prototype.dataAvailable = function() {
         debug('fd read succeed', bytesRead);
         this.totalRead += bytesRead;
         if(this.ondata && this.reading) {
-          this.ondata(this.buffer.slice(this.totalSent, this.totalSent + this.totalRead));
+          this.ondata(this.buffer.slice(this.totalSent, this.totalRead));
           this.totalSent = this.totalRead;
         }
         
