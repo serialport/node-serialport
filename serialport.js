@@ -550,4 +550,3 @@ if(!isWindows && os.platform() !== 'darwin') {
 }
 
 exports.SerialPortBinding = SerialPortBinding;
-exports.transforms = require('./transforms');
