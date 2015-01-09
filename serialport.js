@@ -506,7 +506,7 @@ function SerialPortFactory() {
       callback(null, port);
     }
 
-    fs.readdir("/dev/serial/by-id", function (err, files) {
+    fs.readdir("/dev/serial/by-path", function (err, files) {
       if (err) {
         // if this directory is not found this could just be because it's not plugged in
         if (err.errno === 34) {
@@ -521,7 +521,7 @@ function SerialPortFactory() {
         return;
       }
 
-      var dirName = "/dev/serial/by-id";
+      var dirName = "/dev/serial/by-path";
       async.map(files, function (file, callback) {
         var fileName = path.join(dirName, file);
         fs.readlink(fileName, function (err, link) {
