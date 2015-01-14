@@ -92,7 +92,7 @@ SerialPort.prototype.read = function(n) {
 // Should `push(data)` where `data.length <= n`
 //
 // This function MUST NOT be called directly.
-// 
+//
 SerialPort.prototype._read = function(n) {
   if(!this.isOpen()) {
     debug('queue _read after open');
@@ -109,7 +109,7 @@ SerialPort.prototype._read = function(n) {
 // be written to the transport
 //
 // This function MUST NOT be called directly.
-// 
+//
 SerialPort.prototype._write = function (chunk, encoding, callback) {
   // If we aren't open yet, complete this write later
   // The Writable logic will buffer up any more writes while
@@ -184,11 +184,18 @@ SerialPort.prototype.open = function(options, cb) {
     }.bind(this));
     return;
   }
-  
+
   if(_.isFunction(cb)) {
     this.once('open', cb);
   }
 
+  // The windows native code uses this to send serial
+  // data whenever it arrives
+  this.options.datacallback = function(data) {
+    debug('native data!');
+    if(this._source && this._source.ondata)
+      this._source.ondata(data);
+  }.bind(this);
   this._opening = true;
   debug('opening port');
   SerialPortBinding.open(this.options.comname, this.options, function (err, fd) {
@@ -204,8 +211,7 @@ SerialPort.prototype.open = function(options, cb) {
     } else {
       debug('native open succeed');
       if (isWindows) {
-        this._source = new WindowsSource(fd);
-        options.datacallback = this._source._dataCallback;
+        this._source = new WindowsSource();
       } else {
         this._source = new UnixSource(fd);
       }
@@ -229,204 +235,18 @@ SerialPort.prototype.isOpen = function() {
   return !!this.fd;
 };
 
-/*
-SerialPort.prototype.disconnected = function (err) {
-  // send notification of disconnect
-  if (this.options.disconnectedcallback) {
-    this.options.disconnectedcallback.call(this, err);
-  } else {
-    this.emit('disconnect', err);
-  }
-  this.paused = true;
-  this.closing = true;
-
-  this.emit('close');
-
-  try {
-    SerialPortBinding.close(this.fd, function (err) {
-      if (err) {
-        console.log('Disconnect completed with error:' + err);
-      } else {
-        console.log('Disconnect completed');
-      }
-    });
-  } catch (e) {
-    console.log('Disconnect failed with exception', e);
-  }
-
-  this.removeAllListeners();
-  this.closing = false;
-  this.fd = 0;
-
-  if (!isWindows) {
-    this.readable = false;
-    this.serialPoller.close();
-  }
-
-};
-
-
-SerialPort.prototype.end = SerialPort.prototype.close = function (callback) {
-  var self = this;
-
-  var fd = self.fd;
-
-  if (self.closing) {
-    return;
-  }
-  if (!fd) {
-    var err = new Error('Serialport not open.');
-    if (callback) {
-      callback(err);
-    } else {
-      // console.log("sp not open");
-      self.emit('error', err);
-    }
-    return;
-  }
-
-  self.closing = true;
-
-  // Stop polling before closing the port.
-  if (!isWindows) {
-    self.readable = false;
-    //self.serialPoller.close();
-  }
-
-  try {
-    SerialPortBinding.close(fd, function (err) {
-
-      if (err) {
-        if (callback) {
-          callback(err);
-        } else {
-          // console.log("doclose");
-          self.emit('error', err);
-        }
-        return;
-      }
-
-      self.emit('close');
-      self.removeAllListeners();
-      self.closing = false;
-      self.fd = 0;
-
-      if (callback) {
-        callback();
-      }
-    });
-  } catch (ex) {
-    self.closing = false;
-    if (callback) {
-      callback(ex);
-    } else {
-      self.emit('error', ex);
-    }
-  }
-};
-
-SerialPort.prototype.flush = function (callback) {
-  var self = this;
-  var fd = self.fd;
-
-  if (!fd) {
-    var err = new Error('Serialport not open.');
-    if (callback) {
-      callback(err);
-    } else {
-      self.emit('error', err);
-    }
-    return;
-  }
-
-  SerialPortBinding.flush(fd, function (err, result) {
-    if (err) {
-      if (callback) {
-        callback(err, result);
-      } else {
-        self.emit('error', err);
-      }
-    } else {
-      if (callback) {
-        callback(err, result);
-      }
-    }
-  });
-};
-
-SerialPort.prototype.set = function (options, callback) {
-  var self = this;
-
-  options = (!_.isFunction(options)) && options || {};
-  options = _.merge(options, defaultOptions);
-
-  if (this.isOpen()) {
-    SerialPortBinding.set(this.fd, options, function (err, result) {
-      if (err) {
-        if (callback) {
-          callback(err, result);
-        } else {
-          self.emit('error', err);
-        }
-      } else {
-        callback(err, result);
-      }
-    });
-  } else {
-    var err = new Error('Serialport not open.');
-    if (callback) {
-      callback(err);
-    } else {
-      this.emit('error', err);
-    }
-  }
-};
-
-SerialPort.prototype.drain = function (callback) {
-  if (this.isOpen()) {
-    SerialPortBinding.drain(this.fd, function (err, result) {
-      if (err) {
-        if (callback) {
-          callback(err, result);
-        } else {
-          this.emit('error', err);
-        }
-      } else {
-        if (callback) {
-          callback(err, result);
-        }
-      }
-    }.bind(this));
-  } else {
-    var err = new Error('Serialport not open.');
-    if (callback) {
-      callback(err);
-    } else {
-      this.emit('error', err);
-    }
-  }
-};
-*/
 
 /**
  * Dummy source object for windows
  */
 function WindowsSource(options) {
-  // The windows native code uses this to send serial
-  // data whenever it arrives
-  options.datacallback = function(data) {
-    // No buffering here, the readable superclass should handle that
-    if(this.ondata) {
-      this.ondata(data);
-    }
-  }.bind(this);
 }
 
-WindowsSource.prototype.startRead = function() {
+WindowsSource.prototype.readStart = function() {
   this.reading = true;
 };
 
-WindowsSource.prototype.endRead = function() {
+WindowsSource.prototype.readStop = function() {
   this.reading = false;
 };
 
@@ -453,7 +273,7 @@ function UnixSource(fd) {
 
 /**
  * Callback to read data when it is available from the serial port
- * 
+ *
  * We use a data buffer here so that we're not wasting buffer allocations for small reads
  */
 UnixSource.prototype._dataAvailable = function() {
@@ -468,7 +288,7 @@ UnixSource.prototype._dataAvailable = function() {
           this.ondata(this.buffer.slice(this.totalSent, this.totalRead));
           this.totalSent = this.totalRead;
         }
-        
+
         this._ensureBuffer();
       }
 
