@@ -1,7 +1,28 @@
 #!/usr/bin/env node
+'use strict';
 
-var SerialPort = require('../').SerialPort;
-var optimist = require('optimist');
+var ports = require('../'),
+  optimist = require('optimist'),
+  through2 = require('through2');
+
+var localEchoStream = through2(function(chunk, enc, cb) {
+  if (chunk[0] === 0x0d) {
+    this.push('\n');
+  } else {
+    this.push(chunk);
+  }
+  cb();
+});
+
+var closeDetectStream = through2(function(chunk, enc, cb) {
+  if (chunk[0] === 0x03) {
+    port.close();
+    process.exit(0);
+  }
+
+  this.push(chunk);
+  cb();
+});
 
 var args = optimist
   .alias('h', 'help')
@@ -38,43 +59,32 @@ if (args.help) {
 }
 
 if (!args.portname) {
-  console.error("Serial port name is required.");
+  console.error('Serial port name is required.');
   return process.exit(-1);
 }
 
-process.stdin.resume();
 process.stdin.setRawMode(true);
-process.stdin.on('data', function (s) {
-  if (s[0] === 0x03) {
-    port.close();
-    process.exit(0);
-  }
-  if (args.localecho) {
-    if (s[0] === 0x0d) {
-      process.stdout.write('\n');
-    } else {
-      process.stdout.write(s);
-    }
-  }
-  port.write(s, function (err) {
-    if (err) {
-      console.log(err);
-    }
-  });
-});
 
 var openOptions = {
+  comName: args.portname,
   baudRate: args.baud,
   dataBits: args.databits,
   parity: args.parity,
   stopBits: args.stopbits
 };
-var port = new SerialPort(args.portname, openOptions);
-
-port.on('data', function (data) {
-  process.stdout.write(data.toString());
-});
+var port = ports.open(openOptions);
 
 port.on('error', function (err) {
   console.log(err);
 });
+
+var input = process.stdin
+  .pipe(closeDetectStream);
+
+if(args.localecho) {
+  input = input.pipe(localEchoStream);
+}
+
+input
+  .pipe(port)
+  .pipe(process.stdout);
