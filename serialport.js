@@ -193,8 +193,9 @@ SerialPort.prototype.open = function(options, cb) {
   // data whenever it arrives
   this.options.datacallback = function(data) {
     debug('native data!');
-    if(this._source && this._source.ondata)
+    if(this._source && this._source.ondata) {
       this._source.ondata(data);
+    }
   }.bind(this);
   this._opening = true;
   debug('opening port');
