@@ -66,6 +66,34 @@ describe('SerialPort', function () {
       var port = new SerialPort('/dev/exists', { databits : 19 }, false, errorCallback);
     });
 
+    it('errors with invalid stopbits', function (done) {
+      var errorCallback = function (err) {
+        chai.assert.isDefined(err, 'err is not defined');
+        done();
+      };
+
+      var port = new SerialPort('/dev/exists', { stopbits : 19 }, false, errorCallback);
+    });
+
+    it('errors with invalid parity', function (done) {
+      var errorCallback = function (err) {
+        chai.assert.isDefined(err, 'err is not defined');
+        done();
+      };
+
+      var port = new SerialPort('/dev/exists', { parity : 'pumpkins' }, false, errorCallback);
+    });
+
+    it('errors with invalid flow control', function (done) {
+      var errorCallback = function (err) {
+        chai.assert.isDefined(err, 'err is not defined');
+        done();
+      };
+
+      var port = new SerialPort('/dev/exists', { flowcontrol : ['pumpkins'] }, false, errorCallback);
+    });
+
+
     it('allows optional options', function (done) {
       var cb = function () {};
       var port = new SerialPort('/dev/exists', cb);
