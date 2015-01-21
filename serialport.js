@@ -6,6 +6,7 @@
 // node-pre-gyp, if something fails or package not available fallback
 // to regular build from source.
 
+var debug = require('debug')('serialport');
 var binary = require('node-pre-gyp');
 var path = require('path');
 var PACKAGE_JSON = path.join(__dirname, 'package.json');
@@ -238,6 +239,7 @@ function SerialPortFactory() {
   SerialPort.prototype.write = function (buffer, callback) {
     var self = this;
     if (!this.fd) {
+      debug('Write attempted, but serialport not available - FD is not set');
       var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
@@ -251,6 +253,7 @@ function SerialPortFactory() {
     if (!Buffer.isBuffer(buffer)) {
       buffer = new Buffer(buffer);
     }
+    debug('Write: '+JSON.stringify(buffer));
     factory.SerialPortBinding.write(this.fd, buffer, function (err, results) {
       if (callback) {
         callback(err, results);
@@ -395,13 +398,13 @@ function SerialPortFactory() {
     try {
       factory.SerialPortBinding.close(fd, function (err) {
         if (err) {
-          // console.log('Disconnect completed with error:' + err);
+          debug('Disconnect completed with error: '+JSON.stringify(err));
         } else {
-          // console.log('Disconnect completed');
+          debug('Disconnect completed.');
         }
       });
     } catch (e) {
-      // console.log('Disconnect failed with exception', e);
+      debug('Disconnect completed with an exception: '+JSON.stringify(e));
     }
 
     self.removeAllListeners();
