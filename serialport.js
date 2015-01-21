@@ -397,13 +397,13 @@ function SerialPortFactory() {
     try {
       factory.SerialPortBinding.close(fd, function (err) {
         if (err) {
-          console.log('Disconnect completed with error:' + err);
+          // console.log('Disconnect completed with error:' + err);
         } else {
-          console.log('Disconnect completed');
+          // console.log('Disconnect completed');
         }
       });
     } catch (e) {
-      console.log('Disconnect failed with exception', e);
+      // console.log('Disconnect failed with exception', e);
     }
 
     self.removeAllListeners();
