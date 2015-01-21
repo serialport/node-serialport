@@ -238,6 +238,15 @@ describe('SerialPort', function () {
         done();
       });
     });
+
+    it('emits a close event', function (done) {
+      var port = new SerialPort('/dev/exists', function () {
+        port.on('close', function () {
+          done();
+        });
+        port.close();
+      });
+    });
   });
 
   describe('disconnect', function () {
@@ -248,6 +257,15 @@ describe('SerialPort', function () {
           done();
         }
       }, function () {
+        hardware.disconnect('/dev/exists');
+      });
+    });
+
+    it('emits a disconnect event', function (done) {
+      var port = new SerialPort('/dev/exists', function () {
+        port.on('disconnect', function () {
+          done();
+        });
         hardware.disconnect('/dev/exists');
       });
     });
