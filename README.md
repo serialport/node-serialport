@@ -321,7 +321,7 @@ Attempts to open a connection to the serial port on `process.nextTick`. The defa
 
 **_callback (optional)_**
 
-Called when a connection has been opened. The callback should be a function that looks like: `function (error) { ... }`
+Called asynchronously when a connection has been opened or there is an error during opening. The callback should be a function that looks like: `function (error) { ... }`
 
 ### .open (callback)
 

@@ -97,6 +97,10 @@ function SerialPortFactory() {
       }
     };
 
+    var asyncCallback = function(err){
+      process.nextTick(callback.bind(null, err));
+    };
+
     var err;
 
     options.baudRate = options.baudRate || options.baudrate || _options.baudrate;
@@ -104,26 +108,26 @@ function SerialPortFactory() {
     options.dataBits = options.dataBits || options.databits || _options.databits;
     if (DATABITS.indexOf(options.dataBits) === -1) {
       err = new Error('Invalid "databits": ' + options.dataBits);
-      callback(err);
+      asyncCallback(err);
       return;
     }
 
     options.stopBits = options.stopBits || options.stopbits || _options.stopbits;
     if (STOPBITS.indexOf(options.stopBits) === -1) {
       err = new Error('Invalid "stopbits": ' + options.stopbits);
-      callback(err);
+      asyncCallback(err);
       return;
     }
 
     options.parity = options.parity || _options.parity;
     if (PARITY.indexOf(options.parity) === -1) {
       err = new Error('Invalid "parity": ' + options.parity);
-      callback(err);
+      asyncCallback(err);
       return;
     }
     if (!path) {
       err = new Error('Invalid port specified: ' + path);
-      callback(err);
+      asyncCallback(err);
       return;
     }
 
@@ -144,7 +148,7 @@ function SerialPortFactory() {
           var idx = FLOWCONTROLS.indexOf(fcup);
           if (idx < 0) {
             var err = new Error('Invalid "flowControl": ' + fcup + ". Valid options: " + FLOWCONTROLS.join(", "));
-            callback(err);
+            asyncCallback(err);
             return;
           } else {
 
