@@ -103,6 +103,55 @@ describe('SerialPort', function () {
 
   });
 
+  describe('Functions', function () {
+
+    it('write errors when serialport not open', function (done) {
+      var cb = function () {};
+      var port = new SerialPort('/dev/exists', false, cb);
+      port.write(null, function(err){
+        chai.assert.isDefined(err, 'err is not defined');
+        done();
+      });
+    });
+
+    it('close errors when serialport not open', function (done) {
+      var cb = function () {};
+      var port = new SerialPort('/dev/exists', false, cb);
+      port.close(function(err){
+        chai.assert.isDefined(err, 'err is not defined');
+        done();
+      });
+    });
+
+    it('flush errors when serialport not open', function (done) {
+      var cb = function () {};
+      var port = new SerialPort('/dev/exists', false, cb);
+      port.flush(function(err){
+        chai.assert.isDefined(err, 'err is not defined');
+        done();
+      });
+    });
+
+    it('set errors when serialport not open', function (done) {
+      var cb = function () {};
+      var port = new SerialPort('/dev/exists', false, cb);
+      port.set({}, function(err){
+        chai.assert.isDefined(err, 'err is not defined');
+        done();
+      });
+    });
+
+    it('drain errors when serialport not open', function (done) {
+      var cb = function () {};
+      var port = new SerialPort('/dev/exists', false, cb);
+      port.drain(function(err){
+        chai.assert.isDefined(err, 'err is not defined');
+        done();
+      });
+    });
+
+  });
+
   describe('reading data', function () {
 
     it('emits data events by default', function (done) {
