@@ -1,13 +1,11 @@
-/*jslint node: true */
-/*global describe, it */
-"use strict";
+'use strict';
 
 var chai = require('chai');
 var util = require('util');
 var serialPort = require('../serialport');
 
 describe ('requiresComPort', function() {
-  
+
   describe('echo hello', function() {
     it('sends hello to the last port and validates that it is received back (see arduinoEcho.ino for echo sketch)', function(done) {
       serialPort.list(function(err, ports) {
@@ -16,7 +14,7 @@ describe ('requiresComPort', function() {
         chai.assert.isDefined(ports, 'ports is not defined');
         chai.assert.isTrue(ports.length > 0, 'no ports found');
 
-        var data = new Buffer("hello");
+        var data = new Buffer('hello');
 
         var port = new serialPort.SerialPort(ports.slice(-1)[0].comName, null, false);
         port.on('error', function(err) {
@@ -71,7 +69,7 @@ describe ('requiresComPort', function() {
         chai.assert.isDefined(ports, 'ports is not defined');
         chai.assert.isTrue(ports.length > 0, 'no ports found');
 
-        var data = new Buffer("hello");
+        var data = new Buffer('hello');
 
         var port = new serialPort.SerialPort(ports.slice(-1)[0].comName, null, false);
         port.on('error', function(err) {
