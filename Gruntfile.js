@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function(grunt) {
 
   grunt.initConfig({
@@ -9,17 +11,8 @@ module.exports = function(grunt) {
     },
     jshint: {
       all: ['*.js', 'test/**/*.js', 'arduinoTest/**/*.js'],
-      options: {
-        node: true,
-        '-W030': true, // to allow mocha expects syntax
-        globals: {
-          before: false,
-          after: false,
-          beforeEach: false,
-          afterEach: false,
-          describe: false,
-          it: false
-        }
+      options:{
+        jshintrc: true
       }
     }
   });

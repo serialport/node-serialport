@@ -1,5 +1,4 @@
-/*jslint node: true */
-"use strict";
+'use strict';
 
 // Copyright 2011 Chris Williams <chris@iterativedesigns.com>
 
@@ -33,8 +32,8 @@ function SerialPortFactory() {
   var DATABITS = [5, 6, 7, 8];
   var STOPBITS = [1, 1.5, 2];
   var PARITY = ['none', 'even', 'mark', 'odd', 'space'];
-  var FLOWCONTROLS = ["XON", "XOFF", "XANY", "RTSCTS"];
-  var SETS = ["rts", "cts", "dtr", "dts"];
+  var FLOWCONTROLS = ['XON', 'XOFF', 'XANY', 'RTSCTS'];
+  var SETS = ['rts', 'cts', 'dtr', 'dts'];
 
 
   // Stuff from ReadStream, refactored for our usage:
@@ -143,7 +142,7 @@ function SerialPortFactory() {
           var fcup = flowControl.toUpperCase();
           var idx = FLOWCONTROLS.indexOf(fcup);
           if (idx < 0) {
-            var err = new Error('Invalid "flowControl": ' + fcup + ". Valid options: " + FLOWCONTROLS.join(", "));
+            var err = new Error('Invalid "flowControl": ' + fcup + '. Valid options: ' + FLOWCONTROLS.join(', '));
             callback(err);
             return;
           } else {
@@ -173,9 +172,9 @@ function SerialPortFactory() {
         return;
       }
       if (!err) {
-        err = new Error("Disconnected");
+        err = new Error('Disconnected');
       }
-      self.emit("disconnect", err);
+      self.emit('disconnect', err);
     };
 
     if (process.platform !== 'win32') {
@@ -210,7 +209,6 @@ function SerialPortFactory() {
         if (callback) {
           callback(err);
         } else {
-          // console.log("open");
           self.emit('error', err);
         }
         return;
@@ -240,7 +238,7 @@ function SerialPortFactory() {
   SerialPort.prototype.write = function (buffer, callback) {
     var self = this;
     if (!this.fd) {
-      var err = new Error("Serialport not open.");
+      var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
       } else {
@@ -299,7 +297,7 @@ function SerialPortFactory() {
             if (self.fd >= 0) {
               self.serialPoller.start();
             }
-          } else if (err.code && (err.code === "EBADF" || err.code === 'ENXIO' || (err.errno === -1 || err.code === 'UNKNOWN'))) { // handle edge case were mac/unix doesn't clearly know the error.
+          } else if (err.code && (err.code === 'EBADF' || err.code === 'ENXIO' || (err.errno === -1 || err.code === 'UNKNOWN'))) { // handle edge case were mac/unix doesn't clearly know the error.
             self.disconnected(err);
           } else {
             self.fd = null;
@@ -384,12 +382,12 @@ function SerialPortFactory() {
     if (self.options.disconnectedCallback) {
       self.options.disconnectedCallback(err);
     } else {
-      self.emit("disconnect", err);
+      self.emit('disconnect', err);
     }
     self.paused = true;
     self.closing = true;
 
-    self.emit("close");
+    self.emit('close');
 
     // clean up all other items
     fd = self.fd;
@@ -427,7 +425,7 @@ function SerialPortFactory() {
       return;
     }
     if (!fd) {
-      var err = new Error("Serialport not open.");
+      var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
       } else {
@@ -484,29 +482,29 @@ function SerialPortFactory() {
         var lines = output.split('\n');
         for (var i = 0; i < lines.length; i++) {
           var line = lines[i].trim();
-          if (line !== "") {
-            var line_parts = lines[i].split("=");
+          if (line !== '') {
+            var line_parts = lines[i].split('=');
             result[line_parts[0].trim()] = line_parts[1].trim();
           }
         }
         return result;
       }
       var as_json = udev_output_to_json(udev_output);
-      var pnpId = as_json.DEVLINKS.split(" ")[0];
-      pnpId = pnpId.substring(pnpId.lastIndexOf("/") + 1);
+      var pnpId = as_json.DEVLINKS.split(' ')[0];
+      pnpId = pnpId.substring(pnpId.lastIndexOf('/') + 1);
       var port = {
         comName: as_json.DEVNAME,
         manufacturer: as_json.ID_VENDOR,
         serialNumber: as_json.ID_SERIAL,
         pnpId: pnpId,
-        vendorId: "0x" + as_json.ID_VENDOR_ID,
-        productId: "0x" + as_json.ID_MODEL_ID
+        vendorId: '0x' + as_json.ID_VENDOR_ID,
+        productId: '0x' + as_json.ID_MODEL_ID
       };
 
       callback(null, port);
     }
 
-    fs.readdir("/dev/serial/by-id", function (err, files) {
+    fs.readdir('/dev/serial/by-id', function (err, files) {
       if (err) {
         // if this directory is not found this could just be because it's not plugged in
         if (err.errno === 34) {
@@ -521,7 +519,7 @@ function SerialPortFactory() {
         return;
       }
 
-      var dirName = "/dev/serial/by-id";
+      var dirName = '/dev/serial/by-id';
       async.map(files, function (file, callback) {
         var fileName = path.join(dirName, file);
         fs.readlink(fileName, function (err, link) {
@@ -557,7 +555,7 @@ function SerialPortFactory() {
     var fd = self.fd;
 
     if (!fd) {
-      var err = new Error("Serialport not open.");
+      var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
       } else {
@@ -594,7 +592,7 @@ function SerialPortFactory() {
     options.dts = options.dts || options.dts || _options.dts;
 
     if (!fd) {
-      var err = new Error("Serialport not open.");
+      var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
       } else {
@@ -621,7 +619,7 @@ function SerialPortFactory() {
     var fd = this.fd;
 
     if (!fd) {
-      var err = new Error("Serialport not open.");
+      var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
       } else {

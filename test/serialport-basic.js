@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-var sinon = require("sinon");
+var sinon = require('sinon');
 var chai = require('chai');
 var expect = chai.expect;
 
@@ -24,7 +24,7 @@ describe('SerialPort', function () {
   });
 
   describe('Constructor', function () {
-    it("opens the port immediately", function (done) {
+    it('opens the port immediately', function (done) {
       var port = new SerialPort('/dev/exists', function (err) {
         expect(err).to.not.be.ok;
         done();
@@ -41,7 +41,7 @@ describe('SerialPort', function () {
     it('emits an error on the factory when erroring without a callback', function (done) {
       // finish the test on error
       MockedSerialPort.once('error', function (err) {
-        chai.assert.isDefined(err, "didn't get an error");
+        chai.assert.isDefined(err, 'didn\'t get an error');
         done();
       });
 
@@ -66,6 +66,34 @@ describe('SerialPort', function () {
       var port = new SerialPort('/dev/exists', { databits : 19 }, false, errorCallback);
     });
 
+    it('errors with invalid stopbits', function (done) {
+      var errorCallback = function (err) {
+        chai.assert.isDefined(err, 'err is not defined');
+        done();
+      };
+
+      var port = new SerialPort('/dev/exists', { stopbits : 19 }, false, errorCallback);
+    });
+
+    it('errors with invalid parity', function (done) {
+      var errorCallback = function (err) {
+        chai.assert.isDefined(err, 'err is not defined');
+        done();
+      };
+
+      var port = new SerialPort('/dev/exists', { parity : 'pumpkins' }, false, errorCallback);
+    });
+
+    it('errors with invalid flow control', function (done) {
+      var errorCallback = function (err) {
+        chai.assert.isDefined(err, 'err is not defined');
+        done();
+      };
+
+      var port = new SerialPort('/dev/exists', { flowcontrol : ['pumpkins'] }, false, errorCallback);
+    });
+
+
     it('allows optional options', function (done) {
       var cb = function () {};
       var port = new SerialPort('/dev/exists', cb);
@@ -78,7 +106,7 @@ describe('SerialPort', function () {
   describe('reading data', function () {
 
     it('emits data events by default', function (done) {
-      var testData = new Buffer("I am a really short string");
+      var testData = new Buffer('I am a really short string');
       var port = new SerialPort('/dev/exists', function () {
         port.once('data', function(recvData) {
           expect(recvData).to.eql(testData);
@@ -89,7 +117,7 @@ describe('SerialPort', function () {
     });
 
     it('calls the dataCallback if set', function (done) {
-      var testData = new Buffer("I am a really short string");
+      var testData = new Buffer('I am a really short string');
       var opt = {
         dataCallback: function (recvData) {
           expect(recvData).to.eql(testData);
@@ -123,8 +151,8 @@ describe('SerialPort', function () {
       });
     });
 
-    it("emits data after being reopened", function (done) {
-      var data = new Buffer("Howdy!");
+    it('emits data after being reopened', function (done) {
+      var data = new Buffer('Howdy!');
       var port = new SerialPort('/dev/exists', function () {
         port.close();
         port.open(function () {
@@ -140,7 +168,7 @@ describe('SerialPort', function () {
   });
 
   describe('close', function () {
-    it("fires a close event when it's closed", function (done) {
+    it('fires a close event when it\'s closed', function (done) {
       var port = new SerialPort('/dev/exists', function () {
         var closeSpy = sandbox.spy();
         port.on('close', closeSpy);
@@ -150,7 +178,7 @@ describe('SerialPort', function () {
       });
     });
 
-    it("fires a close event after being reopened", function (done) {
+    it('fires a close event after being reopened', function (done) {
       var port = new SerialPort('/dev/exists', function () {
         var closeSpy = sandbox.spy();
         port.on('close', closeSpy);
@@ -164,7 +192,7 @@ describe('SerialPort', function () {
   });
 
   describe('disconnect', function () {
-    it("fires a disconnect event", function (done) {
+    it('fires a disconnect event', function (done) {
       var port = new SerialPort('/dev/exists', {
         disconnectedCallback: function (err) {
           expect(err).to.not.be.ok;
