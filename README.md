@@ -317,7 +317,7 @@ An object with the following properties:
 
 **_openImmediately (optional)_**
 
-Attempts to open a connection to the serial port on `process.nextTick`. The default is `true`. Set to `false` to manually call `open()` at a later time.
+Attempts to open a connection to the serial port on `process.nextTick`. The default is `true`. Set to `false` to manually call `open()` at a later time, but note you'll need to use factory error listener in the case of constructor errors. 
 
 **_callback (optional)_**
 
@@ -329,7 +329,7 @@ Opens a connection to the given serial port.
 
 **_callback (optional)_**
 
-Called when a connection has been opened. The callback should be a function that looks like: `function (error) { ... }`
+Called when a connection has been opened. NOTE: Will NOT be called if openImmediately is set to false as open will not be performed. The callback should be a function that looks like: `function (error) { ... }`
 
 ### .write (buffer, callback)
 
