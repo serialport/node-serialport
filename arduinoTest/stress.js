@@ -1,6 +1,6 @@
 /*jslint node: true */
 /*global describe, it */
-"use strict";
+'use strict';
 
 var chai = require('chai');
 var util = require('util');
@@ -36,7 +36,7 @@ describe ('stress', function() {
         chai.assert.isDefined(ports, 'ports is not defined');
         chai.assert.isTrue(ports.length > 0, 'no ports found');
 
-        var data = new Buffer("hello");
+        var data = new Buffer('hello');
 
         var port = new serialPort.SerialPort(ports.slice(-1)[0].comName, null, false);
         port.on('error', function(err) {
@@ -55,7 +55,7 @@ describe ('stress', function() {
           }, 20 );
 
           setTimeout(function() {
-            
+
             clearInterval(intervalId);
 
             var diff = hd.end();

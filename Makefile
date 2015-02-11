@@ -14,13 +14,13 @@ release:
 	@echo "Pushing tags to GitHub"
 	@git push --tags
 
-	@echo "Switching to osx-node-pre-gyp branch"
-	@git checkout osx-node-pre-gyp
+	@echo "Switching to osx-binaries branch"
+	@git checkout osx-binaries
 
-	@echo "Merging master into osx-node-pre-gyp"
-	@git merge --no-ff --commit -m "Merge master into osx-node-pre-gyp [publish binary]" master
+	@echo "Merging master into osx-binaries"
+	@git merge --no-ff --commit -m "Merge master into osx-binaries [publish binary]" master
 
-	@echo "Pushing osx-node-pre-gyp"
+	@echo "Pushing osx-binaries"
 	@git push
 
 	@echo "Switching to master branch"
