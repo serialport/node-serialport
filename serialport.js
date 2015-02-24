@@ -34,7 +34,7 @@ function SerialPortFactory() {
   var STOPBITS = [1, 1.5, 2];
   var PARITY = ['none', 'even', 'mark', 'odd', 'space'];
   var FLOWCONTROLS = ['XON', 'XOFF', 'XANY', 'RTSCTS'];
-  var SETS = ['rts', 'cts', 'dtr', 'dts'];
+  var SETS = ['rts', 'cts', 'dtr', 'dts', 'brk'];
 
 
   // Stuff from ReadStream, refactored for our usage:
@@ -64,6 +64,7 @@ function SerialPortFactory() {
     cts: false,
     dtr: false,
     dts: false,
+    brk: false,
     databits: 8,
     stopbits: 1,
     buffersize: 256,
@@ -593,6 +594,7 @@ function SerialPortFactory() {
     options = (typeof option !== 'function') && options || {};
 
     // flush defaults, then update with provided details
+    options.brk = options.brk || options.brk || _options.brk;
     options.rts = options.rts || options.rts || _options.rts;
     options.cts = options.cts || options.cts || _options.cts;
     options.dtr = options.dtr || options.dtr || _options.dtr;

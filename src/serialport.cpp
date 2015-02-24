@@ -481,6 +481,7 @@ NAN_METHOD(Set) {
   memset(baton, 0, sizeof(SetBaton));
   baton->fd = fd;
   baton->callback = new NanCallback(callback);
+  baton->brk = options->Get(NanNew<v8::String>("brk"))->ToBoolean()->BooleanValue();
   baton->rts = options->Get(NanNew<v8::String>("rts"))->ToBoolean()->BooleanValue();
   baton->cts = options->Get(NanNew<v8::String>("cts"))->ToBoolean()->BooleanValue();
   baton->dtr = options->Get(NanNew<v8::String>("dtr"))->ToBoolean()->BooleanValue();
