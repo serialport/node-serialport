@@ -33,7 +33,7 @@ Robots, you say?
 
 This library is admittedly a base level toolkit for building amazing things with real world (including robots). Here are a couple of those amazing things that leverage node-serialport:
 
-* [Johnny-Five](https://github.com/rwaldron/johnny-five) - Firmata based Arduino Framework.
+* [Johnny-Five](https://github.com/rwaldron/johnny-five) - JavaScript IoT and Robotics programming framework.
 * [Cylon.js](http://cylonjs.com/) - JavaScript Robotics, By Your Command.
 * [node-l8smartlight](http://jakobwesthoff.github.io/node-l8smartlight/) ([source](https://github.com/jakobwesthoff/node-l8smartlight)) A node library to control the L8 Smartlight via Bluetooth or USB port
 * [firmata](https://github.com/jgautier/firmata) Talk natively to Arduino using the firmata protocol.
