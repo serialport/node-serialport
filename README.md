@@ -144,78 +144,65 @@ npm install serialport
    npm install serialport
 ```
 
+
 To Use
 ------
 
 Opening a serial port:
 
 ```js
-var SerialPort = require("serialport").SerialPort
-var serialPort = new SerialPort("/dev/tty-usbserial1", {
-  baudrate: 57600
-});
+var serialPorts = require("serialport");
+var serialPort = serialPorts.open({ comname: "/dev/tty-usbserial1", baudrate: 57600 });
 ```
 
-When opening a serial port, you can specify (in this order).
+If you happen to be using the default settings of 9600,8,N,1 then you can just put the comname as the only parameter:
 
-1. Path to Serial Port - required.
-1. Options - optional and described below.
+```js
+var serialPort = serialPorts.open('/dev/tty-usbserial1');
+```
 
-The options object allows you to pass named options to the serial port during initialization. The valid attributes for the options object are the following:
+The options object allows you to pass named options to the serial port during initialization. The options are optional and have default values, except for `comName` which must always be specified. The valid attributes for the options object are the following:
 
+* comname: *Required* The name of the serial port. On Mac/Linux it will be something like `/dev/tty-usbserial1`. On Windows it will be something like `COM3`.
 * baudrate: Baud Rate, defaults to 9600. Should be one of: 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, or 50. Custom rates as allowed by hardware is supported.
 * databits: Data Bits, defaults to 8. Must be one of: 8, 7, 6, or 5.
 * stopbits: Stop Bits, defaults to 1. Must be one of: 1 or 2.
 * parity: Parity, defaults to 'none'. Must be one of: 'none', 'even', 'mark', 'odd', 'space'
-* buffersize: Size of read buffer, defaults to 255. Must be an integer value.
-* parser: The parser engine to use with read data, defaults to rawPacket strategy which just emits the raw buffer as a "data" event. Can be any function that accepts EventEmitter as first parameter and the raw buffer as the second parameter.
 
-**Note, we have added support for either all lowercase OR camelcase of the options (thanks @jagautier), use whichever style you prefer.**
+**Note, the options are completely case-insensitive `baudrate == baudRate == BaUdraTe`.**
 
-open event
+
+It's a Stream!
+--------------
+
+The serial port object implements a Node `Duplex` (read/write) stream. This means that all the documentation and libraries for working with other streams in Node, like `Socket`, will also work with your minty-fresh `SerialPort`.
+
+Take a look at the [Node Streams documentation](http://nodejs.org/api/stream.html) for an in-depth treatment.
+
+
+Opening
 ----------
+If you want to know when the port successfully opens, you can listen to the `open` event. Any reads or writes that happen before the `open` event fires will be buffered and carried out once the open successfully completes.
 
-You MUST wait for the open event to be emitted before reading/writing to the serial port. The open happens asynchronously so installing 'data' listeners and writing
-before the open event might result in... nothing at all.
+A shortcut for listening for the `open` event is to pass a function as the second parameter to `open()`. This function will be called only once when the port has been openned successfully.
 
 Assuming you are connected to a serial console, you would for example:
 
 ```js
-serialPort.on("open", function () {
-  console.log('open');
-  serialPort.on('data', function(data) {
-    console.log('data received: ' + data);
-  });
-  serialPort.write("ls\n", function(err, results) {
-    console.log('err ' + err);
-    console.log('results ' + results);
-  });
+var serialPort = serialPorts.open('/dev/tty-usbserial1', function() {
+  console.log('Hey everyone, my serial port is open!');
 });
 ```
 
-You can also call the open function, in this case instanciate the serialport with an additional flag.
+For advanced use-cases (none of which I can think of right now) you can new up the `SerialPort` object and call `open()` on it yourself. Note that you will get errors if you attempt to `write()` before you have called `open()` on your instance; once you've called `open()`, it's fair game.
 
 ```js
 var SerialPort = require("serialport").SerialPort
-var serialPort = new SerialPort("/dev/tty-usbserial1", {
-  baudrate: 57600
-}, false); // this is the openImmediately flag [default is true]
-
-serialPort.open(function (error) {
-  if ( error ) {
-    console.log('failed to open: '+error);
-  } else {
-    console.log('open');
-    serialPort.on('data', function(data) {
-      console.log('data received: ' + data);
-    });
-    serialPort.write("ls\n", function(err, results) {
-      console.log('err ' + err);
-      console.log('results ' + results);
-    });
-  }
+var serialPort = new SerialPort({ comname: '/dev/tty-usbserial1', baudrate: 57600 }, function() {
+  console.log('Hey everyone, I opened my own SerialPort instance!');
 });
 ```
+
 
 List Ports
 ----------
@@ -223,8 +210,8 @@ List Ports
 You can also list the ports along with some metadata as well.
 
 ```js
-var serialPort = require("serialport");
-serialPort.list(function (err, ports) {
+var serialPorts = require("serialport");
+serialPorts.list(function (err, ports) {
   ports.forEach(function(port) {
     console.log(port.comName);
     console.log(port.pnpId);
@@ -233,47 +220,6 @@ serialPort.list(function (err, ports) {
 });
 ```
 
-Parsers
--------
-
-Out of the box, node-serialport provides two parsers one that simply emits the raw buffer as a data event and the other which provides familiar "readline" style parsing. To use the readline parser, you must provide a delimiter as such:
-
-```js
-var serialport = require("serialport");
-var SerialPort = serialport.SerialPort; // localize object constructor
-
-var sp = new SerialPort("/dev/tty-usbserial1", {
-  parser: serialport.parsers.readline("\n")
-});
-```
-
-To use the raw parser, you just provide the function definition (or leave undefined):
-
-```js
-var serialport = require("serialport");
-var SerialPort = serialport.SerialPort; // localize object constructor
-
-var sp = new SerialPort("/dev/tty-usbserial1", {
-  parser: serialport.parsers.raw
-});
-```
-
-
-You can get updates of new data from the Serial Port as follows:
-
-```js
-serialPort.on("data", function (data) {
-  sys.puts("here: "+data);
-});
-```
-
-You can write to the serial port by sending a string or buffer to the write method as follows:
-
-```js
-serialPort.write("OMG IT WORKS\r");
-```
-
-Enjoy and do cool things with this code.
 
 Reference Guide
 ---------------
@@ -322,34 +268,6 @@ Attempts to open a connection to the serial port on `process.nextTick`. The defa
 **_callback (optional)_**
 
 Called when a connection has been opened. The callback should be a function that looks like: `function (error) { ... }`
-
-### .open (callback)
-
-Opens a connection to the given serial port.
-
-**_callback (optional)_**
-
-Called when a connection has been opened. The callback should be a function that looks like: `function (error) { ... }`
-
-### .write (buffer, callback)
-
-Writes data to the given serial port.
-
-**_buffer_**
-
-The `buffer` parameter accepts a [`Buffer` ](http://nodejs.org/api/buffer.html) object, or a type that is accepted by the `Buffer` constructor (ex. an array of bytes or a string).
-
-**_callback (optional)_**
-
-Called once the write operation returns. The callback should be a function that looks like: `function (error) { ... }` _Note: The write operation is non-blocking. When it returns, data may still have not actually been written to the serial port. See `drain()`._
-
-### .pause ()
-
-Pauses an open connection.
-
-### .resume ()
-
-Resumes a paused connection.
 
 ### .flush (callback)
 
