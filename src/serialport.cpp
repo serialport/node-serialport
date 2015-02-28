@@ -113,23 +113,23 @@ NAN_METHOD(Open) {
   OpenBaton* baton = new OpenBaton();
   memset(baton, 0, sizeof(OpenBaton));
   strcpy(baton->path, *path);
-  baton->baudRate = options->Get(NanNew<v8::String>("baudRate"))->ToInt32()->Int32Value();
-  baton->dataBits = options->Get(NanNew<v8::String>("dataBits"))->ToInt32()->Int32Value();
-  baton->bufferSize = options->Get(NanNew<v8::String>("bufferSize"))->ToInt32()->Int32Value();
+  baton->baudRate = options->Get(NanNew<v8::String>("baudrate"))->ToInt32()->Int32Value();
+  baton->dataBits = options->Get(NanNew<v8::String>("databits"))->ToInt32()->Int32Value();
+  baton->bufferSize = options->Get(NanNew<v8::String>("buffersize"))->ToInt32()->Int32Value();
   baton->parity = ToParityEnum(options->Get(NanNew<v8::String>("parity"))->ToString());
-  baton->stopBits = ToStopBitEnum(options->Get(NanNew<v8::String>("stopBits"))->ToNumber()->NumberValue());
+  baton->stopBits = ToStopBitEnum(options->Get(NanNew<v8::String>("stopbits"))->ToNumber()->NumberValue());
   baton->rtscts = options->Get(NanNew<v8::String>("rtscts"))->ToBoolean()->BooleanValue();
   baton->xon = options->Get(NanNew<v8::String>("xon"))->ToBoolean()->BooleanValue();
   baton->xoff = options->Get(NanNew<v8::String>("xoff"))->ToBoolean()->BooleanValue();
   baton->xany = options->Get(NanNew<v8::String>("xany"))->ToBoolean()->BooleanValue();
 
-  v8::Local<v8::Object> platformOptions = options->Get(NanNew<v8::String>("platformOptions"))->ToObject();
+  v8::Local<v8::Object> platformOptions = options->Get(NanNew<v8::String>("platformoptions"))->ToObject();
   baton->platformOptions = ParsePlatformOptions(platformOptions);
 
   baton->callback = new NanCallback(callback);
-  baton->dataCallback = new NanCallback(options->Get(NanNew<v8::String>("dataCallback")).As<v8::Function>());
-  baton->disconnectedCallback = new NanCallback(options->Get(NanNew<v8::String>("disconnectedCallback")).As<v8::Function>());
-  baton->errorCallback = new NanCallback(options->Get(NanNew<v8::String>("errorCallback")).As<v8::Function>());
+  baton->dataCallback = new NanCallback(options->Get(NanNew<v8::String>("datacallback")).As<v8::Function>());
+  baton->disconnectedCallback = new NanCallback(options->Get(NanNew<v8::String>("disconnectedcallback")).As<v8::Function>());
+  baton->errorCallback = new NanCallback(options->Get(NanNew<v8::String>("errorcallback")).As<v8::Function>());
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
