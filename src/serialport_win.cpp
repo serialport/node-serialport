@@ -163,6 +163,11 @@ public:
   NanCallback* disconnectedCallback;
 };
 
+void EIO_Update(uv_work_t* req) {
+
+}
+
+
 void EIO_Set(uv_work_t* req) {
   SetBaton* data = static_cast<SetBaton*>(req->data);
 
