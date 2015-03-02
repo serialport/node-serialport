@@ -593,10 +593,18 @@ function SerialPortFactory() {
     options = (typeof option !== 'function') && options || {};
 
     // flush defaults, then update with provided details
-    options.rts = options.rts || options.rts || _options.rts;
-    options.cts = options.cts || options.cts || _options.cts;
-    options.dtr = options.dtr || options.dtr || _options.dtr;
-    options.dts = options.dts || options.dts || _options.dts;
+    if(!options.hasOwnProperty('rts')){
+      options.rts = _options.rts;
+    }
+    if(!options.hasOwnProperty('dtr')){
+      options.dtr = _options.dtr;
+    }
+    if(!options.hasOwnProperty('cts')){
+      options.cts = _options.cts;
+    }
+    if(!options.hasOwnProperty('dts')){
+      options.dts = _options.dts;
+    }
 
     if (!fd) {
       var err = new Error('Serialport not open.');
