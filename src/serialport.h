@@ -178,6 +178,7 @@ public:
   bool cts;
   bool dtr;
   bool dsr;
+  bool brk;
 
 };
 

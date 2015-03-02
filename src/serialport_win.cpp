@@ -178,6 +178,12 @@ void EIO_Set(uv_work_t* req) {
     EscapeCommFunction((HANDLE)data->fd, CLRDTR);
   }
 
+  if (data->brk) {
+    EscapeCommFunction((HANDLE)data->fd, SETBREAK);
+  }else{
+    EscapeCommFunction((HANDLE)data->fd, CLRBREAK);
+  }
+
   DWORD bits = 0;
 
   GetCommMask((HANDLE)data->fd, &bits);
