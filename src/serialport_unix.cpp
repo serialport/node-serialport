@@ -722,8 +722,14 @@ void EIO_Set(uv_work_t* req) {
     bits |= TIOCM_DSR;
   }
 
-  data->result = ioctl( data->fd, TIOCMSET, &bits );
+  //todo check these returns
+  if (data->brk) {
+    ioctl(data->fd, TIOCSBRK, NULL);
+  }else{
+    ioctl(data->fd, TIOCCBRK, NULL);
+  }
 
+  data->result = ioctl(data->fd, TIOCMSET, &bits );
 }
 
 void EIO_Drain(uv_work_t* req) {
