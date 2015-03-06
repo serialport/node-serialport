@@ -8,13 +8,86 @@
 #include "serialport_poller.h"
 #endif
 
-uv_mutex_t write_queue_mutex;
-QueuedWrite write_queue;
+struct _WriteQueue {
+  const int _fd; // the fd that is associated with this write queue
+  QueuedWrite _write_queue;
+  uv_mutex_t _write_queue_mutex;
+  _WriteQueue *_next;
+
+  _WriteQueue(const int fd) : _fd(fd), _write_queue(), _next(NULL) {
+    uv_mutex_init(&_write_queue_mutex);
+  }
+
+  void lock() { uv_mutex_lock(&_write_queue_mutex); };
+  void unlock() { uv_mutex_unlock(&_write_queue_mutex); };
+
+  QueuedWrite &get() { return _write_queue; }
+};
+
+
+static _WriteQueue *write_queues = NULL;
+
+static _WriteQueue *qForFD(const int fd) {
+  _WriteQueue *q = write_queues;
+  while (q != NULL) {
+    if (q->_fd == fd) {
+      return q;
+    }
+    q = q->_next;
+  }
+  return NULL;
+};
+
+static _WriteQueue *newQForFD(const int fd) {
+  _WriteQueue *q = qForFD(fd);
+
+  if (q == NULL) {
+    if (write_queues == NULL) {
+      write_queues = new _WriteQueue(fd);
+      return write_queues;
+    } else {
+      q = write_queues;
+      while (q->_next != NULL) {
+        q = q->_next;
+      }
+      q->_next = new _WriteQueue(fd);
+      return q->_next;
+    }
+  }
+
+  return q;
+};
+
+static void deleteQForFD(const int fd) {
+  if (write_queues == NULL)
+    return;
+
+  _WriteQueue *q = write_queues;
+  if (write_queues->_fd == fd) {
+    write_queues = write_queues->_next;
+    delete q;
+
+    return;
+  }
+
+  while (q->_next != NULL) {
+    if (q->_next->_fd == fd) {
+      _WriteQueue *out_q = q->_next;
+      q->_next = q->_next->_next;
+      delete out_q;
+
+      return;
+    }
+    q = q->_next;
+  }
+
+  // It wasn't found...
+};
+
+
 
 NAN_METHOD(Open) {
   NanScope();
-
-  uv_mutex_init(&write_queue_mutex);
 
   // path
   if(!args[0]->IsString()) {
@@ -52,7 +125,7 @@ NAN_METHOD(Open) {
 
   v8::Local<v8::Object> platformOptions = options->Get(NanNew<v8::String>("platformOptions"))->ToObject();
   baton->platformOptions = ParsePlatformOptions(platformOptions);
-    
+
   baton->callback = new NanCallback(callback);
   baton->dataCallback = new NanCallback(options->Get(NanNew<v8::String>("dataCallback")).As<v8::Function>());
   baton->disconnectedCallback = new NanCallback(options->Get(NanNew<v8::String>("disconnectedCallback")).As<v8::Function>());
@@ -82,6 +155,10 @@ void EIO_AfterOpen(uv_work_t* req) {
   } else {
     argv[0] = NanUndefined();
     argv[1] = NanNew<v8::Int32>(data->result);
+
+    int fd = argv[1]->ToInt32()->Int32Value();
+    newQForFD(fd);
+
     AfterOpenSuccess(data->result, data->dataCallback, data->disconnectedCallback, data->errorCallback);
   }
 
@@ -133,7 +210,14 @@ NAN_METHOD(Write) {
   queuedWrite->baton = baton;
   queuedWrite->req.data = queuedWrite;
 
-  uv_mutex_lock(&write_queue_mutex);
+  _WriteQueue *q = qForFD(fd);
+  if(!q) {
+    NanThrowTypeError("There's no write queue for that file descriptor (write)!");
+    NanReturnUndefined();
+  }
+
+  q->lock();
+  QueuedWrite &write_queue = q->get();
   bool empty = write_queue.empty();
 
   write_queue.insert_tail(queuedWrite);
@@ -141,7 +225,7 @@ NAN_METHOD(Write) {
   if (empty) {
     uv_queue_work(uv_default_loop(), &queuedWrite->req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
   }
-  uv_mutex_unlock(&write_queue_mutex);
+  q->unlock();
 
   NanReturnUndefined();
 }
@@ -171,15 +255,26 @@ void EIO_AfterWrite(uv_work_t* req) {
     return;
   }
 
-  uv_mutex_lock(&write_queue_mutex);
+  int fd = data->fd;
+  _WriteQueue *q = qForFD(fd);
+  if(!q) {
+    NanThrowTypeError("There's no write queue for that file descriptor (after write)!");
+    return;
+  }
+
+  q->lock();
+  QueuedWrite &write_queue = q->get();
+
+  // remove this one from the list
   queuedWrite->remove();
 
+  // If there are any left, start a new thread to write the next one.
   if (!write_queue.empty()) {
     // Always pull the next work item from the head of the queue
     QueuedWrite* nextQueuedWrite = write_queue.next;
     uv_queue_work(uv_default_loop(), &nextQueuedWrite->req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
   }
-  uv_mutex_unlock(&write_queue_mutex);
+  q->unlock();
 
   NanDisposePersistent(data->buffer);
   delete data->callback;
@@ -226,6 +321,23 @@ void EIO_AfterClose(uv_work_t* req) {
     argv[0] = v8::Exception::Error(NanNew<v8::String>(data->errorString));
   } else {
     argv[0] = NanUndefined();
+
+    // We don't have an error, so clean up the write queue for that fd
+
+    _WriteQueue *q = qForFD(data->fd);
+    if (q) {
+      q->lock();
+      QueuedWrite &write_queue = q->get();
+      while (!write_queue.empty()) {
+        QueuedWrite *del_q = write_queue.next;
+        NanDisposePersistent(del_q->baton->buffer);
+        del_q->remove();
+      }
+      q->unlock();
+
+      deleteQForFD(data->fd);
+    }
+
   }
   data->callback->Call(1, argv);
 
@@ -369,6 +481,7 @@ NAN_METHOD(Set) {
   memset(baton, 0, sizeof(SetBaton));
   baton->fd = fd;
   baton->callback = new NanCallback(callback);
+  baton->brk = options->Get(NanNew<v8::String>("brk"))->ToBoolean()->BooleanValue();
   baton->rts = options->Get(NanNew<v8::String>("rts"))->ToBoolean()->BooleanValue();
   baton->cts = options->Get(NanNew<v8::String>("cts"))->ToBoolean()->BooleanValue();
   baton->dtr = options->Get(NanNew<v8::String>("dtr"))->ToBoolean()->BooleanValue();

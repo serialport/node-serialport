@@ -34,7 +34,7 @@ function SerialPortFactory() {
   var STOPBITS = [1, 1.5, 2];
   var PARITY = ['none', 'even', 'mark', 'odd', 'space'];
   var FLOWCONTROLS = ['XON', 'XOFF', 'XANY', 'RTSCTS'];
-  var SETS = ['rts', 'cts', 'dtr', 'dts'];
+  var SETS = ['rts', 'cts', 'dtr', 'dts', 'brk'];
 
 
   // Stuff from ReadStream, refactored for our usage:
@@ -60,10 +60,11 @@ function SerialPortFactory() {
     xon: false,
     xoff: false,
     xany: false,
-    rts: false,
+    rts: true,
     cts: false,
-    dtr: false,
+    dtr: true,
     dts: false,
+    brk: false,
     databits: 8,
     stopbits: 1,
     buffersize: 256,
@@ -139,13 +140,13 @@ function SerialPortFactory() {
       if (typeof fc === 'boolean') {
         options.rtscts = true;
       } else {
-        fc.forEach(function (flowControl) {
+        var clean = fc.every(function (flowControl) {
           var fcup = flowControl.toUpperCase();
           var idx = FLOWCONTROLS.indexOf(fcup);
           if (idx < 0) {
             var err = new Error('Invalid "flowControl": ' + fcup + '. Valid options: ' + FLOWCONTROLS.join(', '));
             callback(err);
-            return;
+            return false;
           } else {
 
             // "XON", "XOFF", "XANY", "DTRDTS", "RTSCTS"
@@ -155,8 +156,12 @@ function SerialPortFactory() {
               case 2: options.xany = true;  break;
               case 3: options.rtscts = true; break;
             }
+            return true;
           }
         });
+        if(!clean){
+          return;
+        }
       }
     }
 
@@ -589,10 +594,22 @@ function SerialPortFactory() {
     options = (typeof option !== 'function') && options || {};
 
     // flush defaults, then update with provided details
-    options.rts = options.rts || options.rts || _options.rts;
-    options.cts = options.cts || options.cts || _options.cts;
-    options.dtr = options.dtr || options.dtr || _options.dtr;
-    options.dts = options.dts || options.dts || _options.dts;
+
+    if(!options.hasOwnProperty('rts')){
+      options.rts = _options.rts;
+    }
+    if(!options.hasOwnProperty('dtr')){
+      options.dtr = _options.dtr;
+    }
+    if(!options.hasOwnProperty('cts')){
+      options.cts = _options.cts;
+    }
+    if(!options.hasOwnProperty('dts')){
+      options.dts = _options.dts;
+    }
+    if(!options.hasOwnProperty('brk')){
+      options.brk = _options.brk;
+    }
 
     if (!fd) {
       var err = new Error('Serialport not open.');
