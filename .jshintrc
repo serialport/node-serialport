@@ -23,6 +23,6 @@
 
   "maxparams": 5,
   "maxdepth": 3,
-  "maxstatements": 54, //default 25
-  "maxcomplexity": 30 //default 6
+  "maxstatements": 60, //default 25
+  "maxcomplexity": 40 //default 6
 }
