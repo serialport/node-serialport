@@ -20,7 +20,7 @@ For all discussions, designs, and clarifications, we recommend you join our Gitt
 
 
 
-Version: 1.4.10 - Released December 31, 2014
+Version: 1.6.1 - Released March 5, 2015
 
 *****
 
@@ -317,7 +317,7 @@ An object with the following properties:
 
 **_openImmediately (optional)_**
 
-Attempts to open a connection to the serial port on `process.nextTick`. The default is `true`. Set to `false` to manually call `open()` at a later time, but note you'll need to use factory error listener in the case of constructor errors. 
+Attempts to open a connection to the serial port on `process.nextTick`. The default is `true`. Set to `false` to manually call `open()` at a later time, but note you'll need to use factory error listener in the case of constructor errors.
 
 **_callback (optional)_**
 
