@@ -8,12 +8,16 @@
 #ifdef __APPLE__
 #include <AvailabilityMacros.h>
 #endif
+
 #if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
 #include <sys/ioctl.h>
 #include <IOKit/serial/ioss.h>
 #include <errno.h>
 #endif
 
+#if defined(__OpenBSD__)
+#include <sys/ioctl.h>
+#endif
 
 int ToBaudConstant(int baudRate);
 int ToDataBitsConstant(int dataBits);
