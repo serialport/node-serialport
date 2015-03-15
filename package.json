@@ -1,6 +1,6 @@
 {
   "name": "serialport",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "Welcome your robotic javascript overlords. Better yet, program them!",
   "author": {
     "name": "Chris Williams",
@@ -65,7 +65,7 @@
     "sandboxed-module": "~0.3.0"
   },
   "engines": {
-    "node": ">= 0.8.0"
+    "node": ">= 0.10.0"
   },
   "bin": {
     "serialportlist": "./bin/serialportList.js",
