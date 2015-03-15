@@ -24,6 +24,10 @@ Boolean lockInitialised = FALSE;
 #include <errno.h>
 #endif
 
+#if defined(__OpenBSD__)
+#include <sys/ioctl.h>
+#endif
+
 #if defined(__linux__)
 #include <sys/ioctl.h>
 #include <linux/serial.h>
@@ -41,7 +45,7 @@ OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& opti
   UnixPlatformOptions* result = new UnixPlatformOptions();
   result->vmin = options->Get(NanNew<v8::String>("vmin"))->ToInt32()->Int32Value();
   result->vtime = options->Get(NanNew<v8::String>("vtime"))->ToInt32()->Int32Value();
-  
+
   return result;
 }
 
@@ -124,9 +128,9 @@ int ToDataBitsConstant(int dataBits) {
 
 
 void EIO_Open(uv_work_t* req) {
-  OpenBaton* data = static_cast<OpenBaton*>(req->data);  
-  UnixPlatformOptions* platformOptions = static_cast<UnixPlatformOptions*>(data->platformOptions);  
-  
+  OpenBaton* data = static_cast<OpenBaton*>(req->data);
+  UnixPlatformOptions* platformOptions = static_cast<UnixPlatformOptions*>(data->platformOptions);
+
   int baudRate = ToBaudConstant(data->baudRate);
 
 // #if not ( defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4) )
@@ -736,6 +740,15 @@ void EIO_Drain(uv_work_t* req) {
   DrainBaton* data = static_cast<DrainBaton*>(req->data);
 
   data->result = tcdrain(data->fd);
+}
+
+void EIO_Break(uv_work_t* req) {
+  BreakBaton* data = static_cast<BreakBaton*>(req->data);
+
+  data->result = tcsendbreak(data->fd, 1000);
+  if (data->result == -1) {
+    snprintf(data->errorString, sizeof(data->errorString), "Error %s calling ioctl( ..., tcsendbreak)", strerror(errno));
+  }
 }
 
 #endif

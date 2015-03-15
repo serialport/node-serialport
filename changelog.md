@@ -1,3 +1,20 @@
+Version 1.6.1
+-------------
+- Upgraded to NAN 1.7.0
+- #476 adding break signal
+
+Version 1.6.0
+-------------
+- Long standing issue resolved thanks to @jacobrosenthal for adding control signals into the serialport. YAY!
+- Fix for #426
+- Ability to return from inside loop #453
+- Emits for close/disconnect. #452
+
+Version 1.5.0
+-------------
+- Fixed to work with io.js and node 0.11.x by upgrading to recent nan 1.6.2
+
+
 Version 1.4.8
 -------------
 - Simple bump for the binary.

@@ -54,6 +54,10 @@ NAN_METHOD(Drain);
 void EIO_Drain(uv_work_t* req);
 void EIO_AfterDrain(uv_work_t* req);
 
+NAN_METHOD(Break);
+void EIO_Break(uv_work_t* req);
+void EIO_AfterBreak(uv_work_t* req);
+
 SerialPortParity ToParityEnum(const v8::Handle<v8::String>& str);
 SerialPortStopBits ToStopBitEnum(double stopBits);
 
@@ -183,6 +187,14 @@ public:
 };
 
 struct DrainBaton {
+public:
+  int fd;
+  NanCallback* callback;
+  int result;
+  char errorString[ERROR_STRING_SIZE];
+};
+
+struct BreakBaton {
 public:
   int fd;
   NanCallback* callback;
