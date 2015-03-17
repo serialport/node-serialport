@@ -663,35 +663,6 @@ function SerialPortFactory() {
     });
   };
 
-  SerialPort.prototype.break = function (callback) {
-    var self = this;
-    var fd = this.fd;
-
-    if (!fd) {
-      var err = new Error('Serialport not open.');
-      if (callback) {
-        callback(err);
-      } else {
-        self.emit('error', err);
-      }
-      return;
-    }
-
-    factory.SerialPortBinding.break(fd, function (err, result) {
-      if (err) {
-        if (callback) {
-          callback(err, result);
-        } else {
-          self.emit('error', err);
-        }
-      } else {
-        if (callback) {
-          callback(err, result);
-        }
-      }
-    });
-  };
-
   factory.SerialPort = SerialPort;
   factory.parsers = parsers;
   factory.SerialPortBinding = SerialPortBinding;
