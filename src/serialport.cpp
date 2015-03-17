@@ -565,56 +565,6 @@ void EIO_AfterDrain(uv_work_t* req) {
   delete req;
 }
 
-NAN_METHOD(Break) {
-  NanScope();
-
-  // file descriptor
-  if(!args[0]->IsInt32()) {
-    NanThrowTypeError("First argument must be an int");
-    NanReturnUndefined();
-  }
-  int fd = args[0]->ToInt32()->Int32Value();
-
-  // callback
-  if(!args[1]->IsFunction()) {
-    NanThrowTypeError("Second argument must be a function");
-    NanReturnUndefined();
-  }
-  v8::Local<v8::Function> callback = args[1].As<v8::Function>();
-
-  BreakBaton* baton = new BreakBaton();
-  memset(baton, 0, sizeof(BreakBaton));
-  baton->fd = fd;
-  baton->callback = new NanCallback(callback);
-
-  uv_work_t* req = new uv_work_t();
-  req->data = baton;
-  uv_queue_work(uv_default_loop(), req, EIO_Break, (uv_after_work_cb)EIO_AfterBreak);
-
-  NanReturnUndefined();
-}
-
-void EIO_AfterBreak(uv_work_t* req) {
-  NanScope();
-
-  BreakBaton* data = static_cast<BreakBaton*>(req->data);
-
-  v8::Handle<v8::Value> argv[2];
-
-  if(data->errorString[0]) {
-    argv[0] = v8::Exception::Error(NanNew<v8::String>(data->errorString));
-    argv[1] = NanUndefined();
-  } else {
-    argv[0] = NanUndefined();
-    argv[1] = NanNew<v8::Int32>(data->result);
-  }
-  data->callback->Call(2, argv);
-
-  delete data->callback;
-  delete data;
-  delete req;
-}
-
 // Change request for ticket #401 - credit to @sguilly
 SerialPortParity NAN_INLINE(ToParityEnum(const v8::Handle<v8::String>& v8str)) {
   NanScope();
@@ -658,7 +608,6 @@ extern "C" {
     NODE_SET_METHOD(target, "list", List);
     NODE_SET_METHOD(target, "flush", Flush);
     NODE_SET_METHOD(target, "drain", Drain);
-    NODE_SET_METHOD(target, "break", Break);
 
 #ifndef WIN32
     SerialportPoller::Init(target);
