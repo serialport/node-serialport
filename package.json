@@ -1,6 +1,6 @@
 {
   "name": "serialport",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "Welcome your robotic javascript overlords. Better yet, program them!",
   "author": {
     "name": "Chris Williams",
