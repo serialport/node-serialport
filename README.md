@@ -126,9 +126,9 @@ npm install serialport
  * Download and install node.js:
 
 ```bash
-   wget http://nodejs.org/dist/v0.10.12/node-v0.10.12-linux-arm-pi.tar.gz
-   tar xvfz node-v0.10.12-linux-arm-pi.tar.gz
-   sudo mv node-v0.10.12-linux-arm-pi /opt/node/
+   wget http://nodejs.org/dist/v0.10.16/node-v0.10.16-linux-arm-pi.tar.gz
+   tar xvfz node-v0.10.16-linux-arm-pi.tar.gz
+   sudo mv node-v0.10.16-linux-arm-pi /opt/node/
 ```
 
  * Set up your paths correctly:
