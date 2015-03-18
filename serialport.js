@@ -23,8 +23,10 @@ var async = require('async');
 var exec = require('child_process').exec;
 
 function SerialPortFactory(_spfOptions) {
+  _spfOptions = _spfOptions || {};
 
   var spfOptions = {};
+
   spfOptions.queryPortsByPath =  (_spfOptions.queryPortsByPath === true ? true : false);
 
   var factory = this;
