@@ -22,7 +22,12 @@ var path = require('path');
 var async = require('async');
 var exec = require('child_process').exec;
 
-function SerialPortFactory() {
+function SerialPortFactory(_spfOptions) {
+  _spfOptions = _spfOptions || {};
+
+  var spfOptions = {};
+
+  spfOptions.queryPortsByPath =  (_spfOptions.queryPortsByPath === true ? true : false);
 
   var factory = this;
 
@@ -99,6 +104,7 @@ function SerialPortFactory() {
     };
 
     var err;
+
 
     options.baudRate = options.baudRate || options.baudrate || _options.baudrate;
 
@@ -512,7 +518,9 @@ function SerialPortFactory() {
       callback(null, port);
     }
 
-    fs.readdir('/dev/serial/by-id', function (err, files) {
+    var dirName = (spfOptions.queryPortsByPath ? '/dev/serial/by-path' : '/dev/serial/by-id');
+
+    fs.readdir(dirName, function (err, files) {
       if (err) {
         // if this directory is not found this could just be because it's not plugged in
         if (err.errno === 34) {
@@ -527,7 +535,6 @@ function SerialPortFactory() {
         return;
       }
 
-      var dirName = '/dev/serial/by-id';
       async.map(files, function (file, callback) {
         var fileName = path.join(dirName, file);
         fs.readlink(fileName, function (err, link) {
@@ -649,35 +656,6 @@ function SerialPortFactory() {
     }
 
     factory.SerialPortBinding.drain(fd, function (err, result) {
-      if (err) {
-        if (callback) {
-          callback(err, result);
-        } else {
-          self.emit('error', err);
-        }
-      } else {
-        if (callback) {
-          callback(err, result);
-        }
-      }
-    });
-  };
-
-  SerialPort.prototype.break = function (callback) {
-    var self = this;
-    var fd = this.fd;
-
-    if (!fd) {
-      var err = new Error('Serialport not open.');
-      if (callback) {
-        callback(err);
-      } else {
-        self.emit('error', err);
-      }
-      return;
-    }
-
-    factory.SerialPortBinding.break(fd, function (err, result) {
       if (err) {
         if (callback) {
           callback(err, result);

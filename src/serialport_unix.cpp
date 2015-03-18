@@ -742,13 +742,4 @@ void EIO_Drain(uv_work_t* req) {
   data->result = tcdrain(data->fd);
 }
 
-void EIO_Break(uv_work_t* req) {
-  BreakBaton* data = static_cast<BreakBaton*>(req->data);
-
-  data->result = tcsendbreak(data->fd, 1000);
-  if (data->result == -1) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error %s calling ioctl( ..., tcsendbreak)", strerror(errno));
-  }
-}
-
 #endif
