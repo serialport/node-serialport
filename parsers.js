@@ -51,9 +51,9 @@ module.exports = {
     return function (emitter, buffer) {
       for (var i = 0; i < buffer.length; i++) {
         buf[buf.length] = buffer[i];
-        if(buf[buf.length-1] == delimiter[nextDelimIndex])
+        if(buf[buf.length-1] === delimiter[nextDelimIndex])
           nextDelimIndex++;
-        if(nextDelimIndex == delimiter.length) {
+        if(nextDelimIndex === delimiter.length) {
           emitter.emit('data', buf);
           buf = [];
           nextDelimIndex = 0;

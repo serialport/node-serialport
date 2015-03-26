@@ -52,11 +52,11 @@ describe('parsers', function () {
       parser({ emit: spy }, data);
       expect(spy.callCount).to.equal(3);
       expect(spy.getCall(0).args[1]).to.have.length(15);
-      expect(spy.getCall(0).args[1]).to.satisfy(function(d) { return d[d.length-1] == 0; });
+      expect(spy.getCall(0).args[1]).to.satisfy(function(d) { return d[d.length-1] === 0; });
       expect(spy.getCall(1).args[1]).to.have.length(13);
-      expect(spy.getCall(1).args[1]).to.satisfy(function(d) { return d[d.length-1] == 0; });
+      expect(spy.getCall(1).args[1]).to.satisfy(function(d) { return d[d.length-1] === 0; });
       expect(spy.getCall(2).args[1]).to.have.length(21);
-      expect(spy.getCall(2).args[1]).to.satisfy(function(d) { return d[d.length-1] == 0; });
+      expect(spy.getCall(2).args[1]).to.satisfy(function(d) { return d[d.length-1] === 0; });
     });
     it('accepts single byte delimiter', function() {
       var data = new Buffer('This could be\0binary data\0sent from a Moteino\0');
@@ -81,11 +81,11 @@ describe('parsers', function () {
       parser({ emit: spy }, data2);
       expect(spy.callCount).to.equal(3);
       expect(spy.getCall(0).args[1]).to.have.length(15);
-      expect(spy.getCall(0).args[1]).to.satisfy(function(d) { return d[d.length-1] == 0; });
+      expect(spy.getCall(0).args[1]).to.satisfy(function(d) { return d[d.length-1] === 0; });
       expect(spy.getCall(1).args[1]).to.have.length(13);
-      expect(spy.getCall(1).args[1]).to.satisfy(function(d) { return d[d.length-1] == 0; });
+      expect(spy.getCall(1).args[1]).to.satisfy(function(d) { return d[d.length-1] === 0; });
       expect(spy.getCall(2).args[1]).to.have.length(21);
-      expect(spy.getCall(2).args[1]).to.satisfy(function(d) { return d[d.length-1] == 0; });
+      expect(spy.getCall(2).args[1]).to.satisfy(function(d) { return d[d.length-1] === 0; });
     });
   });
 });
