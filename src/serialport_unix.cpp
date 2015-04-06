@@ -148,6 +148,8 @@ void EIO_Open(uv_work_t* req) {
 
 
   int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
+  if(data->hupcl == false)
+      flags &= ~HUPCL;
   int fd = open(data->path, flags);
 
   if (fd == -1) {

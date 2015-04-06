@@ -78,9 +78,10 @@ public:
   bool xoff;
   bool xany;
   bool dsrdtr;
+  bool hupcl;
   SerialPortParity parity;
   SerialPortStopBits stopBits;
-  OpenBatonPlatformOptions* platformOptions;  
+  OpenBatonPlatformOptions* platformOptions;
   char errorString[ERROR_STRING_SIZE];
 };
 

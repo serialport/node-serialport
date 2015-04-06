@@ -65,6 +65,7 @@ function SerialPortFactory(_spfOptions) {
     xon: false,
     xoff: false,
     xany: false,
+    hupcl:true,
     rts: true,
     cts: false,
     dtr: true,
@@ -170,6 +171,8 @@ function SerialPortFactory(_spfOptions) {
         }
       }
     }
+
+    options.hupcl = (typeof options.hupcl === 'boolean') ? options.hupcl : _options.hupcl;
 
     options.bufferSize = options.bufferSize || options.buffersize || _options.buffersize;
     options.parser = options.parser || _options.parser;
