@@ -147,7 +147,7 @@ void EIO_Open(uv_work_t* req) {
   }
 
 
-  int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
+  int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_SYNC);
   int fd = open(data->path, flags);
 
   if (fd == -1) {
@@ -155,6 +155,12 @@ void EIO_Open(uv_work_t* req) {
     return;
   }
 
+  //Snow Leopard doesn't have O_CLOEXEC
+  int cloexec = fcntl(fd, F_SETFD, FD_CLOEXEC);
+  if (cloexec == -1) {
+    snprintf(data->errorString, sizeof(data->errorString), "Cannot open %s", data->path);
+    return;
+  }
 
   // struct sigaction saio;
   // saio.sa_handler = sigio_handler;
