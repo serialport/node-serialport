@@ -17,7 +17,7 @@ describe('SerialPort', function () {
 
 
   describe('Initialization', function () {
-    if (process.version.indexOf('v0.11.') ===0) {
+    if (process.version.indexOf('v0.10.') !==0) {
       it('does not currently work due to an issue with node unstable release, works in master.', function (done) {
         done();
       });
