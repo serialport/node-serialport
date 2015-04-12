@@ -14,7 +14,7 @@
     "package_name": "{node_abi}-{platform}-{arch}.tar.gz",
     "host": "https://node-serialport.s3.amazonaws.com"
   },
-  "main": "./serialport",
+  "main": "./index",
   "repository": {
     "type": "git",
     "url": "git://github.com/voodootikigod/node-serialport.git"

@@ -143,7 +143,7 @@ var hardware = new Hardware();
 
 var SandboxedModule = require('sandboxed-module');
 
-var serialPort = SandboxedModule.require('../serialport', {
+var serialPort = SandboxedModule.require('../index', {
   requires: {
     fs: {
       read: hardware.fakeRead.bind(hardware)
