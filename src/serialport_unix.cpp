@@ -174,8 +174,9 @@ int setup(int fd, OpenBaton *data) {
 
 
   int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
-  if(data->hupcl == false)
-      flags &= ~HUPCL;
+  if(data->hupcl == false) {
+    flags &= ~HUPCL;
+  }
   int fd = open(data->path, flags);
 
   if (fd == -1) {
@@ -183,6 +184,12 @@ int setup(int fd, OpenBaton *data) {
     return -1;
   }
 
+  //Snow Leopard doesn't have O_CLOEXEC
+  int cloexec = fcntl(fd, F_SETFD, FD_CLOEXEC);
+  if (cloexec == -1) {
+    snprintf(data->errorString, sizeof(data->errorString), "Cannot open %s", data->path);
+    return;
+  }
 
   // struct sigaction saio;
   // saio.sa_handler = sigio_handler;
