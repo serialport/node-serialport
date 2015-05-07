@@ -65,6 +65,7 @@ function SerialPortFactory(_spfOptions) {
     xon: false,
     xoff: false,
     xany: false,
+    hupcl:true,
     rts: true,
     cts: false,
     dtr: true,
@@ -175,7 +176,7 @@ function SerialPortFactory(_spfOptions) {
     opts.bufferSize = options.bufferSize || options.buffersize || _options.buffersize;
     opts.parser = options.parser || _options.parser;
     opts.platformOptions = options.platformOptions || _options.platformOptions;
-
+    options.hupcl = (typeof options.hupcl === 'boolean') ? options.hupcl : _options.hupcl;
     opts.dataCallback = options.dataCallback || function (data) {
       opts.parser(self, data);
     };
