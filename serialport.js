@@ -243,6 +243,38 @@ function SerialPortFactory(_spfOptions) {
     });
   };
 
+  //underlying code is written to update all options, but for now
+  //only baud is respected as I dont want to duplicate all the option
+  //verification code above
+  SerialPort.prototype.update = function (options, callback) {
+    var self = this;
+    if (!this.fd) {
+      debug('Update attempted, but serialport not available - FD is not set');
+      var err = new Error('Serialport not open.');
+      if (callback) {
+        callback(err);
+      } else {
+        // console.log("write-fd");
+        self.emit('error', err);
+      }
+      return;
+    }
+
+    this.options.baudRate = options.baudRate || options.baudrate || _options.baudrate;
+
+    factory.SerialPortBinding.update(this.fd, this.options, function (err) {
+      if (err) {
+        if (callback) {
+          callback(err);
+        } else {
+          self.emit('error', err);
+        }
+        return;
+      }
+      self.emit('open');
+      if (callback) { callback(); }
+    });
+  };
 
   SerialPort.prototype.isOpen = function() {
     return (this.fd ? true : false);

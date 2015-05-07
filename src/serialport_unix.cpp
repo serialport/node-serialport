@@ -128,8 +128,34 @@ int ToDataBitsConstant(int dataBits) {
 
 
 void EIO_Open(uv_work_t* req) {
-  OpenBaton* data = static_cast<OpenBaton*>(req->data);
-  UnixPlatformOptions* platformOptions = static_cast<UnixPlatformOptions*>(data->platformOptions);
+  OpenBaton* data = static_cast<OpenBaton*>(req->data);  
+  
+  int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
+  int fd = open(data->path, flags);
+
+  if(-1 == setup(fd, data)){
+    return;
+  }
+
+  data->result = fd;
+}
+
+void EIO_Update(uv_work_t* req) {
+  OpenBaton* data = static_cast<OpenBaton*>(req->data);  
+  
+  int fd = data->fd;
+
+  if(-1 == setup(fd, data)){
+    return;
+  }
+
+  data->result = fd;
+}
+
+
+int setup(int fd, OpenBaton *data) { 
+
+  UnixPlatformOptions* platformOptions = static_cast<UnixPlatformOptions*>(data->platformOptions);  
 
   int baudRate = ToBaudConstant(data->baudRate);
 
@@ -143,16 +169,15 @@ void EIO_Open(uv_work_t* req) {
   int dataBits = ToDataBitsConstant(data->dataBits);
   if(dataBits == -1) {
     snprintf(data->errorString, sizeof(data->errorString), "Invalid data bits setting %d", data->dataBits);
-    return;
+    return -1;
   }
 
 
-  int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
-  int fd = open(data->path, flags);
+
 
   if (fd == -1) {
     snprintf(data->errorString, sizeof(data->errorString), "Cannot open %s", data->path);
-    return;
+    return -1;
   }
 
 
@@ -276,7 +301,7 @@ void EIO_Open(uv_work_t* req) {
   default:
     snprintf(data->errorString, sizeof(data->errorString), "Invalid parity setting %d", data->parity);
     close(fd);
-    return;
+    return -1;
   }
 
   switch(data->stopBits) {
@@ -289,7 +314,7 @@ void EIO_Open(uv_work_t* req) {
   default:
     snprintf(data->errorString, sizeof(data->errorString), "Invalid stop bits setting %d", data->stopBits);
     close(fd);
-    return;
+    return -1;
   }
 
   options.c_cflag |= CLOCAL; //ignore status lines
@@ -321,7 +346,8 @@ void EIO_Open(uv_work_t* req) {
   }
 #endif
 
-  data->result = fd;
+  return 1;
+
 }
 
 void EIO_Write(uv_work_t* req) {
