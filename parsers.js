@@ -38,5 +38,28 @@ module.exports = {
         emitter.emit('data', out);
       }
     };
+  },
+
+  //Emit a data event each time a byte sequence (delimiter is an array of byte) is found
+  //Sample usage : byteDelimiter([10, 13])
+  byteDelimiter: function (delimiter) {
+    if( Object.prototype.toString.call( delimiter ) !== '[object Array]' ){
+      delimiter = [ delimiter ];
+    }
+    var buf = [];
+    var nextDelimIndex = 0;
+    return function (emitter, buffer) {
+      for (var i = 0; i < buffer.length; i++) {
+        buf[buf.length] = buffer[i];
+        if(buf[buf.length-1] === delimiter[nextDelimIndex]) {
+          nextDelimIndex++;
+        }
+        if(nextDelimIndex === delimiter.length) {
+          emitter.emit('data', buf);
+          buf = [];
+          nextDelimIndex = 0;
+        }
+      }
+    };
   }
 };
