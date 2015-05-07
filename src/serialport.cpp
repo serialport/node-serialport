@@ -122,6 +122,7 @@ NAN_METHOD(Open) {
   baton->xon = options->Get(NanNew<v8::String>("xon"))->ToBoolean()->BooleanValue();
   baton->xoff = options->Get(NanNew<v8::String>("xoff"))->ToBoolean()->BooleanValue();
   baton->xany = options->Get(NanNew<v8::String>("xany"))->ToBoolean()->BooleanValue();
+  baton->hupcl = options->Get(NanNew<v8::String>("hupcl"))->ToBoolean()->BooleanValue();
 
   v8::Local<v8::Object> platformOptions = options->Get(NanNew<v8::String>("platformOptions"))->ToObject();
   baton->platformOptions = ParsePlatformOptions(platformOptions);

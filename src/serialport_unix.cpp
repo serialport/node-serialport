@@ -128,8 +128,8 @@ int ToDataBitsConstant(int dataBits) {
 
 
 void EIO_Open(uv_work_t* req) {
-  OpenBaton* data = static_cast<OpenBaton*>(req->data);  
-  
+  OpenBaton* data = static_cast<OpenBaton*>(req->data);
+
   int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
   int fd = open(data->path, flags);
 
@@ -141,8 +141,8 @@ void EIO_Open(uv_work_t* req) {
 }
 
 void EIO_Update(uv_work_t* req) {
-  OpenBaton* data = static_cast<OpenBaton*>(req->data);  
-  
+  OpenBaton* data = static_cast<OpenBaton*>(req->data);
+
   int fd = data->fd;
 
   if(-1 == setup(fd, data)){
@@ -153,9 +153,9 @@ void EIO_Update(uv_work_t* req) {
 }
 
 
-int setup(int fd, OpenBaton *data) { 
+int setup(int fd, OpenBaton *data) {
 
-  UnixPlatformOptions* platformOptions = static_cast<UnixPlatformOptions*>(data->platformOptions);  
+  UnixPlatformOptions* platformOptions = static_cast<UnixPlatformOptions*>(data->platformOptions);
 
   int baudRate = ToBaudConstant(data->baudRate);
 
@@ -173,7 +173,10 @@ int setup(int fd, OpenBaton *data) {
   }
 
 
-
+  int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
+  if(data->hupcl == false)
+      flags &= ~HUPCL;
+  int fd = open(data->path, flags);
 
   if (fd == -1) {
     snprintf(data->errorString, sizeof(data->errorString), "Cannot open %s", data->path);
