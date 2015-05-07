@@ -44,4 +44,48 @@ describe('parsers', function () {
     });
   });
 
+  describe('#rawdelimiter', function() {
+    it('emits data events every time it meets 00x 00x', function() {
+      var data = new Buffer('This could be\0\0binary data\0\0sent from a Moteino\0\0');
+      var parser = parsers.byteDelimiter([0, 0]);
+      var spy = sinon.spy();
+      parser({ emit: spy }, data);
+      expect(spy.callCount).to.equal(3);
+      expect(spy.getCall(0).args[1]).to.have.length(15);
+      expect(spy.getCall(0).args[1]).to.satisfy(function(d) { return d[d.length-1] === 0; });
+      expect(spy.getCall(1).args[1]).to.have.length(13);
+      expect(spy.getCall(1).args[1]).to.satisfy(function(d) { return d[d.length-1] === 0; });
+      expect(spy.getCall(2).args[1]).to.have.length(21);
+      expect(spy.getCall(2).args[1]).to.satisfy(function(d) { return d[d.length-1] === 0; });
+    });
+    it('accepts single byte delimiter', function() {
+      var data = new Buffer('This could be\0binary data\0sent from a Moteino\0');
+      var parser = parsers.byteDelimiter(0);
+      var spy = sinon.spy();      
+      parser({ emit: spy }, data);
+      expect(spy.callCount).to.equal(3);
+    });
+    it('Works when buffer starts with delimiter', function() {
+      var data = new Buffer('\0Hello\0World\0');
+      var parser = parsers.byteDelimiter(0);
+      var spy = sinon.spy();      
+      parser({ emit: spy }, data);
+      expect(spy.callCount).to.equal(3);
+    });
+    it('continues looking for delimiters in the next buffers', function() {
+      var data1 = new Buffer('This could be\0\0binary ');
+      var data2 = new Buffer('data\0\0sent from a Moteino\0\0');
+      var parser = parsers.byteDelimiter([0,0]);
+      var spy = sinon.spy();      
+      parser({ emit: spy }, data1);
+      parser({ emit: spy }, data2);
+      expect(spy.callCount).to.equal(3);
+      expect(spy.getCall(0).args[1]).to.have.length(15);
+      expect(spy.getCall(0).args[1]).to.satisfy(function(d) { return d[d.length-1] === 0; });
+      expect(spy.getCall(1).args[1]).to.have.length(13);
+      expect(spy.getCall(1).args[1]).to.satisfy(function(d) { return d[d.length-1] === 0; });
+      expect(spy.getCall(2).args[1]).to.have.length(21);
+      expect(spy.getCall(2).args[1]).to.satisfy(function(d) { return d[d.length-1] === 0; });
+    });
+  });
 });

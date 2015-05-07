@@ -34,6 +34,10 @@ void EIO_Open(uv_work_t* req);
 void EIO_AfterOpen(uv_work_t* req);
 void AfterOpenSuccess(int fd, NanCallback* dataCallback, NanCallback* disconnectedCallback, NanCallback* errorCallback);
 
+NAN_METHOD(Update);
+void EIO_Update(uv_work_t* req);
+void EIO_AfterUpdate(uv_work_t* req);
+
 NAN_METHOD(Write);
 void EIO_Write(uv_work_t* req);
 void EIO_AfterWrite(uv_work_t* req);
@@ -69,6 +73,7 @@ public:
   NanCallback* dataCallback;
   NanCallback* disconnectedCallback;
   NanCallback* errorCallback;
+  int fd;
   int result;
   int baudRate;
   int dataBits;
@@ -78,9 +83,10 @@ public:
   bool xoff;
   bool xany;
   bool dsrdtr;
+  bool hupcl;
   SerialPortParity parity;
   SerialPortStopBits stopBits;
-  OpenBatonPlatformOptions* platformOptions;  
+  OpenBatonPlatformOptions* platformOptions;
   char errorString[ERROR_STRING_SIZE];
 };
 
@@ -189,5 +195,7 @@ public:
   int result;
   char errorString[ERROR_STRING_SIZE];
 };
+
+int setup(int fd, OpenBaton *data);
 
 #endif

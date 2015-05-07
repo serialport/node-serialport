@@ -76,18 +76,18 @@ void SerialportPoller::Init(Handle<Object> target) {
 NAN_METHOD(SerialportPoller::New) {
   NanScope();
 
-  SerialportPoller* obj = new SerialportPoller();
-
   if(!args[0]->IsInt32()) {
     NanThrowTypeError("First argument must be an fd");
     NanReturnUndefined();
   }
-  obj->fd_ = args[0]->ToInt32()->Int32Value();
 
   if(!args[1]->IsFunction()) {
     NanThrowTypeError("Third argument must be a function");
     NanReturnUndefined();
   }
+
+  SerialportPoller* obj = new SerialportPoller();
+  obj->fd_ = args[0]->ToInt32()->Int32Value();
   obj->callback_ = new NanCallback(args[1].As<v8::Function>());
   // obj->callCallback();
 

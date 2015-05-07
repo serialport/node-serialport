@@ -331,6 +331,10 @@ Opens a connection to the given serial port.
 
 Called when a connection has been opened. NOTE: Will NOT be called if openImmediately is set to false as open will not be performed. The callback should be a function that looks like: `function (error) { ... }`
 
+### .isOpen()
+
+Returns `true` if the port is open.
+
 ### .write (buffer, callback)
 
 Writes data to the given serial port.

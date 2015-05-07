@@ -80,6 +80,8 @@ void EIO_Open(uv_work_t* req) {
 
   DCB dcb = { 0 };
   dcb.DCBlength = sizeof(DCB);
+  if(data->hupcl == false)
+      dcb.fDtrControl = DTR_CONTROL_DISABLE; // disable DTR to avoid reset
   if(!BuildCommDCB("9600,n,8,1", &dcb)) {
     ErrorCodeToString("BuildCommDCB", GetLastError(), data->errorString);
     return;
@@ -163,6 +165,11 @@ public:
   NanCallback* disconnectedCallback;
 };
 
+void EIO_Update(uv_work_t* req) {
+
+}
+
+
 void EIO_Set(uv_work_t* req) {
   SetBaton* data = static_cast<SetBaton*>(req->data);
 
@@ -189,7 +196,7 @@ void EIO_Set(uv_work_t* req) {
   GetCommMask((HANDLE)data->fd, &bits);
 
   bits &= ~( EV_CTS | EV_DSR);
-  
+
   if (data->cts) {
     bits |= EV_CTS;
   }

@@ -122,6 +122,7 @@ NAN_METHOD(Open) {
   baton->xon = options->Get(NanNew<v8::String>("xon"))->ToBoolean()->BooleanValue();
   baton->xoff = options->Get(NanNew<v8::String>("xoff"))->ToBoolean()->BooleanValue();
   baton->xany = options->Get(NanNew<v8::String>("xany"))->ToBoolean()->BooleanValue();
+  baton->hupcl = options->Get(NanNew<v8::String>("hupcl"))->ToBoolean()->BooleanValue();
 
   v8::Local<v8::Object> platformOptions = options->Get(NanNew<v8::String>("platformOptions"))->ToObject();
   baton->platformOptions = ParsePlatformOptions(platformOptions);
@@ -140,6 +141,90 @@ NAN_METHOD(Open) {
 }
 
 void EIO_AfterOpen(uv_work_t* req) {
+  NanScope();
+
+  OpenBaton* data = static_cast<OpenBaton*>(req->data);
+
+  v8::Handle<v8::Value> argv[2];
+  if(data->errorString[0]) {
+    argv[0] = v8::Exception::Error(NanNew<v8::String>(data->errorString));
+    argv[1] = NanUndefined();
+    // not needed for AfterOpenSuccess
+    delete data->dataCallback;
+    delete data->errorCallback;
+    delete data->disconnectedCallback;
+  } else {
+    argv[0] = NanUndefined();
+    argv[1] = NanNew<v8::Int32>(data->result);
+
+    int fd = argv[1]->ToInt32()->Int32Value();
+    newQForFD(fd);
+
+    AfterOpenSuccess(data->result, data->dataCallback, data->disconnectedCallback, data->errorCallback);
+  }
+
+  data->callback->Call(2, argv);
+
+  delete data->platformOptions;
+  delete data->callback;
+  delete data;
+  delete req;
+}
+
+NAN_METHOD(Update) {
+  NanScope();
+  
+  // file descriptor
+  if(!args[0]->IsInt32()) {
+    NanThrowTypeError("First argument must be an int");
+    NanReturnUndefined();
+  }
+  int fd = args[0]->ToInt32()->Int32Value();
+
+  // options
+  if(!args[1]->IsObject()) {
+    NanThrowTypeError("Second argument must be an object");
+    NanReturnUndefined();
+  }
+  v8::Local<v8::Object> options = args[1]->ToObject();
+
+  // callback
+  if(!args[2]->IsFunction()) {
+    NanThrowTypeError("Third argument must be a function");
+    NanReturnUndefined();
+  }
+  v8::Local<v8::Function> callback = args[2].As<v8::Function>();
+
+  OpenBaton* baton = new OpenBaton();
+  memset(baton, 0, sizeof(OpenBaton));
+  baton->fd = fd;
+  baton->baudRate = options->Get(NanNew<v8::String>("baudRate"))->ToInt32()->Int32Value();
+  baton->dataBits = options->Get(NanNew<v8::String>("dataBits"))->ToInt32()->Int32Value();
+  baton->bufferSize = options->Get(NanNew<v8::String>("bufferSize"))->ToInt32()->Int32Value();
+  baton->parity = ToParityEnum(options->Get(NanNew<v8::String>("parity"))->ToString());
+  baton->stopBits = ToStopBitEnum(options->Get(NanNew<v8::String>("stopBits"))->ToNumber()->NumberValue());
+  baton->rtscts = options->Get(NanNew<v8::String>("rtscts"))->ToBoolean()->BooleanValue();
+  baton->xon = options->Get(NanNew<v8::String>("xon"))->ToBoolean()->BooleanValue();
+  baton->xoff = options->Get(NanNew<v8::String>("xoff"))->ToBoolean()->BooleanValue();
+  baton->xany = options->Get(NanNew<v8::String>("xany"))->ToBoolean()->BooleanValue();
+
+  v8::Local<v8::Object> platformOptions = options->Get(NanNew<v8::String>("platformOptions"))->ToObject();
+  baton->platformOptions = ParsePlatformOptions(platformOptions);
+
+  baton->callback = new NanCallback(callback);
+  baton->dataCallback = new NanCallback(options->Get(NanNew<v8::String>("dataCallback")).As<v8::Function>());
+  baton->disconnectedCallback = new NanCallback(options->Get(NanNew<v8::String>("disconnectedCallback")).As<v8::Function>());
+  baton->errorCallback = new NanCallback(options->Get(NanNew<v8::String>("errorCallback")).As<v8::Function>());
+
+  uv_work_t* req = new uv_work_t();
+  req->data = baton;
+
+  uv_queue_work(uv_default_loop(), req, EIO_Update, (uv_after_work_cb)EIO_AfterUpdate);
+
+  NanReturnUndefined();
+}
+
+void EIO_AfterUpdate(uv_work_t* req) {
   NanScope();
 
   OpenBaton* data = static_cast<OpenBaton*>(req->data);
@@ -603,6 +688,7 @@ extern "C" {
     NanScope();
     NODE_SET_METHOD(target, "set", Set);
     NODE_SET_METHOD(target, "open", Open);
+    NODE_SET_METHOD(target, "update", Update);
     NODE_SET_METHOD(target, "write", Write);
     NODE_SET_METHOD(target, "close", Close);
     NODE_SET_METHOD(target, "list", List);
