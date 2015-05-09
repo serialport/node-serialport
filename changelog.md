@@ -1,3 +1,13 @@
+Version 1.7.0
+-------------
+- Fix for #518 and #498 If you pass to SerialPort function (constructor) the same object for argument "options", inside SerialPort will use it as internal object and adds handlers to it. That causes only one callback to work on different SerialPort instances. (@bullmastiffo)
+- Update README.md #515 (@arahlf)
+- Fix a memory leak in SerialportPoller::New (@jpilet)
+- unix support for update baudrate #502 (@jacobrosenthal)
+- set cloexec after open, possible fix for #468 (@jacobrosenthal)
+- Added hang up on close option to constructor. #495 (@jbendes)
+- Upgraded NAN to 1.8.4 due to complaints from io.js 2.x users. (@imyller)
+
 Version 1.6.1
 -------------
 - Upgraded to NAN 1.7.0
