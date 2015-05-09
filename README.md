@@ -126,9 +126,9 @@ npm install serialport
  * Download and install node.js:
 
 ```bash
-   wget http://nodejs.org/dist/v0.10.12/node-v0.10.12-linux-arm-pi.tar.gz
-   tar xvfz node-v0.10.12-linux-arm-pi.tar.gz
-   sudo mv node-v0.10.12-linux-arm-pi /opt/node/
+   wget http://nodejs.org/dist/v0.10.16/node-v0.10.16-linux-arm-pi.tar.gz
+   tar xvfz node-v0.10.16-linux-arm-pi.tar.gz
+   sudo mv node-v0.10.16-linux-arm-pi /opt/node/
 ```
 
  * Set up your paths correctly:
@@ -330,6 +330,10 @@ Opens a connection to the given serial port.
 **_callback (optional)_**
 
 Called when a connection has been opened. NOTE: Will NOT be called if openImmediately is set to false as open will not be performed. The callback should be a function that looks like: `function (error) { ... }`
+
+### .isOpen()
+
+Returns `true` if the port is open.
 
 ### .write (buffer, callback)
 

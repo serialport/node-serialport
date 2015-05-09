@@ -65,6 +65,7 @@ function SerialPortFactory(_spfOptions) {
     xon: false,
     xoff: false,
     xany: false,
+    hupcl:true,
     rts: true,
     cts: false,
     dtr: true,
@@ -86,8 +87,9 @@ function SerialPortFactory(_spfOptions) {
     if (typeof (callback) !== 'function') {
       callback = null;
     }
-
     options = (typeof options !== 'function') && options || {};
+
+    var opts = {};
 
     openImmediately = (openImmediately === undefined || openImmediately === null) ? true : openImmediately;
 
@@ -106,25 +108,25 @@ function SerialPortFactory(_spfOptions) {
     var err;
 
 
-    options.baudRate = options.baudRate || options.baudrate || _options.baudrate;
+    opts.baudRate = options.baudRate || options.baudrate || _options.baudrate;
 
-    options.dataBits = options.dataBits || options.databits || _options.databits;
-    if (DATABITS.indexOf(options.dataBits) === -1) {
-      err = new Error('Invalid "databits": ' + options.dataBits);
+    opts.dataBits = options.dataBits || options.databits || _options.databits;
+    if (DATABITS.indexOf(opts.dataBits) === -1) {
+      err = new Error('Invalid "databits": ' + opts.dataBits);
       callback(err);
       return;
     }
 
-    options.stopBits = options.stopBits || options.stopbits || _options.stopbits;
-    if (STOPBITS.indexOf(options.stopBits) === -1) {
-      err = new Error('Invalid "stopbits": ' + options.stopbits);
+    opts.stopBits = options.stopBits || options.stopbits || _options.stopbits;
+    if (STOPBITS.indexOf(opts.stopBits) === -1) {
+      err = new Error('Invalid "stopbits": ' + opts.stopbits);
       callback(err);
       return;
     }
 
-    options.parity = options.parity || _options.parity;
-    if (PARITY.indexOf(options.parity) === -1) {
-      err = new Error('Invalid "parity": ' + options.parity);
+    opts.parity = options.parity || _options.parity;
+    if (PARITY.indexOf(opts.parity) === -1) {
+      err = new Error('Invalid "parity": ' + opts.parity);
       callback(err);
       return;
     }
@@ -135,16 +137,16 @@ function SerialPortFactory(_spfOptions) {
     }
 
     // flush defaults, then update with provided details
-    options.rtscts = _options.rtscts;
-    options.xon = _options.xon;
-    options.xoff = _options.xoff;
-    options.xany = _options.xany;
+    opts.rtscts = _options.rtscts;
+    opts.xon = _options.xon;
+    opts.xoff = _options.xoff;
+    opts.xany = _options.xany;
 
     if (options.flowControl || options.flowcontrol) {
       var fc = options.flowControl || options.flowcontrol;
 
       if (typeof fc === 'boolean') {
-        options.rtscts = true;
+        opts.rtscts = true;
       } else {
         var clean = fc.every(function (flowControl) {
           var fcup = flowControl.toUpperCase();
@@ -157,10 +159,10 @@ function SerialPortFactory(_spfOptions) {
 
             // "XON", "XOFF", "XANY", "DTRDTS", "RTSCTS"
             switch (idx) {
-              case 0: options.xon = true; break;
-              case 1: options.xoff = true; break;
-              case 2: options.xany = true;  break;
-              case 3: options.rtscts = true; break;
+              case 0: opts.xon = true; break;
+              case 1: opts.xoff = true; break;
+              case 2: opts.xany = true;  break;
+              case 3: opts.rtscts = true; break;
             }
             return true;
           }
@@ -171,15 +173,15 @@ function SerialPortFactory(_spfOptions) {
       }
     }
 
-    options.bufferSize = options.bufferSize || options.buffersize || _options.buffersize;
-    options.parser = options.parser || _options.parser;
-    options.platformOptions = options.platformOptions || _options.platformOptions;
-
-    options.dataCallback = options.dataCallback || function (data) {
-      options.parser(self, data);
+    opts.bufferSize = options.bufferSize || options.buffersize || _options.buffersize;
+    opts.parser = options.parser || _options.parser;
+    opts.platformOptions = options.platformOptions || _options.platformOptions;
+    options.hupcl = (typeof options.hupcl === 'boolean') ? options.hupcl : _options.hupcl;
+    opts.dataCallback = options.dataCallback || function (data) {
+      opts.parser(self, data);
     };
 
-    options.disconnectedCallback = options.disconnectedCallback || function (err) {
+    opts.disconnectedCallback = options.disconnectedCallback || function (err) {
       if (self.closing) {
         return;
       }
@@ -198,7 +200,7 @@ function SerialPortFactory(_spfOptions) {
       this.reading = false;
     }
 
-    this.options = options;
+    this.options = opts;
     this.path = path;
     if (openImmediately) {
       process.nextTick(function () {
@@ -242,6 +244,38 @@ function SerialPortFactory(_spfOptions) {
     });
   };
 
+  //underlying code is written to update all options, but for now
+  //only baud is respected as I dont want to duplicate all the option
+  //verification code above
+  SerialPort.prototype.update = function (options, callback) {
+    var self = this;
+    if (!this.fd) {
+      debug('Update attempted, but serialport not available - FD is not set');
+      var err = new Error('Serialport not open.');
+      if (callback) {
+        callback(err);
+      } else {
+        // console.log("write-fd");
+        self.emit('error', err);
+      }
+      return;
+    }
+
+    this.options.baudRate = options.baudRate || options.baudrate || _options.baudrate;
+
+    factory.SerialPortBinding.update(this.fd, this.options, function (err) {
+      if (err) {
+        if (callback) {
+          callback(err);
+        } else {
+          self.emit('error', err);
+        }
+        return;
+      }
+      self.emit('open');
+      if (callback) { callback(); }
+    });
+  };
 
   SerialPort.prototype.isOpen = function() {
     return (this.fd ? true : false);
