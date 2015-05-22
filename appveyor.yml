@@ -35,8 +35,8 @@ install:
   - cmd: ECHO %PUBLISH_BINARY%
   - cmd: git clone https://github.com/marcelklehr/nodist.git c:\nodist 2>&1
   - cmd: SET NODIST_X64=0
-  - cmd: call nodist update
-  - cmd: call nodist $env:nodejs_version
+  - cmd: nodist update
+  - cmd: nodist $env:nodejs_version
   - cmd: npm install -g node-gyp
 
 # to run your custom scripts instead of automatic MSBuild
@@ -56,8 +56,8 @@ build_script:
   - cmd: SET PATH=C:\Program Files (x86)\MSBuild\12.0\bin\;%PATH%
   - cmd: SET PATH=C:\python27;%PATH%
   - cmd: set NODIST_X64=1
-  - cmd: call nodist update
-  - cmd: call nodist $env:nodejs_version
+  - cmd: nodist update
+  - cmd: nodist $env:nodejs_version
   - cmd: npm install -g node-gyp
   - cmd: ECHO "BUILDING x64 version:"
   - cmd: npm install --build-from-source --msvs_version=2013
