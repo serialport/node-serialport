@@ -1,3 +1,7 @@
+Version 1.7.1
+-------------
+- Fixed breaking issues in underlying code. (@voodootikigod)
+
 Version 1.7.0
 -------------
 - Fix for #518 and #498 If you pass to SerialPort function (constructor) the same object for argument "options", inside SerialPort will use it as internal object and adds handlers to it. That causes only one callback to work on different SerialPort instances. (@bullmastiffo)
