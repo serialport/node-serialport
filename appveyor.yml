@@ -15,6 +15,7 @@ install:
   - cmd: ECHO "APPVEYOR_REPO_COMMIT_MESSAGE ->"
   - cmd: ECHO %APPVEYOR_REPO_COMMIT_MESSAGE%
   - cmd: SET COMMIT_MSG="%APPVEYOR_REPO_COMMIT_MESSAGE%"
+  - cmd: SET NODIST_PREFIX=C:\nodist
   - cmd: SET PATH=C:\nodist\bin;%PATH%
   - cmd: SET PUBLISH_BINARY=false
   # Check to verify the branch is the same than latest tag, if so
