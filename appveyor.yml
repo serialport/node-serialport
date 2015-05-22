@@ -36,7 +36,7 @@ install:
   - cmd: git clone https://github.com/marcelklehr/nodist.git c:\nodist 2>&1
   - cmd: SET NODIST_X64=0
   - cmd: nodist update
-  - cmd: nodist $env:nodejs_version
+  - cmd: nodist %nodejs_version%
   - cmd: npm install -g node-gyp
 
 # to run your custom scripts instead of automatic MSBuild
@@ -57,7 +57,7 @@ build_script:
   - cmd: SET PATH=C:\python27;%PATH%
   - cmd: set NODIST_X64=1
   - cmd: nodist update
-  - cmd: nodist $env:nodejs_version
+  - cmd: nodist %nodejs_version%
   - cmd: npm install -g node-gyp
   - cmd: ECHO "BUILDING x64 version:"
   - cmd: npm install --build-from-source --msvs_version=2013
