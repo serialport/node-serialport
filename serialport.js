@@ -708,6 +708,12 @@ function SerialPortFactory(_spfOptions) {
   factory.parsers = parsers;
   factory.SerialPortBinding = SerialPortBinding;
 
+  factory.setQueryPortsByPath=function(val)
+  {
+	spfOptions.queryPortsByPath=val;
+  }
+
+
   if (process.platform === 'win32') {
     factory.list = SerialPortBinding.list;
   } else if (process.platform === 'darwin') {
