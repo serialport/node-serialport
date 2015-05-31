@@ -179,6 +179,13 @@ int setup(int fd, OpenBaton *data) {
   // }
   // int fd = open(data->path, flags);
 
+  int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
+  if(data->hupcl == false) {
+    flags &= ~HUPCL;
+  }
+  fd = open(data->path, flags);
+
+
   if (fd == -1) {
     snprintf(data->errorString, sizeof(data->errorString), "Cannot open %s", data->path);
     return -1;
