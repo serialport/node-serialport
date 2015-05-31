@@ -4,7 +4,12 @@ environment:
     secure: wJRlPhmqDgwxllTxhhG5JJosBf3nKYxcXO6NfGnrUUnxmECHeNTsBrldqW8+EjyK
   node_pre_gyp_accessKeyId:
     secure: cgGBaLa6xiPo5duak1/xU5hxPCn1aUQqkQQZf27QQp0=
-
+    
+  matrix:
+  - nodejs_version: "0.10"
+  - nodejs_version: "0.11"
+  - nodejs_version: "0.12"
+  
 
 # to add several platforms to build matrix:
 platform:
@@ -15,6 +20,7 @@ install:
   - cmd: ECHO "APPVEYOR_REPO_COMMIT_MESSAGE ->"
   - cmd: ECHO %APPVEYOR_REPO_COMMIT_MESSAGE%
   - cmd: SET COMMIT_MSG="%APPVEYOR_REPO_COMMIT_MESSAGE%"
+  - cmd: SET NODIST_PREFIX=C:\nodist
   - cmd: SET PATH=C:\nodist\bin;%PATH%
   - cmd: SET PUBLISH_BINARY=false
   # Check to verify the branch is the same than latest tag, if so
@@ -33,8 +39,8 @@ install:
   - cmd: ECHO %PUBLISH_BINARY%
   - cmd: git clone https://github.com/marcelklehr/nodist.git c:\nodist 2>&1
   - cmd: SET NODIST_X64=0
-  - cmd: call nodist update
-  - cmd: call nodist stable
+  - cmd: nodist update
+  - cmd: nodist %nodejs_version%
   - cmd: npm install -g node-gyp
 
 # to run your custom scripts instead of automatic MSBuild
@@ -54,8 +60,8 @@ build_script:
   - cmd: SET PATH=C:\Program Files (x86)\MSBuild\12.0\bin\;%PATH%
   - cmd: SET PATH=C:\python27;%PATH%
   - cmd: set NODIST_X64=1
-  - cmd: call nodist update
-  - cmd: call nodist stable
+  - cmd: nodist update
+  - cmd: nodist %nodejs_version%
   - cmd: npm install -g node-gyp
   - cmd: ECHO "BUILDING x64 version:"
   - cmd: npm install --build-from-source --msvs_version=2013

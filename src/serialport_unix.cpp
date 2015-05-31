@@ -179,7 +179,6 @@ int setup(int fd, OpenBaton *data) {
   // }
   // int fd = open(data->path, flags);
 
-
   int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
   if(data->hupcl == false) {
     flags &= ~HUPCL;
