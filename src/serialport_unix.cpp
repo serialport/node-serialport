@@ -177,7 +177,7 @@ int setup(int fd, OpenBaton *data) {
   if(data->hupcl == false) {
     flags &= ~HUPCL;
   }
-  int fd = open(data->path, flags);
+  fd = open(data->path, flags);
 
   if (fd == -1) {
     snprintf(data->errorString, sizeof(data->errorString), "Cannot open %s", data->path);
@@ -188,7 +188,7 @@ int setup(int fd, OpenBaton *data) {
   int cloexec = fcntl(fd, F_SETFD, FD_CLOEXEC);
   if (cloexec == -1) {
     snprintf(data->errorString, sizeof(data->errorString), "Cannot open %s", data->path);
-    return;
+    return -1;
   }
 
   // struct sigaction saio;
