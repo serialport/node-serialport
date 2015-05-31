@@ -183,7 +183,7 @@ int setup(int fd, OpenBaton *data) {
   if(data->hupcl == false) {
     flags &= ~HUPCL;
   }
-  int fd = open(data->path, flags);
+  fd = open(data->path, flags);
 
 
   if (fd == -1) {
