@@ -117,6 +117,10 @@ void EIO_Open(uv_work_t* req) {
     break;
   }
 
+  if(data->rtscts) {
+    dcb.fOutxCtsFlow = TRUE;
+  }
+
   if(!SetCommState(file, &dcb)) {
     ErrorCodeToString("SetCommState", GetLastError(), data->errorString);
     return;
