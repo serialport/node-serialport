@@ -212,7 +212,7 @@ SerialPort.prototype.open = function(options, cb) {
     } else {
       debug('native open succeed');
       if (isWindows) {
-        this._source = new WindowsSource();
+        this._source = new WindowsSource(fd);
       } else {
         this._source = new UnixSource(fd);
       }
@@ -236,12 +236,32 @@ SerialPort.prototype.isOpen = function() {
   return !!this.fd;
 };
 
+SerialPort.prototype.close = function(cb) {
+  debug('closing');
+  if(_.isFunction(cb)) {
+    this.once('close', cb);
+  }
+
+  this._source.close(function(err) {
+    if(err) {
+      this.emit('error', err);
+    }
+
+    this.emit('close');
+  }.bind(this));
+};
 
 /**
  * Dummy source object for windows
  */
-function WindowsSource(options) {
+function WindowsSource(fd) {
+  this.fd = fd;
 }
+
+WindowsSource.prototype.close = function(cb) {
+  debug('WindowsSource close');
+  SerialPortBinding.close(this.fd, cb);
+};
 
 WindowsSource.prototype.readStart = function() {
   this.reading = true;
@@ -271,6 +291,11 @@ function UnixSource(fd) {
     }
   }.bind(this));
 }
+
+UnixSource.prototype.close = function(cb) {
+  this.serialPoller.close();
+  SerialPortBinding.close(this.fd, cb);
+};
 
 /**
  * Callback to read data when it is available from the serial port
@@ -311,6 +336,7 @@ UnixSource.prototype.readStart = function() {
 
 /**
  * Ends data flowing from the serial port
+ * cb = cb || function() {};
  */
 UnixSource.prototype.readStop = function() {
   this.reading = false;
