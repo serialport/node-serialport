@@ -1,8 +1,4 @@
 {
-  'variables': 
-  {
-    'winplat%': '',
-  },
   'targets': [
     {
       'target_name': 'serialport',
@@ -15,58 +11,17 @@
       'conditions': [
         ['OS=="win"',
           {
-            'conditions': [
-              ['winplat!="uwp"',
-                {
-                  'sources': [
-                    'src/serialport_win.cpp',
-                    'src/win/disphelper.c',
-                    'src/win/enumser.cpp',
-                  ],
-                  'msvs_settings': {
-                    'VCCLCompilerTool': {
-                      'ExceptionHandling': '2',
-                      'DisableSpecificWarnings': [ '4530', '4506' ],
-                    },
-                  },
-                }
-              ],
-              ['winplat=="uwp"',
-                {
-                  'sources': [
-                    'src/serialport_uwp.cpp',
-                  ],
-                  'msvs_settings': {
-                    'VCLinkerTool': {
-                      'IgnoreDefaultLibraryNames' : ['kernel32.lib','advapi32.lib' ],
-                    },
-                    'VCCLCompilerTool': {
-                      'AdditionalUsingDirectories': [ '$(VCInstallDir)vcpackages;$(WindowsSdkDir)UnionMetadata;%(AdditionalUsingDirectories)' ],
-                      'CompileAsWinRT': 'true',
-                    }
-                  },
-                  'libraries': [
-                    '-lonecore.lib',
-                  ],
-                  'configurations': {
-                    'Release': {
-                      'msvs_settings': {
-                        'VCCLCompilerTool': {
-                          'RuntimeLibrary': '2',
-                       }
-                      },
-                    },
-                    'Debug': {
-                      'msvs_settings': {
-                        'VCCLCompilerTool': {
-                          'RuntimeLibrary': '3',
-                        }
-                      },
-                    }
-                  }
-                }
-              ],
+            'sources': [
+              'src/serialport_win.cpp',
+              'src/win/disphelper.c',
+              'src/win/enumser.cpp',
             ],
+            'msvs_settings': {
+              'VCCLCompilerTool': {
+                'ExceptionHandling': '2',
+                'DisableSpecificWarnings': [ '4530', '4506' ],
+              },
+            },
           },
         ],
         ['OS=="mac"',
