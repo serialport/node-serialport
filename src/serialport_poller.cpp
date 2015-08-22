@@ -28,7 +28,7 @@ void SerialportPoller::callCallback(int status) {
 
   // Call the callback to go read more data...
 
-  v8::Handle<v8::Value> argv[1];
+  v8::Local<v8::Value> argv[1];
   if(status != 0) {
     // error handling changed in libuv, see:
     // https://github.com/joyent/libuv/commit/3ee4d3f183331
