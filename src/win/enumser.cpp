@@ -8,7 +8,7 @@ History: PJN / 23-02-1999 Code now uses QueryDosDevice if running on NT to deter
                           the ports at all. It should operate a lot faster in addition.
          PJN / 12-12-1999 Fixed a problem in the Win9x code path when trying to detect 
                           deactivated IRDA-ports. When trying to open those, you will 
-                          get the error-code ERROR_GEN_FAILURE. 
+                          get the error-code ERROR_GEN_FAILURE.ï¿½
          PJN / 17-05-2000 Code now uses GetDefaultCommConfig in all cases to detect 
                           the ports.
          PJN / 29-03-2001 1. Reverted code to use CreateFile or QueryDosDevice as it is 
@@ -963,7 +963,7 @@ BOOL CEnumerateSerial::UsingWMI(CSimpleArray<UINT>& ports, CSimpleArray<CString>
             for (ULONG n=0; n<uReturned; n++)
             {
               ATL::CComVariant varProperty1;
-              HRESULT hrGet = apObj[n]->Get(L"DeviceID", 0, &varProperty1, NULL, NULL);
+              HRESULT hrGet = Nan::Get(apObj[n], L"DeviceID", 0, &varProperty1, NULL, NULL);
               if (SUCCEEDED(hrGet) && (varProperty1.vt == VT_BSTR) && (wcslen(varProperty1.bstrVal) > 3))
               {
                 //If it looks like "COMX" then add it to the array which will be returned
@@ -979,7 +979,7 @@ BOOL CEnumerateSerial::UsingWMI(CSimpleArray<UINT>& ports, CSimpleArray<CString>
 
                   //Also get the friendly name of the port
                   ATL::CComVariant varProperty2;
-                  if (SUCCEEDED(apObj[n]->Get(L"Name", 0, &varProperty2, NULL, NULL)) && (varProperty2.vt == VT_BSTR))
+                  if Nan::Get((SUCCEEDED(apObj[n], L"Name", 0, &varProperty2, NULL, NULL)) && (varProperty2.vt == VT_BSTR))
                   {  
                 #if defined CENUMERATESERIAL_USE_STL
                   #if defined _UNICODE  
