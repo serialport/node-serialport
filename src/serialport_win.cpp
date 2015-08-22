@@ -301,7 +301,7 @@ void EIO_AfterWatchPort(uv_work_t* req) {
   }
 
   if(data->bytesRead > 0) {
-    v8::Handle<v8::Value> argv[1];
+    v8::Local<v8::Value> argv[1];
     argv[0] = Nan::NewBuffer(data->buffer, data->bytesRead).ToLocalChecked();
     data->dataCallback->Call(1, argv);
   } else if(data->errorCode > 0) {
@@ -309,7 +309,7 @@ void EIO_AfterWatchPort(uv_work_t* req) {
       DisposeWatchPortCallbacks(data);
       goto cleanup;
     } else {
-      v8::Handle<v8::Value> argv[1];
+      v8::Local<v8::Value> argv[1];
       argv[0] = Nan::Error(data->errorString);
       data->errorCallback->Call(1, argv);
       Sleep(100); // prevent the errors from occurring too fast

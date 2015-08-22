@@ -144,7 +144,7 @@ void EIO_AfterOpen(uv_work_t* req) {
 
   OpenBaton* data = static_cast<OpenBaton*>(req->data);
 
-  v8::Handle<v8::Value> argv[2];
+  v8::Local<v8::Value> argv[2];
   if(data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
     argv[1] = Nan::Undefined();
@@ -227,7 +227,7 @@ void EIO_AfterUpdate(uv_work_t* req) {
 
   OpenBaton* data = static_cast<OpenBaton*>(req->data);
 
-  v8::Handle<v8::Value> argv[2];
+  v8::Local<v8::Value> argv[2];
   if(data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
     argv[1] = Nan::Undefined();
@@ -318,7 +318,7 @@ void EIO_AfterWrite(uv_work_t* req) {
   QueuedWrite* queuedWrite = static_cast<QueuedWrite*>(req->data);
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
 
-  v8::Handle<v8::Value> argv[2];
+  v8::Local<v8::Value> argv[2];
   if(data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
     argv[1] = Nan::Undefined();
@@ -397,7 +397,7 @@ void EIO_AfterClose(uv_work_t* req) {
 
   CloseBaton* data = static_cast<CloseBaton*>(req->data);
 
-  v8::Handle<v8::Value> argv[1];
+  v8::Local<v8::Value> argv[1];
   if(data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
   } else {
@@ -452,7 +452,7 @@ void EIO_AfterList(uv_work_t* req) {
 
   ListBaton* data = static_cast<ListBaton*>(req->data);
 
-  v8::Handle<v8::Value> argv[2];
+  v8::Local<v8::Value> argv[2];
   if(data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
     argv[1] = Nan::Undefined();
@@ -516,7 +516,7 @@ void EIO_AfterFlush(uv_work_t* req) {
 
   FlushBaton* data = static_cast<FlushBaton*>(req->data);
 
-  v8::Handle<v8::Value> argv[2];
+  v8::Local<v8::Value> argv[2];
 
   if(data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
@@ -577,7 +577,7 @@ void EIO_AfterSet(uv_work_t* req) {
 
   SetBaton* data = static_cast<SetBaton*>(req->data);
 
-  v8::Handle<v8::Value> argv[2];
+  v8::Local<v8::Value> argv[2];
 
   if(data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
@@ -626,7 +626,7 @@ void EIO_AfterDrain(uv_work_t* req) {
 
   DrainBaton* data = static_cast<DrainBaton*>(req->data);
 
-  v8::Handle<v8::Value> argv[2];
+  v8::Local<v8::Value> argv[2];
 
   if(data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
