@@ -8,7 +8,7 @@
 #include <nan.h>
 #include "serialport.h"
 
-class SerialportPoller : public node::ObjectWrap {
+class SerialportPoller : public Nan::ObjectWrap {
  public:
   static void Init(v8::Handle<v8::Object> target);
 
@@ -29,7 +29,7 @@ class SerialportPoller : public node::ObjectWrap {
   int fd_;
   char errorString[ERROR_STRING_SIZE];
 
-  NanCallback* callback_;
+  Nan::Callback* callback_;
 };
 
 #endif

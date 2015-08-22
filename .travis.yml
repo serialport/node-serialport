@@ -1,74 +1,79 @@
-language: node_js
-node_js:
-- '0.10'
-- '0.11'
-- '0.12'
-compiler: clang
+os:
+- linux
+- osx
+# turn on new container-based infrastructure
+sudo: false
+language: cpp
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-4.8
+    - g++-4.8-multilib
+    - gcc-multilib
 env:
+  matrix:
+  - TRAVIS_NODE_VERSION="0.10"
+  - TRAVIS_NODE_VERSION="0.12"
+  - TRAVIS_NODE_VERSION="4"
+  - TRAVIS_NODE_VERSION="0.10" ARCH="x86"
+  - TRAVIS_NODE_VERSION="0.12" ARCH="x86"
+  - TRAVIS_NODE_VERSION="4" ARCH="x86"
   global:
-    - secure: "Zg7w8hTpgVfm6JeTScsMhaexFcVS5N2oI9O/6MLtsm3CUhb0Txq65y4y/a5DU3re6Pl1ryE21anVLdg4RGDeykCauQtg8nFzuGXBfNn9bRTnsIfkiS9LNkbSZ8h3c7EsyX0NJ7LVgnkPh/XXMqMj4Nh0ovbBCwZJ6k2ZvccvDvU="
-    - secure: "VS7JTJYfcCDOiWZH6g+Lm4y+QFuCB++4GnYvWqqaUljebuB2l8gZhDrmQtWKFPBEZP21ptjtpNWJC6hCUf07qJ81vVpb6wMUikfOOLN0nulED+AC5HtCxYnfwIu1i0z00YxaSfvozMXKk9TCLabE0ognoDV+XV1bQoYm8668z7E="
+  - secure: "Zg7w8hTpgVfm6JeTScsMhaexFcVS5N2oI9O/6MLtsm3CUhb0Txq65y4y/a5DU3re6Pl1ryE21anVLdg4RGDeykCauQtg8nFzuGXBfNn9bRTnsIfkiS9LNkbSZ8h3c7EsyX0NJ7LVgnkPh/XXMqMj4Nh0ovbBCwZJ6k2ZvccvDvU="
+  - secure: "VS7JTJYfcCDOiWZH6g+Lm4y+QFuCB++4GnYvWqqaUljebuB2l8gZhDrmQtWKFPBEZP21ptjtpNWJC6hCUf07qJ81vVpb6wMUikfOOLN0nulED+AC5HtCxYnfwIu1i0z00YxaSfvozMXKk9TCLabE0ognoDV+XV1bQoYm8668z7E="
+matrix:
+  exclude:
+  - os: osx
+    env: TRAVIS_NODE_VERSION="0.10" ARCH="x86"
+  - os: osx
+    env: TRAVIS_NODE_VERSION="0.12" ARCH="x86"
+  - os: osx
+    env: TRAVIS_NODE_VERSION="4" ARCH="x86"
 
 before_install:
+# reinstall latest nvm
+- rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
+- BASE_URL=$(node -p "v=parseInt(process.versions.node),(v>=1&&v<4?'https://iojs.org/dist/':'https://nodejs.org/dist/')+process.version")
+- X86_FILE=$(node -p "v=parseInt(process.versions.node),(v>=1&&v<4?'iojs':'node')+'-'+process.version+'-'+process.platform+'-x86'")
+# download node if testing x86 architecture
+- if [[ "$ARCH" == "x86" ]]; then wget $BASE_URL/$X86_FILE.tar.gz; tar -xf $X86_FILE.tar.gz; export PATH=$X86_FILE/bin:$PATH; fi
+# reinstall npm and node-pre-gyp
+- npm install -g node-gyp node-pre-gyp
+# print versions
+- npm --version
+- node-gyp --version
+- node-pre-gyp --version
+# use g++-4.8 on Linux
+- if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.8; fi
+- $CXX --version
 # get commit message
 - COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
-# put local node-pre-gyp on PATH
-- export PATH=./node_modules/.bin/:$PATH
-# put global node-gyp on PATH
-- npm install node-gyp -g
-# install aws-sdk so it is available for publishing
-- npm install aws-sdk
 # figure out if we should publish
 - PUBLISH_BINARY=false
 # if we are building a tag then publish
 - if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then PUBLISH_BINARY=true; fi;
 # or if we put [publish binary] in the commit message
 - if test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"; then PUBLISH_BINARY=true; fi;
-- platform=$(uname -s | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/")
 # If version is 0.9 do not publish to avoid duplicated binary error, caused by 0.9 and 0.10
 # returning same v number in node.js.
 - if [[ "$TRAVIS_NODE_VERSION" == '0.9' ]]; then PUBLISH_BINARY=false; fi;
-# Fix a problem with apt-get failing later, see http://docs.travis-ci.com/user/installing-dependencies/#Installing-Ubuntu-packages
-- sudo apt-get update -qq
-
 
 install:
 # ensure source install works
 - npm install --build-from-source
+
+script:
 # test our module
 - node serialport.js
-
-before_script:
+- npm test
 - echo "Publishing native platform Binary Package? ->" $PUBLISH_BINARY
 # if publishing, do it
 - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package publish; fi;
 # cleanup
 - node-pre-gyp clean
 - node-gyp clean
-
-script:
-# if publishing, test installing from remote
-- INSTALL_RESULT=0
-- if [[ $PUBLISH_BINARY == true ]]; then INSTALL_RESULT=$(npm install --fallback-to-build=false > /dev/null)$? || true; fi;
-# if install returned non zero (errored) then we first unpublish and then call false so travis will bail at this line
-- if [[ $INSTALL_RESULT != 0 ]]; then echo "returned $INSTALL_RESULT";node-pre-gyp unpublish;false; fi
-# If success then we arrive here so lets clean up
-- node-pre-gyp clean
-# node v0.8 and above provide pre-built 32 bit and 64 bit binaries
-# so here we use the 32 bit ones to also test 32 bit builds
-- NVER=`node -v`
-- wget http://nodejs.org/dist/${NVER}/node-${NVER}-${platform}-x86.tar.gz
-- tar xf node-${NVER}-${platform}-x86.tar.gz
-# enable 32 bit node
-- export PATH=$(pwd)/node-${NVER}-${platform}-x86/bin:$PATH
-# install 32 bit compiler toolchain and X11
-- if [[ "$platform" == 'linux' ]]; then sudo apt-get -y install gcc-multilib g++-multilib; fi
-# test source compile in 32 bit mode with internal libsqlite3
-- if [[ "$platform" == 'linux' ]]; then CC=gcc-4.6 CXX=g++-4.6 npm install --build-from-source; else npm install --build-from-source; fi
-- npm test
-# publish 32 bit build
-- echo "Publishing x86 32bit Binary Package? ->" $PUBLISH_BINARY
-- if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package publish; fi;
 
 after_success:
 # if success then query and display all published binaries

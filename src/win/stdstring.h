@@ -63,7 +63,7 @@
 //			- Jim Cline
 //			- Jeff Kohn
 //			- Todd Heckel
-//			- Ullrich Poll‰hne
+//			- Ullrich Poll√§hne
 //			- Joe Vitaterna
 //			- Joe Woodbury
 //			- Aaron (no last name)
@@ -217,7 +217,7 @@
 //	  2000-APR-17 - Thanks to Joe Vitaterna for pointing out that ReverseFind
 //					is supposed to be a const function.
 //
-//	  2000-MAR-07 - Thanks to Ullrich Poll‰hne for catching a range bug in one
+//	  2000-MAR-07 - Thanks to Ullrich Poll√§hne for catching a range bug in one
 //					of the overloads of assign.
 //
 //    2000-FEB-01 - You can now use CStdString on the Mac with CodeWarrior!
@@ -253,7 +253,7 @@
 //				  - Added missing overloads of TrimLeft() and TrimRight().
 //					Thanks to Karim Ratib for pointing them out
 //
-//	  1999-JUL-21 - Made all calls to GetBuf() with no args check length first.
+//	  1999-JUL-21 - Made all calls to GetBuf() with no info check length first.
 //
 //	  1999-JUL-10 - Improved MFC/ATL independence of conversion macros
 //				  - Added SS_NO_REFCOUNT macro to allow you to disable any
@@ -2284,7 +2284,7 @@ public:
 			// <nChars> or the NULL terminator, whichever comes first.  Since we
 			// are about to call a less forgiving overload (in which <nChars>
 			// must be a valid length), we must adjust the length here to a safe
-			// value.  Thanks to Ullrich Poll‰hne for catching this bug
+			// value.  Thanks to Ullrich Poll√§hne for catching this bug
 
 			nChars		= SSMIN(nChars, str.length() - nStart);
 			MYTYPE strTemp(str.c_str()+nStart, nChars);
@@ -2305,7 +2305,7 @@ public:
 			// <nChars> or the NULL terminator, whichever comes first.  Since we
 			// are about to call a less forgiving overload (in which <nChars>
 			// must be a valid length), we must adjust the length here to a safe
-			// value. Thanks to Ullrich Poll‰hne for catching this bug
+			// value. Thanks to Ullrich Poll√§hne for catching this bug
 
 			nChars		= SSMIN(nChars, str.length() - nStart);
 
