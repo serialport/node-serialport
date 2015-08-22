@@ -58,7 +58,7 @@ NAN_METHOD(Drain);
 void EIO_Drain(uv_work_t* req);
 void EIO_AfterDrain(uv_work_t* req);
 
-SerialPortParity ToParityEnum(const v8::Handle<v8::String>& str);
+SerialPortParity ToParityEnum(const v8::Local<v8::String>& str);
 SerialPortStopBits ToStopBitEnum(double stopBits);
 
 struct OpenBatonPlatformOptions

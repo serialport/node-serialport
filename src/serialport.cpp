@@ -643,7 +643,7 @@ void EIO_AfterDrain(uv_work_t* req) {
 }
 
 // Change request for ticket #401 - credit to @sguilly
-SerialPortParity NAN_INLINE(ToParityEnum(const v8::Handle<v8::String>& v8str)) {
+SerialPortParity NAN_INLINE(ToParityEnum(const v8::Local<v8::String>& v8str)) {
   Nan::HandleScope scope;
   Nan::Utf8String *str = new Nan::Utf8String(v8str);
   size_t count = strlen(**str);
