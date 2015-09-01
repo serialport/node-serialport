@@ -40,11 +40,11 @@ public:
 };
 
 OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& options) {
-  NanScope();
+  Nan::HandleScope scope;
 
   UnixPlatformOptions* result = new UnixPlatformOptions();
-  result->vmin = options->Get(NanNew<v8::String>("vmin"))->ToInt32()->Int32Value();
-  result->vtime = options->Get(NanNew<v8::String>("vtime"))->ToInt32()->Int32Value();
+  result->vmin = options->Get(Nan::New<v8::String>("vmin").ToLocalChecked())->ToInt32()->Int32Value();
+  result->vtime = options->Get(Nan::New<v8::String>("vtime").ToLocalChecked())->ToInt32()->Int32Value();
 
   return result;
 }
@@ -53,7 +53,7 @@ int ToBaudConstant(int baudRate);
 int ToDataBitsConstant(int dataBits);
 int ToStopBitsConstant(SerialPortStopBits stopBits);
 
-void AfterOpenSuccess(int fd, NanCallback* dataCallback, NanCallback* disconnectedCallback, NanCallback* errorCallback) {
+void AfterOpenSuccess(int fd, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, Nan::Callback* errorCallback) {
   delete dataCallback;
   delete errorCallback;
   delete disconnectedCallback;
