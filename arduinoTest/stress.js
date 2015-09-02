@@ -12,7 +12,7 @@ var memwatch = require('memwatch');
 describe ('stress', function() {
 
   describe('long running', function() {
-    it('opens a port and sends data, repeated indefinately', function (done) {
+    it('opens a port and sends data, repeated indefinitely', function (done) {
 
       var hd = new memwatch.HeapDiff();
 
