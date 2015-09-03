@@ -159,7 +159,11 @@ void EIO_AfterOpen(uv_work_t* req) {
     int fd = argv[1]->ToInt32()->Int32Value();
     newQForFD(fd);
 
-    AfterOpenSuccess(data->result, data->dataCallback, data->disconnectedCallback, data->errorCallback);
+#ifdef UWP
+    AfterOpenSuccess(data->device, data->dataCallback, data->disconnectedCallback, data->errorCallback);
+#else
+	AfterOpenSuccess(data->result, data->dataCallback, data->disconnectedCallback, data->errorCallback);
+#endif
   }
 
   data->callback->Call(2, argv);
@@ -242,7 +246,11 @@ void EIO_AfterUpdate(uv_work_t* req) {
     int fd = argv[1]->ToInt32()->Int32Value();
     newQForFD(fd);
 
-    AfterOpenSuccess(data->result, data->dataCallback, data->disconnectedCallback, data->errorCallback);
+#ifdef UWP
+    AfterOpenSuccess(data->device, data->dataCallback, data->disconnectedCallback, data->errorCallback);
+#else
+	AfterOpenSuccess(data->result, data->dataCallback, data->disconnectedCallback, data->errorCallback);
+#endif
   }
 
   data->callback->Call(2, argv);
