@@ -283,7 +283,9 @@ function SerialPortFactory(_spfOptions) {
 
   SerialPort.prototype.write = function (buffer, callback) {
     var self = this;
-    if (!this.fd) {
+    // Ignore fd when running in a UWP DLL since a Windows::Devices::SerialCommunication::SerialDevice
+    // object will be used within the serialport addon instead of a file descripter.
+    if (!this.fd && !process.uwpDLL) {
       debug('Write attempted, but serialport not available - FD is not set');
       var err = new Error('Serialport not open.');
       if (callback) {
