@@ -14,7 +14,7 @@
 
 [![Build Status](https://travis-ci.org/voodootikigod/node-serialport.png?branch=master)](https://travis-ci.org/voodootikigod/node-serialport)
 [![Gitter chat](https://badges.gitter.im/voodootikigod/node-serialport.png)](https://gitter.im/voodootikigod/node-serialport)
-[![Dependency Status](https://david-dm.org/voodootikigod/node-serialport.png)
+[![Dependency Status](https://david-dm.org/voodootikigod/node-serialport.png)](https://david-dm.org/voodootikigod/node-serialport)
 
 For all discussions, designs, and clarifications, we recommend you join our Gitter Chat room: [https://gitter.im/voodootikigod/node-serialport](https://gitter.im/voodootikigod/node-serialport)
 
