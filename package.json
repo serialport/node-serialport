@@ -54,6 +54,7 @@
     "node-pre-gyp"
   ],
   "devDependencies": {
+    "aws-sdk": "*",
     "mocha": "*",
     "chai": "*",
     "sinon-chai": "*",
