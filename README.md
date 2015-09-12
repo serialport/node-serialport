@@ -126,17 +126,11 @@ npm install serialport
  * Download and install node.js:
 
 ```bash
-   wget http://nodejs.org/dist/v0.10.16/node-v0.10.16-linux-arm-pi.tar.gz
-   tar xvfz node-v0.10.16-linux-arm-pi.tar.gz
-   sudo mv node-v0.10.16-linux-arm-pi /opt/node/
+   wget http://node-arm.herokuapp.com/node_latest_armhf.deb
+   sudo dpkg -i node_latest_armhf.deb
 ```
 
- * Set up your paths correctly:
-
-```bash
-   echo 'export PATH="$PATH:/opt/node/bin"' >> ~/.bashrc
-   source ~/.bashrc
-```
+More information can be found at [node-arm](http://node-arm.herokuapp.com/).
 
  * Install using npm, note this will take a while as it is actually compiling code and that ARM processor is getting a workout.
 
