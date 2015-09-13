@@ -281,6 +281,17 @@ function SerialPortFactory(_spfOptions) {
     return (this.fd ? true : false);
   };
 
+  SerialPort.prototype.writeHandler = function (err, results) {
+    if (this.callback) {
+      this.callback(err, results);
+    } else {
+      if (err) {
+        // console.log("write");
+        self.emit('error', err);
+      }
+    }
+  };
+
   SerialPort.prototype.write = function (buffer, callback) {
     var self = this;
     if (!this.fd) {
@@ -298,17 +309,8 @@ function SerialPortFactory(_spfOptions) {
     if (!Buffer.isBuffer(buffer)) {
       buffer = new Buffer(buffer);
     }
-    debug('Write: '+JSON.stringify(buffer));
-    factory.SerialPortBinding.write(this.fd, buffer, function (err, results) {
-      if (callback) {
-        callback(err, results);
-      } else {
-        if (err) {
-          // console.log("write");
-          self.emit('error', err);
-        }
-      }
-    });
+    this.callback = callback;
+    factory.SerialPortBinding.write(this.fd, buffer, SerialPort.prototype.writeHandler);
   };
 
   if (process.platform !== 'win32') {
