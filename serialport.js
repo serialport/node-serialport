@@ -244,9 +244,9 @@ function SerialPortFactory(_spfOptions) {
     });
 
       SerialPort.prototype._fsReadHandler = function (err, bytesRead) {
-	  var readPool = self.pool;
-	  var bytesRequested = self.toRead;
-	  self._afterRead(err, bytesRead, readPool, bytesRequested);
+        var readPool = self.pool;
+        var bytesRequested = self.toRead;
+        self._afterRead(self, err, bytesRead, readPool, bytesRequested);
       };
   };
 
@@ -319,45 +319,45 @@ function SerialPortFactory(_spfOptions) {
     factory.SerialPortBinding.write(this.fd, buffer, SerialPort.prototype._writeHandler);
   };
 
-  SerialPort.prototype._afterRead = function(err, bytesRead, readPool, bytesRequested) {
-    this.reading = false;
+  SerialPort.prototype._afterRead = function(self, err, bytesRead, readPool, bytesRequested) {
+    self.reading = false;
     if (err) {
       if (err.code && err.code === 'EAGAIN') {
-        if (this.fd >= 0) {
-          this.serialPoller.start();
+        if (self.fd >= 0) {
+          self.serialPoller.start();
         }
       } else if (err.code && (err.code === 'EBADF' || err.code === 'ENXIO' || (err.errno === -1 || err.code === 'UNKNOWN'))) { // handle edge case were mac/unix doesn't clearly know the error.
-        this.disconnected(err);
+        self.disconnected(err);
       } else {
-        this.fd = null;
-        this.emit('error', err);
-        this.readable = false;
+        self.fd = null;
+        self.emit('error', err);
+        self.readable = false;
       }
     } else {
       // Since we will often not read the number of bytes requested,
       // let's mark the ones we didn't need as available again.
-      this.pool.used -= bytesRequested - bytesRead;
+      self.pool.used -= bytesRequested - bytesRead;
 
       if (bytesRead === 0) {
-        if (this.fd >= 0) {
-          this.serialPoller.start();
+        if (self.fd >= 0) {
+          self.serialPoller.start();
         }
       } else {
-        var b = this.pool.slice(this.start, this.start + bytesRead);
+        var b = self.pool.slice(self.start, self.start + bytesRead);
 
         // do not emit events if the stream is paused
         if (this.paused) {
-          this.buffer = Buffer.concat([this.buffer, b]);
+          self.buffer = Buffer.concat([self.buffer, b]);
           return;
         } else {
-          this._emitData(b);
+          self._emitData(b);
         }
 
         // do not emit events anymore after we declared the stream unreadable
-        if (!this.readable) {
+        if (!self.readable) {
           return;
         }
-        this._read();
+        self._read();
       }
     }
 
