@@ -242,6 +242,12 @@ function SerialPortFactory(_spfOptions) {
       self.emit('open');
       if (callback) { callback(); }
     });
+
+      SerialPort.prototype._fsReadHandler = function (err, bytesRead) {
+	  var readPool = self.pool;
+	  var bytesRequested = self.toRead;
+	  self._afterRead(err, bytesRead, readPool, bytesRequested);
+      };
   };
 
   //underlying code is written to update all options, but for now
@@ -313,51 +319,45 @@ function SerialPortFactory(_spfOptions) {
     factory.SerialPortBinding.write(this.fd, buffer, SerialPort.prototype._writeHandler);
   };
 
-  SerialPort.prototype._fsReadHandler = function (err, bytesRead) {
-    var readPool = self.pool;
-    var bytesRequested = this.toRead;
-    this.afterRead(err, bytesRead, readPool, bytesRequested);
-  };
-
   SerialPort.prototype._afterRead = function(err, bytesRead, readPool, bytesRequested) {
-    self.reading = false;
+    this.reading = false;
     if (err) {
       if (err.code && err.code === 'EAGAIN') {
-        if (self.fd >= 0) {
-          self.serialPoller.start();
+        if (this.fd >= 0) {
+          this.serialPoller.start();
         }
       } else if (err.code && (err.code === 'EBADF' || err.code === 'ENXIO' || (err.errno === -1 || err.code === 'UNKNOWN'))) { // handle edge case were mac/unix doesn't clearly know the error.
-        self.disconnected(err);
+        this.disconnected(err);
       } else {
-        self.fd = null;
-        self.emit('error', err);
-        self.readable = false;
+        this.fd = null;
+        this.emit('error', err);
+        this.readable = false;
       }
     } else {
       // Since we will often not read the number of bytes requested,
       // let's mark the ones we didn't need as available again.
-      self.pool.used -= bytesRequested - bytesRead;
+      this.pool.used -= bytesRequested - bytesRead;
 
       if (bytesRead === 0) {
-        if (self.fd >= 0) {
-          self.serialPoller.start();
+        if (this.fd >= 0) {
+          this.serialPoller.start();
         }
       } else {
-        var b = self.pool.slice(start, start + bytesRead);
+        var b = this.pool.slice(this.start, this.start + bytesRead);
 
         // do not emit events if the stream is paused
-        if (self.paused) {
-          self.buffer = Buffer.concat([self.buffer, b]);
+        if (this.paused) {
+          this.buffer = Buffer.concat([self.buffer, b]);
           return;
         } else {
-          self._emitData(b);
+          this._emitData(b);
         }
 
         // do not emit events anymore after we declared the stream unreadable
-        if (!self.readable) {
+        if (!this.readable) {
           return;
         }
-        self._read();
+        this._read();
       }
     }
 
@@ -387,12 +387,12 @@ function SerialPortFactory(_spfOptions) {
       // Grab another reference to the pool in the case that while we're in the
       // thread pool another read() finishes up the pool, and allocates a new
       // one.
-      this.toRead = Math.min(self.pool.length - self.pool.used, ~~self.bufferSize);
-      var start = self.pool.used;
+      self.toRead = Math.min(self.pool.length - self.pool.used, ~~self.bufferSize);
+      self.start = self.pool.used;
 
-      fs.read(self.fd, self.pool, self.pool.used, toRead, null, this._fsReadHandler);
+      fs.read(self.fd, self.pool, self.pool.used, self.toRead, null, self._fsReadHandler);
 
-      self.pool.used += toRead;
+      self.pool.used += this.toRead;
     };
 
 
