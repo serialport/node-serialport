@@ -293,7 +293,7 @@ function SerialPortFactory(_spfOptions) {
     } else {
       if (err) {
         // console.log("write");
-        self.emit('error', err);
+        this.emit('error', err);
       }
     }
   };
@@ -347,7 +347,7 @@ function SerialPortFactory(_spfOptions) {
 
         // do not emit events if the stream is paused
         if (this.paused) {
-          this.buffer = Buffer.concat([self.buffer, b]);
+          this.buffer = Buffer.concat([this.buffer, b]);
           return;
         } else {
           this._emitData(b);
