@@ -10,7 +10,8 @@ addons:
     - ubuntu-toolchain-r-test
     packages:
     - g++-4.8
-#    - g++-4.8-multilib
+    - g++-4.8-multilib
+    - gcc-multilib
 env:
   matrix:
   # - TRAVIS_NODE_VERSION="0.8"
@@ -18,13 +19,31 @@ env:
   - TRAVIS_NODE_VERSION="0.12"
   - TRAVIS_NODE_VERSION="iojs-3"
   - TRAVIS_NODE_VERSION="4"
+  - TRAVIS_NODE_VERSION="0.10" ARCH="x86"
+  - TRAVIS_NODE_VERSION="0.12" ARCH="x86"
+  - TRAVIS_NODE_VERSION="iojs-3" ARCH="x86"
+  - TRAVIS_NODE_VERSION="4" ARCH="x86"
   global:
   - secure: "Zg7w8hTpgVfm6JeTScsMhaexFcVS5N2oI9O/6MLtsm3CUhb0Txq65y4y/a5DU3re6Pl1ryE21anVLdg4RGDeykCauQtg8nFzuGXBfNn9bRTnsIfkiS9LNkbSZ8h3c7EsyX0NJ7LVgnkPh/XXMqMj4Nh0ovbBCwZJ6k2ZvccvDvU="
   - secure: "VS7JTJYfcCDOiWZH6g+Lm4y+QFuCB++4GnYvWqqaUljebuB2l8gZhDrmQtWKFPBEZP21ptjtpNWJC6hCUf07qJ81vVpb6wMUikfOOLN0nulED+AC5HtCxYnfwIu1i0z00YxaSfvozMXKk9TCLabE0ognoDV+XV1bQoYm8668z7E="
+matrix:
+  exclude:
+  - os: osx
+    env: TRAVIS_NODE_VERSION="0.10" ARCH="x86"
+  - os: osx
+    env: TRAVIS_NODE_VERSION="0.12" ARCH="x86"
+  - os: osx
+    env: TRAVIS_NODE_VERSION="iojs-3" ARCH="x86"
+  - os: osx
+    env: TRAVIS_NODE_VERSION="4" ARCH="x86"
 
 before_install:
 # reinstall latest nvm
 - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
+- BASE_URL=$(node -p "v=parseInt(process.versions.node),(v>=1&&v<4?'https://iojs.org/dist/':'https://nodejs.org/dist/')+process.version")
+- X86_FILE=$(node -p "v=parseInt(process.versions.node),(v>=1&&v<4?'iojs':'node')+'-'+process.version+'-'+process.platform+'-x86'")
+# download node if testing x86 architecture
+- if [[ "$ARCH" == "x86" ]]; then wget $BASE_URL/$X86_FILE.tar.gz; tar -xf $X86_FILE.tar.gz; export PATH=$X86_FILE/bin:$PATH; fi
 # reinstall npm and node-pre-gyp
 - npm install -g node-gyp node-pre-gyp
 # print versions
@@ -53,6 +72,7 @@ install:
 script:
 # test our module
 - node serialport.js
+- npm test
 - echo "Publishing native platform Binary Package? ->" $PUBLISH_BINARY
 # if publishing, do it
 - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package publish; fi;
