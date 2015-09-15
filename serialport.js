@@ -242,7 +242,7 @@ function SerialPortFactory(_spfOptions) {
   // verification code above
   SerialPort.prototype.update = function (options, callback) {
     var self = this;
-    if (!this.fd) {
+    if (!this.isOpen()) {
       debug('Update attempted, but serialport not available - FD is not set');
       var err = new Error('Serialport not open.');
       if (callback) {
@@ -271,13 +271,13 @@ function SerialPortFactory(_spfOptions) {
   };
 
   SerialPort.prototype.isOpen = function() {
-    return !!this.fd;
+    return this.fd !== null;
   };
 
   SerialPort.prototype.write = function (buffer, callback) {
     var self = this;
-    if (!this.fd) {
-      debug('Write attempted, but serialport not available - FD is not set');
+    if (!this.isOpen()) {
+      debug('Write attempted, but serialport is not open');
       var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
@@ -305,9 +305,7 @@ function SerialPortFactory(_spfOptions) {
   if (process.platform !== 'win32') {
     SerialPort.prototype._read = function () {
       var self = this;
-
-      // console.log(">>READ");
-      if (!self.readable || self.paused || self.reading) {
+      if (!self.readable || self.paused || self.reading || this.closing) {
         return;
       }
 
@@ -315,10 +313,7 @@ function SerialPortFactory(_spfOptions) {
 
       if (!self.pool || self.pool.length - self.pool.used < kMinPoolSpace) {
         // discard the old pool. Can't add to the free list because
-        // users might have refernces to slices on it.
-        self.pool = null;
-
-        // alloc new pool
+        // users might have references to slices on it.
         self.pool = new Buffer(kPoolSize);
         self.pool.used = 0;
       }
@@ -333,15 +328,16 @@ function SerialPortFactory(_spfOptions) {
         self.reading = false;
         if (err) {
           if (err.code && err.code === 'EAGAIN') {
-            if (self.fd >= 0) {
+            if (self.isOpen()) {
               self.serialPoller.start();
             }
-          } else if (err.code && (err.code === 'EBADF' || err.code === 'ENXIO' || (err.errno === -1 || err.code === 'UNKNOWN'))) { // handle edge case were mac/unix doesn't clearly know the error.
+          // handle edge case were mac/unix doesn't clearly know the error.
+          } else if (err.code && (err.code === 'EBADF' || err.code === 'ENXIO' || (err.errno === -1 || err.code === 'UNKNOWN'))) {
             self.disconnected(err);
           } else {
             self.fd = null;
-            self.emit('error', err);
             self.readable = false;
+            self.emit('error', err);
           }
         } else {
           // Since we will often not read the number of bytes requested,
@@ -400,7 +396,7 @@ function SerialPortFactory(_spfOptions) {
       }
 
       // No longer open?
-      if (self.fd === null) {
+      if (!this.isOpen()) {
         return;
       }
 
@@ -438,9 +434,11 @@ function SerialPortFactory(_spfOptions) {
       debug('Disconnect completed with an exception: ' + JSON.stringify(e));
     }
 
+    // TODO THIS IS CRAZY TOWN
     self.removeAllListeners();
+
     self.closing = false;
-    self.fd = 0;
+    self.fd = null;
 
     if (process.platform !== 'win32') {
       self.readable = false;
@@ -450,13 +448,12 @@ function SerialPortFactory(_spfOptions) {
 
   SerialPort.prototype.close = function (callback) {
     var self = this;
-
     var fd = self.fd;
 
     if (self.closing) {
       return;
     }
-    if (!fd) {
+    if (!this.isOpen()) {
       var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
@@ -489,7 +486,7 @@ function SerialPortFactory(_spfOptions) {
         self.emit('close');
         self.removeAllListeners();
         self.closing = false;
-        self.fd = 0;
+        self.fd = null;
 
         if (callback) {
           callback();
@@ -585,7 +582,7 @@ function SerialPortFactory(_spfOptions) {
     var self = this;
     var fd = self.fd;
 
-    if (!fd) {
+    if (!this.isOpen()) {
       var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
@@ -628,7 +625,7 @@ function SerialPortFactory(_spfOptions) {
       options.brk = _options.brk;
     }
 
-    if (!fd) {
+    if (!this.isOpen()) {
       var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
@@ -651,7 +648,7 @@ function SerialPortFactory(_spfOptions) {
     var self = this;
     var fd = this.fd;
 
-    if (!fd) {
+    if (!this.isOpen()) {
       var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);

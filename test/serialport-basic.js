@@ -33,9 +33,7 @@ describe('SerialPort', function () {
 
     it('emits the open event', function (done) {
       var port = new SerialPort('/dev/exists');
-      port.on('open', function() {
-        done();
-      });
+      port.on('open', done);
     });
 
     it('emits an error on the factory when erroring without a callback', function (done) {
@@ -146,6 +144,49 @@ describe('SerialPort', function () {
         done();
       });
     });
+
+    it('write should consider 0 to be a valid fd', function(done) {
+      var port = new SerialPort('/dev/exists', function() {
+        expect(port.fd).to.equal(0);
+        port.write(new Buffer(0), done);
+      });
+    });
+
+    it('flush should consider 0 to be a valid fd', function(done) {
+      var port = new SerialPort('/dev/exists', function() {
+        expect(port.fd).to.equal(0);
+        port.flush(done);
+      });
+    });
+
+    it('set should consider 0 to be a valid fd', function(done) {
+      var port = new SerialPort('/dev/exists', function() {
+        expect(port.fd).to.equal(0);
+        port.set({}, done);
+      });
+    });
+
+    it('drain should consider 0 to be a valid fd', function(done) {
+      var port = new SerialPort('/dev/exists', function() {
+        expect(port.fd).to.equal(0);
+        port.drain(done);
+      });
+    });
+
+    it('update should consider 0 a valid file descriptor', function() {
+      var port = new SerialPort('/dev/exists', function(done) {
+        expect(port.fd).to.equal(0);
+        port.update({}, done);
+      });
+    });
+
+    it('isOpen should consider 0 a valid file descriptor', function(done) {
+      var port = new SerialPort('/dev/exists', function() {
+        expect(port.fd).to.equal(0);
+        expect(port.isOpen()).to.be.true;
+        done();
+      });
+    });
   });
 
   describe('reading data', function () {
@@ -178,8 +219,10 @@ describe('SerialPort', function () {
     it('passes the port to the bindings', function (done) {
       var openSpy = sandbox.spy(MockedSerialPort.SerialPortBinding, 'open');
       var port = new SerialPort('/dev/exists', {}, false);
+      expect(port.isOpen()).to.be.false;
       port.open(function (err) {
         expect(err).to.not.be.ok;
+        expect(port.isOpen()).to.be.true;
         expect(openSpy.calledWith('/dev/exists'));
         done();
       });
@@ -215,6 +258,7 @@ describe('SerialPort', function () {
         port.on('close', closeSpy);
         port.close();
         expect(closeSpy.calledOnce);
+        expect(port.isOpen()).to.be.false;
         done();
       });
     });
@@ -233,10 +277,18 @@ describe('SerialPort', function () {
 
     it('emits a close event', function (done) {
       var port = new SerialPort('/dev/exists', function () {
-        port.on('close', function () {
+        port.on('close', done);
+        port.close();
+      });
+    });
+
+    it('should consider 0 a valid fd', function(done) {
+      var port = new SerialPort('/dev/exists', function() {
+        expect(port.fd).to.equal(0);
+        port.close(function () {
+          expect(port.fd).to.be.null;
           done();
         });
-        port.close();
       });
     });
   });
@@ -244,18 +296,26 @@ describe('SerialPort', function () {
   describe('disconnect', function () {
     it('fires a disconnect event', function (done) {
       this.port = new SerialPort('/dev/exists', {
-        disconnectedCallback: function (err) {
-          expect(err).to.not.be.ok;
-          done();
-        }
+        disconnectedCallback: done
       }, function () {
         hardware.disconnect('/dev/exists');
       });
     });
 
+    it('disconnected closes port', function(done) {
+      var port = new SerialPort('/dev/exists', function () {
+        expect(port.fd).to.equal(0);
+        port.disconnected();
+        expect(port.fd).to.be.null;
+        expect(port.isOpen()).to.be.false;
+        done();
+      });
+    });
+
     it('emits a disconnect event', function (done) {
       var port = new SerialPort('/dev/exists', function () {
-        port.on('disconnect', function () {
+        port.on('disconnect', function(err) {
+          expect(err).to.be.ok;
           done();
         });
         hardware.disconnect('/dev/exists');

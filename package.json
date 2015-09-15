@@ -82,6 +82,7 @@
   "license": "MIT",
   "scripts": {
     "install": "node-pre-gyp install --fallback-to-build",
+    "rebuild": "node-pre-gyp rebuild",
     "test": "grunt --verbose"
   }
 }
