@@ -112,6 +112,10 @@ sudo apt-get install build-essential
 npm install serialport
 ```
 
+#### Beaglebone Black
+
+See Raspberry Pi instructions below.
+
 #### Raspberry Pi Linux:
 
  * Starting with a a vanilla New Out of the Box Software (NOOBS) Raspbian image (currently tested: 5/25/2013)
@@ -123,14 +127,16 @@ npm install serialport
    sudo apt-get upgrade -y
 ```
 
- * Download and install node.js:
+ * Download and install iojs (node):
 
 ```bash
-   wget http://node-arm.herokuapp.com/node_latest_armhf.deb
-   sudo dpkg -i node_latest_armhf.deb
+   wget https://iojs.org/dist/v2.5.0/iojs-v2.5.0-linux-armv7l.tar.gz
+   sudo tar -C /usr/local --strip-components 1 -xzf iojs-v2.5.0-linux-armv7l.tar.gz
 ```
 
-More information can be found at [node-arm](http://node-arm.herokuapp.com/).
+The above command will install `iojs` and its alias `node`, as well as the node package manager `npm`
+
+More information on why we are installing this version of iojs and not the latest version of node can be found in [this issue](https://github.com/voodootikigod/node-serialport/issues/578).
 
  * Install using npm, note this will take a while as it is actually compiling code and that ARM processor is getting a workout.
 
