@@ -14,14 +14,11 @@ addons:
     - gcc-multilib
 env:
   matrix:
-  # - TRAVIS_NODE_VERSION="0.8"
   - TRAVIS_NODE_VERSION="0.10"
   - TRAVIS_NODE_VERSION="0.12"
-  - TRAVIS_NODE_VERSION="iojs-3"
   - TRAVIS_NODE_VERSION="4"
   - TRAVIS_NODE_VERSION="0.10" ARCH="x86"
   - TRAVIS_NODE_VERSION="0.12" ARCH="x86"
-  - TRAVIS_NODE_VERSION="iojs-3" ARCH="x86"
   - TRAVIS_NODE_VERSION="4" ARCH="x86"
   global:
   - secure: "Zg7w8hTpgVfm6JeTScsMhaexFcVS5N2oI9O/6MLtsm3CUhb0Txq65y4y/a5DU3re6Pl1ryE21anVLdg4RGDeykCauQtg8nFzuGXBfNn9bRTnsIfkiS9LNkbSZ8h3c7EsyX0NJ7LVgnkPh/XXMqMj4Nh0ovbBCwZJ6k2ZvccvDvU="
@@ -32,8 +29,6 @@ matrix:
     env: TRAVIS_NODE_VERSION="0.10" ARCH="x86"
   - os: osx
     env: TRAVIS_NODE_VERSION="0.12" ARCH="x86"
-  - os: osx
-    env: TRAVIS_NODE_VERSION="iojs-3" ARCH="x86"
   - os: osx
     env: TRAVIS_NODE_VERSION="4" ARCH="x86"
 
@@ -79,27 +74,6 @@ script:
 # cleanup
 - node-pre-gyp clean
 - node-gyp clean
-
-# Disable 32bit testing temporily
-#script:
-# # if publishing, test installing from remote
-# - INSTALL_RESULT=0
-# - if [[ $PUBLISH_BINARY == true ]]; then INSTALL_RESULT=$(npm install --fallback-to-build=false > /dev/null)$? || true; fi;
-# # if install returned non zero (errored) then we first unpublish and then call false so travis will bail at this line
-# - if [[ $INSTALL_RESULT != 0 ]]; then echo "returned $INSTALL_RESULT";node-pre-gyp unpublish;false; fi
-# # If success then we arrive here so lets clean up
-# - node-pre-gyp clean
-# # node v0.8 and above provide pre-built 32 bit and 64 bit binaries
-# # so here we use the 32 bit ones to also test 32 bit builds
-# - NVER=`node -v`
-# - wget http://nodejs.org/dist/${NVER}/node-${NVER}-${platform}-x86.tar.gz
-# - tar xf node-${NVER}-${platform}-x86.tar.gz
-# # enable 32 bit node
-# - export PATH=$(pwd)/node-${NVER}-${platform}-x86/bin:$PATH
-# - npm test
-# # publish 32 bit build
-# - echo "Publishing x86 32bit Binary Package? ->" $PUBLISH_BINARY
-# - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package publish; fi;
 
 after_success:
 # if success then query and display all published binaries
