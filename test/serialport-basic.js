@@ -150,6 +150,56 @@ describe('SerialPort', function () {
       });
     });
 
+    it('write should consider 0 to be a valid fd', function(done) {
+      var port = new SerialPort('/dev/exists', function() {
+        expect(port.fd).to.equal(0);
+        port.write(new Buffer(0), done);
+      });
+    });
+
+    it('flush should consider 0 to be a valid fd', function(done) {
+      var port = new SerialPort('/dev/exists', function() {
+        expect(port.fd).to.equal(0);
+        port.flush(done);
+      });
+    });
+
+    it('set should consider 0 to be a valid fd', function(done) {
+      var port = new SerialPort('/dev/exists', function() {
+        expect(port.fd).to.equal(0);
+        port.set({}, done);
+      });
+    });
+
+    it('drain should consider 0 to be a valid fd', function(done) {
+      var port = new SerialPort('/dev/exists', function() {
+        expect(port.fd).to.equal(0);
+        port.drain(done);
+      });
+    });
+
+    it('disconnected reset fd to null', function(done) {
+      var port = new SerialPort('/dev/exists', function () {
+        expect(port.fd).to.equal(0);
+        port.disconnected();
+        expect(port.fd).to.be.null;
+        done();
+      });
+    });
+
+    it('update should consider 0 a valid file descriptor', function() {
+      var port = new SerialPort('/dev/exists', function(done) {
+        expect(port.fd).to.equal(0);
+        port.update({}, done);
+      });
+    });
+
+    it('isOpen should consider 0 a valid file descriptor', function() {
+      var port = new SerialPort('/dev/exists', function(done) {
+        expect(port.fd).to.equal(0);
+        expect(port.isOpen()).to.be.true;
+      });
+    });
   });
 
   describe('reading data', function () {
@@ -245,6 +295,16 @@ describe('SerialPort', function () {
           done();
         });
         port.close();
+      });
+    });
+
+    it('should consider 0 a valid fd', function(done) {
+      var port = new SerialPort('/dev/exists', function() {
+        expect(port.fd).to.equal(0);
+        port.close(function () {
+          expect(port.fd).to.be.null;
+          done();
+        });
       });
     });
   });

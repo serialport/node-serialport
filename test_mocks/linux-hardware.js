@@ -25,16 +25,18 @@ var mockSerialportPoller = function (hardware) {
 };
 
 var Hardware = function () {
-  // We start at 1 because there are bugs when the fd is 0
-  this.nextFd = 1;
+  this.nextFd = 0;
   this.fds = {};
   this.ports = {};
   this.mockBinding = {
     list: this.list.bind(this),
     open: this.open.bind(this),
+    update: this.update.bind(this),
     write: this.write.bind(this),
     close: this.close.bind(this),
     flush: this.flush.bind(this),
+    set: this.set.bind(this),
+    drain: this.drain.bind(this),
     SerialportPoller: mockSerialportPoller(this)
   };
 };
@@ -42,8 +44,7 @@ var Hardware = function () {
 Hardware.prototype.reset = function () {
   this.ports = {};
   this.fds = {};
-  // TODO Change to zero once 0-fd bug is fixed
-  this.nextFd = 1;
+  this.nextFd = 0;
 };
 
 Hardware.prototype.createPort = function (path) {
@@ -105,6 +106,14 @@ Hardware.prototype.open = function (path, opt, cb) {
   cb && cb(null, port.fd);
 };
 
+Hardware.prototype.update = function(fd, opt, cb) {
+  var port = this.fds[fd];
+  if (!port) {
+    return cb(new Error(fd + " does not exist - please call hardware.createPort(path) first"));
+  }
+  cb && cb();
+};
+
 Hardware.prototype.write = function (fd, buffer, cb) {
   var port = this.fds[fd];
   if (!port) {
@@ -124,6 +133,22 @@ Hardware.prototype.close = function (fd, cb) {
 };
 
 Hardware.prototype.flush = function (fd, cb) {
+  var port = this.fds[fd];
+  if (!port) {
+    return cb(new Error(fd + " does not exist - please call hardware.createPort(path) first"));
+  }
+  cb && cb(null, undefined);
+};
+
+Hardware.prototype.set = function (fd, options, cb) {
+  var port = this.fds[fd];
+  if (!port) {
+    return cb(new Error(fd + " does not exist - please call hardware.createPort(path) first"));
+  }
+  cb && cb(null, undefined);
+};
+
+Hardware.prototype.drain = function (fd, cb) {
   var port = this.fds[fd];
   if (!port) {
     return cb(new Error(fd + " does not exist - please call hardware.createPort(path) first"));
