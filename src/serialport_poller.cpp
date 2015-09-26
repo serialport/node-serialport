@@ -5,11 +5,9 @@
 #include <nan.h>
 #include "serialport_poller.h"
 
-using namespace v8;
+static Nan::Persistent<v8::FunctionTemplate> serialportpoller_constructor;
 
-static v8::Persistent<v8::FunctionTemplate> serialportpoller_constructor;
-
-SerialportPoller::SerialportPoller() :  ObjectWrap() {};
+SerialportPoller::SerialportPoller() :  Nan::ObjectWrap() {};
 SerialportPoller::~SerialportPoller() {
   // printf("~SerialportPoller\n");
   delete callback_;
@@ -38,66 +36,65 @@ void SerialportPoller::callCallback(int status) {
     const char* err_string = uv_strerror(errno);
     #endif
     snprintf(this->errorString, sizeof(this->errorString), "Error %s on polling", err_string);
-    argv[0] = v8::Exception::Error(NanNew<v8::String>(this->errorString));
+    argv[0] = v8::Exception::Error(Nan::New(this->errorString).ToLocalChecked());
   } else {
-    argv[0] = NanUndefined();
+    argv[0] = Nan::Undefined();
   }
 
   callback_->Call(1, argv);
 }
 
 
-
-void SerialportPoller::Init(Handle<Object> target) {
-  NanScope();
+void SerialportPoller::Init(v8::Handle<v8::Object> target) {
+  Nan::HandleScope scope;
 
   // Prepare constructor template
-  Local<FunctionTemplate> tpl = NanNew<FunctionTemplate>(New);
-  tpl->SetClassName(NanNew<String>("SerialportPoller"));
+  v8::Local<v8::FunctionTemplate> tpl = Nan::New<v8::FunctionTemplate>(New);
+  tpl->SetClassName(Nan::New("SerialportPoller").ToLocalChecked());
   tpl->InstanceTemplate()->SetInternalFieldCount(1);
 
 
   // Prototype
 
   // SerialportPoller.close()
-  tpl->PrototypeTemplate()->Set(NanNew<String>("close"),
-      NanNew<FunctionTemplate>(Close)->GetFunction());
+  tpl->PrototypeTemplate()->Set(Nan::New("close").ToLocalChecked(),
+      Nan::GetFunction(Nan::New<v8::FunctionTemplate>(Close)).ToLocalChecked());
 
   // SerialportPoller.start()
-  tpl->PrototypeTemplate()->Set(NanNew<String>("start"),
-      NanNew<FunctionTemplate>(Start)->GetFunction());
+  tpl->PrototypeTemplate()->Set(Nan::New("start").ToLocalChecked(),
+      Nan::GetFunction(Nan::New<v8::FunctionTemplate>(Start)).ToLocalChecked());
 
-  NanAssignPersistent<FunctionTemplate>(serialportpoller_constructor, tpl);
+  serialportpoller_constructor.Reset(tpl);
 
-  target->Set(NanNew<String>("SerialportPoller"), tpl->GetFunction());
+  target->Set(Nan::New("SerialportPoller").ToLocalChecked(), tpl->GetFunction());
 }
 
-NAN_METHOD(SerialportPoller::New) {
-  NanScope();
+void SerialportPoller::New(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  Nan::HandleScope scope;
 
   SerialportPoller* obj = new SerialportPoller();
 
-  if(!args[0]->IsInt32()) {
-    NanThrowTypeError("First argument must be an fd");
-    NanReturnUndefined();
+  if(!info[0]->IsInt32()) {
+	Nan::ThrowTypeError("First argument must be an fd");
+    return;
   }
-  obj->fd_ = args[0]->ToInt32()->Int32Value();
+  obj->fd_ = info[0]->ToInt32()->Int32Value();
 
-  if(!args[1]->IsFunction()) {
-    NanThrowTypeError("Third argument must be a function");
-    NanReturnUndefined();
+  if(!info[1]->IsFunction()) {
+	Nan::ThrowTypeError("Third argument must be a function");
+	return;
   }
-  obj->callback_ = new NanCallback(args[1].As<v8::Function>());
+  obj->callback_ = new Nan::Callback(info[1].As<v8::Function>());
   // obj->callCallback();
 
-  obj->Wrap(args.This());
+  obj->Wrap(info.This());
 
   obj->poll_handle_.data = obj;
 /*int r = */uv_poll_init(uv_default_loop(), &obj->poll_handle_, obj->fd_);
   
   uv_poll_start(&obj->poll_handle_, UV_READABLE, _serialportReadable);
 
-  NanReturnValue(args.This());
+  info.GetReturnValue().Set(info.This());
 }
 
 void SerialportPoller::_start() {
@@ -109,21 +106,17 @@ void SerialportPoller::_stop() {
 }
 
 
-NAN_METHOD(SerialportPoller::Start) {
-  NanScope();
+void SerialportPoller::Start(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  Nan::HandleScope scope;
 
-  SerialportPoller* obj = ObjectWrap::Unwrap<SerialportPoller>(args.This());
+  SerialportPoller* obj = Nan::ObjectWrap::Unwrap<SerialportPoller>(info.This());
   obj->_start();
-  
-  NanReturnUndefined();
 }
-NAN_METHOD(SerialportPoller::Close) {
-  NanScope();
+void SerialportPoller::Close(const Nan::FunctionCallbackInfo<v8::Value>& info) {
+  Nan::HandleScope scope;
 
-  SerialportPoller* obj = ObjectWrap::Unwrap<SerialportPoller>(args.This());
+  SerialportPoller* obj = Nan::ObjectWrap::Unwrap<SerialportPoller>(info.This());
   obj->_stop();
 
   // DO SOMETHING!
-
-  NanReturnUndefined();
 }

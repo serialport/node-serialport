@@ -36,11 +36,11 @@ public:
 };
 
 OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& options) {
-  NanScope();
+  Nan::HandleScope scope;
 
   UnixPlatformOptions* result = new UnixPlatformOptions();
-  result->vmin = options->Get(NanNew<v8::String>("vmin"))->ToInt32()->Int32Value();
-  result->vtime = options->Get(NanNew<v8::String>("vtime"))->ToInt32()->Int32Value();
+  result->vmin = options->Get(Nan::New("vmin").ToLocalChecked())->ToInt32()->Int32Value();
+  result->vtime = options->Get(Nan::New("vtime").ToLocalChecked())->ToInt32()->Int32Value();
   
   return result;
 }
@@ -49,7 +49,7 @@ int ToBaudConstant(int baudRate);
 int ToDataBitsConstant(int dataBits);
 int ToStopBitsConstant(SerialPortStopBits stopBits);
 
-void AfterOpenSuccess(int fd, NanCallback* dataCallback, NanCallback* disconnectedCallback, NanCallback* errorCallback) {
+void AfterOpenSuccess(int fd, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, Nan::Callback* errorCallback) {
   delete dataCallback;
   delete errorCallback;
   delete disconnectedCallback;
@@ -658,23 +658,14 @@ void EIO_List(uv_work_t* req) {
         stSerialDevice device = (* next).value;
 
         ListResultItem* resultItem = new ListResultItem();
-        resultItem->comName = device.port;
 
-        if (device.locationId != NULL) {
-          resultItem->locationId = device.locationId;
-        }
-        if (device.vendorId != NULL) {
-          resultItem->vendorId = device.vendorId;
-        }
-        if (device.productId != NULL) {
-          resultItem->productId = device.productId;
-        }
-        if (device.manufacturer != NULL) {
-          resultItem->manufacturer = device.manufacturer;
-        }
-        if (device.serialNumber != NULL) {
-          resultItem->serialNumber = device.serialNumber;
-        }
+        resultItem->comName = device.port;
+	    resultItem->locationId = device.locationId;
+	    resultItem->vendorId = device.vendorId;
+	    resultItem->productId = device.productId;
+	    resultItem->manufacturer = device.manufacturer;
+	    resultItem->serialNumber = device.serialNumber;
+
         data->results.push_back(resultItem);
 
         stDeviceListItem* current = next;
