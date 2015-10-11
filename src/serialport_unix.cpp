@@ -459,16 +459,23 @@ static io_service_t GetUsbDevice(io_service_t service)
   if (status == kIOReturnSuccess)
   {
     io_service_t currentService;
-    while ((currentService = IOIteratorNext(iterator)))
+    while ((currentService = IOIteratorNext(iterator)) && device == 0)
     {
       io_name_t serviceName;
       status = IORegistryEntryGetNameInPlane(currentService, kIOServicePlane, serviceName);
-      if (status == kIOReturnSuccess && (IOObjectConformsTo(currentService, kIOUSBDeviceClassName))) {
+      if (status == kIOReturnSuccess && IOObjectConformsTo(currentService, kIOUSBDeviceClassName)) {
         device = currentService;
-        break;
+      }
+      else {
+        // Release the service object which is no longer needed
+        (void) IOObjectRelease(currentService);
       }
     }
+
+    // Release the iterator
+    (void) IOObjectRelease(iterator);
   }
+
   return device;
 }
 
