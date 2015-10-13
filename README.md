@@ -185,7 +185,7 @@ serialPort.on("open", function () {
 });
 ```
 
-You can also call the open function, in this case instanciate the serialport with an additional flag.
+You can also call the open function, in this case instantiate the serialport with an additional flag.
 
 ```js
 var SerialPort = require("serialport").SerialPort
