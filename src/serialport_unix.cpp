@@ -692,19 +692,19 @@ void EIO_List(uv_work_t* req) {
         ListResultItem* resultItem = new ListResultItem();
         resultItem->comName = device.port;
 
-        if (device.locationId != NULL) {
+        if (*device.locationId) {
           resultItem->locationId = device.locationId;
         }
-        if (device.vendorId != NULL) {
+        if (*device.vendorId) {
           resultItem->vendorId = device.vendorId;
         }
-        if (device.productId != NULL) {
+        if (*device.productId) {
           resultItem->productId = device.productId;
         }
-        if (device.manufacturer != NULL) {
+        if (*device.manufacturer) {
           resultItem->manufacturer = device.manufacturer;
         }
-        if (device.serialNumber != NULL) {
+        if (*device.serialNumber) {
           resultItem->serialNumber = device.serialNumber;
         }
         data->results.push_back(resultItem);
