@@ -39,7 +39,7 @@ void EIO_AfterOpen(uv_work_t* req);
 #ifdef UWP
 void AfterOpenSuccess(SerialDevice ^ device, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, Nan::Callback* errorCallback);
 #else
-void AfterOpenSuccess(SerialDevice ^ device, NanCallback* dataCallback, NanCallback* disconnectedCallback, NanCallback* errorCallback);
+void AfterOpenSuccess(int fd, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, Nan::Callback* errorCallback);
 #endif
 
 NAN_METHOD(Update);

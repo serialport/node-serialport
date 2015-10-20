@@ -171,9 +171,9 @@ public:
   char errorString[ERROR_STRING_SIZE];
   DWORD errorCode;
   bool disconnected;
-  NanCallback* dataCallback;
-  NanCallback* errorCallback;
-  NanCallback* disconnectedCallback;
+  Nan::Callback* dataCallback;
+  Nan::Callback* errorCallback;
+  Nan::Callback* disconnectedCallback;
 };
 
 void EIO_Update(uv_work_t* req) {
@@ -216,28 +216,26 @@ void DisposeWatchPortCallbacks(WatchPortBaton* data) {
 }
 
 void EIO_AfterWatchPort(uv_work_t* req) {
-  NanScope();
+  Nan::HandleScope scope;
 
   WatchPortBaton* data = static_cast<WatchPortBaton*>(req->data);
-  if (data->disconnected) {
+  if(data->disconnected) {
     data->disconnectedCallback->Call(0, NULL);
     DisposeWatchPortCallbacks(data);
     goto cleanup;
   }
 
-  if (data->bytesRead > 0) {
-    v8::Handle<v8::Value> argv[1];
-    argv[0] = NanNewBufferHandle(data->buffer, data->bytesRead);
+  if(data->bytesRead > 0) {
+    v8::Local<v8::Value> argv[1];
+    argv[0] = Nan::NewBuffer(data->buffer, data->bytesRead).ToLocalChecked();
     data->dataCallback->Call(1, argv);
-  }
-  else if (data->errorCode > 0) {
-    if (data->errorCode == E_HANDLE) {
+  } else if(data->errorCode > 0) {
+    if(data->errorCode == ERROR_INVALID_HANDLE) {
       DisposeWatchPortCallbacks(data);
       goto cleanup;
-    }
-    else {
-      v8::Handle<v8::Value> argv[1];
-      argv[0] = NanError(data->errorString);
+    } else {
+      v8::Local<v8::Value> argv[1];
+      argv[0] = Nan::Error(data->errorString);
       data->errorCallback->Call(1, argv);
       Sleep(100); // prevent the errors from occurring too fast
     }
@@ -249,7 +247,7 @@ cleanup:
   delete req;
 }
 
-void AfterOpenSuccess(SerialDevice^ device, NanCallback* dataCallback, NanCallback* disconnectedCallback, NanCallback* errorCallback) {
+void AfterOpenSuccess(SerialDevice^ device, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, Nan::Callback* errorCallback) {
   WatchPortBaton* baton = new WatchPortBaton();
   memset(baton, 0, sizeof(WatchPortBaton));
   baton->device = device;

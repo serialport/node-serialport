@@ -33,6 +33,7 @@
               ],
               ['winplat=="uwp"',
                 {
+                  'win_delay_load_hook': 'false',
                   'msvs_onecore_vcpp_libs': 1,
                   'defines': [
                     'UWP=1',
