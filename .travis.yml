@@ -40,7 +40,7 @@ before_install:
 # download node if testing x86 architecture
 - if [[ "$ARCH" == "x86" ]]; then wget $BASE_URL/$X86_FILE.tar.gz; tar -xf $X86_FILE.tar.gz; export PATH=$X86_FILE/bin:$PATH; fi
 # reinstall npm and node-pre-gyp
-- npm install -g node-gyp node-pre-gyp
+- npm install -g node-gyp node-pre-gyp aws-sdk
 # print versions
 - npm --version
 - node-gyp --version

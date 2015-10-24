@@ -4,12 +4,12 @@ environment:
     secure: wJRlPhmqDgwxllTxhhG5JJosBf3nKYxcXO6NfGnrUUnxmECHeNTsBrldqW8+EjyK
   node_pre_gyp_accessKeyId:
     secure: cgGBaLa6xiPo5duak1/xU5hxPCn1aUQqkQQZf27QQp0=
-    
+
   matrix:
   - nodejs_version: "0.10"
-  - nodejs_version: "0.11"
   - nodejs_version: "0.12"
-  
+  - nodejs_version: "4"
+
 
 # to add several platforms to build matrix:
 platform:
