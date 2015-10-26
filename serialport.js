@@ -27,8 +27,6 @@ function SerialPortFactory(_spfOptions) {
 
   var spfOptions = {};
 
-  spfOptions.queryPortsByPath =  (_spfOptions.queryPortsByPath === true ? true : false);
-
   var factory = this;
 
   // Removing check for valid BaudRates due to ticket: #140
@@ -552,7 +550,7 @@ function SerialPortFactory(_spfOptions) {
       callback(null, port);
     }
 
-    var dirName = (spfOptions.queryPortsByPath ? '/dev/serial/by-path' : '/dev/serial/by-id');
+    var dirName = '/dev/serial/by-path';
 
     fs.readdir(dirName, function (err, files) {
       if (err) {
