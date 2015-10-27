@@ -18,7 +18,7 @@ release:
 	@git checkout osx-binaries
 
 	@echo "Merging master into osx-binaries"
-	@git merge --no-ff --commit -m "Merge master into osx-binaries [publish binary]" master
+	@git merge -Xtheirs --no-ff --commit -m "Merge master into osx-binaries [publish binary]" master
 
 	@echo "Pushing osx-binaries"
 	@git push
