@@ -4,8 +4,7 @@ How to publish the pre compiled binaries.
 ## Setup for Linux, Windows and OSX
 
 Every time a new tag for the latest release is pushed to github the continuous integration
-builds in Travis-CI and AppVeyor will generate the binaries for each platform and architecture,
-package and publish to the AS3 bucket.
+builds in Travis-CI and AppVeyor will generate the binaries for each platform and architecture. We use [node-pre-gyp-github](https://github.com/bchr02/node-pre-gyp-github) on top of node-pre-gyp to put binaries on github instead of s3.
 
 This can be checked in the .travis.yml file and appveyor.yml file. Within the files there are two
 methods for publishing new binaries for each version, one is if a `git tag` is detected; the other
@@ -17,7 +16,7 @@ We also have an automated make task, we should always use this task to avoid for
 The process for generating the binaries, publishing and releasing the npm module should be as follows:
 
 1. Merge all changes and new features into master.
-2. Bump up version of npm module in `package.json`.
+2. Bump up version and binary host version of npm module in `package.json`, commit and push.
 3. execute make task: `make release`
 
 This task will do the following for you:
@@ -28,10 +27,10 @@ This task will do the following for you:
 4. Merge `master` into `osx-binaries`
 5. Push `osx-binaries`
 6. Checkout master
-7. Finally it will run `npm publish`
 
-With this we will make sure the binaries for all platforms and architectures will be generated each time
-a new version is released.
+With this we will make sure the binaries for all platforms and architectures will be generated each time a new version is released.
+
+You should then check binaries, fill out changelog and publish the github release and finally run `npm publish`
 
 
 ## Config Travis, AppVeyor and Github to generate all of the binaries.
