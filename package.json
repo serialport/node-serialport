@@ -1,6 +1,6 @@
 {
   "name": "serialport",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Welcome your robotic javascript overlords. Better yet, program them!",
   "author": {
     "name": "Chris Williams",
@@ -11,7 +11,7 @@
     "module_name": "serialport",
     "module_path": "./build/{configuration}/{node_abi}-{platform}-{arch}/",
     "package_name": "{node_abi}-{platform}-{arch}.tar.gz",
-    "host": "https://github.com/voodootikigod/node-serialport/releases/download/2.0.2"
+    "host": "https://github.com/voodootikigod/node-serialport/releases/download/2.0.3"
   },
   "main": "./serialport",
   "repository": {
