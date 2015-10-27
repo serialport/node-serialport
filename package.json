@@ -50,12 +50,13 @@
     "debug": "^2.1.1",
     "nan": "~2.0.0",
     "node-pre-gyp": "0.6.x",
-    "node-pre-gyp-github": "^1.0.5",
+    "node-pre-gyp-github": "jacobrosenthal/node-pre-gyp-github#line-endings-osx",
     "optimist": "~0.6.1",
     "sf": "0.1.7"
   },
   "bundledDependencies": [
-    "node-pre-gyp"
+    "node-pre-gyp",
+    "node-pre-gyp-github"
   ],
   "devDependencies": {
     "mocha": "*",

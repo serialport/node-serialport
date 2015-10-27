@@ -22,12 +22,8 @@ platform:
   - x64
 
 install:
-  - cmd: ECHO %APPVEYOR%
   - cmd: ECHO %nodejs_version%
   - cmd: ECHO %platform%
-  - cmd: ECHO %msvs_toolset%
-  - cmd: ECHO %msvs_version%
-  - cmd: ECHO %TOOLSET_ARGS%
   - cmd: ECHO %APPVEYOR_REPO_COMMIT_MESSAGE%
 
   - cmd: SET PATH=%cd%\node_modules\.bin\;%PATH%
