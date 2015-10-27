@@ -26,5 +26,5 @@ release:
 	@echo "Switching to master branch"
 	@git checkout master
 
-	@echo "Publishing to NPM"
-	@npm publish ./
+	@echo "Done"
+	@echo "Don't forget to check the binaries make it to the Github release and npm publish"
