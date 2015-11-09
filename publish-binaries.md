@@ -4,7 +4,7 @@ How to publish the pre compiled binaries.
 ## Setup for Linux, Windows and OSX
 
 Every time a new tag for the latest release is pushed to github the continuous integration
-builds in Travis-CI and AppVeyor will generate the binaries for each platform and architecture. We use [node-pre-gyp-github](https://github.com/bchr02/node-pre-gyp-github) on top of node-pre-gyp to put binaries on github instead of s3.
+builds in Travis-CI and AppVeyor will generate the binaries for each platform and architecture. We use [node-pre-gyp-github](https://github.com/bchr02/node-pre-gyp-github) on top of node-pre-gyp to put binaries on Github instead of S3.
 
 This can be checked in the .travis.yml file and appveyor.yml file. Within the files there are two
 methods for publishing new binaries for each version, one is if a `git tag` is detected; the other
@@ -36,7 +36,7 @@ You should then check binaries, fill out changelog and publish the github releas
 ## Config Travis, AppVeyor and Github to generate all of the binaries.
 
 Before we are able to run everything stated above some steps need to be taken.
-Specifically for being able to publish the pre compiled binaries to AWS-S3. The
+Specifically for being able to publish the pre compiled binaries to Github. The
 correct keys need to be setup in the travis and appveyor `.yml` files. This needs
 to be done by the admin of the repo, in the case of Travis, and the owner of the account,
 in the case of appveyor.
@@ -73,7 +73,7 @@ the osx-binaries branch that contains the `[publish binary]` string, we can push
 
 ```bash
 $ git checkout osx-binaries
-$ git commit --allow-empty -m "Publish new version of pre-compiled binaries to AS3 [publish binary]"
+$ git commit --allow-empty -m "Publish new version of pre-compiled binaries to Github [publish binary]"
 $ git push origin osx-binaries
 ```
 
