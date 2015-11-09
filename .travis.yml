@@ -52,9 +52,14 @@ before_install:
 # figure out if we should publish
 - PUBLISH_BINARY=false
 # if we are building a tag then publish
+- echo $TRAVIS_BRANCH
+- echo `git describe --tags --always HEAD`
+- echo $COMMIT_MESSAGE
 - if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then PUBLISH_BINARY=true; fi;
+- echo "Publishing native platform Binary Package? ->" $PUBLISH_BINARY
 # or if we put [publish binary] in the commit message
 - if test "${COMMIT_MESSAGE#*'[publish binary]'}" != "$COMMIT_MESSAGE"; then PUBLISH_BINARY=true; fi;
+- echo "Publishing native platform Binary Package? ->" $PUBLISH_BINARY
 
 install:
 # ensure source install works
@@ -64,7 +69,6 @@ script:
 # test our module
 - node serialport.js
 - npm test
-- echo "Publishing native platform Binary Package? ->" $PUBLISH_BINARY
 # if publishing, do it
 - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package; fi;
 - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp-github publish; fi;
