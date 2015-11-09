@@ -8,7 +8,7 @@ builds in Travis-CI and AppVeyor will generate the binaries for each platform an
 
 This can be checked in the .travis.yml file and appveyor.yml file. Within the files there are two
 methods for publishing new binaries for each version, one is if a `git tag` is detected; the other
-can be triggered by passing the string `[publish binary]` in the commit message itself.
+can be triggered by passing the string `[publish binary]` in the commit message itself. We use the `[publish binary]` method exclusively.
 
 We also have an automated make task, we should always use this task to avoid forgetting any steps
 (like merging into the `osx-binaries` branch).
@@ -16,21 +16,21 @@ We also have an automated make task, we should always use this task to avoid for
 The process for generating the binaries, publishing and releasing the npm module should be as follows:
 
 1. Merge all changes and new features into master.
-2. Bump up version and binary host version of npm module in `package.json`, commit and push.
-3. execute make task: `make release`
+2. Bump up npm version *AND* binary host version in `package.json`, commit and push.
+3. rum command: `make release`
 
 This task will do the following for you:
 
 1. Generate new tags based on package.json version number
 2. Push tags to Github
 3. Checkout into `osx-binaries` branch
-4. Merge `master` into `osx-binaries`
+4. Merge `master` into `osx-binaries` with `[publish binary]` tag
 5. Push `osx-binaries`
-6. Checkout master
+6. Re-Checkout master
 
 With this we will make sure the binaries for all platforms and architectures will be generated each time a new version is released.
 
-You should then check binaries, fill out changelog and publish the github release and finally run `npm publish`
+From here, travis and appveyor detect the osx-binaries branch `[publish binary]` commit and build for release. As the builds (presumably) succeed youshould see binaries showing up on the github releases page. While you wait, why not copy the changelog updates into the release field? You probably want to wait (hours?) for appveyor success, check that all binaries exist, and then finally run `npm publish`
 
 
 ## Config Travis, AppVeyor and Github to generate all of the binaries.
