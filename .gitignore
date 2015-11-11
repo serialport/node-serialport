@@ -11,3 +11,4 @@ out
 gyp-mac-tool
 .node_pre_gyprc
 /.idea
+*.node

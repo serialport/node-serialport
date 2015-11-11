@@ -1,3 +1,37 @@
+Version 2.0.4
+-------------
+-Fix heap corruption issue affecting windows users since 2.0.0, thanks @kunalspathak
+
+Version 2.0.3
+-------------
+- Move node-pre-gyp binaries away from Amazon S3 to Github Releases page
+- Fix for missing node-pre-gyp binaries, especially for windows users, since the 2.0.0 refactor which forced windows users to build from source -- generally failing due to lack of dependencies
+- Unix port listing moved away from udev which was not available on all platforms, to whitelisting ttyS ttyACM ttyUSB ttyAMA devices, see #610
+
+Version 2.0.2
+-------------
+- Cleanup minor Unix gcc warnings, Thanks @rwaldron
+
+Version 2.0.1
+-------------
+- El Capitan Support, thanks @tmpvar
+
+Version 2.0.0
+-------------
+- Upgrade to NAN2 to support Node 4 support. Technically not api breaking, though NAN2 requires gcc 4.8 which for Pi Wheezy users at the very least, would be breaking. For those affected users looking to utilize serialport 2.x.x and Node 4 see https://github.com/fivdi/onoff/wiki/Node.js-v4-and-native-addons
+
+Version 1.7.4
+-------------
+- Fix OSX 10.10 build errors
+
+Version 1.7.3
+-------------
+- Fix OSX 10.10 build errors
+
+Version 1.7.2
+-------------
+- Fix OSX 10.10 build errors
+
 Version 1.7.1
 -------------
 - Fixed breaking issues in underlying code. (@voodootikigod)
