@@ -538,8 +538,12 @@ function SerialPortFactory(_spfOptions) {
         return result;
       }
       var as_json = udev_output_to_json(udev_output);
-      var pnpId = as_json.DEVLINKS.split(' ')[0];
-      pnpId = pnpId.substring(pnpId.lastIndexOf('/') + 1);
+
+      var pnpId;
+      if(as_json.DEVLINKS) {
+        pnpId = as_json.DEVLINKS.split(' ')[0];
+        pnpId = pnpId.substring(pnpId.lastIndexOf('/') + 1);
+      }
       var port = {
         comName: as_json.DEVNAME,
         manufacturer: as_json.ID_VENDOR,
