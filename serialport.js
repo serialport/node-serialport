@@ -552,7 +552,8 @@ function SerialPortFactory(_spfOptions) {
       callback(null, port);
     }
 
-    var dirName = (spfOptions.queryPortsByPath ? '/dev/serial/by-path' : '/dev/serial/by-id');
+    //var dirName = (spfOptions.queryPortsByPath ? '/dev/serial/by-path' : '/dev/serial/by-id');
+    var dirName = '/dev';
 
     fs.readdir(dirName, function (err, files) {
       if (err) {
@@ -569,9 +570,16 @@ function SerialPortFactory(_spfOptions) {
         return;
       }
 
+      //get only serial port  names
+      for (var i = files.length - 1;i>=0;i--){
+        if ((files[i].indexOf('ttyS') === -1 && files[i].indexOf('ttyACM') === -1 && files[i].indexOf('ttyUSB') === -1 && files[i].indexOf('ttyAMA') === -1) || !fs.statSync(path.join(dirName,files[i])).isCharacterDevice()){
+          files.splice(i,1);
+        }
+      }
+
       async.map(files, function (file, callback) {
         var fileName = path.join(dirName, file);
-        fs.readlink(fileName, function (err, link) {
+        exec('/sbin/udevadm info --query=property -p $(/sbin/udevadm info -q path -n ' + fileName + ')', function (err, stdout) {
           if (err) {
             if (callback) {
               callback(err);
@@ -581,19 +589,7 @@ function SerialPortFactory(_spfOptions) {
             return;
           }
 
-          link = path.resolve(dirName, link);
-          exec('/sbin/udevadm info --query=property -p $(/sbin/udevadm info -q path -n ' + link + ')', function (err, stdout) {
-            if (err) {
-              if (callback) {
-                callback(err);
-              } else {
-                factory.emit('error', err);
-              }
-              return;
-            }
-
-            udev_parser(stdout, callback);
-          });
+          udev_parser(stdout, callback);
         });
       }, callback);
     });

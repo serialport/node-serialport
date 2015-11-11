@@ -1,23 +1,8 @@
-```
-  eeeee eeeee eeeee eeee       e  eeeee
-  8   8 8  88 8   8 8          8  8   "
-  8e  8 8   8 8e  8 8eee       8e 8eeee
-  88  8 8   8 88  8 88      e  88    88
-  88  8 8eee8 88ee8 88ee 88 8ee88 8ee88
-
-  eeeee eeee eeeee  e  eeeee e     eeeee eeeee eeeee eeeee
-  8   " 8    8   8  8  8   8 8     8   8 8  88 8   8   8
-  8eeee 8eee 8eee8e 8e 8eee8 8e    8eee8 8   8 8eee8e  8e
-     88 88   88   8 88 88  8 88    88    8   8 88   8  88
-  8ee88 88ee 88   8 88 88  8 88eee 88    8eee8 88   8  88
-```
-
 [![Build Status](https://travis-ci.org/voodootikigod/node-serialport.png?branch=master)](https://travis-ci.org/voodootikigod/node-serialport)
 [![Gitter chat](https://badges.gitter.im/voodootikigod/node-serialport.png)](https://gitter.im/voodootikigod/node-serialport)
 [![Dependency Status](https://david-dm.org/voodootikigod/node-serialport.png)](https://david-dm.org/voodootikigod/node-serialport)
 
 For all discussions, designs, and clarifications, we recommend you join our Gitter Chat room: [https://gitter.im/voodootikigod/node-serialport](https://gitter.im/voodootikigod/node-serialport)
-
 
 
 *****
@@ -26,41 +11,11 @@ Imagine a world where you can write JavaScript to control blenders, lights, secu
 
 *****
 
-Robots, you say?
-================
-
-This library is admittedly a base level toolkit for building amazing things with real world (including robots). Here are a couple of those amazing things that leverage node-serialport:
-
-* [Johnny-Five](https://github.com/rwaldron/johnny-five) - JavaScript IoT and Robotics programming framework.
-* [Cylon.js](http://cylonjs.com/) - JavaScript Robotics, By Your Command.
-* [node-l8smartlight](http://jakobwesthoff.github.io/node-l8smartlight/) ([source](https://github.com/jakobwesthoff/node-l8smartlight)) A node library to control the L8 Smartlight via Bluetooth or USB port
-* [firmata](https://github.com/jgautier/firmata) Talk natively to Arduino using the firmata protocol.
-* [tmpad](http://tmpvar.com/project/tmpad/) [source](https://github.com/tmpvar/tmpad) - a DIY midi pad using infrared, arduino, and nodejs. [Video](http://vimeo.com/34575470)
-* [duino](https://github.com/ecto/duino) - A higher level framework for working with Arduinos in node.js.
-* [Arduino Drinking Game Extravaganza](http://jsconf.eu/2011/arduino_drinking_game_extravaganza.html) - AKA "The Russian" a hexidecimal drinking game for geeks by Uxebu presented at JSConf EU 2011.
-* [Arduino controlling popcorn.js](https://gist.github.com/968773) - Controlling a popcorn.js video with an Arduino kit.
-* [Robotic JavaScript](http://jsconf.eu/2010/speaker/livingroombindmotion_function.html) - The first live presentation of the node-serialport code set as presented at JSConf EU 2010.
-* [devicestack](https://github.com/adrai/devicestack) - This module helps you to represent a device and its protocol.
-* [reflecta](https://github.com/JayBeavers/Reflecta) A communication protocol that combines Arduino Libraries and NodeJS into an integrated system.
-* [rc4pt-node](https://github.com/comsolid/rc4pt-node) - Control Popcorntime with an Infrared receiver and Arduino.
-
 For getting started with node-serialport, we recommend you begin with the following articles:
 
 * [Arduino Node Security Sensor Hacking](http://nexxylove.tumblr.com/post/20159263403/arduino-node-security-sensor-hacking) - A great all around "how do I use this" article.
 * [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics) - A survey article of why one would want to program robots in JS.
 * [Johnny-Five Getting Started Guide](https://github.com/rwldrn/johnny-five#setup-and-assemble-arduino) - Introduction to using the high level Johnny-Five library (awesome).
-
-How To Use
-==========
-
-Using node-serialport is pretty easy because it is pretty basic. It provides you with the building block to make great things, it is not a complete solution - just a cog in the (world domination) machine.
-
-**Special Notes**
-
-* Last confirmed support for Node.js version 0.8.x was version 1.4.0
-* Last confirmed support for Node.js version 0.11.x was 1.7.4.
-
-Good luck.
 
 
 To Install
@@ -72,10 +27,9 @@ For most "standard" use cases (node v0.10.x on mac, linux, windows on a x86 or x
 npm install serialport
 ```
 
-We are using [node-pre-gyp](https://github.com/mapbox/node-pre-gyp) to compile and post binaries of the library for most common use cases (linux, mac, windows on standard processor platforms). If you are on a special case, node-serialport will work, but it will compile the binary when you install. Follow the instructions below for how that works.
-
 ### Installation Special Cases
 
+We are using [node-pre-gyp](https://github.com/mapbox/node-pre-gyp) to compile and post binaries of the library for most common use cases (linux, mac, windows on standard processor platforms). If you are on a special case, node-serialport will work, but it will compile the binary when you install. 
 
 This assumes you have everything on your system necessary to compile ANY native module for Node.js. This may not be the case, though, so please ensure the following are true for your system before filing an issue about "Does not install". For all operatings systems, please ensure you have Python 2.x installed AND not 3.0, node-gyp (what we use to compile) requires Python 2.x.
 
@@ -84,7 +38,7 @@ This assumes you have everything on your system necessary to compile ANY native 
  * Windows 7 or Windows 8.1 are supported.
  * Install [Visual Studio Express 2013 for Windows Desktop](http://www.microsoft.com/visualstudio/eng/2013-downloads#d-2013-express).
  * If you are hacking on an Arduino, be sure to install [the drivers](http://arduino.cc/en/Guide/windows#toc4).
- * Install [node.js 0.10.x](http://nodejs.org/) matching the bitness (32 or 64) of your operating system.
+ * Install [node.js](http://nodejs.org/) matching the bitness (32 or 64) of your operating system.
  * Install [Python 2.7.6](http://www.python.org/download/releases/2.7.6/) matching the bitness of your operating system.  For any questions, please refer to their [FAQ](http://docs.python.org/2/faq/windows.html). Default settings are perfect.
  * Open the 'Visual Studio Command Prompt' and add Python to the path.
 
@@ -112,7 +66,7 @@ npm install serialport
 
 #### Raspberry Pi Linux:
 
- * Starting with a a vanilla New Out of the Box Software (NOOBS) Raspbian image (currently tested: 5/25/2013)
+ * Starting with a a vanilla New Out of the Box Software (NOOBS) Raspbian image
  * Log into your Raspberry Pi through whatever means works best and ensure you are on a terminal prompt for the remaining steps. This could be local or through an SSH (or a serial connection if you like).
  * Issue the following commands to ensure you are up to date:
 
@@ -152,17 +106,6 @@ When opening a serial port, you can specify (in this order).
 
 1. Path to Serial Port - required.
 1. Options - optional and described below.
-
-The options object allows you to pass named options to the serial port during initialization. The valid attributes for the options object are the following:
-
-* baudrate: Baud Rate, defaults to 9600. Should be one of: 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, or 50. Custom rates as allowed by hardware is supported.
-* databits: Data Bits, defaults to 8. Must be one of: 8, 7, 6, or 5.
-* stopbits: Stop Bits, defaults to 1. Must be one of: 1 or 2.
-* parity: Parity, defaults to 'none'. Must be one of: 'none', 'even', 'mark', 'odd', 'space'
-* buffersize: Size of read buffer, defaults to 255. Must be an integer value.
-* parser: The parser engine to use with read data, defaults to rawPacket strategy which just emits the raw buffer as a "data" event. Can be any function that accepts EventEmitter as first parameter and the raw buffer as the second parameter.
-
-**Note, we have added support for either all lowercase OR camelcase of the options (thanks @jagautier), use whichever style you prefer.**
 
 open event
 ----------
@@ -284,21 +227,23 @@ The system path of the serial port to open. For example, `/dev/tty` on Mac/Linux
 
 Port configuration options.
 
-* `baudRate`
-* `dataBits`
-* `stopBits`
-* `parity`
+* `baudRate` Baud Rate, defaults to 9600. Should be one of: 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, or 50. Custom rates as allowed by hardware is supported.
+* `dataBits` Data Bits, defaults to 8. Must be one of: 8, 7, 6, or 5.
+* `stopBits` Stop Bits, defaults to 1. Must be one of: 1 or 2.
+* `parity` Parity, defaults to 'none'. Must be one of: 'none', 'even', 'mark', 'odd', 'space'
 * `rtscts`
 * `xon`
 * `xoff`
 * `xany`
 * `flowControl`
-* `bufferSize`
-* `parser`
+* `bufferSize` Size of read buffer, defaults to 255. Must be an integer value.
+* `parser` The parser engine to use with read data, defaults to rawPacket strategy which just emits the raw buffer as a "data" event. Can be any function that accepts EventEmitter as first parameter and the raw buffer as the second parameter.
 * `encoding`
 * `dataCallback`
 * `disconnectedCallback`
 * `platformOptions` - sets platform specific options, see below.
+
+**Note, we have added support for either all lowercase OR camelcase of the options (thanks @jagautier), use whichever style you prefer.**
 
 #### Unix Platform Options
 
@@ -401,7 +346,3 @@ Called once a connection is closed. Closing a connection will also remove all ev
 &nbsp;
 &nbsp;
 
-
-# Credit
-
-A special thanks to [The Hybrid Group](http://hybridgroup.com) for helping create and hosting the precompiled binaries for OSX, Linux, & Windows. This makes installing node-serialport much easier and much simpler for individuals using those platforms. Thank you.
