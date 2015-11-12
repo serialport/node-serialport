@@ -1,6 +1,10 @@
+Version 2.0.5
+-------------
+- Fix linux port listing crash since 2.0.3 refactor, thanks @monkbroc
+
 Version 2.0.4
 -------------
--Fix heap corruption issue affecting windows users since 2.0.0, thanks @kunalspathak
+- Fix heap corruption issue affecting windows users since 2.0.0, thanks @kunalspathak
 
 Version 2.0.3
 -------------
