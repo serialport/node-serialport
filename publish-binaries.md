@@ -15,7 +15,8 @@ can be triggered by passing the string `[publish binary]` in the commit message 
 We have an automated make task, we should always use this task to avoid forgetting any steps. The process for generating the binaries, publishing and releasing the npm module should be as follows:
 
 1. Merge all changes and new features into master.
-2. Bump up npm version *AND* binary host version in `package.json`, commit and push.
+2. Fill out changelog.md.
+3. Bump up npm version *AND* binary host version in `package.json`, commit and push.
 3. rum command: `make release`
 
 This task will do the following for you:
@@ -23,7 +24,7 @@ This task will do the following for you:
 1. Generate new tags based on package.json version number
 2. Push tags to Github
 
-From here, travis and appveyor detect the osx-binaries branch `[publish binary]` commit and build for release. As the builds (presumably) succeed youshould see binaries showing up on the github releases page. While you wait, why not copy the changelog updates into the release field? You probably want to wait (hours?) for appveyor success, check that all binaries exist, and then finally run `npm publish`
+From here, travis and appveyor detect release tag commit and build for release. As the builds (presumably) succeed you should see binaries showing up on the github releases page. While you wait, why not copy the changelog updates into the release field? You probably want to wait (hours?) for appveyor success, check that all binaries exist, and then finally don't forget to run `npm publish`
 
 
 ## Config Travis, AppVeyor and Github to generate all of the binaries.
@@ -54,21 +55,3 @@ click in `encrypt tool`, there enter the values in the input field and click enc
 Travis we then need to substitute the newly generated values for the old ones.
 
 Detailed instructions can be found here: http://www.appveyor.com/docs/build-configuration#secure-variables
-
-### OSX binaries
-
-Since Travis does not support config file for multiple OSs we need to create a new branch that contains
-a slightly different version of the .travis.yml file to compile for OSX. The branch needs to be called
-`osx-binaries` and be based of `master` once the pre-compiled binaries PR has been merged in.
-
-If we want to release a new version of the OSX binaries manually we can do it by pushing a new commit to
-the osx-binaries branch that contains the `[publish binary]` string, we can push an empty commit as follows:
-
-```bash
-$ git checkout osx-binaries
-$ git commit --allow-empty -m "Publish new version of pre-compiled binaries to Github [publish binary]"
-$ git push origin osx-binaries
-```
-
-The travis script will verify that the commit message contains the string `[publish binary]` and upload the
-binary packages.
