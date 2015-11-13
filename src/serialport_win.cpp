@@ -170,9 +170,9 @@ public:
   char errorString[ERROR_STRING_SIZE];
   DWORD errorCode;
   bool disconnected;
-  NanCallback* dataCallback;
-  NanCallback* errorCallback;
-  NanCallback* disconnectedCallback;
+  Nan::Callback* dataCallback;
+  Nan::Callback* errorCallback;
+  Nan::Callback* disconnectedCallback;
 };
 
 void EIO_Update(uv_work_t* req) {
@@ -300,8 +300,18 @@ void DisposeWatchPortCallbacks(WatchPortBaton* data) {
   delete data->disconnectedCallback;
 }
 
+// FinalizerCallback will prevent WatchPortBaton::buffer from getting
+// collected by gc while finalizing v8::ArrayBuffer. The buffer will
+// get cleaned up through this callback.
+static void FinalizerCallback(char* data, void* hint) {
+  uv_work_t* req = reinterpret_cast<uv_work_t*>(hint);
+  WatchPortBaton* wpb = static_cast<WatchPortBaton*>(req->data);
+  delete wpb;
+  delete req;
+}
+
 void EIO_AfterWatchPort(uv_work_t* req) {
-  NanScope();
+  Nan::HandleScope scope;
 
   WatchPortBaton* data = static_cast<WatchPortBaton*>(req->data);
   if(data->disconnected) {
@@ -310,17 +320,19 @@ void EIO_AfterWatchPort(uv_work_t* req) {
     goto cleanup;
   }
 
+  bool skipCleanup = false;
   if(data->bytesRead > 0) {
-    v8::Handle<v8::Value> argv[1];
-    argv[0] = NanNewBufferHandle(data->buffer, data->bytesRead);
+    v8::Local<v8::Value> argv[1];
+    argv[0] = Nan::NewBuffer(data->buffer, data->bytesRead, FinalizerCallback, req).ToLocalChecked();
+    skipCleanup = true;
     data->dataCallback->Call(1, argv);
   } else if(data->errorCode > 0) {
     if(data->errorCode == ERROR_INVALID_HANDLE && IsClosingHandle((int)data->fd)) {
       DisposeWatchPortCallbacks(data);
       goto cleanup;
     } else {
-      v8::Handle<v8::Value> argv[1];
-      argv[0] = NanError(data->errorString);
+      v8::Local<v8::Value> argv[1];
+      argv[0] = Nan::Error(data->errorString);
       data->errorCallback->Call(1, argv);
       Sleep(100); // prevent the errors from occurring too fast
     }
@@ -328,11 +340,13 @@ void EIO_AfterWatchPort(uv_work_t* req) {
   AfterOpenSuccess((int)data->fd, data->dataCallback, data->disconnectedCallback, data->errorCallback);
 
 cleanup:
-  delete data;
-  delete req;
+  if (!skipCleanup) {
+    delete data;
+    delete req;
+  }
 }
 
-void AfterOpenSuccess(int fd, NanCallback* dataCallback, NanCallback* disconnectedCallback, NanCallback* errorCallback) {
+void AfterOpenSuccess(int fd, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, Nan::Callback* errorCallback) {
   WatchPortBaton* baton = new WatchPortBaton();
   memset(baton, 0, sizeof(WatchPortBaton));
   baton->fd = (HANDLE)fd;

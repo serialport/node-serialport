@@ -1,6 +1,6 @@
 {
   "name": "serialport",
-  "version": "1.7.4",
+  "version": "2.0.4",
   "description": "Welcome your robotic javascript overlords. Better yet, program them!",
   "author": {
     "name": "Chris Williams",
@@ -9,10 +9,9 @@
   },
   "binary": {
     "module_name": "serialport",
-    "module_path": "./build/{module_name}/v{version}/{configuration}/{node_abi}-{platform}-{arch}/",
-    "remote_path": "./{module_name}/v{version}/{configuration}/",
+    "module_path": "./build/{configuration}/{node_abi}-{platform}-{arch}/",
     "package_name": "{node_abi}-{platform}-{arch}.tar.gz",
-    "host": "https://node-serialport.s3.amazonaws.com"
+    "host": "https://github.com/voodootikigod/node-serialport/releases/download/2.0.4"
   },
   "main": "./serialport",
   "repository": {
@@ -20,6 +19,10 @@
     "url": "git://github.com/voodootikigod/node-serialport.git"
   },
   "maintainers": [
+    {
+      "name": "Jacob Rosenthal",
+      "email": "jakerosenthal@gmail.com"
+    },
     {
       "name": "Chris Williams",
       "email": "voodootikigod@gmail.com"
@@ -45,13 +48,15 @@
     "async": "0.9.0",
     "bindings": "1.2.1",
     "debug": "^2.1.1",
-    "nan": "~1.8.4",
+    "nan": "~2.0.0",
     "node-pre-gyp": "0.6.x",
+    "node-pre-gyp-github": "jacobrosenthal/node-pre-gyp-github#production",
     "optimist": "~0.6.1",
     "sf": "0.1.7"
   },
   "bundledDependencies": [
-    "node-pre-gyp"
+    "node-pre-gyp",
+    "node-pre-gyp-github"
   ],
   "devDependencies": {
     "mocha": "*",
