@@ -707,6 +707,7 @@ function SerialPortFactory(_spfOptions) {
   factory.SerialPort = SerialPort;
   factory.parsers = parsers;
   factory.SerialPortBinding = SerialPortBinding;
+  factory.SerialPortFactory = SerialPortFactory;
 
   if (process.platform === 'win32') {
     factory.list = SerialPortBinding.list;
