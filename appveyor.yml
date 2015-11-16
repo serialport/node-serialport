@@ -1,86 +1,60 @@
+# AppVeyor file
+# http://www.appveyor.com/docs/appveyor-yml
+
+os: unstable
+
+# Fix line endings on Windows
+init:
+  - git config --global core.autocrlf true
+
 # environment variables
 environment:
-  node_pre_gyp_secretAccessKey:
-    secure: wJRlPhmqDgwxllTxhhG5JJosBf3nKYxcXO6NfGnrUUnxmECHeNTsBrldqW8+EjyK
-  node_pre_gyp_accessKeyId:
-    secure: cgGBaLa6xiPo5duak1/xU5hxPCn1aUQqkQQZf27QQp0=
-    
+  NODE_PRE_GYP_GITHUB_TOKEN:
+    secure: azLeMAlIn7bfsIjPriD3O8kg3/uLPNOnAE6FgwPvIT+MWSlMsG3giURb7SxQ01tB
+
   matrix:
   - nodejs_version: "0.10"
-  - nodejs_version: "0.11"
   - nodejs_version: "0.12"
-  
+  - nodejs_version: "4.2"
 
-# to add several platforms to build matrix:
 platform:
+  - x86
   - x64
 
 install:
-  - cmd: ECHO "INSTALL:"
-  - cmd: ECHO "APPVEYOR_REPO_COMMIT_MESSAGE ->"
+  - cmd: ECHO %nodejs_version%
+  - cmd: ECHO %platform%
   - cmd: ECHO %APPVEYOR_REPO_COMMIT_MESSAGE%
+
+  - cmd: SET PATH=%cd%\node_modules\.bin\;%PATH%
+  - ps:  Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:platform
+  - cmd: IF %nodejs_version% LSS 1 npm -g install npm
+  - cmd: IF %nodejs_version% LSS 1 set PATH=%APPDATA%\npm;%PATH%
+
   - cmd: SET COMMIT_MSG="%APPVEYOR_REPO_COMMIT_MESSAGE%"
-  - cmd: SET NODIST_PREFIX=C:\nodist
-  - cmd: SET PATH=C:\nodist\bin;%PATH%
   - cmd: SET PUBLISH_BINARY=false
   # Check to verify the branch is the same than latest tag, if so
   # then we publish the binaries if everything else is successful.
   - cmd: git describe --tags --always HEAD > _git_tag.tmp
   - cmd: SET /p GIT_TAG=<_git_tag.tmp
-  - cmd: ECHO "LATEST LOCAL TAG:"
   - cmd: ECHO %GIT_TAG%
-  - cmd: ECHO "APPVEYOR REPO BRANCH/TAG:"
   - cmd: ECHO %APPVEYOR_REPO_BRANCH%
   - cmd: DEL _git_tag.tmp
   - cmd: IF x%APPVEYOR_REPO_BRANCH%==x%GIT_TAG% SET PUBLISH_BINARY=true
   # Or look for commit message containing `[publish binary]`
   - cmd: IF not x%COMMIT_MSG:[publish binary]=%==x%COMMIT_MSG% SET PUBLISH_BINARY=true
-  - cmd: ECHO "Env Var PUBLISH_BINARY:"
   - cmd: ECHO %PUBLISH_BINARY%
-  - cmd: git clone https://github.com/marcelklehr/nodist.git c:\nodist 2>&1
-  - cmd: SET NODIST_X64=0
-  - cmd: nodist update
-  - cmd: nodist %nodejs_version%
-  - cmd: npm install -g node-gyp
 
-# to run your custom scripts instead of automatic MSBuild
 build_script:
-  - cmd: ECHO "BUILDING ia32 version:"
-  - cmd: npm install --build-from-source
-  - cmd: SET PATH=%cd%\node_modules\.bin\;%PATH%
-  - cmd: node serialport.js
-  - cmd: ECHO "PUBLISH ia32 package:"
-  - cmd: npm install aws-sdk
-  - cmd: IF %PUBLISH_BINARY%==true (node-pre-gyp package publish 2>&1)
-  - cmd: node-pre-gyp clean
-  - cmd: node-gyp clean
-  - cmd: rmdir /q /s node_modules
-  - cmd: ECHO "INSTALLING x64 node.js:"
-  # We add newest MSBuild so we can use the correct libs for the x64 version
-  - cmd: SET PATH=C:\Program Files (x86)\MSBuild\12.0\bin\;%PATH%
-  - cmd: SET PATH=C:\python27;%PATH%
-  - cmd: set NODIST_X64=1
-  - cmd: nodist update
-  - cmd: nodist %nodejs_version%
-  - cmd: npm install -g node-gyp
-  - cmd: ECHO "BUILDING x64 version:"
-  - cmd: npm install --build-from-source --msvs_version=2013
-  - cmd: ECHO "PUBLISH package:"
-  - cmd: npm install aws-sdk
-  - cmd: IF %PUBLISH_BINARY%==true (node-pre-gyp package publish 2>&1)
-  - cmd: node-pre-gyp clean
-  - cmd: node-gyp clean
+  - cmd: npm install --build-from-source --msvs_version=2013 --verbose
+
+test_script:
+  - cmd: npm test
 
 on_success:
-  # test installing from binary package works
-  - cmd: ECHO "ON SUCCESS:"
-  - cmd: ECHO "Try installing from binary:"
-  - cmd: IF %PUBLISH_BINARY%==true npm install --fallback-to-build=false
-  # Clean Directories.
-  - cmd: node-pre-gyp clean
-  # Print Available Binaries
-  - cmd: node-pre-gyp info
-
-test: OFF
+  - cmd: IF %PUBLISH_BINARY%==true (node-pre-gyp package 2>&1)
+  - cmd: IF %PUBLISH_BINARY%==true (node-pre-gyp-github publish 2>&1)
+  - cmd: IF %PUBLISH_BINARY% == true (node-pre-gyp clean)
+  - cmd: IF %PUBLISH_BINARY% == true (npm install --fallback-to-build=false)
 
 deploy: OFF

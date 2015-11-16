@@ -14,17 +14,5 @@ release:
 	@echo "Pushing tags to GitHub"
 	@git push --tags
 
-	@echo "Switching to osx-binaries branch"
-	@git checkout osx-binaries
-
-	@echo "Merging master into osx-binaries"
-	@git merge --no-ff --commit -m "Merge master into osx-binaries [publish binary]" master
-
-	@echo "Pushing osx-binaries"
-	@git push
-
-	@echo "Switching to master branch"
-	@git checkout master
-
-	@echo "Publishing to NPM"
-	@npm publish ./
+	@echo "Done"
+	@echo "Don't forget to check the binaries make it to the Github release page and npm publish"

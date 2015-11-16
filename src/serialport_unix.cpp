@@ -40,11 +40,11 @@ public:
 };
 
 OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& options) {
-  NanScope();
+  Nan::HandleScope scope;
 
   UnixPlatformOptions* result = new UnixPlatformOptions();
-  result->vmin = options->Get(NanNew<v8::String>("vmin"))->ToInt32()->Int32Value();
-  result->vtime = options->Get(NanNew<v8::String>("vtime"))->ToInt32()->Int32Value();
+  result->vmin = Nan::Get(options, Nan::New<v8::String>("vmin").ToLocalChecked()).ToLocalChecked()->ToInt32()->Int32Value();
+  result->vtime = Nan::Get(options, Nan::New<v8::String>("vtime").ToLocalChecked()).ToLocalChecked()->ToInt32()->Int32Value();
 
   return result;
 }
@@ -53,7 +53,7 @@ int ToBaudConstant(int baudRate);
 int ToDataBitsConstant(int dataBits);
 int ToStopBitsConstant(SerialPortStopBits stopBits);
 
-void AfterOpenSuccess(int fd, NanCallback* dataCallback, NanCallback* disconnectedCallback, NanCallback* errorCallback) {
+void AfterOpenSuccess(int fd, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, Nan::Callback* errorCallback) {
   delete dataCallback;
   delete errorCallback;
   delete disconnectedCallback;
@@ -420,7 +420,7 @@ void EIO_Close(uv_work_t* req) {
 
 // Function prototypes
 static kern_return_t FindModems(io_iterator_t *matchingServices);
-static io_registry_entry_t GetUsbDevice(char *pathName);
+static io_service_t GetUsbDevice(io_service_t service);
 static stDeviceListItem* GetSerialDevices();
 
 
@@ -441,56 +441,42 @@ static kern_return_t FindModems(io_iterator_t *matchingServices)
     return kernResult;
 }
 
-static io_registry_entry_t GetUsbDevice(char* pathName)
+static io_service_t GetUsbDevice(io_service_t service)
 {
-    io_registry_entry_t device = 0;
+  IOReturn status;
+  io_iterator_t   iterator = 0;
+  io_service_t    device = 0;
 
-    CFMutableDictionaryRef classesToMatch = IOServiceMatching(kIOUSBDeviceClassName);
-    if (classesToMatch != NULL)
+  if (!service) {
+    return device;
+  }
+
+  status = IORegistryEntryCreateIterator(service,
+                                         kIOServicePlane,
+                                         (kIORegistryIterateParents | kIORegistryIterateRecursively),
+                                         &iterator);
+
+  if (status == kIOReturnSuccess)
+  {
+    io_service_t currentService;
+    while ((currentService = IOIteratorNext(iterator)) && device == 0)
     {
-        io_iterator_t matchingServices;
-        kern_return_t kernResult = IOServiceGetMatchingServices(kIOMasterPortDefault, classesToMatch, &matchingServices);
-        if (KERN_SUCCESS == kernResult)
-        {
-            io_service_t service;
-            Boolean deviceFound = false;
-
-            while ((service = IOIteratorNext(matchingServices)) && !deviceFound)
-            {
-                CFStringRef bsdPathAsCFString = (CFStringRef) IORegistryEntrySearchCFProperty(service, kIOServicePlane, CFSTR(kIOCalloutDeviceKey), kCFAllocatorDefault, kIORegistryIterateRecursively);
-
-                if (bsdPathAsCFString)
-                {
-                    Boolean result;
-                    char    bsdPath[MAXPATHLEN];
-
-                    // Convert the path from a CFString to a C (NUL-terminated)
-                    result = CFStringGetCString(bsdPathAsCFString,
-                                                bsdPath,
-                                                sizeof(bsdPath),
-                                                kCFStringEncodingUTF8);
-
-                    CFRelease(bsdPathAsCFString);
-
-                    if (result && (strcmp(bsdPath, pathName) == 0))
-                    {
-                        deviceFound = true;
-                        //memset(bsdPath, 0, sizeof(bsdPath));
-                        device = service;
-                    }
-                    else
-                    {
-                       // Release the object which are no longer needed
-                       (void) IOObjectRelease(service);
-                    }
-                }
-            }
-            // Release the iterator.
-            IOObjectRelease(matchingServices);
-        }
+      io_name_t serviceName;
+      status = IORegistryEntryGetNameInPlane(currentService, kIOServicePlane, serviceName);
+      if (status == kIOReturnSuccess && IOObjectConformsTo(currentService, kIOUSBDeviceClassName)) {
+        device = currentService;
+      }
+      else {
+        // Release the service object which is no longer needed
+        (void) IOObjectRelease(currentService);
+      }
     }
 
-    return device;
+    // Release the iterator
+    (void) IOObjectRelease(iterator);
+  }
+
+  return device;
 }
 
 static void ExtractUsbInformation(stSerialDevice *serialDevice, IOUSBDeviceInterface  **deviceInterface)
@@ -583,14 +569,13 @@ static stDeviceListItem* GetSerialDevices()
 
                 uv_mutex_lock(&list_mutex);
 
-                io_registry_entry_t device = GetUsbDevice(bsdPath);
+                io_service_t device = GetUsbDevice(modemService);
 
                 if (device) {
-                    CFStringRef manufacturerAsCFString = (CFStringRef) IORegistryEntrySearchCFProperty(device,
-                                          kIOServicePlane,
+                    CFStringRef manufacturerAsCFString = (CFStringRef) IORegistryEntryCreateCFProperty(device,
                                           CFSTR(kUSBVendorString),
                                           kCFAllocatorDefault,
-                                          kIORegistryIterateRecursively);
+                                          0);
 
                     if (manufacturerAsCFString)
                     {
@@ -707,19 +692,19 @@ void EIO_List(uv_work_t* req) {
         ListResultItem* resultItem = new ListResultItem();
         resultItem->comName = device.port;
 
-        if (device.locationId != NULL) {
+        if (*device.locationId) {
           resultItem->locationId = device.locationId;
         }
-        if (device.vendorId != NULL) {
+        if (*device.vendorId) {
           resultItem->vendorId = device.vendorId;
         }
-        if (device.productId != NULL) {
+        if (*device.productId) {
           resultItem->productId = device.productId;
         }
-        if (device.manufacturer != NULL) {
+        if (*device.manufacturer) {
           resultItem->manufacturer = device.manufacturer;
         }
-        if (device.serialNumber != NULL) {
+        if (*device.serialNumber) {
           resultItem->serialNumber = device.serialNumber;
         }
         data->results.push_back(resultItem);

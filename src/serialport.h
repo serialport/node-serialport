@@ -37,9 +37,9 @@ NAN_METHOD(Open);
 void EIO_Open(uv_work_t* req);
 void EIO_AfterOpen(uv_work_t* req);
 #ifdef UWP
-void AfterOpenSuccess(SerialDevice ^ device, NanCallback* dataCallback, NanCallback* disconnectedCallback, NanCallback* errorCallback);
+void AfterOpenSuccess(SerialDevice ^ device, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, Nan::Callback* errorCallback);
 #else
-void AfterOpenSuccess(int fd, NanCallback* dataCallback, NanCallback* disconnectedCallback, NanCallback* errorCallback);
+void AfterOpenSuccess(int fd, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, Nan::Callback* errorCallback);
 #endif
 
 NAN_METHOD(Update);
@@ -66,7 +66,7 @@ NAN_METHOD(Drain);
 void EIO_Drain(uv_work_t* req);
 void EIO_AfterDrain(uv_work_t* req);
 
-SerialPortParity ToParityEnum(const v8::Handle<v8::String>& str);
+SerialPortParity ToParityEnum(const v8::Local<v8::String>& str);
 SerialPortStopBits ToStopBitEnum(double stopBits);
 
 struct OpenBatonPlatformOptions
@@ -77,10 +77,10 @@ OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& opti
 struct OpenBaton {
 public:
   char path[1024];
-  NanCallback* callback;
-  NanCallback* dataCallback;
-  NanCallback* disconnectedCallback;
-  NanCallback* errorCallback;
+  Nan::Callback* callback;
+  Nan::Callback* dataCallback;
+  Nan::Callback* disconnectedCallback;
+  Nan::Callback* errorCallback;
 #ifdef UWP
   SerialDevice^ device;
 #endif
@@ -110,8 +110,8 @@ public:
   char* bufferData;
   size_t bufferLength;
   size_t offset;
-  v8::Persistent<v8::Object> buffer;
-  NanCallback* callback;
+  Nan::Persistent<v8::Object> buffer;
+  Nan::Callback* callback;
   int result;
   char errorString[ERROR_STRING_SIZE];
 };
@@ -161,7 +161,7 @@ public:
   SerialDevice^ device;
 #endif
   int fd;
-  NanCallback* callback;
+  Nan::Callback* callback;
   char errorString[ERROR_STRING_SIZE];
 };
 
@@ -178,7 +178,7 @@ public:
 
 struct ListBaton {
 public:
-  NanCallback* callback;
+  Nan::Callback* callback;
   std::list<ListResultItem*> results;
   char errorString[ERROR_STRING_SIZE];
 };
@@ -189,7 +189,7 @@ public:
   SerialDevice^ device;
 #endif
   int fd;
-  NanCallback* callback;
+  Nan::Callback* callback;
   int result;
   char errorString[ERROR_STRING_SIZE];
 };
@@ -200,7 +200,7 @@ public:
   SerialDevice^ device;
 #endif
   int fd;
-  NanCallback* callback;
+  Nan::Callback* callback;
   int result;
   char errorString[ERROR_STRING_SIZE];
   bool rts;
@@ -217,7 +217,7 @@ public:
   SerialDevice^ device;
 #endif
   int fd;
-  NanCallback* callback;
+  Nan::Callback* callback;
   int result;
   char errorString[ERROR_STRING_SIZE];
 };
