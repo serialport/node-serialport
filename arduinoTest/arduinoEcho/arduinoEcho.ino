@@ -2,7 +2,7 @@ const int ledPin = 11;
 
 void setup() {
   pinMode(ledPin, OUTPUT);
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.write("READY");
 }
 
@@ -13,6 +13,6 @@ void loop() {
     Serial.write(Serial.read());
   }
 
-  delay(100);
+  //delay(100);
   digitalWrite(ledPin, LOW);
 }
