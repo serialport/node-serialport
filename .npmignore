@@ -1,0 +1,14 @@
+arduinoTest/
+examples/
+hwtest/
+sandbox/
+test/
+test_mocks/
+.jshintrc
+.travis.yml
+AUTHORS
+appveyor.yml
+changelog.md
+Gruntfile.js
+publish-binaries.md
+
