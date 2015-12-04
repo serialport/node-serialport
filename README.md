@@ -44,7 +44,7 @@ This assumes you have everything on your system necessary to compile ANY native 
 
 #### Mac OS X:
 
-Ensure that you have at a minimum the xCode Command Line Tools installed appropriate for your system configuration. If you recently upgraded the OS, it probably removed your installation of Command Line Tools, please verify before submitting a ticket. In order to compile it with Node.js 5.x+, you will need to use g++ v4.8 or higher.
+Ensure that you have at a minimum the xCode Command Line Tools installed appropriate for your system configuration. If you recently upgraded the OS, it probably removed your installation of Command Line Tools, please verify before submitting a ticket. To compile `node-serialport` with Node.js 4.x+, you will need to use g++ v4.8 or higher.
 
 #### Desktop (Debian/Ubuntu) Linux:
 
