@@ -599,8 +599,8 @@ function SerialPortFactory(_spfOptions) {
 
           udev_parser(stdout, callback);
         });
-      }, function(ports) {
-        callback(ports.filter(port=>!!port));
+      }, function(err, ports) {
+        callback(err, ports && ports.filter(port => !!port));
       });
     });
   }
