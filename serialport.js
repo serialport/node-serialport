@@ -540,8 +540,12 @@ function SerialPortFactory(_spfOptions) {
       var as_json = udev_output_to_json(udev_output);
 
       var pnpId;
+      // queryPortsByPath is always false?
+      var rePnpId = (spfOptions.queryPortsByPath ? /\/dev\/serial\/by-path\/(\S*)/g : /\/dev\/serial\/by-id\/(\S*)/g);
+      var matches;
       if(as_json.DEVLINKS) {
-        pnpId = as_json.DEVLINKS.split(' ')[0];
+        matches = rePnpId.exec(as_json.DEVLINKS);
+        pnpId = matches && matches[1] || as_json.DEVLINKS.split(' ')[0];
         pnpId = pnpId.substring(pnpId.lastIndexOf('/') + 1);
       }
       var port = {
@@ -586,7 +590,7 @@ function SerialPortFactory(_spfOptions) {
         exec('/sbin/udevadm info --query=property -p $(/sbin/udevadm info -q path -n ' + fileName + ')', function (err, stdout) {
           if (err) {
             if (callback) {
-              callback(err);
+              callback();
             } else {
               factory.emit('error', err);
             }
@@ -595,7 +599,9 @@ function SerialPortFactory(_spfOptions) {
 
           udev_parser(stdout, callback);
         });
-      }, callback);
+      }, function(err, ports) {
+        callback(err, ports && ports.filter(port => !!port));
+      });
     });
   }
 
