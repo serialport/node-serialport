@@ -590,7 +590,7 @@ function SerialPortFactory(_spfOptions) {
         exec('/sbin/udevadm info --query=property -p $(/sbin/udevadm info -q path -n ' + fileName + ')', function (err, stdout) {
           if (err) {
             if (callback) {
-              callback(err);
+              callback();
             } else {
               factory.emit('error', err);
             }
@@ -599,7 +599,9 @@ function SerialPortFactory(_spfOptions) {
 
           udev_parser(stdout, callback);
         });
-      }, callback);
+      }, function(ports) {
+        callback(ports.filter(port=>!!port));
+      });
     });
   }
 
