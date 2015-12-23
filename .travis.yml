@@ -38,7 +38,7 @@ before_install:
 # download node if testing x86 architecture
 - if [[ "$ARCH" == "x86" ]]; then wget $BASE_URL/$X86_FILE.tar.gz; tar -xf $X86_FILE.tar.gz; export PATH=$X86_FILE/bin:$PATH; fi
 # reinstall npm and node-pre-gyp
-- npm install -g node-gyp node-pre-gyp jacobrosenthal/node-pre-gyp-github#production
+- npm install -g node-gyp node-pre-gyp node-pre-gyp-github
 # print versions
 - npm --version
 - node-gyp --version
@@ -71,7 +71,7 @@ script:
 - npm test
 # if publishing, do it
 - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package; fi;
-- if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp-github publish; fi;
+- if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp-github publish --release; fi;
 # cleanup
 - node-pre-gyp clean
 - node-gyp clean
