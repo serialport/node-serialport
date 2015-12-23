@@ -1,3 +1,9 @@
+Version 2.0.6
+-------------
+- Add 5.x build to matrix, thanks @deadprogram
+- Re add nmpignore, thanks @rwaldron
+- Swap to upstream version of node-pre-gyp-github
+
 Version 2.0.5
 -------------
 - Fix linux port listing crash since 2.0.3 refactor, thanks @monkbroc
