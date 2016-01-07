@@ -28,21 +28,23 @@ void ParseUSBSerialDeviceId(String^ deviceId, UINT16* vid, UINT16* pid, std::wst
     return;
   }
   std::wstring wStr(deviceId->Data());
+  std::wstring idPrefix = wStr.substr(0, 3);
 
-  std::wstring usbStr = wStr.substr(0, 3);
-  if (0 != usbStr.compare(L"USB")) {
-    return;
-  }
-  *vid = wcstol(wStr.substr(8, 4).c_str(), NULL, 16);
-  *pid = wcstol(wStr.substr(17, 4).c_str(), NULL, 16);
-  serialStr = wStr.substr(22);
-  int index = -1;
-  index = serialStr.find_first_of(L"\\", 1);
-  if (-1 == index) {
-    index = serialStr.find_first_of(L"#", 1);
-  }
-  if (-1 != index) {
-    serialStr = serialStr.substr(0, index);
+  // Parse string in the format of USB\VID_XXXX&PID_XXXX\XXXXXXXXXX or USB#VID_XXXX&PID_XXXX#XXXXXXXXXX
+  if (0 == idPrefix.compare(L"USB")) {
+    *vid = wcstol(wStr.substr(8, 4).c_str(), NULL, 16);
+    *pid = wcstol(wStr.substr(17, 4).c_str(), NULL, 16);
+    serialStr = wStr.substr(22);
+  // Parse string in the format of \\?\USB#VID_XXXX&PID_XXXX#XXXXXXXXXX{XXXXX-XXXXX}
+  } else if (0 == idPrefix.compare(L"\\\\?")) {
+    *vid = wcstol(wStr.substr(12, 4).c_str(), NULL, 16);
+    *pid = wcstol(wStr.substr(21, 4).c_str(), NULL, 16);
+    serialStr = wStr.substr(26);
+    int index = -1;
+    index = serialStr.find_last_of(L"#", std::wstring::npos);
+    if (-1 != index) {
+      serialStr.erase(index);
+    }	  
   }
 }
 
@@ -86,6 +88,7 @@ void EIO_Open(uv_work_t* req) {
   std::wstring wid_str = std::wstring(s_str.begin(), s_str.end());
   const wchar_t* w_char = wid_str.c_str();
   String^ deviceId = ref new String(w_char);
+  ParseUSBSerialDeviceId(deviceId, &vid, &pid, serialStr); // Get USB-Serial info if it exists
   String ^aqs = SerialDevice::GetDeviceSelector();
 
   auto deviceInfoCollection = concurrency::create_task(DeviceInformation::FindAllAsync(aqs)).get();
@@ -100,8 +103,6 @@ void EIO_Open(uv_work_t* req) {
         break;
       }
       else {
-        // Check USB-Serial
-        ParseUSBSerialDeviceId(deviceId, &vid, &pid, serialStr);
         if (device->UsbVendorId == vid && device->UsbProductId == pid) {
           std::wstring wStr(deviceId->Data());
           int index = -1;
@@ -117,6 +118,20 @@ void EIO_Open(uv_work_t* req) {
   if (!device) {
     return;
   }
+
+  if (data->hupcl == false) {
+    device->IsDataTerminalReadyEnabled = false; // disable DTR to avoid reset 
+  }
+  else {
+    device->IsDataTerminalReadyEnabled = true;
+  }
+
+  device->BaudRate = CBR_9600;
+  device->Parity = SerialParity::None;
+  device->DataBits = 8;
+  device->StopBits = SerialStopBitCount::One;
+  device->Handshake = SerialHandshake::None;
+  device->IsRequestToSendEnabled = true;
 
   device->BaudRate = data->baudRate;
   device->DataBits = data->dataBits;
@@ -314,7 +329,7 @@ void EIO_List(uv_work_t* req) {
 
     auto serialDevice = concurrency::create_task(SerialDevice::FromIdAsync(deviceInfoCollection->GetAt(i)->Id)).get();
     if (!serialDevice) {
-      return;
+      continue;
     }
 
     char* comName = new char[MAX_PATH];
