@@ -35,7 +35,8 @@ This assumes you have everything on your system necessary to compile ANY native 
 
 #### Windows:
 
- * Windows 7 or Windows 8.1 are supported.
+ * Windows 7, Windows 8.1, and Windows 10 are supported.
+ * Might just download and install with no extra steps. If the downloaded binary fails you'll have to build it with the following steps.
  * Install [Visual Studio Express 2013 for Windows Desktop](http://www.microsoft.com/visualstudio/eng/2013-downloads#d-2013-express).
  * If you are hacking on an Arduino, be sure to install [the drivers](http://arduino.cc/en/Guide/windows#toc4).
  * Install [node.js](http://nodejs.org/) matching the bitness (32 or 64) of your operating system.

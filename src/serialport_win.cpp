@@ -80,12 +80,21 @@ void EIO_Open(uv_work_t* req) {
 
   DCB dcb = { 0 };
   dcb.DCBlength = sizeof(DCB);
-  if(data->hupcl == false)
+  if(data->hupcl == false) {
       dcb.fDtrControl = DTR_CONTROL_DISABLE; // disable DTR to avoid reset
-  if(!BuildCommDCB("9600,n,8,1", &dcb)) {
-    ErrorCodeToString("BuildCommDCB", GetLastError(), data->errorString);
-    return;
+  } else {
+    dcb.fDtrControl = DTR_CONTROL_ENABLE;
   }
+
+  dcb.BaudRate = CBR_9600;
+  dcb.Parity = NOPARITY;
+  dcb.ByteSize = 8;
+  dcb.StopBits = ONESTOPBIT;
+  dcb.fInX = FALSE;
+  dcb.fOutX = FALSE;
+  dcb.fOutxDsrFlow = FALSE;
+  dcb.fOutxCtsFlow = FALSE;
+  dcb.fRtsControl = RTS_CONTROL_ENABLE;
 
   dcb.fBinary = true;
   dcb.BaudRate = data->baudRate;
