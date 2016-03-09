@@ -614,16 +614,10 @@ function SerialPortFactory(_spfOptions) {
     }
 
     factory.SerialPortBinding.flush(fd, function (err, result) {
-      if (err) {
-        if (callback) {
-          callback(err, result);
-        } else {
-          self.emit('error', err);
-        }
-      } else {
-        if (callback) {
-          callback(err, result);
-        }
+      if (callback) {
+        callback(err, result);
+      } else if (err) {
+        self.emit('error', err);
       }
     });
   };
@@ -663,14 +657,10 @@ function SerialPortFactory(_spfOptions) {
     }
 
     factory.SerialPortBinding.set(fd, options, function (err, result) {
-      if (err) {
-        if (callback) {
-          callback(err, result);
-        } else {
-          self.emit('error', err);
-        }
-      } else {
+      if (callback) {
         callback(err, result);
+      } else if (err) {
+        self.emit('error', err);
       }
     });
   };
@@ -690,16 +680,10 @@ function SerialPortFactory(_spfOptions) {
     }
 
     factory.SerialPortBinding.drain(fd, function (err, result) {
-      if (err) {
-        if (callback) {
-          callback(err, result);
-        } else {
-          self.emit('error', err);
-        }
-      } else {
-        if (callback) {
-          callback(err, result);
-        }
+      if (callback) {
+        callback(err, result);
+      } else if (err) {
+        self.emit('error', err);
       }
     });
   };
