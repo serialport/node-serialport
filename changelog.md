@@ -1,3 +1,8 @@
+Version 2.0.7-beta1
+-------------
+- Remove deprecated BuildCommDCB for windows support
+- Cleanup callback handling
+
 Version 2.0.6
 -------------
 - Add 5.x build to matrix, thanks @deadprogram
