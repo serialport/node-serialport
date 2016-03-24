@@ -342,7 +342,7 @@ function SerialPortFactory(_spfOptions) {
         self.reading = false;
         if (err) {
           if (err.code && err.code === 'EAGAIN') {
-            if (self.fd >= 0) {
+            if (!self.closing && self.fd >= 0) {
               self.serialPoller.start();
             }
           } else if (err.code && (err.code === 'EBADF' || err.code === 'ENXIO' || (err.errno === -1 || err.code === 'UNKNOWN'))) { // handle edge case were mac/unix doesn't clearly know the error.
