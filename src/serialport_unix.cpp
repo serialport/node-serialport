@@ -131,9 +131,6 @@ void EIO_Open(uv_work_t* req) {
   OpenBaton* data = static_cast<OpenBaton*>(req->data);
 
   int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
-  if(data->hupcl == false) {
-    flags &= ~HUPCL;
-  }
   int fd = open(data->path, flags);
 
   if(-1 == setup(fd, data)){
@@ -325,7 +322,9 @@ int setup(int fd, OpenBaton *data) {
 
   options.c_cflag |= CLOCAL; //ignore status lines
   options.c_cflag |= CREAD;  //enable receiver
-  options.c_cflag |= HUPCL;  //drop DTR (i.e. hangup) on close
+  if(data->hupcl) {
+    options.c_cflag |= HUPCL;  //drop DTR (i.e. hangup) on close
+  }
 
   // Raw output
   options.c_oflag = 0;
