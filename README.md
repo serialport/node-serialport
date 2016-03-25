@@ -244,7 +244,7 @@ Port configuration options.
 * `disconnectedCallback`
 * `platformOptions` - sets platform specific options, see below.
 
-**Note, we have added support for either all lowercase OR camelcase of the options (thanks @jagautier), use whichever style you prefer.**
+**Note:** We have added support for either all lowercase OR camelcase of the options (thanks @jagautier), use whichever style you prefer.
 
 #### Unix Platform Options
 
@@ -283,7 +283,11 @@ The `buffer` parameter accepts a [`Buffer` ](http://nodejs.org/api/buffer.html) 
 
 **_callback (optional)_**
 
-Called once the write operation returns. The callback should be a function that looks like: `function (error) { ... }` _Note: The write operation is non-blocking. When it returns, data may still have not actually been written to the serial port. See `drain()`._
+Called once the write operation returns. The callback should be a function that looks like: `function (error) { ... }` 
+
+**Note:** The write operation is non-blocking. When it returns, data may still have not actually been written to the serial port. See `drain()`._
+
+**Note:** Some devices like the Arduino reset when you open a connection to them. In these cases if you immediately write to the device they wont be ready to receive the data. This is often worked around by having the Arduino send a "ready" byte that your node program waits for before writing. You can also often get away with waiting around 400ms. 
 
 ### .pause ()
 
