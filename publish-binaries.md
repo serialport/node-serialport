@@ -17,15 +17,14 @@ We have an automated make task, we should always use this task to avoid forgetti
 1. Merge all changes and new features into master.
 2. Fill out changelog.md.
 3. Bump up npm version *AND* binary host version in `package.json`, commit and push.
-3. run command: `make release`
+4. Generate new tags based on package.json version number with `git tag -m "2.0.7" 2.0.7`
+5. Push tags to Github with `git push --tags`
+6. Publish to npm. BUT NOT YET. Builds can take hours and occasionally fail (mainly on Appveyor) for seemingly no reason. Restart any failures in the travis or appeveyor ui. While you wait, copy the changelog updates into the Github release field. When the entire matrix succeeds and all binaries exist run `npm publish`.
 
-This task will do the following for you:
-
-1. Generate new tags based on package.json version number
-2. Push tags to Github
-
-From here, Travis and AppVeyor detect release tag commit, and build for release. As the builds (presumably) succeed you should see binaries showing up on the Github releases page. While you wait, why not copy the changelog updates into the release field? You probably want to wait (hours?) for Appveyor success, check that all binaries exist, and then finally don't forget to run `npm publish`
-
+Differences for beta release
+* Work in a beta branch
+* Tag like: `git tag -m "2.0.7-beta1" 2.0.7-beta1` 
+* Publish like `npm publish . --tag beta1`
 
 ## Config Travis, AppVeyor and Github to generate all of the binaries.
 
