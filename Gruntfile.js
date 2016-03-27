@@ -1,7 +1,6 @@
 'use strict';
 
 module.exports = function(grunt) {
-
   grunt.initConfig({
     mochaTest: {
       test: {
@@ -9,16 +8,12 @@ module.exports = function(grunt) {
         src: ['test/**/*.js']
       }
     },
-    jshint: {
-      all: ['*.js', 'test/**/*.js', 'arduinoTest/**/*.js'],
-      options:{
-        jshintrc: true
-      }
+    eslint: {
+      src: ['*.js', 'test/**/*.js', 'arduinoTest/**/*.js']
     }
   });
 
   grunt.loadNpmTasks('grunt-mocha-test');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.registerTask('default', ['jshint', 'mochaTest']);
-
+  grunt.loadNpmTasks('gruntify-eslint');
+  grunt.registerTask('default', ['eslint', 'mochaTest']);
 };

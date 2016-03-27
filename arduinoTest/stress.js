@@ -1,19 +1,15 @@
-/*jslint node: true */
-/*global describe, it */
 'use strict';
 
 var chai = require('chai');
 var util = require('util');
 var serialPort = require('../serialport');
-var colors = require('colors');
+require('colors'); // this modifies String.prototype
 var fs = require('fs');
 var memwatch = require('memwatch');
 
-describe ('stress', function() {
-
+describe('stress', function() {
   describe('long running', function() {
     it('opens a port and sends data, repeated indefinitely', function (done) {
-
       var hd = new memwatch.HeapDiff();
 
       memwatch.on('leak', function(info) {
@@ -31,7 +27,6 @@ describe ('stress', function() {
       });
 
       serialPort.list(function(err, ports) {
-
         chai.assert.isUndefined(err, util.inspect(err));
         chai.assert.isDefined(ports, 'ports is not defined');
         chai.assert.isTrue(ports.length > 0, 'no ports found');
@@ -43,19 +38,16 @@ describe ('stress', function() {
           chai.assert.fail(util.inspect(err));
         });
 
-        port.on('data', function (data) {
-        });
+        port.on('data', function () {});
 
         port.open(function(err) {
           chai.assert.isUndefined(err, util.inspect(err));
 
-
           var intervalId = setInterval(function () {
             port.write(data);
-          }, 20 );
+          }, 20);
 
           setTimeout(function() {
-
             clearInterval(intervalId);
 
             var diff = hd.end();
@@ -64,11 +56,9 @@ describe ('stress', function() {
             console.log(util.inspect(diff).green);
 
             done();
-
           }, 3590000);
         });
       });
     });
   });
-
 });
