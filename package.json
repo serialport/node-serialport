@@ -59,15 +59,16 @@
     "node-pre-gyp-github"
   ],
   "devDependencies": {
-    "mocha": "*",
-    "chai": "*",
-    "sinon-chai": "*",
-    "sinon": "*",
+    "chai": "^3.2.0",
+    "debug": "^2.2.0",
     "grunt": "*",
     "grunt-cli": "*",
-    "grunt-mocha-test": "*",
-    "grunt-contrib-jshint": "*",
-    "sandboxed-module": "~0.3.0"
+    "grunt-contrib-jshint": "^0.11.3",
+    "grunt-mocha-test": "^0.12.7",
+    "mocha": "^2.3.2",
+    "sandboxed-module": "^2.0.3",
+    "sinon": "^1.16.1",
+    "sinon-chai": "^2.8.0"
   },
   "engines": {
     "node": ">= 0.10.0"
