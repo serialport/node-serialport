@@ -1,9 +1,10 @@
+# Node Serialport
+
 [![Build Status](https://travis-ci.org/voodootikigod/node-serialport.svg?branch=master)](https://travis-ci.org/voodootikigod/node-serialport)
 [![Gitter chat](https://badges.gitter.im/voodootikigod/node-serialport.svg)](https://gitter.im/voodootikigod/node-serialport)
 [![Dependency Status](https://david-dm.org/voodootikigod/node-serialport.svg)](https://david-dm.org/voodootikigod/node-serialport)
 
-For all discussions, designs, and clarifications, we recommend you join our Gitter Chat room: [https://gitter.im/voodootikigod/node-serialport](https://gitter.im/voodootikigod/node-serialport)
-
+For support you can open a [github issue](https://github.com/voodootikigod/node-serialport/issues/new), for discussions, designs, and clarifications, we recommend you join our [Gitter Chat room](https://gitter.im/voodootikigod/node-serialport)
 
 *****
 
@@ -15,11 +16,32 @@ For getting started with node-serialport, we recommend you begin with the follow
 
 * [Arduino Node Security Sensor Hacking](http://nexxylove.tumblr.com/post/20159263403/arduino-node-security-sensor-hacking) - A great all around "how do I use this" article.
 * [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics) - A survey article of why one would want to program robots in JS.
-* [Johnny-Five Getting Started Guide](https://github.com/rwldrn/johnny-five#setup-and-assemble-arduino) - Introduction to using the high level Johnny-Five library (awesome).
+* [Johnny-Five](https://github.com/rwaldron/johnny-five#hello-johnny) - The Johnny-Five Robotics and IoT library's introduction "Hello Johnny" (awesome).
 
 
-To Install
-----------
+****
+
+* [Installation](#installation-instructions)
+* [Usage](#usage)
+  * [Open Event](#open-event)
+  * [Listing Ports](#listing-ports)
+  * [Parsers](#parsers)
+* [Methods](#methods)
+  * [SerialPort](#serialport-path-options-openimmediately-callback)
+  * [open()](#open-callback)
+  * [isOpen()](#isopen)
+  * [write()](#write-buffer-callback)
+  * [pause()](#pause-)
+  * [resume()](#resume-)
+  * [flush()](#flush-callback)
+  * [drain()](#drain-callback)
+  * [close()](#close-callback)
+* [Events](#events)
+
+
+****
+
+## Installation Instructions
 
 For most "standard" use cases (node v0.10.x on mac, linux, windows on a x86 or x64 processor), node-serialport will install nice and easy with a simple
 
@@ -91,8 +113,7 @@ More information can be found at [node-arm](http://node-arm.herokuapp.com/).
    npm install serialport
 ```
 
-To Use
-------
+## Usage
 
 Opening a serial port:
 
@@ -108,7 +129,7 @@ When opening a serial port, you can specify (in this order).
 1. Path to Serial Port - required.
 1. Options - optional and described below.
 
-open event
+Open Event
 ----------
 
 You MUST wait for the open event to be emitted before reading/writing to the serial port. The open happens asynchronously so installing 'data' listeners and writing
@@ -153,7 +174,7 @@ serialPort.open(function (error) {
 });
 ```
 
-List Ports
+Listing Ports
 ----------
 
 You can also list the ports along with some metadata as well.
@@ -211,9 +232,6 @@ serialPort.write("OMG IT WORKS\r");
 
 Enjoy and do cool things with this code.
 
-Reference Guide
----------------
-
 ## Methods
 
 ### SerialPort (path, options, openImmediately, callback)
@@ -261,13 +279,15 @@ Attempts to open a connection to the serial port on `process.nextTick`. The defa
 
 Called when a connection has been opened. The callback should be a function that looks like: `function (error) { ... }`
 
+**Note:** The callback will NOT be called if openImmediately is set to false as the open will not be performed.
+
 ### .open (callback)
 
 Opens a connection to the given serial port.
 
 **_callback (optional)_**
 
-Called when a connection has been opened. NOTE: Will NOT be called if openImmediately is set to false as open will not be performed. The callback should be a function that looks like: `function (error) { ... }`
+Called when a connection has been opened. The callback should be a function that looks like: `function (error) { ... }`
 
 ### .isOpen()
 
@@ -283,11 +303,11 @@ The `buffer` parameter accepts a [`Buffer` ](http://nodejs.org/api/buffer.html) 
 
 **_callback (optional)_**
 
-Called once the write operation returns. The callback should be a function that looks like: `function (error) { ... }` 
+Called once the write operation returns. The callback should be a function that looks like: `function (error) { ... }`
 
-**Note:** The write operation is non-blocking. When it returns, data may still have not actually been written to the serial port. See `drain()`._
+**Note:** The write operation is non-blocking. When it returns, data may still have not actually been written to the serial port. See `drain()`.
 
-**Note:** Some devices like the Arduino reset when you open a connection to them. In these cases if you immediately write to the device they wont be ready to receive the data. This is often worked around by having the Arduino send a "ready" byte that your node program waits for before writing. You can also often get away with waiting around 400ms. 
+**Note:** Some devices like the Arduino reset when you open a connection to them. In these cases if you immediately write to the device they wont be ready to receive the data. This is often worked around by having the Arduino send a "ready" byte that your node program waits for before writing. You can also often get away with waiting around 400ms.
 
 ### .pause ()
 
@@ -336,17 +356,13 @@ Called once a connection is closed. Closing a connection will also remove all ev
 ## Events
 
 ### .on('open', callback)
+Callback is called with no arguments when the port is opened and ready for writing. This happens if you have the constructor open immediately (which opens in the next tick) or if you open the port manually with `open()`. See [Useage/Open Event](#open-event) for more information.
 
 ### .on('data', callback)
+Callback is called with data depending on your chosen parser. The default `raw` parser will have a `Buffer` object with a varying amount of data in it. The `readLine` parser will provide a string of your line. See the [parsers](#parsers) section for more information
 
 ### .on('close', callback)
+Callback is called with no arguments when the port is closed.
 
 ### .on('error', callback)
-
-&nbsp;
-&nbsp;
-
----
-
-&nbsp;
-&nbsp;
+Callback is called with an error object whenever there is an error.
