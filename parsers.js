@@ -61,5 +61,19 @@ module.exports = {
         }
       }
     };
+  },
+
+  //encoding: ascii utf8 utf16le ucs2 base64 binary hex
+  stringDelimiters: function (startDelimiter, endDelimiter, encoding) {
+    encoding = encoding || 'utf8';
+
+    var data = '', rawData = '';
+    return function (emitter, buffer) {
+      rawData += buffer.toString(encoding);
+      if (rawData.indexOf(startDelimiter) >= 0 && rawData.indexOf(endDelimiter) >= 0) {
+        data = rawData.substring(rawData.indexOf(startDelimiter), rawData.indexOf(endDelimiter) + endDelimiter.length);
+        emitter.emit('data', data);
+      }
+    }
   }
 };
