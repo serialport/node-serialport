@@ -15,8 +15,8 @@ environment:
   matrix:
   - nodejs_version: "0.10"
   - nodejs_version: "0.12"
-  - nodejs_version: "4.2"
-  - nodejs_version: "5.1"
+  - nodejs_version: "4"
+  - nodejs_version: "5"
 
 platform:
   - x86
