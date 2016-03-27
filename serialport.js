@@ -249,7 +249,7 @@ function SerialPortFactory(_spfOptions) {
   //verification code above
   SerialPort.prototype.update = function (options, callback) {
     var self = this;
-    if (!this.fd) {
+    if (this.fd === null) {
       debug('Update attempted, but serialport not available - FD is not set');
       var err = new Error('Serialport not open.');
       if (callback) {
@@ -278,12 +278,12 @@ function SerialPortFactory(_spfOptions) {
   };
 
   SerialPort.prototype.isOpen = function() {
-    return (this.fd ? true : false);
+    return this.fd !== null;
   };
 
   SerialPort.prototype.write = function (buffer, callback) {
     var self = this;
-    if (!this.fd) {
+    if (this.fd === null) {
       debug('Write attempted, but serialport not available - FD is not set');
       var err = new Error('Serialport not open.');
       if (callback) {
@@ -454,7 +454,7 @@ function SerialPortFactory(_spfOptions) {
 
     self.removeAllListeners();
     self.closing = false;
-    self.fd = 0;
+    self.fd = null;
 
     if (process.platform !== 'win32') {
       self.readable = false;
@@ -472,7 +472,7 @@ function SerialPortFactory(_spfOptions) {
     if (self.closing) {
       return;
     }
-    if (!fd) {
+    if (fd === null) {
       var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
@@ -507,7 +507,7 @@ function SerialPortFactory(_spfOptions) {
         self.emit('close');
         self.removeAllListeners();
         self.closing = false;
-        self.fd = 0;
+        self.fd = null;
 
         if (callback) {
           callback();
@@ -603,7 +603,7 @@ function SerialPortFactory(_spfOptions) {
     var self = this;
     var fd = self.fd;
 
-    if (!fd) {
+    if (fd === null) {
       var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
@@ -646,7 +646,7 @@ function SerialPortFactory(_spfOptions) {
       options.brk = _options.brk;
     }
 
-    if (!fd) {
+    if (fd === null) {
       var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
@@ -669,7 +669,7 @@ function SerialPortFactory(_spfOptions) {
     var self = this;
     var fd = this.fd;
 
-    if (!fd) {
+    if (fd === null) {
       var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
