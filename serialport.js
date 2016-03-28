@@ -211,7 +211,6 @@ function SerialPortFactory(_spfOptions) {
     this.readable = true;
     this.reading = false;
     factory.SerialPortBinding.open(this.path, this.options, function (err, fd) {
-      self.fd = fd;
       if (err) {
         if (callback) {
           callback(err);
@@ -220,6 +219,7 @@ function SerialPortFactory(_spfOptions) {
         }
         return;
       }
+      self.fd = fd;
       if (process.platform !== 'win32') {
         self.paused = false;
         self.serialPoller = new factory.SerialPortBinding.SerialportPoller(self.fd, function (err) {
