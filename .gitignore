@@ -1,3 +1,4 @@
+# MAKE SURE ALL ADDITIONS HERE ARE MIRRORED INTO THE .npmignore AS WELL
 .lock-wscript
 *.node
 .DS_Store
@@ -11,3 +12,4 @@ out
 gyp-mac-tool
 .node_pre_gyprc
 /.idea
+*.node

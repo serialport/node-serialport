@@ -25,7 +25,7 @@ describe('SerialPort', function () {
 
   describe('Constructor', function () {
     it('opens the port immediately', function (done) {
-      var port = new SerialPort('/dev/exists', function (err) {
+      this.port = new SerialPort('/dev/exists', function (err) {
         expect(err).to.not.be.ok;
         done();
       });
@@ -33,7 +33,7 @@ describe('SerialPort', function () {
 
     it('emits the open event', function (done) {
       var port = new SerialPort('/dev/exists');
-      port.on('open', function(){
+      port.on('open', function() {
         done();
       });
     });
@@ -45,7 +45,7 @@ describe('SerialPort', function () {
         done();
       });
 
-      var port = new SerialPort('/dev/johnJacobJingleheimerSchmidt');
+      this.port = new SerialPort('/dev/johnJacobJingleheimerSchmidt');
     });
 
     it('emits an error on the serialport when explicit error handler present', function (done) {
@@ -63,7 +63,7 @@ describe('SerialPort', function () {
         done();
       };
 
-      var port = new SerialPort('/dev/exists', { databits : 19 }, false, errorCallback);
+      this.port = new SerialPort('/dev/exists', { databits: 19 }, false, errorCallback);
     });
 
     it('errors with invalid stopbits', function (done) {
@@ -72,7 +72,7 @@ describe('SerialPort', function () {
         done();
       };
 
-      var port = new SerialPort('/dev/exists', { stopbits : 19 }, false, errorCallback);
+      this.port = new SerialPort('/dev/exists', { stopbits: 19 }, false, errorCallback);
     });
 
     it('errors with invalid parity', function (done) {
@@ -81,7 +81,7 @@ describe('SerialPort', function () {
         done();
       };
 
-      var port = new SerialPort('/dev/exists', { parity : 'pumpkins' }, false, errorCallback);
+      this.port = new SerialPort('/dev/exists', { parity: 'pumpkins' }, false, errorCallback);
     });
 
     it('errors with invalid flow control', function (done) {
@@ -90,9 +90,8 @@ describe('SerialPort', function () {
         done();
       };
 
-      var port = new SerialPort('/dev/exists', { flowcontrol : ['pumpkins'] }, false, errorCallback);
+      this.port = new SerialPort('/dev/exists', { flowcontrol: ['pumpkins'] }, false, errorCallback);
     });
-
 
     it('allows optional options', function (done) {
       var cb = function () {};
@@ -100,15 +99,13 @@ describe('SerialPort', function () {
       expect(typeof port.options).to.eq('object');
       done();
     });
-
   });
 
   describe('Functions', function () {
-
     it('write errors when serialport not open', function (done) {
       var cb = function () {};
       var port = new SerialPort('/dev/exists', false, cb);
-      port.write(null, function(err){
+      port.write(null, function(err) {
         chai.assert.isDefined(err, 'err is not defined');
         done();
       });
@@ -117,7 +114,7 @@ describe('SerialPort', function () {
     it('close errors when serialport not open', function (done) {
       var cb = function () {};
       var port = new SerialPort('/dev/exists', false, cb);
-      port.close(function(err){
+      port.close(function(err) {
         chai.assert.isDefined(err, 'err is not defined');
         done();
       });
@@ -126,7 +123,7 @@ describe('SerialPort', function () {
     it('flush errors when serialport not open', function (done) {
       var cb = function () {};
       var port = new SerialPort('/dev/exists', false, cb);
-      port.flush(function(err){
+      port.flush(function(err) {
         chai.assert.isDefined(err, 'err is not defined');
         done();
       });
@@ -135,7 +132,7 @@ describe('SerialPort', function () {
     it('set errors when serialport not open', function (done) {
       var cb = function () {};
       var port = new SerialPort('/dev/exists', false, cb);
-      port.set({}, function(err){
+      port.set({}, function(err) {
         chai.assert.isDefined(err, 'err is not defined');
         done();
       });
@@ -144,16 +141,14 @@ describe('SerialPort', function () {
     it('drain errors when serialport not open', function (done) {
       var cb = function () {};
       var port = new SerialPort('/dev/exists', false, cb);
-      port.drain(function(err){
+      port.drain(function(err) {
         chai.assert.isDefined(err, 'err is not defined');
         done();
       });
     });
-
   });
 
   describe('reading data', function () {
-
     it('emits data events by default', function (done) {
       var testData = new Buffer('I am a really short string');
       var port = new SerialPort('/dev/exists', function () {
@@ -173,15 +168,13 @@ describe('SerialPort', function () {
           done();
         }
       };
-      var port = new SerialPort('/dev/exists', opt, function () {
+      this.port = new SerialPort('/dev/exists', opt, function () {
         hardware.emitData('/dev/exists', testData);
       });
     });
-
   });
 
   describe('#open', function () {
-
     it('passes the port to the bindings', function (done) {
       var openSpy = sandbox.spy(MockedSerialPort.SerialPortBinding, 'open');
       var port = new SerialPort('/dev/exists', {}, false);
@@ -213,7 +206,6 @@ describe('SerialPort', function () {
         });
       });
     });
-
   });
 
   describe('close', function () {
@@ -251,7 +243,7 @@ describe('SerialPort', function () {
 
   describe('disconnect', function () {
     it('fires a disconnect event', function (done) {
-      var port = new SerialPort('/dev/exists', {
+      this.port = new SerialPort('/dev/exists', {
         disconnectedCallback: function (err) {
           expect(err).to.not.be.ok;
           done();
@@ -270,6 +262,4 @@ describe('SerialPort', function () {
       });
     });
   });
-
 });
-
