@@ -12,17 +12,14 @@ by Tom Igoe
 'use strict';
 
 // serial port initialization:
-var serialport = require('serialport'),		// include the serialport library
+var serialport = require('../serialport'),		// include the serialport library
 SerialPort  = serialport.SerialPort,			// make a local instance of serial
-portName = process.argv[2],								// get the port name from the command line
-portConfig = {
-	baudRate: 115200												// set data rate at 115200bps
-};
+portName = process.argv[2];								// get the port name from the command line
 
 var output = 32;													// ASCII space; lowest printable character
 var byteCount = 0;												// number of bytes read
 // open the serial port:
-var myPort = new SerialPort(portName, portConfig);
+var myPort = new SerialPort(portName);
 
 function openPort() {
 	console.log('port open');
