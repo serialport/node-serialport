@@ -11,7 +11,7 @@
  - Esa-Matti Suuronen <esa-matti@suuronen.org>
  - Nathan Rajlich <nathan@tootallnate.net>
  - Rick Waldron <waldron.rick@gmail.com>
- - <w1nk>
+ - `<w1nk>`
  - Georges-Etienne Legendre <legege>
  - Duane Johnson <duane.johnson@gmail.com>
  - Rod Vagg <@rvagg>
