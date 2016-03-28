@@ -345,7 +345,7 @@ function SerialPortFactory(_spfOptions) {
           self.pool.used -= bytesRequested - bytesRead;
 
           if (bytesRead === 0) {
-            if (self.fd >= 0) {
+            if (self.isOpen()) {
               self.serialPoller.start();
             }
           } else {
