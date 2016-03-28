@@ -328,7 +328,7 @@ function SerialPortFactory(_spfOptions) {
         self.reading = false;
         if (err) {
           if (err.code && err.code === 'EAGAIN') {
-            if (self.isOpen()) {
+            if (!self.closing && self.isOpen()) {
               self.serialPoller.start();
             }
           // handle edge case were mac/unix doesn't clearly know the error.
