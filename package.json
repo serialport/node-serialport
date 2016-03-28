@@ -68,7 +68,7 @@
     "grunt-mocha-test": "*",
     "gruntify-eslint": "^2.0.0",
     "mocha": "*",
-    "sandboxed-module": "~0.3.0",
+    "sandboxed-module": "^2.0.3",
     "sinon": "*",
     "sinon-chai": "*"
   },
