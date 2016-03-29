@@ -1,3 +1,8 @@
+Version 2.0.7-beta2
+-------------
+- Code cleanup due to moving to eslint internally
+- Bugfixes around JS handling of file descriptors
+
 Version 2.0.7-beta1
 -------------
 - Remove deprecated BuildCommDCB for windows support
