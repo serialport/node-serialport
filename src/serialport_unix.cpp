@@ -350,7 +350,7 @@ int setup(int fd, OpenBaton *data) {
 
   // removed this unneeded sleep.
   // sleep(1);
-  tcflush(fd, TCIFLUSH);
+  tcflush(fd, TCIOFLUSH);
   tcsetattr(fd, TCSANOW, &options);
 
   // On OS X, starting in Tiger, we can set a custom baud rate, as follows:
@@ -727,7 +727,7 @@ void EIO_List(uv_work_t* req) {
 void EIO_Flush(uv_work_t* req) {
   FlushBaton* data = static_cast<FlushBaton*>(req->data);
 
-  data->result = tcflush(data->fd, TCIFLUSH);
+  data->result = tcflush(data->fd, TCIOFLUSH);
 }
 
 void EIO_Set(uv_work_t* req) {
