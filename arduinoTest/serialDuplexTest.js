@@ -3,11 +3,6 @@ serialDuplexTest.js
 
 Tests the functtionality of the serial port library.
 To be used in conjunction with the Arduino sketch called ArduinoEcho.ino
-Change data rate in ArduinoEcho.ino to 115200 first.
-
-created 1 Oct  2015
-by Tom Igoe
-
 */
 'use strict';
 
