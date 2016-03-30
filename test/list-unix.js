@@ -2,7 +2,7 @@
 
 var chai = require('chai');
 var expect = chai.expect;
-var listUnix = require('../test_mocks/list-unix');
+var listUnix = require('./mocks/list-unix');
 
 var ports = {
   'ttyS0':

@@ -180,10 +180,19 @@ var hardware = new Hardware();
 
 var SandboxedModule = require('sandboxed-module');
 
-var serialPort = SandboxedModule.require('../serialport', {
+var serialPort = SandboxedModule.require('../../serialport', {
   requires: {
     fs: {
       read: hardware.fakeRead.bind(hardware)
+    },
+    'node-pre-gyp': {
+      find: function() {
+        // this one is silly - we don't want it to find the binary
+        // so we say hey! it's this already mocked require!
+        // if it found the binary it would be loaded in a sandbox
+        // and wouldn't be able to be loaded in a regular context
+        return 'node-pre-gyp';
+      }
     }
   },
   singleOnly: true,

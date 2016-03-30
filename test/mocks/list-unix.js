@@ -7,7 +7,7 @@ var SandboxedModule = require('sandboxed-module');
 var mockPorts = {};
 var error = false;
 
-var listUnix = SandboxedModule.require('../lib/list-unix', {
+var listUnix = SandboxedModule.require('../../lib/list-unix', {
   requires: {
     fs: {
       readdir: function(path, cb) {
