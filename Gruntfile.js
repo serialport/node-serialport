@@ -9,7 +9,13 @@ module.exports = function(grunt) {
       }
     },
     eslint: {
-      src: ['*.js', 'test/**/*.js', 'test_mocks/**/*.js', 'arduinoTest/**/*.js']
+      src: [
+        '*.js',
+        'test/**/*.js',
+        'test_mocks/**/*.js',
+        'arduinoTest/**/*.js',
+        'bin/*.js'
+      ]
     }
   });
 
