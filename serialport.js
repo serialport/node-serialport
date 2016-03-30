@@ -162,6 +162,7 @@ function SerialPortFactory(_spfOptions) {
           return true;
         });
         if (!clean) {
+          // TODO this is very very messy
           return;
         }
       }
@@ -238,7 +239,7 @@ function SerialPortFactory(_spfOptions) {
   };
 
   // underlying code is written to update all options, but for now
-  // only baud is respected as I dont want to duplicate all the option
+  // only baud is respected as I don't want to duplicate all the option
   // verification code above
   SerialPort.prototype.update = function (options, callback) {
     var self = this;
@@ -248,7 +249,6 @@ function SerialPortFactory(_spfOptions) {
       if (callback) {
         callback(err);
       } else {
-        // console.log("write-fd");
         self.emit('error', err);
       }
       return;

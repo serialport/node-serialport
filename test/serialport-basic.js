@@ -251,7 +251,7 @@ describe('SerialPort', function () {
     });
   });
 
-  describe('close', function () {
+  describe('#close', function () {
     it('fires a close event when it\'s closed', function (done) {
       var port = new SerialPort('/dev/exists', function () {
         var closeSpy = sandbox.spy();
