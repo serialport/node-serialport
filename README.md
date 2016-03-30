@@ -87,6 +87,21 @@ sudo apt-get install build-essential
 npm install serialport
 ```
 
+#### Alpine Linux:
+
+[Alpine](http://www.alpinelinux.org/) is a (very) small distro, but it uses the musl standard library instead of glibc (that most other Linux distros use), so it requires compilation.
+
+```
+# If you don't have node/npm already, add that first
+sudo apk add --no-cache nodejs
+
+# Add the necessary build and runtime dependencies
+sudo apk add --no-cache make gcc g++ python linux-headers udev
+
+# Then we can install serialport, forcing it to compile
+npm install serialport --build-from-source=serialport
+```
+
 #### Raspberry Pi Linux:
 
 Follow the instructions for [setting up a Raspberry pi for use with Johnny-Five and Raspi IO](https://github.com/nebrius/raspi-io/wiki/Getting-a-Raspberry-Pi-ready-for-NodeBots). These projects use Node Serialport under the hood.
