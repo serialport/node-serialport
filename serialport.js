@@ -12,69 +12,58 @@ var path = require('path');
 var PACKAGE_JSON = path.join(__dirname, 'package.json');
 var binding_path = binary.find(path.resolve(PACKAGE_JSON));
 var SerialPortBinding = require(binding_path);
-
-var parsers = require('./parsers');
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var fs = require('fs');
 var stream = require('stream');
-var async = require('async');
-var exec = require('child_process').exec;
+var parsers = require('./lib/parsers');
+var listUnix = require('./lib/list-unix');
 
-function SerialPortFactory(_spfOptions) {
-  _spfOptions = _spfOptions || {};
+function makeDefaultPlatformOptions() {
+  var options = {};
 
-  var spfOptions = {};
-
-  spfOptions.queryPortsByPath = (_spfOptions.queryPortsByPath === true);
-
-  var factory = this;
-
-  // Removing check for valid BaudRates due to ticket: #140
-  // var BAUDRATES = [500000, 230400, 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, 50];
-
-  //  VALIDATION ARRAYS
-  var DATABITS = [5, 6, 7, 8];
-  var STOPBITS = [1, 1.5, 2];
-  var PARITY = ['none', 'even', 'mark', 'odd', 'space'];
-  var FLOWCONTROLS = ['XON', 'XOFF', 'XANY', 'RTSCTS'];
-  // var SETS = ['rts', 'cts', 'dtr', 'dts', 'brk'];
-
-  // Stuff from ReadStream, refactored for our usage:
-  var kPoolSize = 40 * 1024;
-  var kMinPoolSpace = 128;
-
-  function makeDefaultPlatformOptions() {
-    var options = {};
-
-    if (process.platform !== 'win32') {
-      options.vmin = 1;
-      options.vtime = 0;
-    }
-
-    return options;
+  if (process.platform !== 'win32') {
+    options.vmin = 1;
+    options.vtime = 0;
   }
 
-  // The default options, can be overwritten in the 'SerialPort' constructor
-  var _options = {
-    baudrate: 9600,
-    parity: 'none',
-    rtscts: false,
-    xon: false,
-    xoff: false,
-    xany: false,
-    hupcl: true,
-    rts: true,
-    cts: false,
-    dtr: true,
-    dts: false,
-    brk: false,
-    databits: 8,
-    stopbits: 1,
-    buffersize: 256,
-    parser: parsers.raw,
-    platformOptions: makeDefaultPlatformOptions()
-  };
+  return options;
+}
+
+//  VALIDATION ARRAYS
+var DATABITS = [5, 6, 7, 8];
+var STOPBITS = [1, 1.5, 2];
+var PARITY = ['none', 'even', 'mark', 'odd', 'space'];
+var FLOWCONTROLS = ['XON', 'XOFF', 'XANY', 'RTSCTS'];
+// var SETS = ['rts', 'cts', 'dtr', 'dts', 'brk'];
+
+// The default options, can be overwritten in the 'SerialPort' constructor
+var _options = {
+  baudrate: 9600,
+  parity: 'none',
+  rtscts: false,
+  xon: false,
+  xoff: false,
+  xany: false,
+  hupcl: true,
+  rts: true,
+  cts: false,
+  dtr: true,
+  dts: false,
+  brk: false,
+  databits: 8,
+  stopbits: 1,
+  buffersize: 256,
+  parser: parsers.raw,
+  platformOptions: makeDefaultPlatformOptions()
+};
+
+// Stuff from ReadStream, refactored for our usage:
+var kPoolSize = 40 * 1024;
+var kMinPoolSpace = 128;
+
+function SerialPortFactory() {
+  var factory = this;
 
   function SerialPort(path, options, openImmediately, callback) {
     var self = this;
@@ -102,33 +91,28 @@ function SerialPortFactory(_spfOptions) {
       }
     };
 
-    var err;
-
     opts.baudRate = options.baudRate || options.baudrate || _options.baudrate;
 
     opts.dataBits = options.dataBits || options.databits || _options.databits;
     if (DATABITS.indexOf(opts.dataBits) === -1) {
-      err = new Error('Invalid "databits": ' + opts.dataBits);
-      callback(err);
+      callback(new Error('Invalid "databits": ' + opts.dataBits));
       return;
     }
 
     opts.stopBits = options.stopBits || options.stopbits || _options.stopbits;
     if (STOPBITS.indexOf(opts.stopBits) === -1) {
-      err = new Error('Invalid "stopbits": ' + opts.stopbits);
-      callback(err);
+      callback(new Error('Invalid "stopbits": ' + opts.stopbits));
       return;
     }
 
     opts.parity = options.parity || _options.parity;
     if (PARITY.indexOf(opts.parity) === -1) {
-      err = new Error('Invalid "parity": ' + opts.parity);
-      callback(err);
+      callback(new Error('Invalid "parity": ' + opts.parity));
       return;
     }
+
     if (!path) {
-      err = new Error('Invalid port specified: ' + path);
-      callback(err);
+      callback(new Error('Invalid port specified: ' + path));
       return;
     }
 
@@ -162,6 +146,7 @@ function SerialPortFactory(_spfOptions) {
           return true;
         });
         if (!clean) {
+          // TODO this is very very messy
           return;
         }
       }
@@ -238,7 +223,7 @@ function SerialPortFactory(_spfOptions) {
   };
 
   // underlying code is written to update all options, but for now
-  // only baud is respected as I dont want to duplicate all the option
+  // only baud is respected as I don't want to duplicate all the option
   // verification code above
   SerialPort.prototype.update = function (options, callback) {
     var self = this;
@@ -248,7 +233,6 @@ function SerialPortFactory(_spfOptions) {
       if (callback) {
         callback(err);
       } else {
-        // console.log("write-fd");
         self.emit('error', err);
       }
       return;
@@ -502,82 +486,6 @@ function SerialPortFactory(_spfOptions) {
     }
   };
 
-  function listUnix(callback) {
-    function udev_parser(udev_output, callback) {
-      function udev_output_to_json(output) {
-        var result = {};
-        var lines = output.split('\n');
-        for (var i = 0; i < lines.length; i++) {
-          var line = lines[i].trim();
-          if (line !== '') {
-            var line_parts = lines[i].split('=');
-            result[line_parts[0].trim()] = line_parts[1].trim();
-          }
-        }
-        return result;
-      }
-      var as_json = udev_output_to_json(udev_output);
-
-      var pnpId;
-      if (as_json.DEVLINKS) {
-        pnpId = as_json.DEVLINKS.split(' ')[0];
-        pnpId = pnpId.substring(pnpId.lastIndexOf('/') + 1);
-      }
-      var port = {
-        comName: as_json.DEVNAME,
-        manufacturer: as_json.ID_VENDOR,
-        serialNumber: as_json.ID_SERIAL,
-        pnpId: pnpId,
-        vendorId: '0x' + as_json.ID_VENDOR_ID,
-        productId: '0x' + as_json.ID_MODEL_ID
-      };
-
-      callback(null, port);
-    }
-
-    // var dirName = (spfOptions.queryPortsByPath ? '/dev/serial/by-path' : '/dev/serial/by-id');
-    var dirName = '/dev';
-
-    fs.readdir(dirName, function (err, files) {
-      if (err) {
-        // if this directory is not found this could just be because it's not plugged in
-        if (err.errno === 34) {
-          return callback(null, []);
-        }
-
-        if (callback) {
-          callback(err);
-        } else {
-          factory.emit('error', err);
-        }
-        return;
-      }
-
-      // get only serial port  names
-      for (var i = files.length - 1; i >= 0; i--) {
-        if ((files[i].indexOf('ttyS') === -1 && files[i].indexOf('ttyACM') === -1 && files[i].indexOf('ttyUSB') === -1 && files[i].indexOf('ttyAMA') === -1) || !fs.statSync(path.join(dirName, files[i])).isCharacterDevice()) {
-          files.splice(i, 1);
-        }
-      }
-
-      async.map(files, function (file, callback) {
-        var fileName = path.join(dirName, file);
-        exec('/sbin/udevadm info --query=property -p $(/sbin/udevadm info -q path -n ' + fileName + ')', function (err, stdout) {
-          if (err) {
-            if (callback) {
-              callback(err);
-            } else {
-              factory.emit('error', err);
-            }
-            return;
-          }
-
-          udev_parser(stdout, callback);
-        });
-      }, callback);
-    });
-  }
-
   SerialPort.prototype.flush = function (callback) {
     var self = this;
     var fd = self.fd;
@@ -668,18 +576,22 @@ function SerialPortFactory(_spfOptions) {
   };
 
   factory.SerialPort = SerialPort;
-  factory.parsers = parsers;
-  factory.SerialPortBinding = SerialPortBinding;
-
-  if (process.platform === 'win32') {
-    factory.list = SerialPortBinding.list;
-  } else if (process.platform === 'darwin') {
-    factory.list = SerialPortBinding.list;
-  } else {
-    factory.list = listUnix;
-  }
 }
 
 util.inherits(SerialPortFactory, EventEmitter);
+
+SerialPortFactory.prototype.parsers = parsers;
+SerialPortFactory.prototype.SerialPortBinding = SerialPortBinding;
+
+if (process.platform === 'win32' || process.platform === 'darwin') {
+  SerialPortFactory.prototype.list = SerialPortBinding.list;
+} else {
+  SerialPortFactory.prototype.list = function(callback) {
+    callback = callback || function(err) {
+      this.emit('error', err);
+    }.bind(this);
+    return listUnix(callback);
+  };
+}
 
 module.exports = new SerialPortFactory();

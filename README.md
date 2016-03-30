@@ -232,7 +232,7 @@ Port configuration options.
 * `xon`
 * `xoff`
 * `xany`
-* `flowControl`
+* `flowControl` One of the following `XON`, `XOFF`, `XANY`, `RTSCTS`
 * `bufferSize` Size of read buffer, defaults to 255. Must be an integer value.
 * `parser` The parser engine to use with read data, defaults to rawPacket strategy which just emits the raw buffer as a "data" event. Can be any function that accepts EventEmitter as first parameter and the raw buffer as the second parameter.
 * `encoding`

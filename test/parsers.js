@@ -6,7 +6,7 @@ var sinonChai = require('sinon-chai');
 var sinon = require('sinon');
 chai.use(sinonChai);
 
-var parsers = require('../parsers');
+var parsers = require('../lib/parsers');
 
 describe('parsers', function () {
   describe('#raw', function () {
