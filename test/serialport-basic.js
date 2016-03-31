@@ -4,7 +4,7 @@ var sinon = require('sinon');
 var chai = require('chai');
 var expect = chai.expect;
 
-var MockedSerialPort = require('../test_mocks/linux-hardware');
+var MockedSerialPort = require('../test_mocks/darwin-hardware');
 var SerialPort = MockedSerialPort.SerialPort;
 var hardware = MockedSerialPort.hardware;
 

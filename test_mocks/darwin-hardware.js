@@ -1,4 +1,4 @@
-// This takes a serial-port factory and mocks the shit out of it in complete isolation per require of this file
+// This takes a serial-port factory and mocks it in complete isolation
 
 'use strict';
 
@@ -186,6 +186,7 @@ var serialPort = SandboxedModule.require('../serialport', {
       read: hardware.fakeRead.bind(hardware)
     }
   },
+  singleOnly: true,
   globals: {
     process: {
       platform: 'darwin',

@@ -47,7 +47,7 @@ install:
   - cmd: ECHO %PUBLISH_BINARY%
 
 build_script:
-  - cmd: npm install --build-from-source --msvs_version=2013 --verbose
+  - cmd: npm install --build-from-source --msvs_version=2013
 
 test_script:
   - cmd: npm test
