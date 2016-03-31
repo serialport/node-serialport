@@ -344,7 +344,7 @@ Closes an open connection.
 
 **_callback (optional)_**
 
-Called once a connection is closed. Closing a connection will also remove all event listeners. The callback should be a function that looks like: `function (error) { ... }`
+Called once a connection is closed. Closing a connection will also remove all event listeners. The callback should be a function that looks like: `function (error) { ... }` If called without an callback and there is an error, an error event will be emitted.
 
 ## Events
 
@@ -355,7 +355,7 @@ Callback is called with no arguments when the port is opened and ready for writi
 Callback is called with data depending on your chosen parser. The default `raw` parser will have a `Buffer` object with a varying amount of data in it. The `readLine` parser will provide a string of your line. See the [parsers](#parsers) section for more information
 
 ### .on('close', callback)
-Callback is called with no arguments when the port is closed.
+Callback is called with no arguments when the port is closed. In the event of an error, an error event will be triggered
 
 ### .on('error', callback)
 Callback is called with an error object whenever there is an error.
