@@ -128,6 +128,9 @@ Hardware.prototype.close = function (fd, cb) {
   if (!port) {
     return cb(new Error(fd + ' does not exist - please call hardware.createPort(path) first'));
   }
+  if (!port.open) {
+    return cb(new Error(fd + ' fd is already closed'));
+  }
   port.open = false;
   cb && cb(null);
 };

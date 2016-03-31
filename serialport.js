@@ -448,6 +448,7 @@ function SerialPortFactory(_spfOptions) {
     var fd = self.fd;
 
     if (self.closing) {
+      // TODO this should be an error
       return;
     }
     if (!this.isOpen()) {
@@ -480,21 +481,18 @@ function SerialPortFactory(_spfOptions) {
           return;
         }
 
-        self.emit('close');
-        self.removeAllListeners();
         self.closing = false;
         self.fd = null;
-
-        if (callback) {
-          callback();
-        }
+        self.emit('close');
+        if (callback) { callback() }
+        self.removeAllListeners();
       });
-    } catch (ex) {
+    } catch (err) {
       self.closing = false;
       if (callback) {
-        callback(ex);
+        callback(err);
       } else {
-        self.emit('error', ex);
+        self.emit('error', err);
       }
     }
   };
