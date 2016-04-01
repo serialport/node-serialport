@@ -194,9 +194,10 @@ var serialPort = SandboxedModule.require('../../serialport', {
         // so we say hey! it's this already mocked require!
         // if it found the binary it would be loaded in a sandbox
         // and wouldn't be able to be loaded in a regular context
-        return 'node-pre-gyp';
+        return 'mock-binding';
       }
-    }
+    },
+    'mock-binding': hardware.mockBinding
   },
   singleOnly: true,
   globals: {
@@ -208,6 +209,5 @@ var serialPort = SandboxedModule.require('../../serialport', {
 });
 
 serialPort.hardware = hardware;
-serialPort.SerialPortBinding = hardware.mockBinding;
 
 module.exports = serialPort;
