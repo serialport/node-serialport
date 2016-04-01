@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict';
+
 var SerialPort = require('../').SerialPort;
 var optimist = require('optimist');
 
@@ -38,9 +40,18 @@ if (args.help) {
 }
 
 if (!args.portname) {
-  console.error("Serial port name is required.");
+  console.error('Serial port name is required.');
   return process.exit(-1);
 }
+
+var openOptions = {
+  baudRate: args.baud,
+  dataBits: args.databits,
+  parity: args.parity,
+  stopBits: args.stopbits
+};
+
+var port = new SerialPort(args.portname, openOptions);
 
 process.stdin.resume();
 process.stdin.setRawMode(true);
@@ -62,14 +73,6 @@ process.stdin.on('data', function (s) {
     }
   });
 });
-
-var openOptions = {
-  baudRate: args.baud,
-  dataBits: args.databits,
-  parity: args.parity,
-  stopBits: args.stopbits
-};
-var port = new SerialPort(args.portname, openOptions);
 
 port.on('data', function (data) {
   process.stdout.write(data.toString());

@@ -4,12 +4,10 @@ var chai = require('chai');
 var util = require('util');
 var serialPort = require('../serialport');
 
-describe ('requiresComPort', function() {
-
+describe('requiresComPort', function() {
   describe('echo hello', function() {
     it('sends hello to the last port and validates that it is received back (see arduinoEcho.ino for echo sketch)', function(done) {
       serialPort.list(function(err, ports) {
-
         chai.assert.isUndefined(err, util.inspect(err));
         chai.assert.isDefined(ports, 'ports is not defined');
         chai.assert.isTrue(ports.length > 0, 'no ports found');
@@ -40,7 +38,6 @@ describe ('requiresComPort', function() {
   describe('relaxed baud rate', function() {
     it('opens a port with a non-standard baud rate', function(done) {
       serialPort.list(function(err, ports) {
-
         chai.assert.isUndefined(err, util.inspect(err));
         chai.assert.isDefined(ports, 'ports is not defined');
         chai.assert.isTrue(ports.length > 0, 'no ports found');
@@ -64,7 +61,6 @@ describe ('requiresComPort', function() {
   describe('simple write', function() {
     it('opens a port and sends data without encountering error', function(done) {
       serialPort.list(function(err, ports) {
-
         chai.assert.isUndefined(err, util.inspect(err));
         chai.assert.isDefined(ports, 'ports is not defined');
         chai.assert.isTrue(ports.length > 0, 'no ports found');
@@ -88,10 +84,9 @@ describe ('requiresComPort', function() {
     });
   });
 
-    describe('validate close event', function() {
+  describe('validate close event', function() {
     it('opens a port then closes it using events', function(done) {
       serialPort.list(function(err, ports) {
-
         chai.assert.isUndefined(err, util.inspect(err));
         chai.assert.isDefined(ports, 'ports is not defined');
         chai.assert.isTrue(ports.length > 0, 'no ports found');
@@ -114,5 +109,4 @@ describe ('requiresComPort', function() {
       });
     });
   });
-
 });

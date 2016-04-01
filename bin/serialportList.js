@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict';
+
 var serialport = require('../');
 var sf = require('sf');
 

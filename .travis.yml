@@ -17,9 +17,11 @@ env:
   - TRAVIS_NODE_VERSION="0.10"
   - TRAVIS_NODE_VERSION="0.12"
   - TRAVIS_NODE_VERSION="4"
+  - TRAVIS_NODE_VERSION="5"
   - TRAVIS_NODE_VERSION="0.10" ARCH="x86"
   - TRAVIS_NODE_VERSION="0.12" ARCH="x86"
   - TRAVIS_NODE_VERSION="4" ARCH="x86"
+  - TRAVIS_NODE_VERSION="5" ARCH="x86"
   global:
   - secure: nFQKlcfG1rV/kQm1EJtgQyRefZb6scdn/9epEaJgAyaqDRXHSZIFSuoOh4d/P5GC6V0yi6dA8I+XJsoRy29qG+JXWxN2enwjp16IbpUri9Z5H8uZPur1N6QPby9BX+PX5/4HU+KRgWtFDdfqqzbLmObXsxIUGtZtBbRY9otiUt8=
   exclude:
@@ -29,6 +31,8 @@ env:
     env: TRAVIS_NODE_VERSION="0.12" ARCH="x86"
   - os: osx
     env: TRAVIS_NODE_VERSION="4" ARCH="x86"
+  - os: osx
+    env: TRAVIS_NODE_VERSION="5" ARCH="x86"
 
 before_install:
 # reinstall latest nvm
@@ -38,7 +42,7 @@ before_install:
 # download node if testing x86 architecture
 - if [[ "$ARCH" == "x86" ]]; then wget $BASE_URL/$X86_FILE.tar.gz; tar -xf $X86_FILE.tar.gz; export PATH=$X86_FILE/bin:$PATH; fi
 # reinstall npm and node-pre-gyp
-- npm install -g node-gyp node-pre-gyp jacobrosenthal/node-pre-gyp-github#production
+- npm install -g node-gyp node-pre-gyp node-pre-gyp-github
 # print versions
 - npm --version
 - node-gyp --version
@@ -49,6 +53,8 @@ before_install:
 - $CXX --version
 # get commit message
 - COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
+# Set a test serialport for integration testing when we run our tests if we have one
+- if [[ $TRAVIS_OS_NAME == "osx" ]]; then export TEST_PORT='/dev/cu.serial1'; fi
 # figure out if we should publish
 - PUBLISH_BINARY=false
 # if we are building a tag then publish
@@ -71,7 +77,7 @@ script:
 - npm test
 # if publishing, do it
 - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package; fi;
-- if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp-github publish; fi;
+- if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp-github publish --release; fi;
 # cleanup
 - node-pre-gyp clean
 - node-gyp clean

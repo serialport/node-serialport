@@ -12,22 +12,18 @@ var path = require('path');
 var PACKAGE_JSON = path.join(__dirname, 'package.json');
 var binding_path = binary.find(path.resolve(PACKAGE_JSON));
 var SerialPortBinding = require(binding_path);
-
-var parsers = require('./parsers');
+var parsers = require('./lib/parsers');
+var listUnix = require('./lib/list-unix');
 var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var fs = require('fs');
 var stream = require('stream');
-var path = require('path');
-var async = require('async');
-var exec = require('child_process').exec;
-
 function SerialPortFactory(_spfOptions) {
   _spfOptions = _spfOptions || {};
 
   var spfOptions = {};
 
-  spfOptions.queryPortsByPath =  (_spfOptions.queryPortsByPath === true ? true : false);
+  spfOptions.queryPortsByPath = (_spfOptions.queryPortsByPath === true);
 
   var factory = this;
 
@@ -39,14 +35,13 @@ function SerialPortFactory(_spfOptions) {
   var STOPBITS = [1, 1.5, 2];
   var PARITY = ['none', 'even', 'mark', 'odd', 'space'];
   var FLOWCONTROLS = ['XON', 'XOFF', 'XANY', 'RTSCTS'];
-  var SETS = ['rts', 'cts', 'dtr', 'dts', 'brk'];
-
+  // var SETS = ['rts', 'cts', 'dtr', 'dts', 'brk'];
 
   // Stuff from ReadStream, refactored for our usage:
   var kPoolSize = 40 * 1024;
   var kMinPoolSpace = 128;
 
-  function makeDefaultPlatformOptions(){
+  function makeDefaultPlatformOptions() {
     var options = {};
 
     if (process.platform !== 'win32') {
@@ -65,7 +60,7 @@ function SerialPortFactory(_spfOptions) {
     xon: false,
     xoff: false,
     xany: false,
-    hupcl:true,
+    hupcl: true,
     rts: true,
     cts: false,
     dtr: true,
@@ -79,7 +74,6 @@ function SerialPortFactory(_spfOptions) {
   };
 
   function SerialPort(path, options, openImmediately, callback) {
-
     var self = this;
 
     var args = Array.prototype.slice.call(arguments);
@@ -106,7 +100,6 @@ function SerialPortFactory(_spfOptions) {
     };
 
     var err;
-
 
     opts.baudRate = options.baudRate || options.baudrate || _options.baudrate;
 
@@ -155,19 +148,18 @@ function SerialPortFactory(_spfOptions) {
             var err = new Error('Invalid "flowControl": ' + fcup + '. Valid options: ' + FLOWCONTROLS.join(', '));
             callback(err);
             return false;
-          } else {
-
-            // "XON", "XOFF", "XANY", "DTRDTS", "RTSCTS"
-            switch (idx) {
-              case 0: opts.xon = true; break;
-              case 1: opts.xoff = true; break;
-              case 2: opts.xany = true;  break;
-              case 3: opts.rtscts = true; break;
-            }
-            return true;
           }
+          // "XON", "XOFF", "XANY", "DTRDTS", "RTSCTS"
+          switch (idx) {
+            case 0: opts.xon = true; break;
+            case 1: opts.xoff = true; break;
+            case 2: opts.xany = true; break;
+            case 3: opts.rtscts = true; break;
+          }
+          return true;
         });
-        if(!clean){
+        if (!clean) {
+          // TODO this is very very messy
           return;
         }
       }
@@ -211,14 +203,12 @@ function SerialPortFactory(_spfOptions) {
 
   util.inherits(SerialPort, stream.Stream);
 
-
   SerialPort.prototype.open = function (callback) {
     var self = this;
     this.paused = true;
     this.readable = true;
     this.reading = false;
     factory.SerialPortBinding.open(this.path, this.options, function (err, fd) {
-      self.fd = fd;
       if (err) {
         if (callback) {
           callback(err);
@@ -227,6 +217,7 @@ function SerialPortFactory(_spfOptions) {
         }
         return;
       }
+      self.fd = fd;
       if (process.platform !== 'win32') {
         self.paused = false;
         self.serialPoller = new factory.SerialPortBinding.SerialportPoller(self.fd, function (err) {
@@ -240,22 +231,21 @@ function SerialPortFactory(_spfOptions) {
       }
 
       self.emit('open');
-      if (callback) { callback(); }
+      if (callback) { callback() }
     });
   };
 
-  //underlying code is written to update all options, but for now
-  //only baud is respected as I dont want to duplicate all the option
-  //verification code above
+  // underlying code is written to update all options, but for now
+  // only baud is respected as I don't want to duplicate all the option
+  // verification code above
   SerialPort.prototype.update = function (options, callback) {
     var self = this;
-    if (!this.fd) {
+    if (!this.isOpen()) {
       debug('Update attempted, but serialport not available - FD is not set');
       var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
       } else {
-        // console.log("write-fd");
         self.emit('error', err);
       }
       return;
@@ -273,23 +263,22 @@ function SerialPortFactory(_spfOptions) {
         return;
       }
       self.emit('open');
-      if (callback) { callback(); }
+      if (callback) { callback() }
     });
   };
 
   SerialPort.prototype.isOpen = function() {
-    return (this.fd ? true : false);
+    return this.fd !== null;
   };
 
   SerialPort.prototype.write = function (buffer, callback) {
     var self = this;
-    if (!this.fd) {
-      debug('Write attempted, but serialport not available - FD is not set');
+    if (!this.isOpen()) {
+      debug('Write attempted, but serialport is not open');
       var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
       } else {
-        // console.log("write-fd");
         self.emit('error', err);
       }
       return;
@@ -298,13 +287,12 @@ function SerialPortFactory(_spfOptions) {
     if (!Buffer.isBuffer(buffer)) {
       buffer = new Buffer(buffer);
     }
-    debug('Write: '+JSON.stringify(buffer));
+    debug('Write: ' + JSON.stringify(buffer));
     factory.SerialPortBinding.write(this.fd, buffer, function (err, results) {
       if (callback) {
         callback(err, results);
       } else {
         if (err) {
-          // console.log("write");
           self.emit('error', err);
         }
       }
@@ -314,9 +302,7 @@ function SerialPortFactory(_spfOptions) {
   if (process.platform !== 'win32') {
     SerialPort.prototype._read = function () {
       var self = this;
-
-      // console.log(">>READ");
-      if (!self.readable || self.paused || self.reading) {
+      if (!self.readable || self.paused || self.reading || this.closing) {
         return;
       }
 
@@ -324,10 +310,7 @@ function SerialPortFactory(_spfOptions) {
 
       if (!self.pool || self.pool.length - self.pool.used < kMinPoolSpace) {
         // discard the old pool. Can't add to the free list because
-        // users might have refernces to slices on it.
-        self.pool = null;
-
-        // alloc new pool
+        // users might have references to slices on it.
         self.pool = new Buffer(kPoolSize);
         self.pool.used = 0;
       }
@@ -342,15 +325,16 @@ function SerialPortFactory(_spfOptions) {
         self.reading = false;
         if (err) {
           if (err.code && err.code === 'EAGAIN') {
-            if (self.fd >= 0) {
+            if (!self.closing && self.isOpen()) {
               self.serialPoller.start();
             }
-          } else if (err.code && (err.code === 'EBADF' || err.code === 'ENXIO' || (err.errno === -1 || err.code === 'UNKNOWN'))) { // handle edge case were mac/unix doesn't clearly know the error.
+          // handle edge case were mac/unix doesn't clearly know the error.
+          } else if (err.code && (err.code === 'EBADF' || err.code === 'ENXIO' || (err.errno === -1 || err.code === 'UNKNOWN'))) {
             self.disconnected(err);
           } else {
             self.fd = null;
-            self.emit('error', err);
             self.readable = false;
+            self.emit('error', err);
           }
         } else {
           // Since we will often not read the number of bytes requested,
@@ -358,7 +342,7 @@ function SerialPortFactory(_spfOptions) {
           self.pool.used -= bytesRequested - bytesRead;
 
           if (bytesRead === 0) {
-            if (self.fd >= 0) {
+            if (self.isOpen()) {
               self.serialPoller.start();
             }
           } else {
@@ -368,9 +352,8 @@ function SerialPortFactory(_spfOptions) {
             if (self.paused) {
               self.buffer = Buffer.concat([self.buffer, b]);
               return;
-            } else {
-              self._emitData(b);
             }
+            self._emitData(b);
 
             // do not emit events anymore after we declared the stream unreadable
             if (!self.readable) {
@@ -379,7 +362,6 @@ function SerialPortFactory(_spfOptions) {
             self._read();
           }
         }
-
       }
 
       fs.read(self.fd, self.pool, self.pool.used, toRead, null, function (err, bytesRead) {
@@ -390,7 +372,6 @@ function SerialPortFactory(_spfOptions) {
 
       self.pool.used += toRead;
     };
-
 
     SerialPort.prototype._emitData = function (data) {
       this.options.dataCallback(data);
@@ -412,15 +393,13 @@ function SerialPortFactory(_spfOptions) {
       }
 
       // No longer open?
-      if (null === self.fd) {
+      if (!this.isOpen()) {
         return;
       }
 
       self._read();
     };
-
   } // if !'win32'
-
 
   SerialPort.prototype.disconnected = function (err) {
     var self = this;
@@ -443,36 +422,36 @@ function SerialPortFactory(_spfOptions) {
     try {
       factory.SerialPortBinding.close(fd, function (err) {
         if (err) {
-          debug('Disconnect completed with error: '+JSON.stringify(err));
+          debug('Disconnect completed with error: ' + JSON.stringify(err));
         } else {
           debug('Disconnect completed.');
         }
       });
     } catch (e) {
-      debug('Disconnect completed with an exception: '+JSON.stringify(e));
+      debug('Disconnect completed with an exception: ' + JSON.stringify(e));
     }
 
+    // TODO THIS IS CRAZY TOWN
     self.removeAllListeners();
+
     self.closing = false;
-    self.fd = 0;
+    self.fd = null;
 
     if (process.platform !== 'win32') {
       self.readable = false;
       self.serialPoller.close();
     }
-
   };
-
 
   SerialPort.prototype.close = function (callback) {
     var self = this;
-
     var fd = self.fd;
 
     if (self.closing) {
+      // TODO this should be an error
       return;
     }
-    if (!fd) {
+    if (!this.isOpen()) {
       var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
@@ -493,113 +472,36 @@ function SerialPortFactory(_spfOptions) {
 
     try {
       factory.SerialPortBinding.close(fd, function (err) {
-
         if (err) {
           if (callback) {
             callback(err);
           } else {
-            // console.log("doclose");
             self.emit('error', err);
           }
           return;
         }
 
-        self.emit('close');
-        self.removeAllListeners();
         self.closing = false;
-        self.fd = 0;
-
-        if (callback) {
-          callback();
-        }
+        self.fd = null;
+        self.emit('close');
+        if (callback) { callback() }
+        self.removeAllListeners();
       });
-    } catch (ex) {
+    } catch (err) {
       self.closing = false;
       if (callback) {
-        callback(ex);
+        callback(err);
       } else {
-        self.emit('error', ex);
+        self.emit('error', err);
       }
     }
   };
-
-  function listUnix(callback) {
-    function udev_parser(udev_output, callback) {
-      function udev_output_to_json(output) {
-        var result = {};
-        var lines = output.split('\n');
-        for (var i = 0; i < lines.length; i++) {
-          var line = lines[i].trim();
-          if (line !== '') {
-            var line_parts = lines[i].split('=');
-            result[line_parts[0].trim()] = line_parts[1].trim();
-          }
-        }
-        return result;
-      }
-      var as_json = udev_output_to_json(udev_output);
-      var pnpId = as_json.DEVLINKS.split(' ')[0];
-      pnpId = pnpId.substring(pnpId.lastIndexOf('/') + 1);
-      var port = {
-        comName: as_json.DEVNAME,
-        manufacturer: as_json.ID_VENDOR,
-        serialNumber: as_json.ID_SERIAL,
-        pnpId: pnpId,
-        vendorId: '0x' + as_json.ID_VENDOR_ID,
-        productId: '0x' + as_json.ID_MODEL_ID
-      };
-
-      callback(null, port);
-    }
-
-    //var dirName = (spfOptions.queryPortsByPath ? '/dev/serial/by-path' : '/dev/serial/by-id');
-    var dirName = '/dev';
-
-    fs.readdir(dirName, function (err, files) {
-      if (err) {
-        // if this directory is not found this could just be because it's not plugged in
-        if (err.errno === 34) {
-          return callback(null, []);
-        }
-
-        if (callback) {
-          callback(err);
-        } else {
-          factory.emit('error', err);
-        }
-        return;
-      }
-
-      //get only serial port  names
-      for (var i = files.length - 1;i>=0;i--){
-        if ((files[i].indexOf('ttyS') === -1 && files[i].indexOf('ttyACM') === -1 && files[i].indexOf('ttyUSB') === -1 && files[i].indexOf('ttyAMA') === -1) || !fs.statSync(path.join(dirName,files[i])).isCharacterDevice()){
-          files.splice(i,1);
-        }
-      }
-
-      async.map(files, function (file, callback) {
-        var fileName = path.join(dirName, file);
-        exec('/sbin/udevadm info --query=property -p $(/sbin/udevadm info -q path -n ' + fileName + ')', function (err, stdout) {
-          if (err) {
-            if (callback) {
-              callback(err);
-            } else {
-              factory.emit('error', err);
-            }
-            return;
-          }
-
-          udev_parser(stdout, callback);
-        });
-      }, callback);
-    });
-  }
 
   SerialPort.prototype.flush = function (callback) {
     var self = this;
     var fd = self.fd;
 
-    if (!fd) {
+    if (!this.isOpen()) {
       var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
@@ -610,16 +512,10 @@ function SerialPortFactory(_spfOptions) {
     }
 
     factory.SerialPortBinding.flush(fd, function (err, result) {
-      if (err) {
-        if (callback) {
-          callback(err, result);
-        } else {
-          self.emit('error', err);
-        }
-      } else {
-        if (callback) {
-          callback(err, result);
-        }
+      if (callback) {
+        callback(err, result);
+      } else if (err) {
+        self.emit('error', err);
       }
     });
   };
@@ -632,23 +528,23 @@ function SerialPortFactory(_spfOptions) {
 
     // flush defaults, then update with provided details
 
-    if(!options.hasOwnProperty('rts')){
+    if (!options.hasOwnProperty('rts')) {
       options.rts = _options.rts;
     }
-    if(!options.hasOwnProperty('dtr')){
+    if (!options.hasOwnProperty('dtr')) {
       options.dtr = _options.dtr;
     }
-    if(!options.hasOwnProperty('cts')){
+    if (!options.hasOwnProperty('cts')) {
       options.cts = _options.cts;
     }
-    if(!options.hasOwnProperty('dts')){
+    if (!options.hasOwnProperty('dts')) {
       options.dts = _options.dts;
     }
-    if(!options.hasOwnProperty('brk')){
+    if (!options.hasOwnProperty('brk')) {
       options.brk = _options.brk;
     }
 
-    if (!fd) {
+    if (!this.isOpen()) {
       var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
@@ -659,14 +555,10 @@ function SerialPortFactory(_spfOptions) {
     }
 
     factory.SerialPortBinding.set(fd, options, function (err, result) {
-      if (err) {
-        if (callback) {
-          callback(err, result);
-        } else {
-          self.emit('error', err);
-        }
-      } else {
+      if (callback) {
         callback(err, result);
+      } else if (err) {
+        self.emit('error', err);
       }
     });
   };
@@ -675,7 +567,7 @@ function SerialPortFactory(_spfOptions) {
     var self = this;
     var fd = this.fd;
 
-    if (!fd) {
+    if (!this.isOpen()) {
       var err = new Error('Serialport not open.');
       if (callback) {
         callback(err);
@@ -686,34 +578,31 @@ function SerialPortFactory(_spfOptions) {
     }
 
     factory.SerialPortBinding.drain(fd, function (err, result) {
-      if (err) {
-        if (callback) {
-          callback(err, result);
-        } else {
-          self.emit('error', err);
-        }
-      } else {
-        if (callback) {
-          callback(err, result);
-        }
+      if (callback) {
+        callback(err, result);
+      } else if (err) {
+        self.emit('error', err);
       }
     });
   };
 
   factory.SerialPort = SerialPort;
-  factory.parsers = parsers;
-  factory.SerialPortBinding = SerialPortBinding;
-
-  if (process.platform === 'win32') {
-    factory.list = SerialPortBinding.list;
-  } else if (process.platform === 'darwin') {
-    factory.list = SerialPortBinding.list;
-  } else {
-    factory.list = listUnix;
-  }
-
 }
 
 util.inherits(SerialPortFactory, EventEmitter);
+
+SerialPortFactory.prototype.parsers = parsers;
+SerialPortFactory.prototype.SerialPortBinding = SerialPortBinding;
+
+if (process.platform === 'win32' || process.platform === 'darwin') {
+  SerialPortFactory.prototype.list = SerialPortBinding.list;
+} else {
+  SerialPortFactory.prototype.list = function(callback) {
+    callback = callback || function(err) {
+      if (err) { this.emit('error', err) }
+    }.bind(this);
+    return listUnix(callback);
+  };
+}
 
 module.exports = new SerialPortFactory();

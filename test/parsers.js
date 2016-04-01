@@ -6,10 +6,9 @@ var sinonChai = require('sinon-chai');
 var sinon = require('sinon');
 chai.use(sinonChai);
 
-var parsers = require('../parsers');
+var parsers = require('../lib/parsers');
 
 describe('parsers', function () {
-
   describe('#raw', function () {
     it('emits data exactly as it\'s written', function () {
       var data = new Buffer('BOGUS');
@@ -30,7 +29,7 @@ describe('parsers', function () {
     });
   });
 
-  describe('#byteLength', function(){
+  describe('#byteLength', function() {
     it('emits data events every 8 bytes', function () {
       var data = new Buffer('Robots are so freaking cool!');
       var spy = sinon.spy();
@@ -52,40 +51,40 @@ describe('parsers', function () {
       parser({ emit: spy }, data);
       expect(spy.callCount).to.equal(3);
       expect(spy.getCall(0).args[1]).to.have.length(15);
-      expect(spy.getCall(0).args[1]).to.satisfy(function(d) { return d[d.length-1] === 0; });
+      expect(spy.getCall(0).args[1]).to.satisfy(function(d) { return d[d.length - 1] === 0 });
       expect(spy.getCall(1).args[1]).to.have.length(13);
-      expect(spy.getCall(1).args[1]).to.satisfy(function(d) { return d[d.length-1] === 0; });
+      expect(spy.getCall(1).args[1]).to.satisfy(function(d) { return d[d.length - 1] === 0 });
       expect(spy.getCall(2).args[1]).to.have.length(21);
-      expect(spy.getCall(2).args[1]).to.satisfy(function(d) { return d[d.length-1] === 0; });
+      expect(spy.getCall(2).args[1]).to.satisfy(function(d) { return d[d.length - 1] === 0 });
     });
     it('accepts single byte delimiter', function() {
       var data = new Buffer('This could be\0binary data\0sent from a Moteino\0');
       var parser = parsers.byteDelimiter(0);
-      var spy = sinon.spy();      
+      var spy = sinon.spy();
       parser({ emit: spy }, data);
       expect(spy.callCount).to.equal(3);
     });
     it('Works when buffer starts with delimiter', function() {
       var data = new Buffer('\0Hello\0World\0');
       var parser = parsers.byteDelimiter(0);
-      var spy = sinon.spy();      
+      var spy = sinon.spy();
       parser({ emit: spy }, data);
       expect(spy.callCount).to.equal(3);
     });
     it('continues looking for delimiters in the next buffers', function() {
       var data1 = new Buffer('This could be\0\0binary ');
       var data2 = new Buffer('data\0\0sent from a Moteino\0\0');
-      var parser = parsers.byteDelimiter([0,0]);
-      var spy = sinon.spy();      
+      var parser = parsers.byteDelimiter([0, 0]);
+      var spy = sinon.spy();
       parser({ emit: spy }, data1);
       parser({ emit: spy }, data2);
       expect(spy.callCount).to.equal(3);
       expect(spy.getCall(0).args[1]).to.have.length(15);
-      expect(spy.getCall(0).args[1]).to.satisfy(function(d) { return d[d.length-1] === 0; });
+      expect(spy.getCall(0).args[1]).to.satisfy(function(d) { return d[d.length - 1] === 0 });
       expect(spy.getCall(1).args[1]).to.have.length(13);
-      expect(spy.getCall(1).args[1]).to.satisfy(function(d) { return d[d.length-1] === 0; });
+      expect(spy.getCall(1).args[1]).to.satisfy(function(d) { return d[d.length - 1] === 0 });
       expect(spy.getCall(2).args[1]).to.have.length(21);
-      expect(spy.getCall(2).args[1]).to.satisfy(function(d) { return d[d.length-1] === 0; });
+      expect(spy.getCall(2).args[1]).to.satisfy(function(d) { return d[d.length - 1] === 0 });
     });
   });
 });
