@@ -8,6 +8,7 @@ var expect = chai.expect;
 var MockedSerialPort = require('./mocks/darwin-hardware');
 var SerialPort = MockedSerialPort.SerialPort;
 var hardware = MockedSerialPort.hardware;
+var bindings = hardware.mockBinding;
 
 describe('SerialPort', function () {
   var sandbox;
@@ -38,18 +39,15 @@ describe('SerialPort', function () {
     });
 
     it('emits an error on the factory when erroring without a callback', function (done) {
-      // finish the test on error
       MockedSerialPort.once('error', function (err) {
         assert.instanceOf(err, Error);
         done();
       });
-
       this.port = new SerialPort('/dev/johnJacobJingleheimerSchmidt');
     });
 
-    it('emits an error on the serialport when explicit error handler present', function (done) {
+    it('emits an error on the serial port when explicit error handler present', function (done) {
       var port = new SerialPort('/dev/johnJacobJingleheimerSchmidt');
-
       port.once('error', function(err) {
         assert.instanceOf(err, Error);
         done();
@@ -61,7 +59,6 @@ describe('SerialPort', function () {
         assert.instanceOf(err, Error);
         done();
       };
-
       this.port = new SerialPort('/dev/exists', { databits: 19 }, false, errorCallback);
     });
 
@@ -70,7 +67,6 @@ describe('SerialPort', function () {
         assert.instanceOf(err, Error);
         done();
       };
-
       this.port = new SerialPort('/dev/exists', { stopbits: 19 }, false, errorCallback);
     });
 
@@ -79,7 +75,6 @@ describe('SerialPort', function () {
         assert.instanceOf(err, Error);
         done();
       };
-
       this.port = new SerialPort('/dev/exists', { parity: 'pumpkins' }, false, errorCallback);
     });
 
@@ -88,19 +83,142 @@ describe('SerialPort', function () {
         assert.instanceOf(err, Error);
         done();
       };
-
       this.port = new SerialPort('/dev/exists', { flowcontrol: ['pumpkins'] }, false, errorCallback);
     });
 
     it('allows optional options', function (done) {
-      var cb = function () {};
-      var port = new SerialPort('/dev/exists', cb);
-      expect(typeof port.options).to.eq('object');
-      done();
+      this.port = new SerialPort('/dev/exists', done);
     });
   });
 
   describe('Functions', function () {
+    describe('#open', function () {
+      it('passes the port to the bindings', function (done) {
+        var openSpy = sandbox.spy(bindings, 'open');
+        var port = new SerialPort('/dev/exists', {}, false);
+        expect(port.isOpen()).to.be.false;
+        port.open(function (err) {
+          expect(err).to.not.be.ok;
+          expect(port.isOpen()).to.be.true;
+          expect(openSpy.calledWith('/dev/exists'));
+          done();
+        });
+      });
+
+      it('calls back an error when opening an invalid port', function (done) {
+        var port = new SerialPort('/dev/unhappy', {}, false);
+        port.open(function (err) {
+          expect(err).to.be.ok;
+          done();
+        });
+      });
+
+      it('emits data after being reopened', function (done) {
+        var data = new Buffer('Howdy!');
+        var port = new SerialPort('/dev/exists', function () {
+          port.close(function() {
+            port.open(function () {
+              port.once('data', function (res) {
+                expect(res).to.eql(data);
+                done();
+              });
+              hardware.emitData('/dev/exists', data);
+            });
+          });
+        });
+      });
+
+      it('cannot be opened twice in the callback', function(done) {
+        var port = new SerialPort('/dev/exists', function () {
+          port.open(function(err) {
+            assert.instanceOf(err, Error);
+            done();
+          });
+        });
+      });
+
+      it('cannot be opened twice', function(done) {
+        var port = new SerialPort('/dev/exists', {}, false);
+        var calls = 0;
+        var errors = 0;
+        var spy = function(err) {
+          calls++;
+          if (err) {
+            errors++;
+            assert.instanceOf(err, Error);
+            assert.strictEqual(err.message, 'Port is opening');
+          }
+          if (calls === 2) {
+            assert.strictEqual(errors, 1);
+            done();
+          }
+        };
+        port.open(spy);
+        port.open(spy);
+      });
+    });
+
+    describe('#close', function () {
+      it('emits a close event', function (done) {
+        var port = new SerialPort('/dev/exists', function () {
+          port.on('close', function() {
+            assert.isFalse(port.isOpen());
+            done();
+          });
+          port.close();
+        });
+      });
+
+      it('has a close callback', function (done) {
+        var port = new SerialPort('/dev/exists', function () {
+          port.close(function() {
+            assert.isFalse(port.isOpen());
+            done();
+          });
+        });
+      });
+
+      it('emits the close event and runs the callback', function (done) {
+        var called = 0;
+        var doneIfTwice = function() {
+          called++;
+          if (called === 2) { return done() }
+        };
+        var port = new SerialPort('/dev/exists', function() {
+          port.close(doneIfTwice);
+        });
+        port.on('close', doneIfTwice);
+      });
+
+      it('emits an error event or error callback but not both', function(done) {
+        var port = new SerialPort('/dev/exists', false);
+        var called = 0;
+        var doneIfTwice = function(err) {
+          assert.instanceOf(err, Error);
+          called++;
+          if (called === 2) { return done() }
+        };
+        port.on('error', doneIfTwice);
+        port.close();
+        port.close(doneIfTwice);
+      });
+
+      it('fires a close event after being reopened', function (done) {
+        var port = new SerialPort('/dev/exists', function () {
+          var closeSpy = sandbox.spy();
+          port.on('close', closeSpy);
+          port.close(function() {
+            port.open(function() {
+              port.close(function() {
+                expect(closeSpy.calledTwice);
+                done();
+              });
+            });
+          });
+        });
+      });
+    });
+
     it('write errors when serialport not open', function (done) {
       var cb = function () {};
       var port = new SerialPort('/dev/exists', false, cb);
@@ -216,102 +334,8 @@ describe('SerialPort', function () {
     });
   });
 
-  describe('#open', function () {
-    it('passes the port to the bindings', function (done) {
-      var openSpy = sandbox.spy(MockedSerialPort.SerialPortBinding, 'open');
-      var port = new SerialPort('/dev/exists', {}, false);
-      expect(port.isOpen()).to.be.false;
-      port.open(function (err) {
-        expect(err).to.not.be.ok;
-        expect(port.isOpen()).to.be.true;
-        expect(openSpy.calledWith('/dev/exists'));
-        done();
-      });
-    });
-
-    it('calls back an error when opening an invalid port', function (done) {
-      var port = new SerialPort('/dev/unhappy', {}, false);
-      port.open(function (err) {
-        expect(err).to.be.ok;
-        done();
-      });
-    });
-
-    it('emits data after being reopened', function (done) {
-      var data = new Buffer('Howdy!');
-      var port = new SerialPort('/dev/exists', function () {
-        port.close();
-        port.open(function () {
-          port.once('data', function (res) {
-            expect(res).to.eql(data);
-            done();
-          });
-          hardware.emitData('/dev/exists', data);
-        });
-      });
-    });
-  });
-
-  describe('#close', function () {
-    it('emits a close event', function (done) {
-      var port = new SerialPort('/dev/exists', function () {
-        port.on('close', function() {
-          assert.isFalse(port.isOpen());
-          done();
-        });
-        port.close();
-      });
-    });
-
-    it('has a close callback', function (done) {
-      var port = new SerialPort('/dev/exists', function () {
-        port.close(function() {
-          assert.isFalse(port.isOpen());
-          done();
-        });
-      });
-    });
-
-    it('emits the close event and runs the callback', function (done) {
-      var called = 0;
-      var doneIfTwice = function() {
-        called++;
-        if (called === 2) { return done() }
-      };
-      var port = new SerialPort('/dev/exists', function() {
-        port.close(doneIfTwice);
-      });
-      port.on('close', doneIfTwice);
-    });
-
-    it('emits an error event or error callback but not both', function(done) {
-      var port = new SerialPort('/dev/exists', false);
-      var called = 0;
-      var doneIfTwice = function(err) {
-        assert.instanceOf(err, Error);
-        called++;
-        if (called === 2) { return done() }
-      };
-      port.on('error', doneIfTwice);
-      port.close();
-      port.close(doneIfTwice);
-    });
-
-    it('fires a close event after being reopened', function (done) {
-      var port = new SerialPort('/dev/exists', function () {
-        var closeSpy = sandbox.spy();
-        port.on('close', closeSpy);
-        port.close();
-        port.open();
-        port.close();
-        expect(closeSpy.calledTwice);
-        done();
-      });
-    });
-  });
-
-  describe('disconnect', function () {
-    it('fires a disconnect event', function (done) {
+  describe('disconnections', function () {
+    it('calls the disconnect callback', function (done) {
       this.port = new SerialPort('/dev/exists', {
         disconnectedCallback: done
       }, function () {
@@ -319,24 +343,30 @@ describe('SerialPort', function () {
       });
     });
 
-    it('disconnected closes port', function(done) {
+    it('emits a disconnect event', function (done) {
       var port = new SerialPort('/dev/exists', function () {
-        expect(port.fd).to.equal(0);
-        port.disconnected();
-        expect(port.fd).to.be.null;
-        expect(port.isOpen()).to.be.false;
+        hardware.disconnect('/dev/exists');
+      });
+      port.on('disconnect', function(err) {
+        assert.instanceOf(err, Error);
         done();
       });
     });
 
-    it('emits a disconnect event', function (done) {
-      var port = new SerialPort('/dev/exists', function () {
-        port.on('disconnect', function(err) {
-          assert.instanceOf(err, Error);
-          done();
-        });
-        hardware.disconnect('/dev/exists');
-      });
-    });
+    // Disconnects are inconsistent bananas
+    // it('closes the port', function(done) {
+    //   var port = new SerialPort('/dev/exists', function () {
+    //     expect(port.fd).to.equal(0);
+    //     hardware.disconnect('/dev/exists');
+    //   });
+    //   var spy = sandbox.spy();
+    //   port.on('disconnect', spy);
+    //   port.on('close', function(err) {
+    //     assert.instanceOf(err, Error);
+    //     assert.isFalse(port.isOpen());
+    //     assert(spy.calledOnce);
+    //     done();
+    //   });
+    // });
   });
 });
