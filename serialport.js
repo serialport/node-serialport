@@ -18,13 +18,8 @@ var EventEmitter = require('events').EventEmitter;
 var util = require('util');
 var fs = require('fs');
 var stream = require('stream');
-function SerialPortFactory(_spfOptions) {
-  _spfOptions = _spfOptions || {};
 
-  var spfOptions = {};
-
-  spfOptions.queryPortsByPath = (_spfOptions.queryPortsByPath === true);
-
+function SerialPortFactory() {
   var factory = this;
 
   // Removing check for valid BaudRates due to ticket: #140
@@ -51,7 +46,6 @@ function SerialPortFactory(_spfOptions) {
 
     return options;
   }
-
   // The default options, can be overwritten in the 'SerialPort' constructor
   var _options = {
     baudrate: 9600,
@@ -183,10 +177,13 @@ function SerialPortFactory(_spfOptions) {
       self.emit('disconnect', err);
     };
 
+    this.fd = null;
+    this.paused = true;
+    this.opening = false;
+    this.closing = false;
+
     if (process.platform !== 'win32') {
       // All other platforms:
-      this.fd = null;
-      this.paused = true;
       this.bufferSize = options.bufferSize || 64 * 1024;
       this.readable = true;
       this.reading = false;
@@ -203,11 +200,29 @@ function SerialPortFactory(_spfOptions) {
 
   util.inherits(SerialPort, stream.Stream);
 
+  SerialPort.prototype._error = function(error, callback) {
+    if (callback) {
+      callback(error);
+    } else {
+      this.emit('error', error);
+    }
+  };
+
   SerialPort.prototype.open = function (callback) {
-    var self = this;
+    if (this.isOpen()) {
+      return this._error(new Error('Port is already open'), callback);
+    }
+
+    if (this.opening) {
+      return this._error(new Error('Port is opening'), callback);
+    }
+
     this.paused = true;
     this.readable = true;
     this.reading = false;
+    this.opening = true;
+
+    var self = this;
     factory.SerialPortBinding.open(this.path, this.options, function (err, fd) {
       if (err) {
         if (callback) {
@@ -218,8 +233,10 @@ function SerialPortFactory(_spfOptions) {
         return;
       }
       self.fd = fd;
+      self.paused = false;
+      self.opening = false;
+
       if (process.platform !== 'win32') {
-        self.paused = false;
         self.serialPoller = new factory.SerialPortBinding.SerialportPoller(self.fd, function (err) {
           if (!err) {
             self._read();
@@ -239,20 +256,14 @@ function SerialPortFactory(_spfOptions) {
   // only baud is respected as I don't want to duplicate all the option
   // verification code above
   SerialPort.prototype.update = function (options, callback) {
-    var self = this;
     if (!this.isOpen()) {
-      debug('Update attempted, but serialport not available - FD is not set');
-      var err = new Error('Serialport not open.');
-      if (callback) {
-        callback(err);
-      } else {
-        self.emit('error', err);
-      }
-      return;
+      debug('update attempted, but port is not open');
+      return this._error(new Error('Port is not open'), callback);
     }
 
     this.options.baudRate = options.baudRate || options.baudrate || _options.baudrate;
 
+    var self = this;
     factory.SerialPortBinding.update(this.fd, this.options, function (err) {
       if (err) {
         if (callback) {
@@ -272,22 +283,17 @@ function SerialPortFactory(_spfOptions) {
   };
 
   SerialPort.prototype.write = function (buffer, callback) {
-    var self = this;
     if (!this.isOpen()) {
-      debug('Write attempted, but serialport is not open');
-      var err = new Error('Serialport not open.');
-      if (callback) {
-        callback(err);
-      } else {
-        self.emit('error', err);
-      }
-      return;
+      debug('write attempted, but port is not open');
+      return this._error(new Error('Port is not open'), callback);
     }
 
     if (!Buffer.isBuffer(buffer)) {
       buffer = new Buffer(buffer);
     }
-    debug('Write: ' + JSON.stringify(buffer));
+    debug('write data: ' + JSON.stringify(buffer));
+
+    var self = this;
     factory.SerialPortBinding.write(this.fd, buffer, function (err, results) {
       if (callback) {
         callback(err, results);
@@ -448,18 +454,13 @@ function SerialPortFactory(_spfOptions) {
     var fd = self.fd;
 
     if (self.closing) {
-      // TODO this should be an error
-      return;
+      debug('close attempted, but port is already closing');
+      return this._error(new Error('Port is not open'), callback);
     }
+
     if (!this.isOpen()) {
-      var err = new Error('Serialport not open.');
-      if (callback) {
-        callback(err);
-      } else {
-        // console.log("sp not open");
-        self.emit('error', err);
-      }
-      return;
+      debug('close attempted, but port is not open');
+      return this._error(new Error('Port is not open'), callback);
     }
 
     self.closing = true;
@@ -472,28 +473,21 @@ function SerialPortFactory(_spfOptions) {
 
     try {
       factory.SerialPortBinding.close(fd, function (err) {
+        self.closing = false;
         if (err) {
-          if (callback) {
-            callback(err);
-          } else {
-            self.emit('error', err);
-          }
-          return;
+          debug('SerialPortBinding.close had an error', err);
+          return self._error(err, callback);
         }
 
-        self.closing = false;
         self.fd = null;
         self.emit('close');
         if (callback) { callback() }
         self.removeAllListeners();
       });
     } catch (err) {
-      self.closing = false;
-      if (callback) {
-        callback(err);
-      } else {
-        self.emit('error', err);
-      }
+      this.closing = false;
+      debug('SerialPortBinding.close had an throwing error', err);
+      return this._error(err, callback);
     }
   };
 
@@ -502,13 +496,8 @@ function SerialPortFactory(_spfOptions) {
     var fd = self.fd;
 
     if (!this.isOpen()) {
-      var err = new Error('Serialport not open.');
-      if (callback) {
-        callback(err);
-      } else {
-        self.emit('error', err);
-      }
-      return;
+      debug('flush attempted, but port is not open');
+      return this._error(new Error('Port is not open'), callback);
     }
 
     factory.SerialPortBinding.flush(fd, function (err, result) {
@@ -521,6 +510,11 @@ function SerialPortFactory(_spfOptions) {
   };
 
   SerialPort.prototype.set = function (options, callback) {
+    if (!this.isOpen()) {
+      debug('set attempted, but port is not open');
+      return this._error(new Error('Port is not open'), callback);
+    }
+
     var self = this;
     var fd = self.fd;
 
@@ -544,16 +538,6 @@ function SerialPortFactory(_spfOptions) {
       options.brk = _options.brk;
     }
 
-    if (!this.isOpen()) {
-      var err = new Error('Serialport not open.');
-      if (callback) {
-        callback(err);
-      } else {
-        self.emit('error', err);
-      }
-      return;
-    }
-
     factory.SerialPortBinding.set(fd, options, function (err, result) {
       if (callback) {
         callback(err, result);
@@ -568,13 +552,8 @@ function SerialPortFactory(_spfOptions) {
     var fd = this.fd;
 
     if (!this.isOpen()) {
-      var err = new Error('Serialport not open.');
-      if (callback) {
-        callback(err);
-      } else {
-        self.emit('error', err);
-      }
-      return;
+      debug('drain attempted, but port is not open');
+      return this._error(new Error('Port is not open'), callback);
     }
 
     factory.SerialPortBinding.drain(fd, function (err, result) {
