@@ -1,6 +1,26 @@
+Version 2.0.7-beta2
+-------------
+- Code cleanup due to moving to eslint internally
+- Bugfixes around JS handling of file descriptors
+
+Version 2.0.7-beta1
+-------------
+- Remove deprecated BuildCommDCB for windows support
+- Cleanup callback handling
+
+Version 2.0.6
+-------------
+- Add 5.x build to matrix, thanks @deadprogram
+- Re add nmpignore, thanks @rwaldron
+- Swap to upstream version of node-pre-gyp-github
+
+Version 2.0.5
+-------------
+- Fix linux port listing crash since 2.0.3 refactor, thanks @monkbroc
+
 Version 2.0.4
 -------------
--Fix heap corruption issue affecting windows users since 2.0.0, thanks @kunalspathak
+- Fix heap corruption issue affecting windows users since 2.0.0, thanks @kunalspathak
 
 Version 2.0.3
 -------------

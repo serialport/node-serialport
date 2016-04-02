@@ -16,15 +16,16 @@ environment:
   - nodejs_version: "0.10"
   - nodejs_version: "0.12"
   - nodejs_version: "4.2"
+  - nodejs_version: "5.1"
 
 platform:
   - x86
   - x64
 
 install:
-  - cmd: ECHO %nodejs_version%
-  - cmd: ECHO %platform%
-  - cmd: ECHO %APPVEYOR_REPO_COMMIT_MESSAGE%
+  - cmd: ECHO "%nodejs_version%"
+  - cmd: ECHO "%platform%"
+  - cmd: ECHO "%APPVEYOR_REPO_COMMIT_MESSAGE%"
 
   - cmd: SET PATH=%cd%\node_modules\.bin\;%PATH%
   - ps:  Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:platform
@@ -44,16 +45,18 @@ install:
   # Or look for commit message containing `[publish binary]`
   - cmd: IF not x%COMMIT_MSG:[publish binary]=%==x%COMMIT_MSG% SET PUBLISH_BINARY=true
   - cmd: ECHO %PUBLISH_BINARY%
+  # Set a serialport for us to play with
+  - cmd: SET TEST_PORT=COM1
 
 build_script:
-  - cmd: npm install --build-from-source --msvs_version=2013 --verbose
+  - cmd: npm install --build-from-source --msvs_version=2013
 
 test_script:
   - cmd: npm test
 
 on_success:
   - cmd: IF %PUBLISH_BINARY%==true (node-pre-gyp package 2>&1)
-  - cmd: IF %PUBLISH_BINARY%==true (node-pre-gyp-github publish 2>&1)
+  - cmd: IF %PUBLISH_BINARY%==true (node-pre-gyp-github publish --release 2>&1)
   - cmd: IF %PUBLISH_BINARY% == true (node-pre-gyp clean)
   - cmd: IF %PUBLISH_BINARY% == true (npm install --fallback-to-build=false)
 

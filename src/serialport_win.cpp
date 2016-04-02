@@ -82,9 +82,8 @@ void EIO_Open(uv_work_t* req) {
   dcb.DCBlength = sizeof(DCB);
   if(data->hupcl == false) {
       dcb.fDtrControl = DTR_CONTROL_DISABLE; // disable DTR to avoid reset
-  }
-  else {
-	  dcb.fDtrControl = DTR_CONTROL_ENABLE;
+  } else {
+    dcb.fDtrControl = DTR_CONTROL_ENABLE;
   }
 
   dcb.BaudRate = CBR_9600;
