@@ -238,12 +238,8 @@ SerialPort.prototype.open = function (callback) {
   var self = this;
   SerialPortBinding.open(this.path, this.options, function (err, fd) {
     if (err) {
-      if (callback) {
-        callback(err);
-      } else {
-        self.emit('error', err);
-      }
-      return;
+      debug('SerialPortBinding.open had an error', err);
+      return self._error(err, callback);
     }
     self.fd = fd;
     self.paused = false;
@@ -292,7 +288,7 @@ SerialPort.prototype.update = function (options, callback) {
 };
 
 SerialPort.prototype.isOpen = function() {
-  return this.fd !== null;
+  return this.fd !== null && !this.closing;
 };
 
 SerialPort.prototype.write = function (buffer, callback) {

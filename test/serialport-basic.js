@@ -217,21 +217,66 @@ describe('SerialPort', function () {
           });
         });
       });
+
+      it('errors when the port is not open', function (done) {
+        var cb = function () {};
+        var port = new SerialPort('/dev/exists', false, cb);
+        port.close(function(err) {
+          assert.instanceOf(err, Error);
+          done();
+        });
+      });
+    });
+
+    describe('#isOpen', function() {
+      it('returns false when the port is created', function (done) {
+        var port = new SerialPort('/dev/exists', {}, false);
+        assert.isFalse(port.isOpen());
+        done();
+      });
+
+      it('returns false when the port is opening', function (done) {
+        var port = new SerialPort('/dev/exists', {}, false);
+        sandbox.stub(bindings, 'open', function() {
+          assert.isTrue(port.opening);
+          assert.isFalse(port.isOpen());
+          done();
+        });
+        port.open();
+      });
+
+      it('returns true when the port is open', function (done) {
+        var port = new SerialPort('/dev/exists', function() {
+          assert.isTrue(port.isOpen());
+          done();
+        });
+      });
+      it('returns false when the port is closing', function (done) {
+        var port;
+        sandbox.stub(bindings, 'close', function() {
+          assert.isTrue(port.closing);
+          assert.isFalse(port.isOpen());
+          done();
+        });
+        port = new SerialPort('/dev/exists', {}, function() {
+          port.close();
+        });
+      });
+      it('returns false when the port is closed', function (done) {
+        var port = new SerialPort('/dev/exists', function() {
+          port.close();
+        });
+        port.on('close', function() {
+          assert.isFalse(port.isOpen());
+          done();
+        });
+      });
     });
 
     it('write errors when serialport not open', function (done) {
       var cb = function () {};
-      var port = new SerialPort('/dev/exists', false, cb);
+      var port = new SerialPort('/dev/exists', {}, false, cb);
       port.write(null, function(err) {
-        assert.instanceOf(err, Error);
-        done();
-      });
-    });
-
-    it('close errors when serialport not open', function (done) {
-      var cb = function () {};
-      var port = new SerialPort('/dev/exists', false, cb);
-      port.close(function(err) {
         assert.instanceOf(err, Error);
         done();
       });
@@ -239,7 +284,7 @@ describe('SerialPort', function () {
 
     it('flush errors when serialport not open', function (done) {
       var cb = function () {};
-      var port = new SerialPort('/dev/exists', false, cb);
+      var port = new SerialPort('/dev/exists', {}, false, cb);
       port.flush(function(err) {
         assert.instanceOf(err, Error);
         done();
@@ -248,7 +293,7 @@ describe('SerialPort', function () {
 
     it('set errors when serialport not open', function (done) {
       var cb = function () {};
-      var port = new SerialPort('/dev/exists', false, cb);
+      var port = new SerialPort('/dev/exists', {}, false, cb);
       port.set({}, function(err) {
         assert.instanceOf(err, Error);
         done();
@@ -257,7 +302,7 @@ describe('SerialPort', function () {
 
     it('drain errors when serialport not open', function (done) {
       var cb = function () {};
-      var port = new SerialPort('/dev/exists', false, cb);
+      var port = new SerialPort('/dev/exists', {}, false, cb);
       port.drain(function(err) {
         assert.instanceOf(err, Error);
         done();
@@ -296,14 +341,6 @@ describe('SerialPort', function () {
       var port = new SerialPort('/dev/exists', function(done) {
         expect(port.fd).to.equal(0);
         port.update({}, done);
-      });
-    });
-
-    it('isOpen should consider 0 a valid file descriptor', function(done) {
-      var port = new SerialPort('/dev/exists', function() {
-        expect(port.fd).to.equal(0);
-        expect(port.isOpen()).to.be.true;
-        done();
       });
     });
   });
