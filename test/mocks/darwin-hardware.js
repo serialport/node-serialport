@@ -196,14 +196,8 @@ var serialPort = SandboxedModule.require('../../serialport', {
     fs: {
       read: hardware.fakeRead.bind(hardware)
     },
-    'node-pre-gyp': {
-      find: function() {
-        // this one is silly - we don't want it to find the binary
-        // so we say hey! it's this already mocked require!
-        // if it found the binary it would be loaded in a sandbox
-        // and wouldn't be able to be loaded in a regular context
-        return 'mock-binding';
-      }
+    'bindings': function() {
+      return hardware.mockBinding;
     },
     'mock-binding': hardware.mockBinding
   },

@@ -6,18 +6,19 @@
 // node-pre-gyp, if something fails or package not available fallback
 // to regular build from source.
 
+// 3rd Party Dependencies
 var debug = require('debug')('serialport');
-var binary = require('node-pre-gyp');
-var path = require('path');
-var PACKAGE_JSON = path.join(__dirname, 'package.json');
-var binding_path = binary.find(path.resolve(PACKAGE_JSON));
-var SerialPortBinding = require(binding_path);
+
+// Internal Dependencies
+var SerialPortBinding = require('bindings')('serialport.node');
 var parsers = require('./lib/parsers');
 var listUnix = require('./lib/list-unix');
+
+// Built-ins Dependencies
 var EventEmitter = require('events').EventEmitter;
-var util = require('util');
 var fs = require('fs');
 var stream = require('stream');
+var util = require('util');
 
 function SerialPortFactory() {
   var factory = this;
