@@ -16,7 +16,7 @@ module.exports = {
     "no-caller": 2,
     "max-depth": 2,
     "complexity": [2, 32],
-    "max-statements": [2, 60],
+    "max-statements": [2, 41],
     "no-else-return": 2, // maybe
     "wrap-iife": [2, "inside"],
     "new-cap": 2,
