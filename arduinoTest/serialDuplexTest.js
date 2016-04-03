@@ -16,37 +16,39 @@ var myPort = new SerialPort(portName);          // open the serial port:
 var output = 32;                                // ASCII space; lowest printable character
 var byteCount = 0;                              // number of bytes read
 
-function openPort() {
+function onOpen() {
   console.log('port open');
   console.log('baud rate: ' + myPort.options.baudRate);
   var outString = String.fromCharCode(output);
-  console.log('String is: ' + outString);
+  console.log('Sent:\t\t' + outString);
   myPort.write(outString);
 }
 
-function receiveData(data) {
+function onData(data) {
   if (output <= 126) {        // highest printable character: ASCII ~
     output++;
   } else {
     output = 32;              // lowest printable character: space
   }
-  console.log('received: ' + data);
-  console.log('Byte count: ' + byteCount);
+  console.log('Received:\t' + data);
+  console.log('Read Events:\t' + byteCount);
   byteCount++;
   var outString = String.fromCharCode(output);
   myPort.write(outString);
-  console.log('Sent: ' + outString);
+  console.log('Sent:\t\t' + outString);
 }
 
-function closePort() {
+function onClose() {
   console.log('port closed');
+  process.exit(1);
 }
 
-function serialError(error) {
+function onError(error) {
   console.log('there was an error with the serial port: ' + error);
+  process.exit(1);
 }
 
-myPort.on('open', openPort);      // called when the serial port opens
-myPort.on('data', receiveData);    // called when data comes in
-myPort.on('close', closePort);    // called when the serial port closes
-myPort.on('error', serialError);  // called when there's an error with the serial port
+myPort.on('open', onOpen);      // called when the serial port opens
+myPort.on('data', onData);    // called when data comes in
+myPort.on('close', onClose);    // called when the serial port closes
+myPort.on('error', onError);  // called when there's an error with the serial port
