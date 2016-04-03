@@ -370,7 +370,9 @@ Closes an open connection.
 
 **_callback (optional)_**
 
-Called once a connection is closed. Closing a connection will also remove all event listeners. The callback should be a function that looks like: `function (error) { ... }` If called without an callback and there is an error, an error event will be emitted.
+Called once a connection is closed. The callback should be a function that looks like: `function (error) { ... }` If called without an callback and there is an error, an error event will be emitted.
+
+**Note:** Currently closing a connection will also remove all event listeners.
 
 ## Events
 
@@ -385,6 +387,11 @@ Callback is called with no arguments when the port is closed. In the event of an
 
 ### .on('error', callback)
 Callback is called with an error object whenever there is an error.
+
+### .on('disconect', callback)
+Callback is called with an error object.
+
+**Note:** Currently disconnections will also remove all event listeners on some platforms.
 
 ## Command Line Tools
 If you install `serialport` globally. (eg, `npm install -g serialport`) you'll receive two command line tools.
