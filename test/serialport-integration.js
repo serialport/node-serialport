@@ -7,8 +7,16 @@ var SerialPort = serialPort.SerialPort;
 describe('SerialPort', function () {
   describe('Initialization', function () {
     it('Throws an error in callback when trying to open an invalid port', function (done) {
-      this.port = new SerialPort('/dev/nullbad', function (err) {
-        assert.isDefined(err);
+      this.port = new SerialPort('COM99', function (err) {
+        assert.instanceOf(err, Error);
+        done();
+      });
+    });
+
+    it('Emits an error in an event when trying to open an invalid port', function (done) {
+      var port = new SerialPort('COM99');
+      port.on('error', function(err) {
+        assert.instanceOf(err, Error);
         done();
       });
     });
