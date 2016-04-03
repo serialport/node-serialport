@@ -1,17 +1,43 @@
 #!/usr/bin/env node
-
 'use strict';
 
 var serialport = require('../');
-var sf = require('sf');
+var version = require('../package.json').version;
+var args = require('commander');
 
-serialport.list(function (err, results) {
-  if (err) {
-    throw err;
-  }
+args
+  .version(version)
+  .description('List available serial ports')
+  .option('-f, --format <type>', 'Format the output as text, json, or jsonline. default: text', /^(text|json|jsonline)$/i, 'text')
+  .parse(process.argv);
 
-  for (var i = 0; i < results.length; i++) {
-    var item = results[i];
-    console.log(sf('{comName,-15} {pnpId,-20} {manufacturer}', item));
+var formatters = {
+  text: function(err, ports) {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+    ports.forEach(function(port) {
+      console.log(port.comName + '\t' + (port.pnpId || '') + '\t' + (port.manufacturer || ''));
+    });
+  },
+  json: function(err, ports) {
+    if (err) {
+      console.error(JSON.stringify(err));
+      process.exit(1);
+    }
+    console.log(JSON.stringify(ports));
+  },
+  jsonline: function(err, ports) {
+    if (err) {
+      console.error(JSON.stringify(err));
+      process.exit(1);
+    }
+    ports.forEach(function(port) {
+      console.log(JSON.stringify(port));
+    });
   }
-});
+};
+
+serialport.list(formatters[args.format]);
+
