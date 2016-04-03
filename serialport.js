@@ -15,7 +15,6 @@ var SerialPortBinding = require(binding_path);
 var parsers = require('./lib/parsers');
 var listUnix = require('./lib/list-unix');
 var EventEmitter = require('events').EventEmitter;
-var util = require('util');
 var fs = require('fs');
 var stream = require('stream');
 
@@ -198,7 +197,11 @@ function SerialPortFactory() {
     }
   }
 
-  util.inherits(SerialPort, stream.Stream);
+  SerialPort.prototype = Object.create(stream.Stream.prototype, {
+    constructor: {
+      value: SerialPort
+    }
+  });
 
   SerialPort.prototype._error = function(error, callback) {
     if (callback) {
@@ -568,7 +571,11 @@ function SerialPortFactory() {
   factory.SerialPort = SerialPort;
 }
 
-util.inherits(SerialPortFactory, EventEmitter);
+SerialPortFactory.prototype = Object.create(EventEmitter.prototype, {
+  constructor: {
+    value: SerialPortFactory
+  }
+});
 
 SerialPortFactory.prototype.parsers = parsers;
 SerialPortFactory.prototype.SerialPortBinding = SerialPortBinding;
