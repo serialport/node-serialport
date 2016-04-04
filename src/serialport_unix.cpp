@@ -131,6 +131,9 @@ void EIO_Open(uv_work_t* req) {
   OpenBaton* data = static_cast<OpenBaton*>(req->data);
 
   int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
+  if(data->hupcl == false) {
+    flags &= ~HUPCL;
+  }
   int fd = open(data->path, flags);
 
   if(-1 == setup(fd, data)){
@@ -171,20 +174,6 @@ int setup(int fd, OpenBaton *data) {
     snprintf(data->errorString, sizeof(data->errorString), "Invalid data bits setting %d", data->dataBits);
     return -1;
   }
-
-
-  // int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
-  // if(data->hupcl == false) {
-  //   flags &= ~HUPCL;
-  // }
-  // int fd = open(data->path, flags);
-
-  int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
-  if(data->hupcl == false) {
-    flags &= ~HUPCL;
-  }
-  fd = open(data->path, flags);
-
 
   if (fd == -1) {
     snprintf(data->errorString, sizeof(data->errorString), "Cannot open %s", data->path);
