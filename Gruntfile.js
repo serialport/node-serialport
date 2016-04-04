@@ -11,9 +11,8 @@ module.exports = function(grunt) {
     eslint: {
       src: [
         '*.js',
+        'lib/**/*.js',
         'test/**/*.js',
-        'test_mocks/**/*.js',
-        'arduinoTest/**/*.js',
         'bin/*.js'
       ]
     }
