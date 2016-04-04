@@ -11,9 +11,7 @@
 
 #define MAX_BUFFER_SIZE 1000
 
-
-struct WindowsPlatformOptions : OpenBatonPlatformOptions
-{
+struct WindowsPlatformOptions : OpenBatonPlatformOptions {
 };
 
 OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& options){
@@ -21,10 +19,8 @@ OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& opti
   return new WindowsPlatformOptions();
 }
 
-
 // Declare type of pointer to CancelIoEx function
 typedef BOOL (WINAPI *CancelIoExType)(HANDLE hFile, LPOVERLAPPED lpOverlapped);
-
 
 std::list<int> g_closingHandles;
 int bufferSize;
@@ -128,7 +124,7 @@ void EIO_Open(uv_work_t* req) {
     break;
   }
 
-  if(!SetCommState(file, &dcb)) {
+  if (!SetCommState(file, &dcb)) {
     ErrorCodeToString("SetCommState", GetLastError(), data->errorString);
     return;
   }
@@ -149,7 +145,7 @@ void EIO_Open(uv_work_t* req) {
   commTimeouts.ReadTotalTimeoutConstant    = 1000; // Total read timeout (period of read loop)
   commTimeouts.WriteTotalTimeoutConstant   = 1000; // Const part of write timeout
   commTimeouts.WriteTotalTimeoutMultiplier = msPerByte; // Variable part of write timeout (per byte)
-  if(!SetCommTimeouts(file, &commTimeouts)) {
+  if (!SetCommTimeouts(file, &commTimeouts)) {
     ErrorCodeToString("SetCommTimeouts", GetLastError(), data->errorString);
     return;
   }
@@ -175,28 +171,27 @@ public:
 };
 
 void EIO_Update(uv_work_t* req) {
-
+  // TODO always error or do an update
 }
-
 
 void EIO_Set(uv_work_t* req) {
   SetBaton* data = static_cast<SetBaton*>(req->data);
 
   if (data->rts) {
     EscapeCommFunction((HANDLE)data->fd, SETRTS);
-  }else{
+  } else {
     EscapeCommFunction((HANDLE)data->fd, CLRRTS);
   }
 
   if (data->dtr) {
     EscapeCommFunction((HANDLE)data->fd, SETDTR);
-  }else{
+  } else {
     EscapeCommFunction((HANDLE)data->fd, CLRDTR);
   }
 
   if (data->brk) {
     EscapeCommFunction((HANDLE)data->fd, SETBREAK);
-  }else{
+  } else {
     EscapeCommFunction((HANDLE)data->fd, CLRBREAK);
   }
 
@@ -213,7 +208,7 @@ void EIO_Set(uv_work_t* req) {
   if (data->dsr) {
     bits |= EV_DSR;
   }
-
+  // TODO check for error
   data->result = SetCommMask((HANDLE)data->fd, bits);
 }
 
@@ -243,6 +238,8 @@ void EIO_WatchPort(uv_work_t* req) {
         }
         else {
           ErrorCodeToString("Reading from COM port (ReadFile)", data->errorCode, data->errorString);
+          CloseHandle(hEvent);
+          return;
         }
         break;
       }
@@ -261,6 +258,8 @@ void EIO_WatchPort(uv_work_t* req) {
         }
         else {
           ErrorCodeToString("Reading from COM port (GetOverlappedResult)", data->errorCode, data->errorString);
+          CloseHandle(hEvent);
+          return;
         }
         break;
       }
@@ -365,47 +364,47 @@ void EIO_Write(uv_work_t* req) {
   data->result = 0;
 
   do {
-	  OVERLAPPED ov = {0};
-	  // Event used by GetOverlappedResult(..., TRUE) to wait for outgoing data or timeout
-	  // Event MUST be used if program has several simultaneous asynchronous operations
-	  // on the same handle (i.e. ReadFile and WriteFile)
-	  ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+    OVERLAPPED ov = {0};
+    // Event used by GetOverlappedResult(..., TRUE) to wait for outgoing data or timeout
+    // Event MUST be used if program has several simultaneous asynchronous operations
+    // on the same handle (i.e. ReadFile and WriteFile)
+    ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
-	  // Start write operation - synchrounous or asynchronous
-	  DWORD bytesWrittenSync = 0;
-	  if(!WriteFile((HANDLE)data->fd, data->bufferData, static_cast<DWORD>(data->bufferLength), &bytesWrittenSync, &ov)) {
-		DWORD lastError = GetLastError();
-		if(lastError != ERROR_IO_PENDING) {
-		  // Write operation error
-		  ErrorCodeToString("Writing to COM port (WriteFile)", lastError, data->errorString);
-		  return;
-		}
-		else {
-		  // Write operation is asynchronous and is pending
-		  // We MUST wait for operation completion before deallocation of OVERLAPPED struct
-		  // or write data buffer
+    // Start write operation - synchrounous or asynchronous
+    DWORD bytesWrittenSync = 0;
+    if(!WriteFile((HANDLE)data->fd, data->bufferData, static_cast<DWORD>(data->bufferLength), &bytesWrittenSync, &ov)) {
+      DWORD lastError = GetLastError();
+      if(lastError != ERROR_IO_PENDING) {
+        // Write operation error
+        ErrorCodeToString("Writing to COM port (WriteFile)", lastError, data->errorString);
+        return;
+      }
+      else {
+        // Write operation is asynchronous and is pending
+        // We MUST wait for operation completion before deallocation of OVERLAPPED struct
+        // or write data buffer
 
-		  // Wait for async write operation completion or timeout
-		  DWORD bytesWrittenAsync = 0;
-		  if(!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesWrittenAsync, TRUE)) {
-			// Write operation error
-			DWORD lastError = GetLastError();
-			ErrorCodeToString("Writing to COM port (GetOverlappedResult)", lastError, data->errorString);
-			return;
-		  }
-		  else {
-			// Write operation completed asynchronously
-			data->result = bytesWrittenAsync;
-		  }
-		}
-	  }
-	  else {
-		// Write operation completed synchronously
-		data->result = bytesWrittenSync;
-	  }
+        // Wait for async write operation completion or timeout
+        DWORD bytesWrittenAsync = 0;
+        if(!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesWrittenAsync, TRUE)) {
+          // Write operation error
+          DWORD lastError = GetLastError();
+          ErrorCodeToString("Writing to COM port (GetOverlappedResult)", lastError, data->errorString);
+          return;
+        }
+        else {
+          // Write operation completed asynchronously
+          data->result = bytesWrittenAsync;
+        }
+      }
+    }
+    else {
+      // Write operation completed synchronously
+      data->result = bytesWrittenSync;
+    }
 
-	  data->offset += data->result;
-	  CloseHandle(ov.hEvent);
+    data->offset += data->result;
+    CloseHandle(ov.hEvent);
   } while (data->bufferLength > data->offset);
 
 }
@@ -419,13 +418,12 @@ void EIO_Close(uv_work_t* req) {
   // Look up function address
   CancelIoExType pCancelIoEx = (CancelIoExType)GetProcAddress(hKernel32, "CancelIoEx");
   // Do something with it
-  if (pCancelIoEx)
-  {
-      // Function exists so call it
-      // Cancel all pending IO Requests for the current device
-      pCancelIoEx((HANDLE)data->fd, NULL);
+  if (pCancelIoEx) {
+    // Function exists so call it
+    // Cancel all pending IO Requests for the current device
+    pCancelIoEx((HANDLE)data->fd, NULL);
   }
-  if(!CloseHandle((HANDLE)data->fd)) {
+  if (!CloseHandle((HANDLE)data->fd)) {
     ErrorCodeToString("closing connection", GetLastError(), data->errorString);
     return;
   }
