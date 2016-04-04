@@ -312,6 +312,7 @@ static void FinalizerCallback(char* data, void* hint) {
 void EIO_AfterWatchPort(uv_work_t* req) {
   Nan::HandleScope scope;
 
+  bool skipCleanup = false;
   WatchPortBaton* data = static_cast<WatchPortBaton*>(req->data);
   if(data->disconnected) {
     data->disconnectedCallback->Call(0, NULL);
@@ -319,7 +320,6 @@ void EIO_AfterWatchPort(uv_work_t* req) {
     goto cleanup;
   }
 
-  bool skipCleanup = false;
   if(data->bytesRead > 0) {
     v8::Local<v8::Value> argv[1];
     argv[0] = Nan::NewBuffer(data->buffer, data->bytesRead, FinalizerCallback, req).ToLocalChecked();
@@ -378,6 +378,8 @@ void EIO_Write(uv_work_t* req) {
 		if(lastError != ERROR_IO_PENDING) {
 		  // Write operation error
 		  ErrorCodeToString("Writing to COM port (WriteFile)", lastError, data->errorString);
+		  CloseHandle(ov.hEvent);
+		  break;
 		}
 		else {
 		  // Write operation is asynchronous and is pending
@@ -390,6 +392,8 @@ void EIO_Write(uv_work_t* req) {
 			// Write operation error
 			DWORD lastError = GetLastError();
 			ErrorCodeToString("Writing to COM port (GetOverlappedResult)", lastError, data->errorString);
+			CloseHandle(ov.hEvent);
+			break;
 		  }
 		  else {
 			// Write operation completed asynchronously
