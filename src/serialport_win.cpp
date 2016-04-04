@@ -378,6 +378,7 @@ void EIO_Write(uv_work_t* req) {
 		if(lastError != ERROR_IO_PENDING) {
 		  // Write operation error
 		  ErrorCodeToString("Writing to COM port (WriteFile)", lastError, data->errorString);
+		  return;
 		}
 		else {
 		  // Write operation is asynchronous and is pending
@@ -390,6 +391,7 @@ void EIO_Write(uv_work_t* req) {
 			// Write operation error
 			DWORD lastError = GetLastError();
 			ErrorCodeToString("Writing to COM port (GetOverlappedResult)", lastError, data->errorString);
+			return;
 		  }
 		  else {
 			// Write operation completed asynchronously
