@@ -23,7 +23,7 @@ We have an automated make task, we should always use this task to avoid forgetti
 
 Differences for beta release
 * Work in a beta branch
-* Tag like: `git tag -m "2.0.7-beta1" 2.0.7-beta1` 
+* Tag like: `git tag 2.0.7-beta1 -a` and include the change log in the tag's annotation.
 * Publish like `npm publish . --tag beta1`
 
 ## Config Travis, AppVeyor and Github to generate all of the binaries.

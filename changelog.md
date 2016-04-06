@@ -1,3 +1,7 @@
+Version 2.0.7-beta4
+-------------
+ - Fix pre-gyp paths so bindings can be found
+
 Version 2.0.7-beta3
 -------------
  - Fix support systems who provide 0 as a valid file descriptor
