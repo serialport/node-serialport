@@ -1,3 +1,15 @@
+Version 2.0.7-beta3
+-------------
+ - Fix support systems who provide 0 as a valid file descriptor
+ - Integration tests on CI's that support it or for the folks at home with an arduino handy
+ - Many documentation improvements
+ - Listing serialports on unix/linux (non osx) now include more ports and have less bugs in the output
+ - Fix race conditions when opening and closing ports that led to errors while reading and writing while closing or opening the port.
+ - Fix a double open bug on OSX that would cause opening and closing ports repetitively to error.
+ - Fix a 100% cpu and possible hang bug when ports were disconnected on windows.
+ - Fix a memory leak on windows
+ - Upgraded to nan-2.2.1 for memory leak fixes and node 6 support (still not supported)
+
 Version 2.0.7-beta2
 -------------
 - Code cleanup due to moving to eslint internally
