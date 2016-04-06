@@ -388,7 +388,7 @@ Callback is called with no arguments when the port is closed. In the event of an
 ### .on('error', callback)
 Callback is called with an error object whenever there is an error.
 
-### .on('disconect', callback)
+### .on('disconnect', callback)
 Callback is called with an error object.
 
 **Note:** Currently disconnections will also remove all event listeners on some platforms.
