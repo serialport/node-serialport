@@ -1,4 +1,3 @@
-#ifndef WIN32
 #include "serialport.h"
 #include "serialport_poller.h"
 #include <unistd.h>
@@ -635,21 +634,21 @@ static stDeviceListItem* GetSerialDevices()
 #endif
 
 void EIO_List(uv_work_t* req) {
-  // This code exists in javascript for unix platforms
+  ListBaton* data = static_cast<ListBaton*>(req->data);
 
-#ifdef __APPLE__
-  if(!lockInitialised)
-  {
+#ifndef __APPLE__
+  // This code exists in javascript for unix platforms
+  snprintf(data->errorString, sizeof(data->errorString), "List is not Implemented");
+  return;
+# else
+  if(!lockInitialised) {
     uv_mutex_init(&list_mutex);
     lockInitialised = TRUE;
   }
 
-  ListBaton* data = static_cast<ListBaton*>(req->data);
-
   stDeviceListItem* devices = GetSerialDevices();
 
-  if (*(devices->length) > 0)
-  {
+  if (*(devices->length) > 0) {
     stDeviceListItem* next = devices;
 
     for (int i = 0, len = *(devices->length); i < len; i++) {
@@ -735,5 +734,3 @@ void EIO_Drain(uv_work_t* req) {
 
   data->result = tcdrain(data->fd);
 }
-
-#endif
