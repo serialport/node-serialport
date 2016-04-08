@@ -182,7 +182,7 @@ serialPort.open(function (error) {
 
 Retrieves a list of available serial ports with metadata.
 
-* `callback` is a required function that looks should look like: `function (err, ports) { ... }`. `ports` will be an array of objects with port info. Only the `comName` is guaranteed, all the other fields are retrieved as available. The `comName` is either the path or identifier (eg `COM1`) used to open the serialport.
+* `callback` is a required function that looks should look like: `function (err, ports) { ... }`. `ports` will be an array of objects with port info. Only the `comName` is guaranteed, all the other fields undefined if unavailable. The `comName` is either the path or identifier (eg `COM1`) used to open the serialport.
 
 ```js
 // example port information
@@ -190,7 +190,7 @@ Retrieves a list of available serial ports with metadata.
   comName: '/dev/cu.usbmodem1421',
   manufacturer: 'Arduino (www.arduino.cc)',
   serialNumber: '757533138333964011C1',
-  pnpId: '',
+  pnpId: undefined,
   locationId: '0x14200000',
   vendorId: '0x2341',
   productId: '0x0043'
