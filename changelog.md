@@ -1,3 +1,11 @@
+Version 2.0.7-beta5
+-------------
+ - Fix binary paths to confirm with modern standards
+ - Confirm ns.js and electron compatibility
+ - Make the outpout of `.list` consistent between platforms and docs
+ - Define ambiguous flow control flags and document them
+ - Add support for bluetooth devices in `.list` /dev/rfcommXX
+
 Version 2.0.7-beta4
 -------------
  - Fix pre-gyp paths so bindings can be found
