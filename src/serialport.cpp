@@ -171,7 +171,7 @@ void EIO_AfterOpen(uv_work_t* req) {
 }
 
 NAN_METHOD(Update) {
-  
+
   // file descriptor
   if(!info[0]->IsInt32()) {
     Nan::ThrowTypeError("First argument must be an int");
@@ -461,16 +461,52 @@ void EIO_AfterList(uv_work_t* req) {
     int i = 0;
     for(std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it, i++) {
       v8::Local<v8::Object> item = Nan::New<v8::Object>();
-      Nan::Set(item, Nan::New<v8::String>("comName").ToLocalChecked(), Nan::New<v8::String>((*it)->comName.c_str()).ToLocalChecked());
-      Nan::Set(item, Nan::New<v8::String>("manufacturer").ToLocalChecked(), Nan::New<v8::String>((*it)->manufacturer.c_str()).ToLocalChecked());
-      Nan::Set(item, Nan::New<v8::String>("serialNumber").ToLocalChecked(), Nan::New<v8::String>((*it)->serialNumber.c_str()).ToLocalChecked());
-      Nan::Set(item, Nan::New<v8::String>("pnpId").ToLocalChecked(), Nan::New<v8::String>((*it)->pnpId.c_str()).ToLocalChecked());
-      Nan::Set(item, Nan::New<v8::String>("locationId").ToLocalChecked(), Nan::New<v8::String>((*it)->locationId.c_str()).ToLocalChecked());
-      Nan::Set(item, Nan::New<v8::String>("vendorId").ToLocalChecked(), Nan::New<v8::String>((*it)->vendorId.c_str()).ToLocalChecked());
-      Nan::Set(item, Nan::New<v8::String>("productId").ToLocalChecked(), Nan::New<v8::String>((*it)->productId.c_str()).ToLocalChecked());
+
+      if (strlen((*it)->comName.c_str()) > 0) {
+        Nan::Set(item, Nan::New<v8::String>("comName").ToLocalChecked(), Nan::New<v8::String>((*it)->comName.c_str()).ToLocalChecked());
+      } else {
+        Nan::Set(item, Nan::New<v8::String>("comName").ToLocalChecked(), Nan::Undefined());
+      }
+
+      if (strlen((*it)->manufacturer.c_str()) > 0) {
+        Nan::Set(item, Nan::New<v8::String>("manufacturer").ToLocalChecked(), Nan::New<v8::String>((*it)->manufacturer.c_str()).ToLocalChecked());
+      } else {
+        Nan::Set(item, Nan::New<v8::String>("manufacturer").ToLocalChecked(), Nan::Undefined());
+      }
+
+      if (strlen((*it)->serialNumber.c_str()) > 0) {
+        Nan::Set(item, Nan::New<v8::String>("serialNumber").ToLocalChecked(), Nan::New<v8::String>((*it)->serialNumber.c_str()).ToLocalChecked());
+      } else {
+        Nan::Set(item, Nan::New<v8::String>("serialNumber").ToLocalChecked(), Nan::Undefined());
+      }
+
+      if (strlen((*it)->pnpId.c_str()) > 0) {
+        Nan::Set(item, Nan::New<v8::String>("pnpId").ToLocalChecked(), Nan::New<v8::String>((*it)->pnpId.c_str()).ToLocalChecked());
+      } else {
+        Nan::Set(item, Nan::New<v8::String>("pnpId").ToLocalChecked(), Nan::Undefined());
+      }
+
+      if (strlen((*it)->locationId.c_str()) > 0) {
+        Nan::Set(item, Nan::New<v8::String>("locationId").ToLocalChecked(), Nan::New<v8::String>((*it)->locationId.c_str()).ToLocalChecked());
+      } else {
+        Nan::Set(item, Nan::New<v8::String>("locationId").ToLocalChecked(), Nan::Undefined());
+      }
+
+      if (strlen((*it)->vendorId.c_str()) > 0) {
+        Nan::Set(item, Nan::New<v8::String>("vendorId").ToLocalChecked(), Nan::New<v8::String>((*it)->vendorId.c_str()).ToLocalChecked());
+      } else {
+        Nan::Set(item, Nan::New<v8::String>("vendorId").ToLocalChecked(), Nan::Undefined());
+      }
+
+      if (strlen((*it)->productId.c_str()) > 0) {
+        Nan::Set(item, Nan::New<v8::String>("productId").ToLocalChecked(), Nan::New<v8::String>((*it)->productId.c_str()).ToLocalChecked());
+      } else {
+        Nan::Set(item, Nan::New<v8::String>("productId").ToLocalChecked(), Nan::Undefined());
+      }
+
       Nan::Set(results, i, item);
     }
-    argv[0] = Nan::Undefined();
+    argv[0] = Nan::Null();
     argv[1] = results;
   }
   data->callback->Call(2, argv);
