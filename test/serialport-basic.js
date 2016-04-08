@@ -2,6 +2,7 @@
 
 var sinon = require('sinon');
 var chai = require('chai');
+chai.use(require('chai-subset'));
 var assert = chai.assert;
 var expect = chai.expect;
 
@@ -43,11 +44,11 @@ describe('SerialPort', function () {
         assert.instanceOf(err, Error);
         done();
       });
-      this.port = new SerialPort('/dev/johnJacobJingleheimerSchmidt');
+      this.port = new SerialPort('/bad/port');
     });
 
-    it('emits an error on the serial port when explicit error handler present', function (done) {
-      var port = new SerialPort('/dev/johnJacobJingleheimerSchmidt');
+    it('emits an error when an invalid port is provided', function (done) {
+      var port = new SerialPort('/bad/port');
       port.once('error', function(err) {
         assert.instanceOf(err, Error);
         done();
@@ -55,35 +56,67 @@ describe('SerialPort', function () {
     });
 
     it('errors with invalid databits', function (done) {
-      var errorCallback = function (err) {
+      this.port = new SerialPort('/dev/exists', { databits: 19 }, false, function (err) {
         assert.instanceOf(err, Error);
         done();
-      };
-      this.port = new SerialPort('/dev/exists', { databits: 19 }, false, errorCallback);
+      });
     });
 
     it('errors with invalid stopbits', function (done) {
-      var errorCallback = function (err) {
+      this.port = new SerialPort('/dev/exists', { stopbits: 19 }, function (err) {
         assert.instanceOf(err, Error);
         done();
-      };
-      this.port = new SerialPort('/dev/exists', { stopbits: 19 }, false, errorCallback);
+      });
     });
 
     it('errors with invalid parity', function (done) {
-      var errorCallback = function (err) {
+      this.port = new SerialPort('/dev/exists', { parity: 'pumpkins' }, false, function (err) {
         assert.instanceOf(err, Error);
         done();
-      };
-      this.port = new SerialPort('/dev/exists', { parity: 'pumpkins' }, false, errorCallback);
+      });
     });
 
-    it('errors with invalid flow control', function (done) {
-      var errorCallback = function (err) {
-        assert.instanceOf(err, Error);
+    describe('flowControl', function() {
+      it('errors with invalid flow control', function (done) {
+        var opts = { flowcontrol: ['pumpkins'] };
+        this.port = new SerialPort('/dev/exists', opts, false, function (err) {
+          assert.instanceOf(err, Error);
+          done();
+        });
+      });
+
+      it('sets valid flow control', function (done) {
+        var port = new SerialPort('/dev/exists', { flowcontrol: ['xon', 'XOFF', 'xany', 'RTSCTS'] }, false);
+        assert.isTrue(port.options.xon);
+        assert.isTrue(port.options.xoff);
+        assert.isTrue(port.options.xany);
+        assert.isTrue(port.options.rtscts);
         done();
-      };
-      this.port = new SerialPort('/dev/exists', { flowcontrol: ['pumpkins'] }, false, errorCallback);
+      });
+
+      it('sets rtscts to true if flow control is true', function (done) {
+        var port = new SerialPort('/dev/exists', { flowcontrol: true }, false);
+        assert.isFalse(port.options.xon);
+        assert.isFalse(port.options.xoff);
+        assert.isFalse(port.options.xany);
+        assert.isTrue(port.options.rtscts);
+        done();
+      });
+
+      it('sets valid flow control individually', function (done) {
+        var options = {
+          xon: true,
+          xoff: true,
+          xany: true,
+          rtscts: true
+        };
+        var port = new SerialPort('/dev/exists', options, false);
+        assert.isTrue(port.options.xon);
+        assert.isTrue(port.options.xoff);
+        assert.isTrue(port.options.xany);
+        assert.isTrue(port.options.rtscts);
+        done();
+      });
     });
 
     it('allows optional options', function (done) {
@@ -103,6 +136,29 @@ describe('SerialPort', function () {
           expect(openSpy.calledWith('/dev/exists'));
           done();
         });
+      });
+
+      it('passes default options to the bindings', function (done) {
+        var defaultOptions = {
+          baudRate: 9600,
+          parity: 'none',
+          xon: false,
+          xoff: false,
+          xany: false,
+          rtscts: false,
+          hupcl: true,
+          dataBits: 8,
+          stopBits: 1,
+          bufferSize: 65536
+        };
+        sandbox.stub(bindings, 'open', function (path, opt, cb) {
+          assert.equal(path, '/dev/exists');
+          assert.containSubset(opt, defaultOptions);
+          assert.isFunction(cb);
+          done();
+        });
+        var port = new SerialPort('/dev/exists', {}, false);
+        port.open();
       });
 
       it('calls back an error when opening an invalid port', function (done) {
@@ -273,6 +329,78 @@ describe('SerialPort', function () {
       });
     });
 
+    describe('#set', function() {
+      it('errors when serialport not open', function (done) {
+        var cb = function () {};
+        var port = new SerialPort('/dev/exists', {}, false, cb);
+        port.set({}, function(err) {
+          assert.instanceOf(err, Error);
+          done();
+        });
+      });
+
+      it('sets the flags on the ports bindings', function(done) {
+        var settings = {
+          brk: true,
+          cts: true,
+          dtr: true,
+          dts: true,
+          rts: true
+        };
+
+        sandbox.stub(bindings, 'set', function(fd, options) {
+          assert.deepEqual(options, settings);
+          done();
+        });
+
+        var port = new SerialPort('/dev/exists', function() {
+          port.set(settings);
+        });
+      });
+
+      it('sets missing options to default values', function(done) {
+        var settings = {
+          cts: true,
+          dts: true,
+          rts: false
+        };
+
+        var filledWithMissing = {
+          brk: false,
+          cts: true,
+          dtr: true,
+          dts: true,
+          rts: false
+        };
+        sandbox.stub(bindings, 'set', function(fd, options) {
+          assert.deepEqual(options, filledWithMissing);
+          done();
+        });
+
+        var port = new SerialPort('/dev/exists', function() {
+          port.set(settings);
+        });
+      });
+
+      it('resets all flags if none are provided', function (done) {
+        var defaults = {
+          brk: false,
+          cts: false,
+          dtr: true,
+          dts: false,
+          rts: true
+        };
+        sandbox.stub(bindings, 'set', function(fd, options) {
+          assert.deepEqual(options, defaults);
+          done();
+        });
+
+        var port = new SerialPort('/dev/exists', function() {
+          port.set();
+        });
+      });
+    });
+
     it('write errors when serialport not open', function (done) {
       var cb = function () {};
       var port = new SerialPort('/dev/exists', {}, false, cb);
@@ -286,15 +414,6 @@ describe('SerialPort', function () {
       var cb = function () {};
       var port = new SerialPort('/dev/exists', {}, false, cb);
       port.flush(function(err) {
-        assert.instanceOf(err, Error);
-        done();
-      });
-    });
-
-    it('set errors when serialport not open', function (done) {
-      var cb = function () {};
-      var port = new SerialPort('/dev/exists', {}, false, cb);
-      port.set({}, function(err) {
         assert.instanceOf(err, Error);
         done();
       });
@@ -320,13 +439,6 @@ describe('SerialPort', function () {
       var port = new SerialPort('/dev/exists', function() {
         expect(port.fd).to.equal(0);
         port.flush(done);
-      });
-    });
-
-    it('set should consider 0 to be a valid fd', function(done) {
-      var port = new SerialPort('/dev/exists', function() {
-        expect(port.fd).to.equal(0);
-        port.set({}, done);
       });
     });
 

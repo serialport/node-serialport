@@ -269,23 +269,18 @@ Port configuration options.
 * `dataBits` Data Bits, defaults to 8. Must be one of: 8, 7, 6, or 5.
 * `stopBits` Stop Bits, defaults to 1. Must be one of: 1 or 2.
 * `parity` Parity, defaults to 'none'. Must be one of: 'none', 'even', 'mark', 'odd', 'space'
-* `rtscts`
-* `xon`
-* `xoff`
-* `xany`
-* `flowControl` One of the following `XON`, `XOFF`, `XANY`, `RTSCTS`
-* `bufferSize` Size of read buffer, defaults to 255. Must be an integer value.
+* `rtscts` defaults to false
+* `xon` defaults to false
+* `xoff` defaults to false
+* `xany` defaults to false
+* `flowControl` `true` for `rtscts` or an array with one or more of the following strings to enable them `xon`, `xoff`, `xany`, `rtscts`. Overwrites any individual settings.
+* `bufferSize` Size of read buffer, defaults to 65536. Must be an integer value.
 * `parser` The parser engine to use with read data, defaults to rawPacket strategy which just emits the raw buffer as a "data" event. Can be any function that accepts EventEmitter as first parameter and the raw buffer as the second parameter.
-* `encoding`
-* `dataCallback`
-* `disconnectedCallback`
 * `platformOptions` - sets platform specific options, see below.
-
-**Note:** We have added support for either all lowercase OR camelcase of the options (thanks @jagautier), use whichever style you prefer.
 
 #### Unix Platform Options
 
-An object with the following properties:
+These properties are ignored for windows. An object with the following properties:
 
 * `vmin` (default: 1) - see [`man termios`](http://linux.die.net/man/3/termios)
 * `vtime` (default: 0) - see [`man termios`](http://linux.die.net/man/3/termios)
@@ -373,6 +368,26 @@ Closes an open connection.
 Called once a connection is closed. The callback should be a function that looks like: `function (error) { ... }` If called without an callback and there is an error, an error event will be emitted.
 
 **Note:** Currently closing a connection will also remove all event listeners.
+
+### .set (options, callback)
+
+Sets flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363257(v=vs.85).aspx) for windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for mac and linux.
+
+**_options (optional)_**
+
+All options are operating system default when the port is opened. Every flag is set on each call to the provided or default values. If options isn't provided default options will be used.
+
+ * `brk` optional boolean, defaults to false
+ * `cts` optional boolean, defaults to false
+ * `dsr` optional boolean, defaults to false
+ * `dtr` optional boolean, defaults to true
+ * `rts` optional boolean, defaults to true
+
+**_callback (optional)_**
+
+`callback: function(err, results)`
+
+Called once the port's flags have been set. `results` are the return of the underlying system command. If `.set` is called without an callback and there is an error, an error event will be emitted.
 
 ## Events
 

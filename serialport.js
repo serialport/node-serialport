@@ -9,6 +9,9 @@
 // 3rd Party Dependencies
 var debug = require('debug')('serialport');
 
+// shims
+var assign = require('object.assign').getPolyfill();
+
 // Internal Dependencies
 var SerialPortBinding = require('bindings')('serialport.node');
 var parsers = require('./lib/parsers');
@@ -34,15 +37,12 @@ if (process.platform === 'win32' || process.platform === 'darwin') {
   };
 }
 
-// Removing check for valid BaudRates due to ticket: #140
-// var BAUDRATES = [500000, 230400, 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, 50];
-
 //  VALIDATION ARRAYS
 var DATABITS = [5, 6, 7, 8];
 var STOPBITS = [1, 1.5, 2];
 var PARITY = ['none', 'even', 'mark', 'odd', 'space'];
-var FLOWCONTROLS = ['XON', 'XOFF', 'XANY', 'RTSCTS'];
-// var SETS = ['rts', 'cts', 'dtr', 'dts', 'brk'];
+var FLOWCONTROLS = ['xon', 'xoff', 'xany', 'rtscts'];
+var SET_OPTIONS = ['brk', 'cts', 'dtr', 'dts', 'rts'];
 
 // Stuff from ReadStream, refactored for our usage:
 var kPoolSize = 40 * 1024;
@@ -58,136 +58,126 @@ function makeDefaultPlatformOptions() {
 
   return options;
 }
-// The default options, can be overwritten in the 'SerialPort' constructor
-var _options = {
-  baudrate: 9600,
+
+var defaultSettings = {
+  baudRate: 9600,
   parity: 'none',
-  rtscts: false,
   xon: false,
   xoff: false,
   xany: false,
+  rtscts: false,
   hupcl: true,
-  rts: true,
-  cts: false,
-  dtr: true,
-  dts: false,
-  brk: false,
-  databits: 8,
-  stopbits: 1,
-  buffersize: 256,
+  dataBits: 8,
+  stopBits: 1,
+  bufferSize: 64 * 1024,
   parser: parsers.raw,
   platformOptions: makeDefaultPlatformOptions()
 };
 
-function SerialPort(path, options, openImmediately, callback) {
-  var self = this;
+var defaultSetFlags = {
+  brk: false,
+  cts: false,
+  dtr: true,
+  dts: false,
+  rts: true
+};
 
+// deprecate the lowercase version of these options next major release
+var LOWERCASE_OPTIONS = [
+  'baudRate',
+  'dataBits',
+  'stopBits',
+  'bufferSize',
+  'platformOptions',
+  'flowControl'
+];
+
+function correctOptions(options) {
+  LOWERCASE_OPTIONS.forEach(function(name) {
+    var lowerName = name.toLowerCase();
+    if (options.hasOwnProperty(lowerName)) {
+      var value = options[lowerName];
+      delete options[lowerName];
+      options[name] = value;
+    }
+  });
+  return options;
+}
+
+function SerialPort(path, options, openImmediately, callback) {
   var args = Array.prototype.slice.call(arguments);
   callback = args.pop();
-  if (typeof (callback) !== 'function') {
+  if (typeof callback !== 'function') {
     callback = null;
   }
+
   options = (typeof options !== 'function') && options || {};
 
-  var opts = {};
-
-  openImmediately = (openImmediately === undefined || openImmediately === null) ? true : openImmediately;
+  if (openImmediately === undefined || openImmediately === null) {
+    openImmediately = true;
+  }
 
   stream.Stream.call(this);
-
   callback = callback || function (err) {
     if (err) {
-      if (self._events.error) {
-        self.emit('error', err);
+      if (this._events.error) {
+        this.emit('error', err);
       } else {
         factory.emit('error', err);
       }
     }
-  };
+  }.bind(this);
 
-  var err;
-
-  opts.baudRate = options.baudRate || options.baudrate || _options.baudrate;
-
-  opts.dataBits = options.dataBits || options.databits || _options.databits;
-  if (DATABITS.indexOf(opts.dataBits) === -1) {
-    err = new Error('Invalid "databits": ' + opts.dataBits);
-    callback(err);
-    return;
-  }
-
-  opts.stopBits = options.stopBits || options.stopbits || _options.stopbits;
-  if (STOPBITS.indexOf(opts.stopBits) === -1) {
-    err = new Error('Invalid "stopbits": ' + opts.stopbits);
-    callback(err);
-    return;
-  }
-
-  opts.parity = options.parity || _options.parity;
-  if (PARITY.indexOf(opts.parity) === -1) {
-    err = new Error('Invalid "parity": ' + opts.parity);
-    callback(err);
-    return;
-  }
   if (!path) {
-    err = new Error('Invalid port specified: ' + path);
-    callback(err);
-    return;
+    return callback(new Error('Invalid port specified: ' + path));
+  }
+  this.path = path;
+
+  var correctedOptions = correctOptions(options);
+  var settings = assign({}, defaultSettings, correctedOptions);
+
+  if (DATABITS.indexOf(settings.dataBits) === -1) {
+    return callback(new Error('Invalid "databits": ' + settings.dataBits));
   }
 
-  // flush defaults, then update with provided details
-  opts.rtscts = _options.rtscts;
-  opts.xon = _options.xon;
-  opts.xoff = _options.xoff;
-  opts.xany = _options.xany;
+  if (STOPBITS.indexOf(settings.stopBits) === -1) {
+    return callback(new Error('Invalid "stopbits": ' + settings.stopbits));
+  }
 
-  if (options.flowControl || options.flowcontrol) {
-    var fc = options.flowControl || options.flowcontrol;
+  if (PARITY.indexOf(settings.parity) === -1) {
+    return callback(new Error('Invalid "parity": ' + settings.parity));
+  }
 
-    if (typeof fc === 'boolean') {
-      opts.rtscts = true;
-    } else {
-      var clean = fc.every(function (flowControl) {
-        var fcup = flowControl.toUpperCase();
-        var idx = FLOWCONTROLS.indexOf(fcup);
-        if (idx < 0) {
-          var err = new Error('Invalid "flowControl": ' + fcup + '. Valid options: ' + FLOWCONTROLS.join(', '));
-          callback(err);
-          return false;
-        }
-        // "XON", "XOFF", "XANY", "DTRDTS", "RTSCTS"
-        switch (idx) {
-          case 0: opts.xon = true; break;
-          case 1: opts.xoff = true; break;
-          case 2: opts.xany = true; break;
-          case 3: opts.rtscts = true; break;
-        }
-        return true;
-      });
-      if (!clean) {
-        // TODO this is very very messy
-        return;
+  var fc = settings.flowControl;
+  if (fc === true) {
+    // Why!?
+    settings.rtscts = true;
+  } else if (Array.isArray(fc)) {
+    for (var i = fc.length - 1; i >= 0; i--) {
+      var fcSetting = fc[i].toLowerCase();
+      if (FLOWCONTROLS.indexOf(fcSetting) > -1) {
+        settings[fcSetting] = true;
+      } else {
+        return callback(new Error('Invalid flowControl option: ' + fcSetting));
       }
     }
   }
 
-  opts.bufferSize = options.bufferSize || options.buffersize || _options.buffersize;
-  opts.parser = options.parser || _options.parser;
-  opts.platformOptions = options.platformOptions || _options.platformOptions;
-  options.hupcl = (typeof options.hupcl === 'boolean') ? options.hupcl : _options.hupcl;
-  opts.dataCallback = options.dataCallback || function (data) {
-    opts.parser(self, data);
-  };
+  // TODO remove this option
+  settings.dataCallback = options.dataCallback || function (data) {
+    settings.parser(this, data);
+  }.bind(this);
 
-  opts.disconnectedCallback = options.disconnectedCallback || function (err) {
-    if (self.closing) {
+  // TODO remove this option
+  settings.disconnectedCallback = options.disconnectedCallback || function (err) {
+    if (this.closing) {
       return;
     }
     if (!err) {
       err = new Error('Disconnected');
     }
-    self.emit('disconnect', err);
-  };
+    this.emit('disconnect', err);
+  }.bind(this);
 
   this.fd = null;
   this.paused = true;
@@ -195,18 +185,17 @@ function SerialPort(path, options, openImmediately, callback) {
   this.closing = false;
 
   if (process.platform !== 'win32') {
-    // All other platforms:
-    this.bufferSize = options.bufferSize || 64 * 1024;
+    this.bufferSize = settings.bufferSize;
     this.readable = true;
     this.reading = false;
   }
 
-  this.options = opts;
-  this.path = path;
+  this.options = settings;
+
   if (openImmediately) {
     process.nextTick(function () {
-      self.open(callback);
-    });
+      this.open(callback);
+    }.bind(this));
   }
 }
 
@@ -270,21 +259,17 @@ SerialPort.prototype.update = function (options, callback) {
     return this._error(new Error('Port is not open'), callback);
   }
 
-  this.options.baudRate = options.baudRate || options.baudrate || _options.baudrate;
+  var correctedOptions = correctOptions(options);
+  var settings = assign({}, defaultSettings, correctedOptions);
+  this.options.baudRate = settings.baudRate;
 
-  var self = this;
   SerialPortBinding.update(this.fd, this.options, function (err) {
     if (err) {
-      if (callback) {
-        callback(err);
-      } else {
-        self.emit('error', err);
-      }
-      return;
+      return this._error(err, callback);
     }
-    self.emit('open');
+    this.emit('open');
     if (callback) { callback() }
-  });
+  }.bind(this));
 };
 
 SerialPort.prototype.isOpen = function() {
@@ -524,36 +509,29 @@ SerialPort.prototype.set = function (options, callback) {
     return this._error(new Error('Port is not open'), callback);
   }
 
-  var self = this;
-  var fd = self.fd;
-
-  options = (typeof option !== 'function') && options || {};
-
-  // flush defaults, then update with provided details
-
-  if (!options.hasOwnProperty('rts')) {
-    options.rts = _options.rts;
-  }
-  if (!options.hasOwnProperty('dtr')) {
-    options.dtr = _options.dtr;
-  }
-  if (!options.hasOwnProperty('cts')) {
-    options.cts = _options.cts;
-  }
-  if (!options.hasOwnProperty('dts')) {
-    options.dts = _options.dts;
-  }
-  if (!options.hasOwnProperty('brk')) {
-    options.brk = _options.brk;
+  options = options || {};
+  if (!callback && typeof options === 'function') {
+    callback = options;
+    options = {};
   }
 
-  SerialPortBinding.set(fd, options, function (err, result) {
-    if (callback) {
-      callback(err, result);
-    } else if (err) {
-      self.emit('error', err);
+  var settings = {};
+  for (var i = SET_OPTIONS.length - 1; i >= 0; i--) {
+    var flag = SET_OPTIONS[i];
+    if (options[flag] !== undefined) {
+      settings[flag] = options[flag];
+    } else {
+      settings[flag] = defaultSetFlags[flag];
     }
-  });
+  }
+
+  SerialPortBinding.set(this.fd, settings, function (err, result) {
+    if (err) {
+      debug('SerialPortBinding.set had an error', err);
+      return this._error(err, callback);
+    }
+    if (callback) { callback(null, result) }
+  }.bind(this));
 };
 
 SerialPort.prototype.drain = function (callback) {
