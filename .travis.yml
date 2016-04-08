@@ -1,7 +1,4 @@
-os:
-- linux
-- osx
-# turn on new container-based infrastructure
+---
 sudo: false
 language: cpp
 addons:
@@ -12,18 +9,24 @@ addons:
     - g++-4.8
     - g++-4.8-multilib
     - gcc-multilib
+
+# Build matrix
+os:
+- linux
+- osx
 env:
-  matrix:
-  - TRAVIS_NODE_VERSION="0.10"
-  - TRAVIS_NODE_VERSION="0.12"
-  - TRAVIS_NODE_VERSION="4"
-  - TRAVIS_NODE_VERSION="5"
-  - TRAVIS_NODE_VERSION="0.10" ARCH="x86"
-  - TRAVIS_NODE_VERSION="0.12" ARCH="x86"
-  - TRAVIS_NODE_VERSION="4" ARCH="x86"
-  - TRAVIS_NODE_VERSION="5" ARCH="x86"
   global:
   - secure: nFQKlcfG1rV/kQm1EJtgQyRefZb6scdn/9epEaJgAyaqDRXHSZIFSuoOh4d/P5GC6V0yi6dA8I+XJsoRy29qG+JXWxN2enwjp16IbpUri9Z5H8uZPur1N6QPby9BX+PX5/4HU+KRgWtFDdfqqzbLmObXsxIUGtZtBbRY9otiUt8=
+  matrix:
+  - TRAVIS_NODE_VERSION="0.10"
+  - TRAVIS_NODE_VERSION="0.10" ARCH="x86"
+  - TRAVIS_NODE_VERSION="0.12"
+  - TRAVIS_NODE_VERSION="0.12" ARCH="x86"
+  - TRAVIS_NODE_VERSION="4"
+  - TRAVIS_NODE_VERSION="4" ARCH="x86"
+  - TRAVIS_NODE_VERSION="5"
+  - TRAVIS_NODE_VERSION="5" ARCH="x86"
+matrix:
   exclude:
   - os: osx
     env: TRAVIS_NODE_VERSION="0.10" ARCH="x86"
