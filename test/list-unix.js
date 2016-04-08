@@ -31,6 +31,8 @@ var ports = {
     'DEVNAME=/dev/ttyMFD0\n' +
     'ID_VENDOR_ID=0x2341\n' +
     'ID_MODEL_ID=0x0043\n',
+  'rfcomm4':
+    'DEVNAME=/dev/rfcomm4\n',
   'ttyNOTASERIALPORT': ''
 };
 
@@ -74,6 +76,14 @@ var portOutput = [
     pnpId: undefined,
     vendorId: '0x2341',
     productId: '0x0043'
+  },
+  {
+    comName: '/dev/rfcomm4',
+    manufacturer: undefined,
+    serialNumber: undefined,
+    pnpId: undefined,
+    vendorId: undefined,
+    productId: undefined
   }
 ];
 
