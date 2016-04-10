@@ -4,9 +4,10 @@
 appveyor.yml
 AUTHORS.md
 changelog.md
+CODE_OF_CONDUCT.md
+examples/
 Gruntfile.js
 publish-binaries.md
-examples/
 test/
 
 # MIRRORED FROM .gitignore PLEASE MAINTAIN
