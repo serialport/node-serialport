@@ -13,7 +13,8 @@ module.exports = function(grunt) {
         '*.js',
         'lib/**/*.js',
         'test/**/*.js',
-        'bin/*.js'
+        'bin/**/*.js',
+        'examples/**/*.js'
       ]
     }
   });
