@@ -5,6 +5,7 @@ appveyor.yml
 AUTHORS.md
 changelog.md
 CODE_OF_CONDUCT.md
+CONTRIBUTING.md
 examples/
 Gruntfile.js
 PUBLISHING.md
