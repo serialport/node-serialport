@@ -1,19 +1,17 @@
-////////////////////////////////////////////////////////
-// Use the cool library                               //
-// git://github.com/voodootikigod/node-serialport.git //
-// to read the serial port where arduino is sitting.  //
-////////////////////////////////////////////////////////               
-var com = require("serialport");
+'use strict';
+var serialport = require('serialport');
+var SerialPort = serialport.SerialPort;
+var parsers = serialport.parsers;
 
-var serialPort = new com.SerialPort("/dev/cu.usbmodemfd121", {
-    baudrate: 9600,
-    parser: com.parsers.readline('\r\n')
-  });
+var port = new SerialPort('/dev/cu.usbmodemfd121', {
+  baudrate: 9600,
+  parser: parsers.readline('\r\n')
+});
 
-serialPort.on('open',function() {
+port.on('open', function() {
   console.log('Port open');
 });
 
-serialPort.on('data', function(data) {
+port.on('data', function(data) {
   console.log(data);
 });

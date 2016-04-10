@@ -28,7 +28,7 @@ For getting started with node-serialport, we recommend you begin with the follow
   * [Alpine Linux](#alpine-linux)
   * [Raspberry Pi Linux](#raspberry-pi-linux)
 * [Usage](#usage)
-  * [The Open Event](#the-open-event)
+  * [Opening a Port](#opening-a-port)
   * [Listing Ports](#listing-ports)
   * [Parsers](#parsers)
 * [Methods](#methods)
@@ -129,50 +129,55 @@ When opening a serial port, you can specify (in this order).
 1. Path to Serial Port - required.
 1. Options - optional and described below.
 
-### The Open Event
+### Opening a Port
 
-You MUST wait for the open event to be emitted before writing to the serial port. The open happens asynchronously so writing before the open event will result in an error.
+Constructing a `SerialPort` object will open a port, eventually. You can bind events while the port is opening but you must wait until it is open to `write()` to it. (Most port functions require an open port.) You can call code when a port is opened in three ways.
 
-Assuming you are connected to a serial console, you would for example:
+ - The `open` event is always emitted when the port is opened
+ - The constructor callback is called when the port is opened and you haven't disabled the `openImmediately` option, if you have disabled it, the callback is only used for errors.
+ - The `.open()` function takes a callback that is called when the port is opened. This can be used if you disabled the `openImmediately` option or have previously closed an open port.
+
 
 ```js
 var SerialPort = require('serialport').SerialPort;
-var serialPort = new SerialPort('/dev/tty-usbserial1');
-serialPort.on('data', function(data) {
-  console.log('data received: ' + data);
-});
+var port = new SerialPort('/dev/tty-usbserial1');
 
-serialPort.on('open', function () {
-  console.log('open');
-  serialPort.write('ls\n', function(err, results) {
-    console.log('err ' + err);
-    console.log('results ' + results);
+port.on('open', function () {
+  port.write('main screen turn on', function(err, bytesWritten) {
+    if (err) {
+      return console.log('Error: ', err.message);
+    }
+    console.log(bytesWritten, 'bytes written');
   });
 });
 ```
 
-You can also use the open function to open the port, but you must set the openImmediately flag to false so it does not open on it's own.
+This could be moved to the constructor's callback.
+```
+var SerialPort = require('serialport').SerialPort;
+var port = new SerialPort('/dev/tty-usbserial1', function () {
+  port.write('main screen turn on', function(err, bytesWritten) {
+    if (err) {
+      return console.log('Error: ', err.message);
+    }
+    console.log(bytesWritten, 'bytes written');
+  });
+});
+```
+
+When disabling the `openImmediately` flag you'll need to open the port on your own. Note, in order to disable the `openImmediately` flag, we have to pass an options object.
 
 ```js
-var SerialPort = require('serialport').SerialPort
-var opt = {
-  baudrate: 57600
-};
-var serialPort = new SerialPort('/dev/tty-usbserial1', opt, false); // this is the openImmediately flag [default is true]
+var SerialPort = require('serialport').SerialPort;
+var port = new SerialPort('/dev/tty-usbserial1', {}, false);
 
-serialPort.open(function (error) {
-  if ( error ) {
-    console.log('failed to open: '+error);
-  } else {
-    console.log('open');
-    serialPort.on('data', function(data) {
-      console.log('data received: ' + data);
-    });
-    serialPort.write('ls\n', function(err, results) {
-      console.log('err ' + err);
-      console.log('results ' + results);
-    });
+port.open(function (err) {
+  if (err) {
+    return console.log('Error opening port: ', err.message);
   }
+
+  // errors will be emitted on the port since there is no callback to write
+  port.write('main screen turn on');
 });
 ```
 
@@ -317,7 +322,7 @@ The `buffer` parameter accepts a [`Buffer` ](http://nodejs.org/api/buffer.html) 
 
 **_callback (optional)_**
 
-Called once the write operation returns. The callback should be a function that looks like: `function (error) { ... }`
+Called once the write operation returns. The callback should be a function that looks like: `function (error, bytesWritten) { ... }`
 
 **Note:** The write operation is non-blocking. When it returns, data may still have not actually been written to the serial port. See `drain()`.
 
