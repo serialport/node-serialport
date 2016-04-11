@@ -1,7 +1,7 @@
 {
   "name": "serialport",
-  "version": "2.0.7-beta2",
-  "description": "Welcome your robotic javascript overlords. Better yet, program them!",
+  "version": "2.1.0",
+  "description": "Node.js package to access serial ports. Welcome your robotic javascript overlords. Better yet, program them!",
   "author": {
     "name": "Chris Williams",
     "email": "voodootikigod@gmail.com",
@@ -9,15 +9,19 @@
   },
   "binary": {
     "module_name": "serialport",
-    "module_path": "./build/{configuration}/{node_abi}-{platform}-{arch}/",
+    "module_path": "build/{configuration}/",
     "package_name": "{node_abi}-{platform}-{arch}.tar.gz",
-    "host": "https://github.com/voodootikigod/node-serialport/releases/download/2.0.7-beta2"
+    "host": "https://github.com/voodootikigod/node-serialport/releases/download/2.1.0"
   },
   "main": "./serialport",
   "repository": {
     "type": "git",
     "url": "git://github.com/voodootikigod/node-serialport.git"
   },
+  "keywords": [
+    "serialport",
+    "nodebots"
+  ],
   "maintainers": [
     {
       "name": "Jacob Rosenthal",
@@ -48,9 +52,10 @@
     "async": "0.9.0",
     "bindings": "1.2.1",
     "debug": "^2.1.1",
-    "nan": "~2.0.0",
+    "nan": "~2.2.1",
     "node-pre-gyp": "0.6.x",
     "node-pre-gyp-github": "^1.1.0",
+    "object.assign": "^4.0.3",
     "optimist": "~0.6.1",
     "sf": "0.1.7"
   },
@@ -60,11 +65,12 @@
   ],
   "devDependencies": {
     "chai": "*",
+    "chai-subset": "^1.2.2",
     "eslint-config-standard": "^5.1.0",
     "eslint-plugin-promise": "^1.1.0",
     "eslint-plugin-standard": "^1.3.2",
-    "grunt": "*",
-    "grunt-cli": "*",
+    "grunt": "0.4.5",
+    "grunt-cli": "1.1.0",
     "grunt-mocha-test": "*",
     "gruntify-eslint": "^2.0.0",
     "mocha": "*",
@@ -82,7 +88,9 @@
   "license": "MIT",
   "scripts": {
     "install": "node-pre-gyp install --fallback-to-build",
-    "rebuild": "node-pre-gyp rebuild",
+    "rebuild": "npm rebuild && node-pre-gyp rebuild",
+    "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
     "test": "grunt --verbose"
-  }
+  },
+  "gypfile": true
 }

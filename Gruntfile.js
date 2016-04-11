@@ -11,15 +11,17 @@ module.exports = function(grunt) {
     eslint: {
       src: [
         '*.js',
+        'lib/**/*.js',
         'test/**/*.js',
-        'test_mocks/**/*.js',
-        'arduinoTest/**/*.js',
-        'bin/*.js'
+        'bin/**/*.js',
+        'examples/**/*.js'
       ]
     }
   });
 
   grunt.loadNpmTasks('grunt-mocha-test');
   grunt.loadNpmTasks('gruntify-eslint');
-  grunt.registerTask('default', ['eslint', 'mochaTest']);
+  grunt.registerTask('lint', ['eslint']);
+  grunt.registerTask('test', ['mochaTest']);
+  grunt.registerTask('default', ['lint', 'test']);
 };
