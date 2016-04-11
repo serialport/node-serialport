@@ -1,36 +1,19 @@
-Version 2.0.7-beta5
+Version 2.1.0
 -------------
- - Fix binary paths to confirm with modern standards
- - Confirm ns.js and electron compatibility
- - Make the outpout of `.list` consistent between platforms and docs
- - Define ambiguous flow control flags and document them
- - Add support for bluetooth devices in `.list` /dev/rfcommXX
-
-Version 2.0.7-beta4
--------------
- - Fix pre-gyp paths so bindings can be found
-
-Version 2.0.7-beta3
--------------
- - Fix support systems who provide 0 as a valid file descriptor
- - Integration tests on CI's that support it or for the folks at home with an arduino handy
- - Many documentation improvements
- - Listing serialports on unix/linux (non osx) now include more ports and have less bugs in the output
- - Fix race conditions when opening and closing ports that led to errors while reading and writing while closing or opening the port.
- - Fix a double open bug on OSX that would cause opening and closing ports repetitively to error.
- - Fix a 100% cpu and possible hang bug when ports were disconnected on windows.
- - Fix a memory leak on windows
- - Upgraded to nan-2.2.1 for memory leak fixes and node 6 support (still not supported)
-
-Version 2.0.7-beta2
--------------
-- Code cleanup due to moving to eslint internally
-- Bugfixes around JS handling of file descriptors
-
-Version 2.0.7-beta1
--------------
-- Remove deprecated BuildCommDCB for windows support
-- Cleanup callback handling
+- Major refactor, bug fixes and docs improvements thanks to @ecksun, @fivdi, @gfcittolin, @jacobrosenthal, @mhart, @nebrius, @pabigot, @paulkaplan, @reconbot, @rodovich, @rwaldron, @sayanee, @tigoe and everyone who reported and helped debug issues!
+- Fix binary paths to confirm with modern standards
+- Integration tests on CI's that support it or for the folks at home with an arduino handy
+- Upgrade to nan-2.2.1 for memory leak fixes and node 6 compatibility (still not supported)
+- Confirm nw.js and electron compatibility
+- Make the outpout of `.list` consistent between platforms and docs
+- Define ambiguous flow control flags and document them
+- Fix support systems who provide 0 as a valid file descriptor
+- Fix race conditions when opening and closing ports that led to errors while reading and writing while closing or opening the port.
+- [unix] Fix a double open bug on unix that would cause opening and closing ports repetitively to error.
+- [unix] Listing serialports on linux now include more ports (including bluetooth devices eg. `/dev/rfcommXX`) and have less bugs in the output
+- [windows] Remove deprecated BuildCommDCB for windows 10 support
+- [windows] Fix a memory leak on windows
+- [windows] Fix a 100% cpu and possible hang bug when ports were disconnected on windows.
 
 Version 2.0.6
 -------------

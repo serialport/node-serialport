@@ -1,7 +1,7 @@
 {
   "name": "serialport",
-  "version": "2.0.7-beta5",
-  "description": "Welcome your robotic javascript overlords. Better yet, program them!",
+  "version": "2.1.0",
+  "description": "Node.js package to access serial ports. Welcome your robotic javascript overlords. Better yet, program them!",
   "author": {
     "name": "Chris Williams",
     "email": "voodootikigod@gmail.com",
@@ -11,13 +11,17 @@
     "module_name": "serialport",
     "module_path": "build/{configuration}/",
     "package_name": "{node_abi}-{platform}-{arch}.tar.gz",
-    "host": "https://github.com/voodootikigod/node-serialport/releases/download/2.0.7-beta5"
+    "host": "https://github.com/voodootikigod/node-serialport/releases/download/2.1.0"
   },
   "main": "./serialport",
   "repository": {
     "type": "git",
     "url": "git://github.com/voodootikigod/node-serialport.git"
   },
+  "keywords": [
+    "serialport",
+    "nodebots"
+  ],
   "maintainers": [
     {
       "name": "Jacob Rosenthal",
@@ -87,5 +91,6 @@
     "rebuild": "npm rebuild && node-pre-gyp rebuild",
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
     "test": "grunt --verbose"
-  }
+  },
+  "gypfile": true
 }
