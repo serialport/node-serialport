@@ -9,9 +9,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef UWP
-using namespace Windows::Devices::SerialCommunication;
-#endif
 
 enum SerialPortParity {
   SERIALPORT_PARITY_NONE = 1,
@@ -36,11 +33,7 @@ void EIO_AfterList(uv_work_t* req);
 NAN_METHOD(Open);
 void EIO_Open(uv_work_t* req);
 void EIO_AfterOpen(uv_work_t* req);
-#ifdef UWP
-void AfterOpenSuccess(SerialDevice ^ device, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, Nan::Callback* errorCallback);
-#else
 void AfterOpenSuccess(int fd, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, Nan::Callback* errorCallback);
-#endif
 
 NAN_METHOD(Update);
 void EIO_Update(uv_work_t* req);
@@ -81,9 +74,6 @@ public:
   Nan::Callback* dataCallback;
   Nan::Callback* disconnectedCallback;
   Nan::Callback* errorCallback;
-#ifdef UWP
-  SerialDevice^ device;
-#endif
   int fd;
   int result;
   int baudRate;
@@ -103,9 +93,6 @@ public:
 
 struct WriteBaton {
 public:
-#ifdef UWP
-  SerialDevice^ device;
-#endif
   int fd;
   char* bufferData;
   size_t bufferLength;
@@ -157,9 +144,6 @@ public:
 
 struct CloseBaton {
 public:
-#ifdef UWP
-  SerialDevice^ device;
-#endif
   int fd;
   Nan::Callback* callback;
   char errorString[ERROR_STRING_SIZE];
@@ -185,9 +169,6 @@ public:
 
 struct FlushBaton {
 public:
-#ifdef UWP
-  SerialDevice^ device;
-#endif
   int fd;
   Nan::Callback* callback;
   int result;
@@ -196,9 +177,6 @@ public:
 
 struct SetBaton {
 public:
-#ifdef UWP
-  SerialDevice^ device;
-#endif
   int fd;
   Nan::Callback* callback;
   int result;
@@ -213,9 +191,6 @@ public:
 
 struct DrainBaton {
 public:
-#ifdef UWP
-  SerialDevice^ device;
-#endif
   int fd;
   Nan::Callback* callback;
   int result;

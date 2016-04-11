@@ -170,17 +170,12 @@ void EIO_Open(uv_work_t* req) {
   device->ReadTimeout = commTimeout;
   device->WriteTimeout = commTimeout;
 
-  data->device = device;
   g_device = device;
   data->result = 0;
 }
 
 struct WatchPortBaton {
 public:
-#ifdef UWP
-  SerialDevice^ device;
-#endif
-  HANDLE fd;
   DWORD bytesRead;
   char buffer[MAX_BUFFER_SIZE];
   char errorString[ERROR_STRING_SIZE];
@@ -194,32 +189,30 @@ public:
 void EIO_Update(uv_work_t* req) {
 }
 
-
 void EIO_Set(uv_work_t* req) {
 }
-
 
 void EIO_WatchPort(uv_work_t* req) {
   WatchPortBaton* data = static_cast<WatchPortBaton*>(req->data);
   data->bytesRead = 0;
   data->disconnected = false;
 
-  DataReader^ dataReader = ref new DataReader(data->device->InputStream);
+  DataReader^ dataReader = ref new DataReader(g_device->InputStream);
   dataReader->InputStreamOptions = InputStreamOptions::Partial;
 
   auto bytesToRead = concurrency::create_task(dataReader->LoadAsync((unsigned int)bufferSize)).get();
-  data->bytesRead = bytesToRead;
   try {
     memset(data->buffer, 0, MAX_BUFFER_SIZE);
     // Keep reading until we consume the complete stream.
     while (dataReader->UnconsumedBufferLength > 0) {
-        char byte = dataReader->ReadByte();
-        strncat(data->buffer, &byte, 1);
+      unsigned char byteReceived = dataReader->ReadByte();
+      data->buffer[data->bytesRead] = byteReceived;
+      data->bytesRead++;
     }
   }
   catch (Exception^ e) {
-      data->errorCode = e->HResult;
-      PlatformStringToChar(e->Message, data->errorString);
+    data->errorCode = e->HResult;
+    PlatformStringToChar(e->Message, data->errorString);
   }
   dataReader->DetachStream();
 }
@@ -267,7 +260,7 @@ void EIO_AfterWatchPort(uv_work_t* req) {
       Sleep(100); // prevent the errors from occurring too fast
     }
   }
-  AfterOpenSuccess(data->device, data->dataCallback, data->disconnectedCallback, data->errorCallback);
+  AfterOpenSuccess(NULL, data->dataCallback, data->disconnectedCallback, data->errorCallback);
 
 cleanup:
   if (!skipCleanup) {
@@ -276,10 +269,9 @@ cleanup:
   }
 }
 
-void AfterOpenSuccess(SerialDevice^ device, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, Nan::Callback* errorCallback) {
+void AfterOpenSuccess(int unused, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, Nan::Callback* errorCallback) {
   WatchPortBaton* baton = new WatchPortBaton();
   memset(baton, 0, sizeof(WatchPortBaton));
-  baton->device = device;
   baton->dataCallback = dataCallback;
   baton->errorCallback = errorCallback;
   baton->disconnectedCallback = disconnectedCallback;
@@ -299,7 +291,7 @@ void EIO_Write(uv_work_t* req) {
     return;
   }
   DataWriter^ dataWriter = ref new DataWriter(g_device->OutputStream);
-  dataWriter->WriteBytes(ref new Array<unsigned char>((unsigned char*)data->bufferData, data->bufferLength));
+  dataWriter->WriteBytes(ref new Array<byte>((byte*)data->bufferData, data->bufferLength));
   auto bytesStored = concurrency::create_task(dataWriter->StoreAsync()).get();
   data->result = bytesStored;
   if(data->bufferLength == bytesStored) {
