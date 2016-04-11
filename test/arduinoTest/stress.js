@@ -4,7 +4,7 @@
 
 var assert = require('chai').assert;
 var util = require('util');
-var serialPort = require('../../serialport');
+var serialPort = require('../../');
 require('colors'); // this modifies String.prototype
 // var fs = require('fs');
 

@@ -7,7 +7,7 @@ Tests the functionality of the serial port library.
 To be used in conjunction with the Arduino sketch ArduinoEcho.ino
 */
 'use strict';
-var SerialPort = require('../../serialport').SerialPort;
+var SerialPort = require('../../').SerialPort;
 var optimist = require('optimist');
 
 var args = optimist

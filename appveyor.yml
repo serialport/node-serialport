@@ -52,6 +52,7 @@ build_script:
   - cmd: npm install --build-from-source --msvs_version=2013
 
 test_script:
+  - cmd: node ./
   - cmd: npm test
 
 on_success:
