@@ -1,4 +1,3 @@
-#ifndef WIN32
 #include "serialport.h"
 #include "serialport_poller.h"
 #include <unistd.h>
@@ -125,15 +124,19 @@ int ToDataBitsConstant(int dataBits) {
   return -1;
 }
 
-
-
 void EIO_Open(uv_work_t* req) {
   OpenBaton* data = static_cast<OpenBaton*>(req->data);
 
   int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
   int fd = open(data->path, flags);
 
-  if(-1 == setup(fd, data)){
+  if (-1 == fd) {
+    snprintf(data->errorString, sizeof(data->errorString), "Cannot open %s", data->path);
+    return;
+  }
+
+  if (-1 == setup(fd, data)) {
+    close(fd);
     return;
   }
 
@@ -152,42 +155,13 @@ void EIO_Update(uv_work_t* req) {
   data->result = fd;
 }
 
-
 int setup(int fd, OpenBaton *data) {
-
   UnixPlatformOptions* platformOptions = static_cast<UnixPlatformOptions*>(data->platformOptions);
 
   int baudRate = ToBaudConstant(data->baudRate);
-
-// #if not ( defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4) )
-//   if(baudRate == -1) {
-//     snprintf(data->errorString, sizeof(data->errorString), "Invalid baud rate setting %d", data->baudRate);
-//     return;
-//   }
-// #endif
-
   int dataBits = ToDataBitsConstant(data->dataBits);
   if(dataBits == -1) {
     snprintf(data->errorString, sizeof(data->errorString), "Invalid data bits setting %d", data->dataBits);
-    return -1;
-  }
-
-
-  // int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
-  // if(data->hupcl == false) {
-  //   flags &= ~HUPCL;
-  // }
-  // int fd = open(data->path, flags);
-
-  int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
-  if(data->hupcl == false) {
-    flags &= ~HUPCL;
-  }
-  fd = open(data->path, flags);
-
-
-  if (fd == -1) {
-    snprintf(data->errorString, sizeof(data->errorString), "Cannot open %s", data->path);
     return -1;
   }
 
@@ -317,7 +291,6 @@ int setup(int fd, OpenBaton *data) {
     break;
   default:
     snprintf(data->errorString, sizeof(data->errorString), "Invalid parity setting %d", data->parity);
-    close(fd);
     return -1;
   }
 
@@ -330,13 +303,14 @@ int setup(int fd, OpenBaton *data) {
     break;
   default:
     snprintf(data->errorString, sizeof(data->errorString), "Invalid stop bits setting %d", data->stopBits);
-    close(fd);
     return -1;
   }
 
   options.c_cflag |= CLOCAL; //ignore status lines
   options.c_cflag |= CREAD;  //enable receiver
-  options.c_cflag |= HUPCL;  //drop DTR (i.e. hangup) on close
+  if(data->hupcl) {
+    options.c_cflag |= HUPCL;  //drop DTR (i.e. hangup) on close
+  }
 
   // Raw output
   options.c_oflag = 0;
@@ -359,6 +333,7 @@ int setup(int fd, OpenBaton *data) {
     speed_t speed = data->baudRate;
     if (ioctl(fd,  IOSSIOSPEED, &speed) == -1) {
       snprintf(data->errorString, sizeof(data->errorString), "Error %s calling ioctl( ..., IOSSIOSPEED, %ld )", strerror(errno), speed );
+      return -1;
     }
   }
 #endif
@@ -401,19 +376,9 @@ void EIO_Write(uv_work_t* req) {
 
 void EIO_Close(uv_work_t* req) {
   CloseBaton* data = static_cast<CloseBaton*>(req->data);
-
-  // printf(">>>> close fd %d\n", data->fd);
-
-  // fcntl(data->fd, F_SETFL, FNONBLOCK);
-
-  ssize_t r;
-
-  r = close(data->fd);
-
-  // printf(">>>> closed fd %d (err: %d)\n", data->fd, errno);
-
-  if (r && r != EBADF)
+  if (-1 == close(data->fd)) {
     snprintf(data->errorString, sizeof(data->errorString), "Unable to close fd %d, errno: %d", data->fd, errno);
+  }
 }
 
 #ifdef __APPLE__
@@ -669,21 +634,21 @@ static stDeviceListItem* GetSerialDevices()
 #endif
 
 void EIO_List(uv_work_t* req) {
-  // This code exists in javascript for unix platforms
+  ListBaton* data = static_cast<ListBaton*>(req->data);
 
-#ifdef __APPLE__
-  if(!lockInitialised)
-  {
+#ifndef __APPLE__
+  // This code exists in javascript for unix platforms
+  snprintf(data->errorString, sizeof(data->errorString), "List is not Implemented");
+  return;
+# else
+  if(!lockInitialised) {
     uv_mutex_init(&list_mutex);
     lockInitialised = TRUE;
   }
 
-  ListBaton* data = static_cast<ListBaton*>(req->data);
-
   stDeviceListItem* devices = GetSerialDevices();
 
-  if (*(devices->length) > 0)
-  {
+  if (*(devices->length) > 0) {
     stDeviceListItem* next = devices;
 
     for (int i = 0, len = *(devices->length); i < len; i++) {
@@ -769,5 +734,3 @@ void EIO_Drain(uv_work_t* req) {
 
   data->result = tcdrain(data->fd);
 }
-
-#endif

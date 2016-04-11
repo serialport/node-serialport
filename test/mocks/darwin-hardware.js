@@ -2,6 +2,14 @@
 
 'use strict';
 
+function callLater() {
+  var args = Array.prototype.slice.call(arguments);
+  var callback = args.shift();
+  process.nextTick(function() {
+    callback && callback.apply(null, args);
+  });
+}
+
 var mockSerialportPoller = function (hardware) {
   var Poller = function (fd, cb) {
     this.port = hardware.fds[fd];
@@ -93,7 +101,7 @@ Hardware.prototype.list = function (cb) {
   var info = Object.keys(ports).map(function (path) {
     return ports[path].info;
   });
-  cb && cb(info);
+  callLater(cb, null, info);
 };
 
 Hardware.prototype.open = function (path, opt, cb) {
@@ -103,7 +111,7 @@ Hardware.prototype.open = function (path, opt, cb) {
   }
   port.open = true;
   port.openOpt = opt;
-  cb && cb(null, port.fd);
+  callLater(cb, null, port.fd);
 };
 
 Hardware.prototype.update = function(fd, opt, cb) {
@@ -111,7 +119,7 @@ Hardware.prototype.update = function(fd, opt, cb) {
   if (!port) {
     return cb(new Error(fd + ' does not exist - please call hardware.createPort(path) first'));
   }
-  cb && cb();
+  callLater(cb, null);
 };
 
 Hardware.prototype.write = function (fd, buffer, cb) {
@@ -120,7 +128,7 @@ Hardware.prototype.write = function (fd, buffer, cb) {
     return cb(new Error(fd + ' does not exist - please call hardware.createPort(path) first'));
   }
   port.lastWrite = new Buffer(buffer); // copy
-  cb && cb(null, buffer.length);
+  callLater(cb, null, buffer.length);
 };
 
 Hardware.prototype.close = function (fd, cb) {
@@ -132,7 +140,7 @@ Hardware.prototype.close = function (fd, cb) {
     return cb(new Error(fd + ' fd is already closed'));
   }
   port.open = false;
-  cb && cb(null);
+  callLater(cb, null);
 };
 
 Hardware.prototype.flush = function (fd, cb) {
@@ -140,7 +148,7 @@ Hardware.prototype.flush = function (fd, cb) {
   if (!port) {
     return cb(new Error(fd + ' does not exist - please call hardware.createPort(path) first'));
   }
-  cb && cb(null, undefined);
+  callLater(cb, null, undefined);
 };
 
 Hardware.prototype.set = function (fd, options, cb) {
@@ -148,7 +156,7 @@ Hardware.prototype.set = function (fd, options, cb) {
   if (!port) {
     return cb(new Error(fd + ' does not exist - please call hardware.createPort(path) first'));
   }
-  cb && cb(null, undefined);
+  callLater(cb, null, undefined);
 };
 
 Hardware.prototype.drain = function (fd, cb) {
@@ -156,7 +164,7 @@ Hardware.prototype.drain = function (fd, cb) {
   if (!port) {
     return cb(new Error(fd + ' does not exist - please call hardware.createPort(path) first'));
   }
-  cb && cb(null, undefined);
+  callLater(cb, null, undefined);
 };
 
 Hardware.prototype.fakeRead = function (fd, buffer, offset, length, position, cb) {
@@ -176,7 +184,7 @@ Hardware.prototype.fakeRead = function (fd, buffer, offset, length, position, cb
   var read = port.data.slice(0, length);
   port.data = port.data.slice(length);
   read.copy(buffer, offset);
-  cb(null, read.length, buffer);
+  callLater(cb, null, read.length, buffer);
 };
 
 var hardware = new Hardware();
@@ -188,15 +196,10 @@ var serialPort = SandboxedModule.require('../../serialport', {
     fs: {
       read: hardware.fakeRead.bind(hardware)
     },
-    'node-pre-gyp': {
-      find: function() {
-        // this one is silly - we don't want it to find the binary
-        // so we say hey! it's this already mocked require!
-        // if it found the binary it would be loaded in a sandbox
-        // and wouldn't be able to be loaded in a regular context
-        return 'node-pre-gyp';
-      }
-    }
+    'bindings': function() {
+      return hardware.mockBinding;
+    },
+    'mock-binding': hardware.mockBinding
   },
   singleOnly: true,
   globals: {
@@ -208,6 +211,5 @@ var serialPort = SandboxedModule.require('../../serialport', {
 });
 
 serialPort.hardware = hardware;
-serialPort.SerialPortBinding = hardware.mockBinding;
 
 module.exports = serialPort;

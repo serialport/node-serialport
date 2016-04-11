@@ -1,16 +1,14 @@
-arduinoTest/
-examples/
-hwtest/
-sandbox/
-test/
-test_mocks/
+.github
 .jshintrc
 .travis.yml
-AUTHORS
 appveyor.yml
+AUTHORS.md
 changelog.md
+CODE_OF_CONDUCT.md
+examples/
 Gruntfile.js
 publish-binaries.md
+test/
 
 # MIRRORED FROM .gitignore PLEASE MAINTAIN
 .lock-wscript
@@ -19,11 +17,6 @@ publish-binaries.md
 build/
 node_modules
 npm-debug.log
-Makefile.gyp
-*.Makefile
-*.target.gyp.mk
-out
 gyp-mac-tool
 .node_pre_gyprc
 /.idea
-*.node

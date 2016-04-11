@@ -6,11 +6,11 @@
 
 For support you can open a [github issue](https://github.com/voodootikigod/node-serialport/issues/new), for discussions, designs, and clarifications, we recommend you join our [Gitter Chat room](https://gitter.im/voodootikigod/node-serialport)
 
-*****
+***
 
 Imagine a world where you can write JavaScript to control blenders, lights, security systems, or even robots. Yes, I said robots. That world is here and now with node-serialport. It provides a very simple interface to the low level serial port code necessary to program [Arduino](http://www.arduino.cc/) chipsets, [X10](http://www.smarthome.com/manuals/protocol.txt) wireless communications, or even the rising [Z-Wave](http://www.z-wave.com/modules/ZwaveStart/) and [Zigbee](http://www.zigbee.org/) standards. The physical world is your oyster with this goodie. For a full break down of why we made this, please read [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics).
 
-*****
+***
 
 For getting started with node-serialport, we recommend you begin with the following articles:
 
@@ -18,12 +18,17 @@ For getting started with node-serialport, we recommend you begin with the follow
 * [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics) - A survey article of why one would want to program robots in JS.
 * [Johnny-Five](https://github.com/rwaldron/johnny-five#hello-johnny) - The Johnny-Five Robotics and IoT library's introduction "Hello Johnny" (awesome).
 
-
-****
+***
 
 * [Installation](#installation-instructions)
+* [Installation Special Cases](#installation-special-cases)
+  * [Windows](#windows)
+  * [Mac OS X](#mac-os-x)
+  * [Ubuntu Linux](#ubuntu-linux)
+  * [Alpine Linux](#alpine-linux)
+  * [Raspberry Pi Linux](#raspberry-pi-linux)
 * [Usage](#usage)
-  * [Open Event](#open-event)
+  * [Opening a Port](#opening-a-port)
   * [Listing Ports](#listing-ports)
   * [Parsers](#parsers)
 * [Methods](#methods)
@@ -37,9 +42,11 @@ For getting started with node-serialport, we recommend you begin with the follow
   * [drain()](#drain-callback)
   * [close()](#close-callback)
 * [Events](#events)
+* [Command Line Tools](#command-line-tools)
+  * [Serial Port List](#serial-port-list)
+  * [Serial Port Terminal](#serial-port-terminal)
 
-
-****
+***
 
 ## Installation Instructions
 
@@ -55,7 +62,7 @@ We are using [node-pre-gyp](https://github.com/mapbox/node-pre-gyp) to compile a
 
 This assumes you have everything on your system necessary to compile ANY native module for Node.js. This may not be the case, though, so please ensure the following are true for your system before filing an issue about "Does not install". For all operatings systems, please ensure you have Python 2.x installed AND not 3.0, node-gyp (what we use to compile) requires Python 2.x.
 
-#### Windows:
+#### Windows
 
  * Windows 7, Windows 8.1, and Windows 10 are supported.
  * Might just download and install with no extra steps. If the downloaded binary fails you'll have to build it with the following steps.
@@ -65,11 +72,11 @@ This assumes you have everything on your system necessary to compile ANY native 
  * Install [Python 2.7.6](http://www.python.org/download/releases/2.7.6/) matching the bitness of your operating system.  For any questions, please refer to their [FAQ](http://docs.python.org/2/faq/windows.html). Default settings are perfect.
  * Open the 'Visual Studio Command Prompt' and add Python to the path.
 
-#### Mac OS X:
+#### Mac OS X
 
 Ensure that you have at a minimum the xCode Command Line Tools installed appropriate for your system configuration. If you recently upgraded the OS, it probably removed your installation of Command Line Tools, please verify before submitting a ticket. To compile `node-serialport` with Node.js 4.x+, you will need to use g++ v4.8 or higher.
 
-#### Desktop (Debian/Ubuntu) Linux:
+#### Ubuntu Linux
 
 You know what you need for your system, basically your appropriate analog of build-essential. Keep rocking! Ubuntu renamed the `node` binary `nodejs` which can cause problems building `node-serialport`. The fix is simple, install the [nodejs-legacy package](https://packages.debian.org/sid/nodejs-legacy) that symlinks `/usr/bin/nodejs => /usr/bin/node` or install the more up to date nodejs package from [Chris Lea's PPA](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager#ubuntu-mint-elementary-os).
 
@@ -87,7 +94,7 @@ sudo apt-get install build-essential
 npm install serialport
 ```
 
-#### Alpine Linux:
+#### Alpine Linux
 
 [Alpine](http://www.alpinelinux.org/) is a (very) small distro, but it uses the musl standard library instead of glibc (that most other Linux distros use), so it requires compilation.
 
@@ -102,7 +109,7 @@ sudo apk add --no-cache make gcc g++ python linux-headers udev
 npm install serialport --build-from-source=serialport
 ```
 
-#### Raspberry Pi Linux:
+#### Raspberry Pi Linux
 
 Follow the instructions for [setting up a Raspberry pi for use with Johnny-Five and Raspi IO](https://github.com/nebrius/raspi-io/wiki/Getting-a-Raspberry-Pi-ready-for-NodeBots). These projects use Node Serialport under the hood.
 
@@ -122,58 +129,82 @@ When opening a serial port, you can specify (in this order).
 1. Path to Serial Port - required.
 1. Options - optional and described below.
 
-Open Event
-----------
+### Opening a Port
 
-You MUST wait for the open event to be emitted before reading/writing to the serial port. The open happens asynchronously so installing 'data' listeners and writing
-before the open event might result in... nothing at all.
+Constructing a `SerialPort` object will open a port, eventually. You can bind events while the port is opening but you must wait until it is open to `write()` to it. (Most port functions require an open port.) You can call code when a port is opened in three ways.
 
-Assuming you are connected to a serial console, you would for example:
+ - The `open` event is always emitted when the port is opened
+ - The constructor callback is called when the port is opened and you haven't disabled the `openImmediately` option, if you have disabled it, the callback is only used for errors.
+ - The `.open()` function takes a callback that is called when the port is opened. This can be used if you disabled the `openImmediately` option or have previously closed an open port.
+
 
 ```js
-serialPort.on("open", function () {
-  console.log('open');
-  serialPort.on('data', function(data) {
-    console.log('data received: ' + data);
-  });
-  serialPort.write("ls\n", function(err, results) {
-    console.log('err ' + err);
-    console.log('results ' + results);
+var SerialPort = require('serialport').SerialPort;
+var port = new SerialPort('/dev/tty-usbserial1');
+
+port.on('open', function () {
+  port.write('main screen turn on', function(err, bytesWritten) {
+    if (err) {
+      return console.log('Error: ', err.message);
+    }
+    console.log(bytesWritten, 'bytes written');
   });
 });
 ```
 
-You can also call the open function, in this case instantiate the serialport with an additional flag.
+This could be moved to the constructor's callback.
+```
+var SerialPort = require('serialport').SerialPort;
+var port = new SerialPort('/dev/tty-usbserial1', function () {
+  port.write('main screen turn on', function(err, bytesWritten) {
+    if (err) {
+      return console.log('Error: ', err.message);
+    }
+    console.log(bytesWritten, 'bytes written');
+  });
+});
+```
+
+When disabling the `openImmediately` flag you'll need to open the port on your own. Note, in order to disable the `openImmediately` flag, we have to pass an options object.
 
 ```js
-var SerialPort = require("serialport").SerialPort
-var serialPort = new SerialPort("/dev/tty-usbserial1", {
-  baudrate: 57600
-}, false); // this is the openImmediately flag [default is true]
+var SerialPort = require('serialport').SerialPort;
+var port = new SerialPort('/dev/tty-usbserial1', {}, false);
 
-serialPort.open(function (error) {
-  if ( error ) {
-    console.log('failed to open: '+error);
-  } else {
-    console.log('open');
-    serialPort.on('data', function(data) {
-      console.log('data received: ' + data);
-    });
-    serialPort.write("ls\n", function(err, results) {
-      console.log('err ' + err);
-      console.log('results ' + results);
-    });
+port.open(function (err) {
+  if (err) {
+    return console.log('Error opening port: ', err.message);
   }
+
+  // errors will be emitted on the port since there is no callback to write
+  port.write('main screen turn on');
 });
 ```
 
-Listing Ports
-----------
+### Listing Ports
 
-You can also list the ports along with some metadata as well.
+`.list(callback)`
+
+Retrieves a list of available serial ports with metadata.
+
+* `callback` is a required function that looks should look like: `function (err, ports) { ... }`. `ports` will be an array of objects with port info. Only the `comName` is guaranteed, all the other fields undefined if unavailable. The `comName` is either the path or identifier (eg `COM1`) used to open the serialport.
 
 ```js
-var serialPort = require("serialport");
+// example port information
+{
+  comName: '/dev/cu.usbmodem1421',
+  manufacturer: 'Arduino (www.arduino.cc)',
+  serialNumber: '757533138333964011C1',
+  pnpId: undefined,
+  locationId: '0x14200000',
+  vendorId: '0x2341',
+  productId: '0x0043'
+}
+
+```
+
+```js
+var serialPort = require('serialport');
 serialPort.list(function (err, ports) {
   ports.forEach(function(port) {
     console.log(port.comName);
@@ -183,27 +214,26 @@ serialPort.list(function (err, ports) {
 });
 ```
 
-Parsers
--------
+### Parsers
 
 Out of the box, node-serialport provides two parsers one that simply emits the raw buffer as a data event and the other which provides familiar "readline" style parsing. To use the readline parser, you must provide a delimiter as such:
 
 ```js
-var serialport = require("serialport");
-var SerialPort = serialport.SerialPort; // localize object constructor
+var serialport = require('serialport');
+var SerialPort = serialport.SerialPort;
 
-var sp = new SerialPort("/dev/tty-usbserial1", {
-  parser: serialport.parsers.readline("\n")
+var port = new SerialPort('/dev/tty-usbserial1', {
+  parser: serialport.parsers.readline('\n')
 });
 ```
 
 To use the raw parser, you just provide the function definition (or leave undefined):
 
 ```js
-var serialport = require("serialport");
-var SerialPort = serialport.SerialPort; // localize object constructor
+var serialport = require('serialport');
+var SerialPort = serialport.SerialPort;
 
-var sp = new SerialPort("/dev/tty-usbserial1", {
+var port = new SerialPort('/dev/tty-usbserial1', {
   parser: serialport.parsers.raw
 });
 ```
@@ -212,15 +242,16 @@ var sp = new SerialPort("/dev/tty-usbserial1", {
 You can get updates of new data from the Serial Port as follows:
 
 ```js
-serialPort.on("data", function (data) {
-  sys.puts("here: "+data);
+port.on('data', function (data) {
+  console.log('Data: ' + data);
 });
 ```
 
 You can write to the serial port by sending a string or buffer to the write method as follows:
 
 ```js
-serialPort.write("OMG IT WORKS\r");
+port.write('Hi Mom!');
+port.write(new Buffer('Hi Mom!'));
 ```
 
 Enjoy and do cool things with this code.
@@ -243,23 +274,18 @@ Port configuration options.
 * `dataBits` Data Bits, defaults to 8. Must be one of: 8, 7, 6, or 5.
 * `stopBits` Stop Bits, defaults to 1. Must be one of: 1 or 2.
 * `parity` Parity, defaults to 'none'. Must be one of: 'none', 'even', 'mark', 'odd', 'space'
-* `rtscts`
-* `xon`
-* `xoff`
-* `xany`
-* `flowControl` One of the following `XON`, `XOFF`, `XANY`, `RTSCTS`
-* `bufferSize` Size of read buffer, defaults to 255. Must be an integer value.
+* `rtscts` defaults to false
+* `xon` defaults to false
+* `xoff` defaults to false
+* `xany` defaults to false
+* `flowControl` `true` for `rtscts` or an array with one or more of the following strings to enable them `xon`, `xoff`, `xany`, `rtscts`. Overwrites any individual settings.
+* `bufferSize` Size of read buffer, defaults to 65536. Must be an integer value.
 * `parser` The parser engine to use with read data, defaults to rawPacket strategy which just emits the raw buffer as a "data" event. Can be any function that accepts EventEmitter as first parameter and the raw buffer as the second parameter.
-* `encoding`
-* `dataCallback`
-* `disconnectedCallback`
 * `platformOptions` - sets platform specific options, see below.
-
-**Note:** We have added support for either all lowercase OR camelcase of the options (thanks @jagautier), use whichever style you prefer.
 
 #### Unix Platform Options
 
-An object with the following properties:
+These properties are ignored for windows. An object with the following properties:
 
 * `vmin` (default: 1) - see [`man termios`](http://linux.die.net/man/3/termios)
 * `vtime` (default: 0) - see [`man termios`](http://linux.die.net/man/3/termios)
@@ -296,7 +322,7 @@ The `buffer` parameter accepts a [`Buffer` ](http://nodejs.org/api/buffer.html) 
 
 **_callback (optional)_**
 
-Called once the write operation returns. The callback should be a function that looks like: `function (error) { ... }`
+Called once the write operation returns. The callback should be a function that looks like: `function (error, bytesWritten) { ... }`
 
 **Note:** The write operation is non-blocking. When it returns, data may still have not actually been written to the serial port. See `drain()`.
 
@@ -344,7 +370,29 @@ Closes an open connection.
 
 **_callback (optional)_**
 
-Called once a connection is closed. Closing a connection will also remove all event listeners. The callback should be a function that looks like: `function (error) { ... }` If called without an callback and there is an error, an error event will be emitted.
+Called once a connection is closed. The callback should be a function that looks like: `function (error) { ... }` If called without an callback and there is an error, an error event will be emitted.
+
+**Note:** Currently closing a connection will also remove all event listeners.
+
+### .set (options, callback)
+
+Sets flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363257(v=vs.85).aspx) for windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for mac and linux.
+
+**_options (optional)_**
+
+All options are operating system default when the port is opened. Every flag is set on each call to the provided or default values. If options isn't provided default options will be used.
+
+ * `brk` optional boolean, defaults to false
+ * `cts` optional boolean, defaults to false
+ * `dsr` optional boolean, defaults to false
+ * `dtr` optional boolean, defaults to true
+ * `rts` optional boolean, defaults to true
+
+**_callback (optional)_**
+
+`callback: function(err, results)`
+
+Called once the port's flags have been set. `results` are the return of the underlying system command. If `.set` is called without an callback and there is an error, an error event will be emitted.
 
 ## Events
 
@@ -359,3 +407,17 @@ Callback is called with no arguments when the port is closed. In the event of an
 
 ### .on('error', callback)
 Callback is called with an error object whenever there is an error.
+
+### .on('disconnect', callback)
+Callback is called with an error object.
+
+**Note:** Currently disconnections will also remove all event listeners on some platforms.
+
+## Command Line Tools
+If you install `serialport` globally. (eg, `npm install -g serialport`) you'll receive two command line tools.
+
+### Serial Port List
+`serialportlist` will list all available serialports
+
+### Serial Port Terminal
+`serialportterm` provides a basic terminal interface for a serialport. `ctrl+c` will exit.

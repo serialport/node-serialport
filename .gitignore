@@ -5,11 +5,6 @@
 build/
 node_modules
 npm-debug.log
-Makefile.gyp
-*.Makefile
-*.target.gyp.mk
-out
 gyp-mac-tool
 .node_pre_gyprc
 /.idea
-*.node
