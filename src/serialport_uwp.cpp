@@ -303,6 +303,7 @@ void EIO_Write(uv_work_t* req) {
 void EIO_Close(uv_work_t* req) {
   if (g_device) {
     delete g_device;
+	g_device = nullptr;
   }
 }
 
