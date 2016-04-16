@@ -17,9 +17,10 @@ We have an automated make task, we should always use this task to avoid forgetti
 1. Merge all changes and new features into master.
 2. Fill out changelog.md.
 3. Bump up npm version *AND* binary host version in `package.json`, commit and push.
-4. Generate new tags based on package.json version number with `git tag 2.0.7 -a` and include the change log in the tag's annotation.
-5. Push tags to Github with `git push --tags`
-6. Publish to npm. BUT NOT YET. Builds can take hours and occasionally fail (mainly on Appveyor) for seemingly no reason. Restart any failures in the travis or appeveyor ui. While you wait, copy the changelog updates into the Github release field. When the entire matrix succeeds and all binaries exist run `npm publish`.
+4. Update the readme to refer to older docs if you're bumping a major version
+5. Generate new tags based on package.json version number with `git tag 2.0.7 -a` and include the change log in the tag's annotation.
+6. Push tags to Github with `git push --tags`
+7. Publish to npm. BUT NOT YET. Builds can an hour and occasionally fail (mainly on Appveyor) for seemingly no reason. Restart any failures in the travis or appeveyor ui. While you wait, copy the changelog updates into the Github release field. When the entire matrix succeeds and all binaries exist run `npm publish`.
 
 Differences for beta release
 * Work in a beta branch
