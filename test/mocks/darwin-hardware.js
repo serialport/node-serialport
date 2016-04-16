@@ -37,15 +37,15 @@ var Hardware = function () {
   this.fds = {};
   this.ports = {};
   this.mockBinding = {
+    close: this.close.bind(this),
+    drain: this.drain.bind(this),
+    flush: this.flush.bind(this),
     list: this.list.bind(this),
     open: this.open.bind(this),
-    update: this.update.bind(this),
-    write: this.write.bind(this),
-    close: this.close.bind(this),
-    flush: this.flush.bind(this),
+    SerialportPoller: mockSerialportPoller(this),
     set: this.set.bind(this),
-    drain: this.drain.bind(this),
-    SerialportPoller: mockSerialportPoller(this)
+    update: this.update.bind(this),
+    write: this.write.bind(this)
   };
 };
 
@@ -191,15 +191,12 @@ var hardware = new Hardware();
 
 var SandboxedModule = require('sandboxed-module');
 
-var serialPort = SandboxedModule.require('../../serialport', {
+var serialPort = SandboxedModule.require('../../', {
   requires: {
     fs: {
       read: hardware.fakeRead.bind(hardware)
     },
-    'bindings': function() {
-      return hardware.mockBinding;
-    },
-    'mock-binding': hardware.mockBinding
+    './bindings': hardware.mockBinding
   },
   singleOnly: true,
   globals: {

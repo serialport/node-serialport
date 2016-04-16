@@ -1,7 +1,7 @@
 'use strict';
 
 var assert = require('chai').assert;
-var serialPort = require('../serialport');
+var serialPort = require('../');
 var SerialPort = serialPort.SerialPort;
 
 describe('SerialPort', function () {

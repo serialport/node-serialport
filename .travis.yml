@@ -76,13 +76,16 @@ install:
 
 script:
 # test our module
-- node serialport.js
+- node ./
 - npm test
+
 # if publishing, do it
 - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package; fi;
 - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp-github publish --release; fi;
+
 # cleanup
 - node-pre-gyp clean
 - node-gyp clean
+
 # test binary exists
 - if [[ $PUBLISH_BINARY == true ]]; then npm install --fallback-to-build=false; fi;
