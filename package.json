@@ -59,10 +59,6 @@
     "optimist": "~0.6.1",
     "sf": "0.1.7"
   },
-  "bundledDependencies": [
-    "node-pre-gyp",
-    "node-pre-gyp-github"
-  ],
   "devDependencies": {
     "chai": "*",
     "chai-subset": "^1.2.2",
@@ -87,6 +83,7 @@
   },
   "license": "MIT",
   "scripts": {
+    "preinstall": "npm install node-pre-gyp node-pre-gyp-github",
     "install": "node-pre-gyp install --fallback-to-build",
     "rebuild": "npm rebuild && node-pre-gyp rebuild",
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
