@@ -6,8 +6,15 @@ void setup() {
 
 void loop() {
   while (Serial.available()) {
-    digitalWrite(LED_BUILTIN, HIGH);
-    Serial.write(Serial.read());
+    int byte = Serial.read();
+    if (byte == 130) {
+      Serial.begin(57600);
+      Serial.write("set to 57600");
+    } else if (byte == 131) {
+      Serial.begin(9600);
+      Serial.write("set to 9600");
+    } else {
+      Serial.write(byte);
+    }
   }
-  digitalWrite(LED_BUILTIN, LOW);
 }

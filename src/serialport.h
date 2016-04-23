@@ -64,11 +64,9 @@ struct OpenBatonPlatformOptions { };
 OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& options);
 
 struct OpenBaton {
-  char path[1024];
+  char errorString[ERROR_STRING_SIZE];
   Nan::Callback* callback;
-  Nan::Callback* dataCallback;
-  Nan::Callback* disconnectedCallback;
-  Nan::Callback* errorCallback;
+  char path[1024];
   int fd;
   int result;
   int baudRate;
@@ -80,10 +78,19 @@ struct OpenBaton {
   bool xany;
   bool dsrdtr;
   bool hupcl;
+  Nan::Callback* dataCallback;
+  Nan::Callback* disconnectedCallback;
+  Nan::Callback* errorCallback;
   SerialPortParity parity;
   SerialPortStopBits stopBits;
   OpenBatonPlatformOptions* platformOptions;
+};
+
+struct ConnectionOptionsBaton {
   char errorString[ERROR_STRING_SIZE];
+  Nan::Callback* callback;
+  int fd;
+  int baudRate;
 };
 
 struct WriteBaton {

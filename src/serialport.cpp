@@ -179,6 +179,11 @@ NAN_METHOD(Update) {
   }
   v8::Local<v8::Object> options = info[1]->ToObject();
 
+  if (!Nan::Has(options, Nan::New<v8::String>("baudRate").ToLocalChecked()).FromMaybe(false)) {
+    Nan::ThrowTypeError("baudRate must be set on options object");
+    return;
+  }
+
   // callback
   if (!info[2]->IsFunction()) {
     Nan::ThrowTypeError("Third argument must be a function");
@@ -186,26 +191,12 @@ NAN_METHOD(Update) {
   }
   v8::Local<v8::Function> callback = info[2].As<v8::Function>();
 
-  OpenBaton* baton = new OpenBaton();
-  memset(baton, 0, sizeof(OpenBaton));
+  ConnectionOptionsBaton* baton = new ConnectionOptionsBaton();
+  memset(baton, 0, sizeof(ConnectionOptionsBaton));
+
   baton->fd = fd;
   baton->baudRate = Nan::Get(options, Nan::New<v8::String>("baudRate").ToLocalChecked()).ToLocalChecked()->ToInt32()->Int32Value();
-  baton->dataBits = Nan::Get(options, Nan::New<v8::String>("dataBits").ToLocalChecked()).ToLocalChecked()->ToInt32()->Int32Value();
-  baton->bufferSize = Nan::Get(options, Nan::New<v8::String>("bufferSize").ToLocalChecked()).ToLocalChecked()->ToInt32()->Int32Value();
-  baton->parity = ToParityEnum(Nan::Get(options, Nan::New<v8::String>("parity").ToLocalChecked()).ToLocalChecked()->ToString());
-  baton->stopBits = ToStopBitEnum(Nan::Get(options, Nan::New<v8::String>("stopBits").ToLocalChecked()).ToLocalChecked()->ToNumber()->NumberValue());
-  baton->rtscts = Nan::Get(options, Nan::New<v8::String>("rtscts").ToLocalChecked()).ToLocalChecked()->ToBoolean()->BooleanValue();
-  baton->xon = Nan::Get(options, Nan::New<v8::String>("xon").ToLocalChecked()).ToLocalChecked()->ToBoolean()->BooleanValue();
-  baton->xoff = Nan::Get(options, Nan::New<v8::String>("xoff").ToLocalChecked()).ToLocalChecked()->ToBoolean()->BooleanValue();
-  baton->xany = Nan::Get(options, Nan::New<v8::String>("xany").ToLocalChecked()).ToLocalChecked()->ToBoolean()->BooleanValue();
-
-  v8::Local<v8::Object> platformOptions = Nan::Get(options, Nan::New<v8::String>("platformOptions").ToLocalChecked()).ToLocalChecked()->ToObject();
-  baton->platformOptions = ParsePlatformOptions(platformOptions);
-
   baton->callback = new Nan::Callback(callback);
-  baton->dataCallback = new Nan::Callback(Nan::Get(options, Nan::New<v8::String>("dataCallback").ToLocalChecked()).ToLocalChecked().As<v8::Function>());
-  baton->disconnectedCallback = new Nan::Callback(Nan::Get(options, Nan::New<v8::String>("disconnectedCallback").ToLocalChecked()).ToLocalChecked().As<v8::Function>());
-  baton->errorCallback = new Nan::Callback(Nan::Get(options, Nan::New<v8::String>("errorCallback").ToLocalChecked()).ToLocalChecked().As<v8::Function>());
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
@@ -218,30 +209,17 @@ NAN_METHOD(Update) {
 void EIO_AfterUpdate(uv_work_t* req) {
   Nan::HandleScope scope;
 
-  OpenBaton* data = static_cast<OpenBaton*>(req->data);
+  ConnectionOptionsBaton* data = static_cast<ConnectionOptionsBaton*>(req->data);
 
-  v8::Local<v8::Value> argv[2];
+  v8::Local<v8::Value> argv[1];
   if (data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
-    argv[1] = Nan::Undefined();
-    // not needed because we're not calling AfterOpenSuccess
-    delete data->dataCallback;
-    delete data->errorCallback;
-    delete data->disconnectedCallback;
   } else {
     argv[0] = Nan::Null();
-    argv[1] = Nan::New<v8::Int32>(data->result);
-
-    // TODO figure out if this is a bug
-    int fd = argv[1]->ToInt32()->Int32Value();
-    newQForFD(fd);
-
-    AfterOpenSuccess(data->result, data->dataCallback, data->disconnectedCallback, data->errorCallback);
   }
 
-  data->callback->Call(2, argv);
+  data->callback->Call(1, argv);
 
-  delete data->platformOptions;
   delete data->callback;
   delete data;
   delete req;
@@ -363,7 +341,6 @@ NAN_METHOD(Close) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
-  int fd = info[0]->ToInt32()->Int32Value();
 
   // callback
   if (!info[1]->IsFunction()) {
@@ -374,7 +351,7 @@ NAN_METHOD(Close) {
 
   CloseBaton* baton = new CloseBaton();
   memset(baton, 0, sizeof(CloseBaton));
-  baton->fd = fd;
+  baton->fd = info[0]->ToInt32()->Int32Value();
   baton->callback = new Nan::Callback(callback);
 
   uv_work_t* req = new uv_work_t();
