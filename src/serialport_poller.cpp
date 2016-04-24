@@ -3,17 +3,17 @@
 // License to use this is the same as that of node-serialport.
 
 #include <nan.h>
-#include "serialport_poller.h"
+#include "./serialport_poller.h"
 
 using namespace v8;
 
 static Nan::Persistent<v8::FunctionTemplate> serialportpoller_constructor;
 
-SerialportPoller::SerialportPoller() :  Nan::ObjectWrap() {};
+SerialportPoller::SerialportPoller() :  Nan::ObjectWrap() {}
 SerialportPoller::~SerialportPoller() {
   // printf("~SerialportPoller\n");
   delete callback_;
-};
+}
 
 void _serialportReadable(uv_poll_t *req, int status, int events) {
   SerialportPoller* sp = (SerialportPoller*) req->data;
@@ -29,7 +29,7 @@ void SerialportPoller::callCallback(int status) {
   // Call the callback to go read more data...
 
   v8::Local<v8::Value> argv[1];
-  if(status != 0) {
+  if (status != 0) {
     // error handling changed in libuv, see:
     // https://github.com/joyent/libuv/commit/3ee4d3f183331
     #ifdef UV_ERRNO_H_
@@ -74,13 +74,12 @@ void SerialportPoller::Init(Handle<Object> target) {
 }
 
 NAN_METHOD(SerialportPoller::New) {
-
-  if(!info[0]->IsInt32()) {
+  if (!info[0]->IsInt32()) {
     Nan::ThrowTypeError("First argument must be an fd");
     return;
   }
 
-  if(!info[1]->IsFunction()) {
+  if (!info[1]->IsFunction()) {
     Nan::ThrowTypeError("Third argument must be a function");
     return;
   }
@@ -93,8 +92,9 @@ NAN_METHOD(SerialportPoller::New) {
   obj->Wrap(info.This());
 
   obj->poll_handle_.data = obj;
-/*int r = */uv_poll_init(uv_default_loop(), &obj->poll_handle_, obj->fd_);
-  
+
+  uv_poll_init(uv_default_loop(), &obj->poll_handle_, obj->fd_);
+
   uv_poll_start(&obj->poll_handle_, UV_READABLE, _serialportReadable);
 
   info.GetReturnValue().Set(info.This());
@@ -110,14 +110,13 @@ void SerialportPoller::_stop() {
 
 
 NAN_METHOD(SerialportPoller::Start) {
-
   SerialportPoller* obj = Nan::ObjectWrap::Unwrap<SerialportPoller>(info.This());
   obj->_start();
-  
+
   return;
 }
-NAN_METHOD(SerialportPoller::Close) {
 
+NAN_METHOD(SerialportPoller::Close) {
   SerialportPoller* obj = Nan::ObjectWrap::Unwrap<SerialportPoller>(info.This());
   obj->_stop();
 
