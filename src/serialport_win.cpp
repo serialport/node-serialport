@@ -1,11 +1,11 @@
-#include "serialport.h"
+#include <nan.h>
 #include <list>
+#include <vector>
+#include "./serialport.h"
 #include "win/disphelper.h"
-
 #include "win/stdafx.h"
 #include "win/enumser.h"
 
-#include <nan.h>
 
 #ifdef WIN32
 
@@ -14,7 +14,7 @@
 struct WindowsPlatformOptions : OpenBatonPlatformOptions {
 };
 
-OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& options){
+OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& options) {
   // currently none
   return new WindowsPlatformOptions();
 }
@@ -25,7 +25,7 @@ typedef BOOL (WINAPI *CancelIoExType)(HANDLE hFile, LPOVERLAPPED lpOverlapped);
 std::list<int> g_closingHandles;
 int bufferSize;
 void ErrorCodeToString(const char* prefix, int errorCode, char *errorStr) {
-  switch(errorCode) {
+  switch (errorCode) {
   case ERROR_FILE_NOT_FOUND:
     _snprintf(errorStr, ERROR_STRING_SIZE, "%s: File not found", prefix);
     break;
@@ -70,14 +70,14 @@ void EIO_Open(uv_work_t* req) {
   }
 
   bufferSize = data->bufferSize;
-  if(bufferSize > MAX_BUFFER_SIZE) {
+  if (bufferSize > MAX_BUFFER_SIZE) {
     bufferSize = MAX_BUFFER_SIZE;
   }
 
   DCB dcb = { 0 };
   dcb.DCBlength = sizeof(DCB);
-  if(data->hupcl == false) {
-      dcb.fDtrControl = DTR_CONTROL_DISABLE; // disable DTR to avoid reset
+  if (data->hupcl == false) {
+    dcb.fDtrControl = DTR_CONTROL_DISABLE;  // disable DTR to avoid reset
   } else {
     dcb.fDtrControl = DTR_CONTROL_ENABLE;
   }
@@ -95,7 +95,7 @@ void EIO_Open(uv_work_t* req) {
   dcb.fBinary = true;
   dcb.BaudRate = data->baudRate;
   dcb.ByteSize = data->dataBits;
-  switch(data->parity) {
+  switch (data->parity) {
   case SERIALPORT_PARITY_NONE:
     dcb.Parity = NOPARITY;
     break;
@@ -112,7 +112,7 @@ void EIO_Open(uv_work_t* req) {
     dcb.Parity = SPACEPARITY;
     break;
   }
-  switch(data->stopBits) {
+  switch (data->stopBits) {
   case SERIALPORT_STOPBITS_ONE:
     dcb.StopBits = ONESTOPBIT;
     break;
@@ -131,7 +131,7 @@ void EIO_Open(uv_work_t* req) {
 
   // Set the com port read/write timeouts
   DWORD serialBitsPerByte = 8/*std data bits*/ + 1/*start bit*/;
-  serialBitsPerByte += (data->parity   == SERIALPORT_PARITY_NONE ) ? 0 : 1;
+  serialBitsPerByte += (data->parity == SERIALPORT_PARITY_NONE) ? 0 : 1;
   serialBitsPerByte += (data->stopBits == SERIALPORT_STOPBITS_ONE) ? 1 : 2;
   DWORD msPerByte = (data->baudRate > 0) ?
                     ((1000 * serialBitsPerByte + data->baudRate - 1) / data->baudRate) :
@@ -140,11 +140,11 @@ void EIO_Open(uv_work_t* req) {
     msPerByte = 1;
   }
   COMMTIMEOUTS commTimeouts = {0};
-  commTimeouts.ReadIntervalTimeout = msPerByte; // Minimize chance of concatenating of separate serial port packets on read
-  commTimeouts.ReadTotalTimeoutMultiplier  = 0; // Do not allow big read timeout when big read buffer used
-  commTimeouts.ReadTotalTimeoutConstant    = 1000; // Total read timeout (period of read loop)
-  commTimeouts.WriteTotalTimeoutConstant   = 1000; // Const part of write timeout
-  commTimeouts.WriteTotalTimeoutMultiplier = msPerByte; // Variable part of write timeout (per byte)
+  commTimeouts.ReadIntervalTimeout = msPerByte;  // Minimize chance of concatenating of separate serial port packets on read
+  commTimeouts.ReadTotalTimeoutMultiplier = 0;  // Do not allow big read timeout when big read buffer used
+  commTimeouts.ReadTotalTimeoutConstant = 1000;  // Total read timeout (period of read loop)
+  commTimeouts.WriteTotalTimeoutConstant = 1000;  // Const part of write timeout
+  commTimeouts.WriteTotalTimeoutMultiplier = msPerByte;  // Variable part of write timeout (per byte)
   if (!SetCommTimeouts(file, &commTimeouts)) {
     ErrorCodeToString("SetCommTimeouts", GetLastError(), data->errorString);
     return;
@@ -158,7 +158,6 @@ void EIO_Open(uv_work_t* req) {
 }
 
 struct WatchPortBaton {
-public:
   HANDLE fd;
   DWORD bytesRead;
   char buffer[MAX_BUFFER_SIZE];
@@ -199,7 +198,7 @@ void EIO_Set(uv_work_t* req) {
 
   GetCommMask((HANDLE)data->fd, &bits);
 
-  bits &= ~( EV_CTS | EV_DSR);
+  bits &= ~(EV_CTS | EV_DSR);
 
   if (data->cts) {
     bits |= EV_CTS;
@@ -223,20 +222,19 @@ void EIO_WatchPort(uv_work_t* req) {
   // on the same handle (i.e. ReadFile and WriteFile)
   HANDLE hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
-  while(true) {
+  while (true) {
     OVERLAPPED ov = {0};
     ov.hEvent = hEvent;
 
     // Start read operation - synchrounous or asynchronous
     DWORD bytesReadSync = 0;
-    if(!ReadFile((HANDLE)data->fd, data->buffer, bufferSize, &bytesReadSync, &ov)) {
+    if (!ReadFile((HANDLE)data->fd, data->buffer, bufferSize, &bytesReadSync, &ov)) {
       data->errorCode = GetLastError();
-      if(data->errorCode != ERROR_IO_PENDING) {
+      if (data->errorCode != ERROR_IO_PENDING) {
         // Read operation error
-        if(data->errorCode == ERROR_OPERATION_ABORTED) {
+        if (data->errorCode == ERROR_OPERATION_ABORTED) {
           data->disconnected = true;
-        }
-        else {
+        } else {
           ErrorCodeToString("Reading from COM port (ReadFile)", data->errorCode, data->errorString);
           CloseHandle(hEvent);
           return;
@@ -250,31 +248,28 @@ void EIO_WatchPort(uv_work_t* req) {
 
       // Wait for async read operation completion or timeout
       DWORD bytesReadAsync = 0;
-      if(!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesReadAsync, TRUE)) {
+      if (!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesReadAsync, TRUE)) {
         // Read operation error
         data->errorCode = GetLastError();
-        if(data->errorCode == ERROR_OPERATION_ABORTED) {
+        if (data->errorCode == ERROR_OPERATION_ABORTED) {
           data->disconnected = true;
-        }
-        else {
+        } else {
           ErrorCodeToString("Reading from COM port (GetOverlappedResult)", data->errorCode, data->errorString);
           CloseHandle(hEvent);
           return;
         }
         break;
-      }
-      else {
+      } else {
         // Read operation completed asynchronously
         data->bytesRead = bytesReadAsync;
       }
-    }
-    else {
+    } else {
       // Read operation completed synchronously
       data->bytesRead = bytesReadSync;
     }
 
     // Return data received if any
-    if(data->bytesRead > 0) {
+    if (data->bytesRead > 0) {
       break;
     }
   }
@@ -283,8 +278,8 @@ void EIO_WatchPort(uv_work_t* req) {
 }
 
 bool IsClosingHandle(int fd) {
-  for(std::list<int>::iterator it=g_closingHandles.begin(); it!=g_closingHandles.end(); ++it) {
-    if(fd == *it) {
+  for (std::list<int>::iterator it = g_closingHandles.begin(); it != g_closingHandles.end(); ++it) {
+    if (fd == *it) {
       g_closingHandles.remove(fd);
       return true;
     }
@@ -312,27 +307,27 @@ void EIO_AfterWatchPort(uv_work_t* req) {
   Nan::HandleScope scope;
 
   WatchPortBaton* data = static_cast<WatchPortBaton*>(req->data);
-  if(data->disconnected) {
+  if (data->disconnected) {
     data->disconnectedCallback->Call(0, NULL);
     DisposeWatchPortCallbacks(data);
     goto cleanup;
   }
 
   bool skipCleanup = false;
-  if(data->bytesRead > 0) {
+  if (data->bytesRead > 0) {
     v8::Local<v8::Value> argv[1];
     argv[0] = Nan::NewBuffer(data->buffer, data->bytesRead, FinalizerCallback, req).ToLocalChecked();
     skipCleanup = true;
     data->dataCallback->Call(1, argv);
-  } else if(data->errorCode > 0) {
-    if(data->errorCode == ERROR_INVALID_HANDLE && IsClosingHandle((int)data->fd)) {
+  } else if (data->errorCode > 0) {
+    if (data->errorCode == ERROR_INVALID_HANDLE && IsClosingHandle((int)data->fd)) {
       DisposeWatchPortCallbacks(data);
       goto cleanup;
     } else {
       v8::Local<v8::Value> argv[1];
       argv[0] = Nan::Error(data->errorString);
       data->errorCallback->Call(1, argv);
-      Sleep(100); // prevent the errors from occurring too fast
+      Sleep(100);  // prevent the errors from occurring too fast
     }
   }
   AfterOpenSuccess((int)data->fd, data->dataCallback, data->disconnectedCallback, data->errorCallback);
@@ -372,33 +367,30 @@ void EIO_Write(uv_work_t* req) {
 
     // Start write operation - synchrounous or asynchronous
     DWORD bytesWrittenSync = 0;
-    if(!WriteFile((HANDLE)data->fd, data->bufferData, static_cast<DWORD>(data->bufferLength), &bytesWrittenSync, &ov)) {
+    if (!WriteFile((HANDLE)data->fd, data->bufferData, static_cast<DWORD>(data->bufferLength), &bytesWrittenSync, &ov)) {
       DWORD lastError = GetLastError();
-      if(lastError != ERROR_IO_PENDING) {
+      if (lastError != ERROR_IO_PENDING) {
         // Write operation error
         ErrorCodeToString("Writing to COM port (WriteFile)", lastError, data->errorString);
         return;
-      }
-      else {
+      } else {
         // Write operation is asynchronous and is pending
         // We MUST wait for operation completion before deallocation of OVERLAPPED struct
         // or write data buffer
 
         // Wait for async write operation completion or timeout
         DWORD bytesWrittenAsync = 0;
-        if(!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesWrittenAsync, TRUE)) {
+        if (!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesWrittenAsync, TRUE)) {
           // Write operation error
           DWORD lastError = GetLastError();
           ErrorCodeToString("Writing to COM port (GetOverlappedResult)", lastError, data->errorString);
           return;
-        }
-        else {
+        } else {
           // Write operation completed asynchronously
           data->result = bytesWrittenAsync;
         }
       }
-    }
-    else {
+    } else {
       // Write operation completed synchronously
       data->result = bytesWrittenSync;
     }
@@ -406,7 +398,6 @@ void EIO_Write(uv_work_t* req) {
     data->offset += data->result;
     CloseHandle(ov.hEvent);
   } while (data->bufferLength > data->offset);
-
 }
 
 void EIO_Close(uv_work_t* req) {
@@ -468,11 +459,11 @@ void EIO_List(uv_work_t* req) {
       dhGetValue(L"%s", &name,  objDevice, L".Name");
       dhGetValue(L"%s", &pnpid, objDevice, L".PnPDeviceID");
 
-      if( name != NULL && ((match = strstr( name, "(COM" )) != NULL) ) { // look for "(COM23)"
+      if (name != NULL && ((match = strstr(name, "(COM")) != NULL)) {  // look for "(COM23)"
         // 'Manufacturuer' can be null, so only get it if we need it
         dhGetValue(L"%s", &manu, objDevice,  L".Manufacturer");
         port_count++;
-        char* comname = strtok( match, "()");
+        char* comname = strtok(match, "()");
         ListResultItem* resultItem = new ListResultItem();
         resultItem->comName = comname;
         resultItem->manufacturer = manu;
@@ -492,23 +483,18 @@ void EIO_List(uv_work_t* req) {
   }
 
   std::vector<UINT> ports;
-  if (CEnumerateSerial::UsingQueryDosDevice(ports))
-  {
-    for (size_t i = 0; i < ports.size(); i++)
-    {
+  if (CEnumerateSerial::UsingQueryDosDevice(ports)) {
+    for (size_t i = 0; i < ports.size(); i++) {
       char comname[64] = { 0 };
       _snprintf(comname, sizeof(comname), "COM%u", ports[i]);
       bool bFound = false;
-      for (std::list<ListResultItem*>::iterator ri = data->results.begin(); ri != data->results.end(); ++ri)
-      {
-        if (stricmp((*ri)->comName.c_str(), comname) == 0)
-        {
+      for (std::list<ListResultItem*>::iterator ri = data->results.begin(); ri != data->results.end(); ++ri) {
+        if (stricmp((*ri)->comName.c_str(), comname) == 0) {
           bFound = true;
           break;
         }
       }
-      if (!bFound)
-      {
+      if (!bFound) {
         ListResultItem* resultItem = new ListResultItem();
         resultItem->comName = comname;
         resultItem->manufacturer = "";
@@ -522,7 +508,7 @@ void EIO_List(uv_work_t* req) {
 void EIO_Flush(uv_work_t* req) {
   FlushBaton* data = static_cast<FlushBaton*>(req->data);
 
-  if(!FlushFileBuffers((HANDLE)data->fd)) {
+  if (!FlushFileBuffers((HANDLE)data->fd)) {
     ErrorCodeToString("flushing connection", GetLastError(), data->errorString);
     return;
   }
@@ -531,7 +517,7 @@ void EIO_Flush(uv_work_t* req) {
 void EIO_Drain(uv_work_t* req) {
   DrainBaton* data = static_cast<DrainBaton*>(req->data);
 
-  if(!FlushFileBuffers((HANDLE)data->fd)) {
+  if (!FlushFileBuffers((HANDLE)data->fd)) {
     ErrorCodeToString("draining connection", GetLastError(), data->errorString);
     return;
   }

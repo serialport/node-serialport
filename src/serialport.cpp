@@ -1,15 +1,13 @@
-
-
-#include "serialport.h"
+#include "./serialport.h"
 
 #ifdef WIN32
 #define strncasecmp strnicmp
 #else
-#include "serialport_poller.h"
+#include "./serialport_poller.h"
 #endif
 
 struct _WriteQueue {
-  const int _fd; // the fd that is associated with this write queue
+  const int _fd;  // the fd that is associated with this write queue
   QueuedWrite _write_queue;
   uv_mutex_t _write_queue_mutex;
   _WriteQueue *_next;
@@ -18,12 +16,11 @@ struct _WriteQueue {
     uv_mutex_init(&_write_queue_mutex);
   }
 
-  void lock() { uv_mutex_lock(&_write_queue_mutex); };
-  void unlock() { uv_mutex_unlock(&_write_queue_mutex); };
+  void lock() { uv_mutex_lock(&_write_queue_mutex); }
+  void unlock() { uv_mutex_unlock(&_write_queue_mutex); }
 
   QueuedWrite &get() { return _write_queue; }
 };
-
 
 static _WriteQueue *write_queues = NULL;
 
@@ -36,7 +33,7 @@ static _WriteQueue *qForFD(const int fd) {
     q = q->_next;
   }
   return NULL;
-};
+}
 
 static _WriteQueue *newQForFD(const int fd) {
   _WriteQueue *q = qForFD(fd);
@@ -56,7 +53,7 @@ static _WriteQueue *newQForFD(const int fd) {
   }
 
   return q;
-};
+}
 
 static void deleteQForFD(const int fd) {
   if (write_queues == NULL)
@@ -82,28 +79,25 @@ static void deleteQForFD(const int fd) {
   }
 
   // It wasn't found...
-};
-
-
+}
 
 NAN_METHOD(Open) {
-
   // path
-  if(!info[0]->IsString()) {
+  if (!info[0]->IsString()) {
     Nan::ThrowTypeError("First argument must be a string");
     return;
   }
   v8::String::Utf8Value path(info[0]->ToString());
 
   // options
-  if(!info[1]->IsObject()) {
+  if (!info[1]->IsObject()) {
     Nan::ThrowTypeError("Second argument must be an object");
     return;
   }
   v8::Local<v8::Object> options = info[1]->ToObject();
 
   // callback
-  if(!info[2]->IsFunction()) {
+  if (!info[2]->IsFunction()) {
     Nan::ThrowTypeError("Third argument must be a function");
     return;
   }
@@ -145,7 +139,7 @@ void EIO_AfterOpen(uv_work_t* req) {
   OpenBaton* data = static_cast<OpenBaton*>(req->data);
 
   v8::Local<v8::Value> argv[2];
-  if(data->errorString[0]) {
+  if (data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
     argv[1] = Nan::Undefined();
     // not needed because we're not calling AfterOpenSuccess
@@ -171,23 +165,22 @@ void EIO_AfterOpen(uv_work_t* req) {
 }
 
 NAN_METHOD(Update) {
-
   // file descriptor
-  if(!info[0]->IsInt32()) {
+  if (!info[0]->IsInt32()) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
   int fd = info[0]->ToInt32()->Int32Value();
 
   // options
-  if(!info[1]->IsObject()) {
+  if (!info[1]->IsObject()) {
     Nan::ThrowTypeError("Second argument must be an object");
     return;
   }
   v8::Local<v8::Object> options = info[1]->ToObject();
 
   // callback
-  if(!info[2]->IsFunction()) {
+  if (!info[2]->IsFunction()) {
     Nan::ThrowTypeError("Third argument must be a function");
     return;
   }
@@ -228,7 +221,7 @@ void EIO_AfterUpdate(uv_work_t* req) {
   OpenBaton* data = static_cast<OpenBaton*>(req->data);
 
   v8::Local<v8::Value> argv[2];
-  if(data->errorString[0]) {
+  if (data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
     argv[1] = Nan::Undefined();
     // not needed because we're not calling AfterOpenSuccess
@@ -255,16 +248,15 @@ void EIO_AfterUpdate(uv_work_t* req) {
 }
 
 NAN_METHOD(Write) {
-
   // file descriptor
-  if(!info[0]->IsInt32()) {
+  if (!info[0]->IsInt32()) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
   int fd = info[0]->ToInt32()->Int32Value();
 
   // buffer
-  if(!info[1]->IsObject() || !node::Buffer::HasInstance(info[1])) {
+  if (!info[1]->IsObject() || !node::Buffer::HasInstance(info[1])) {
     Nan::ThrowTypeError("Second argument must be a buffer");
     return;
   }
@@ -273,7 +265,7 @@ NAN_METHOD(Write) {
   size_t bufferLength = node::Buffer::Length(buffer);
 
   // callback
-  if(!info[2]->IsFunction()) {
+  if (!info[2]->IsFunction()) {
     Nan::ThrowTypeError("Third argument must be a function");
     return;
   }
@@ -294,7 +286,7 @@ NAN_METHOD(Write) {
   queuedWrite->req.data = queuedWrite;
 
   _WriteQueue *q = qForFD(fd);
-  if(!q) {
+  if (!q) {
     Nan::ThrowTypeError("There's no write queue for that file descriptor (write)!");
     return;
   }
@@ -320,7 +312,7 @@ void EIO_AfterWrite(uv_work_t* req) {
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
 
   v8::Local<v8::Value> argv[2];
-  if(data->errorString[0]) {
+  if (data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
     argv[1] = Nan::Undefined();
   } else {
@@ -331,16 +323,16 @@ void EIO_AfterWrite(uv_work_t* req) {
 
   if (data->offset < data->bufferLength && !data->errorString[0]) {
     // We're not done with this baton, so throw it right back onto the queue.
-	  // Don't re-push the write in the event loop if there was an error; because same error could occur again!
+    // Don't re-push the write in the event loop if there was an error; because same error could occur again!
     // TODO: Add a uv_poll here for unix...
-    //fprintf(stderr, "Write again...\n");
+    // fprintf(stderr, "Write again...\n");
     uv_queue_work(uv_default_loop(), req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
     return;
   }
 
   int fd = data->fd;
   _WriteQueue *q = qForFD(fd);
-  if(!q) {
+  if (!q) {
     Nan::ThrowTypeError("There's no write queue for that file descriptor (after write)!");
     return;
   }
@@ -366,16 +358,15 @@ void EIO_AfterWrite(uv_work_t* req) {
 }
 
 NAN_METHOD(Close) {
-
   // file descriptor
-  if(!info[0]->IsInt32()) {
+  if (!info[0]->IsInt32()) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
   int fd = info[0]->ToInt32()->Int32Value();
 
   // callback
-  if(!info[1]->IsFunction()) {
+  if (!info[1]->IsFunction()) {
     Nan::ThrowTypeError("Second argument must be a function");
     return;
   }
@@ -399,7 +390,7 @@ void EIO_AfterClose(uv_work_t* req) {
   CloseBaton* data = static_cast<CloseBaton*>(req->data);
 
   v8::Local<v8::Value> argv[1];
-  if(data->errorString[0]) {
+  if (data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
   } else {
     argv[0] = Nan::Undefined();
@@ -419,7 +410,6 @@ void EIO_AfterClose(uv_work_t* req) {
 
       deleteQForFD(data->fd);
     }
-
   }
   data->callback->Call(1, argv);
 
@@ -429,9 +419,8 @@ void EIO_AfterClose(uv_work_t* req) {
 }
 
 NAN_METHOD(List) {
-
   // callback
-  if(!info[0]->IsFunction()) {
+  if (!info[0]->IsFunction()) {
     Nan::ThrowTypeError("First argument must be a function");
     return;
   }
@@ -454,13 +443,13 @@ void EIO_AfterList(uv_work_t* req) {
   ListBaton* data = static_cast<ListBaton*>(req->data);
 
   v8::Local<v8::Value> argv[2];
-  if(data->errorString[0]) {
+  if (data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
     argv[1] = Nan::Undefined();
   } else {
     v8::Local<v8::Array> results = Nan::New<v8::Array>();
     int i = 0;
-    for(std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it, i++) {
+    for (std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it, i++) {
       v8::Local<v8::Object> item = Nan::New<v8::Object>();
 
       if (strlen((*it)->comName.c_str()) > 0) {
@@ -513,7 +502,7 @@ void EIO_AfterList(uv_work_t* req) {
   data->callback->Call(2, argv);
 
   delete data->callback;
-  for(std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it) {
+  for (std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it) {
     delete *it;
   }
   delete data;
@@ -521,16 +510,15 @@ void EIO_AfterList(uv_work_t* req) {
 }
 
 NAN_METHOD(Flush) {
-
   // file descriptor
-  if(!info[0]->IsInt32()) {
+  if (!info[0]->IsInt32()) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
   int fd = info[0]->ToInt32()->Int32Value();
 
   // callback
-  if(!info[1]->IsFunction()) {
+  if (!info[1]->IsFunction()) {
     Nan::ThrowTypeError("Second argument must be a function");
     return;
   }
@@ -555,7 +543,7 @@ void EIO_AfterFlush(uv_work_t* req) {
 
   v8::Local<v8::Value> argv[2];
 
-  if(data->errorString[0]) {
+  if (data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
     argv[1] = Nan::Undefined();
   } else {
@@ -570,23 +558,22 @@ void EIO_AfterFlush(uv_work_t* req) {
 }
 
 NAN_METHOD(Set) {
-
   // file descriptor
-  if(!info[0]->IsInt32()) {
+  if (!info[0]->IsInt32()) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
   int fd = info[0]->ToInt32()->Int32Value();
 
   // options
-  if(!info[1]->IsObject()) {
+  if (!info[1]->IsObject()) {
     Nan::ThrowTypeError("Second argument must be an object");
     return;
   }
   v8::Local<v8::Object> options = info[1]->ToObject();
 
   // callback
-  if(!info[2]->IsFunction()) {
+  if (!info[2]->IsFunction()) {
     Nan::ThrowTypeError("Third argument must be a function");
     return;
   }
@@ -616,7 +603,7 @@ void EIO_AfterSet(uv_work_t* req) {
 
   v8::Local<v8::Value> argv[2];
 
-  if(data->errorString[0]) {
+  if (data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
     argv[1] = Nan::Undefined();
   } else {
@@ -631,16 +618,15 @@ void EIO_AfterSet(uv_work_t* req) {
 }
 
 NAN_METHOD(Drain) {
-
   // file descriptor
-  if(!info[0]->IsInt32()) {
+  if (!info[0]->IsInt32()) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
   int fd = info[0]->ToInt32()->Int32Value();
 
   // callback
-  if(!info[1]->IsFunction()) {
+  if (!info[1]->IsFunction()) {
     Nan::ThrowTypeError("Second argument must be a function");
     return;
   }
@@ -665,7 +651,7 @@ void EIO_AfterDrain(uv_work_t* req) {
 
   v8::Local<v8::Value> argv[2];
 
-  if(data->errorString[0]) {
+  if (data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
     argv[1] = Nan::Undefined();
   } else {
@@ -685,15 +671,15 @@ SerialPortParity NAN_INLINE(ToParityEnum(const v8::Local<v8::String>& v8str)) {
   Nan::Utf8String *str = new Nan::Utf8String(v8str);
   size_t count = strlen(**str);
   SerialPortParity parity = SERIALPORT_PARITY_NONE;
-  if(!strncasecmp(**str, "none", count)) {
+  if (!strncasecmp(**str, "none", count)) {
   parity = SERIALPORT_PARITY_NONE;
-  } else if(!strncasecmp(**str, "even", count)) {
+  } else if (!strncasecmp(**str, "even", count)) {
   parity = SERIALPORT_PARITY_EVEN;
-  } else if(!strncasecmp(**str, "mark", count)) {
+  } else if (!strncasecmp(**str, "mark", count)) {
   parity = SERIALPORT_PARITY_MARK;
-  } else if(!strncasecmp(**str, "odd", count)) {
+  } else if (!strncasecmp(**str, "odd", count)) {
   parity = SERIALPORT_PARITY_ODD;
-  } else if(!strncasecmp(**str, "space", count)) {
+  } else if (!strncasecmp(**str, "space", count)) {
   parity = SERIALPORT_PARITY_SPACE;
   }
   // delete[] str;
@@ -702,18 +688,17 @@ SerialPortParity NAN_INLINE(ToParityEnum(const v8::Local<v8::String>& v8str)) {
 
 
 SerialPortStopBits NAN_INLINE(ToStopBitEnum(double stopBits)) {
-  if(stopBits > 1.4 && stopBits < 1.6) {
+  if (stopBits > 1.4 && stopBits < 1.6) {
     return SERIALPORT_STOPBITS_ONE_FIVE;
   }
-  if(stopBits == 2) {
+  if (stopBits == 2) {
     return SERIALPORT_STOPBITS_TWO;
   }
   return SERIALPORT_STOPBITS_ONE;
 }
 
 extern "C" {
-  void init (v8::Handle<v8::Object> target)
-  {
+  void init(v8::Handle<v8::Object> target) {
     Nan::HandleScope scope;
     Nan::SetMethod(target, "set", Set);
     Nan::SetMethod(target, "open", Open);
