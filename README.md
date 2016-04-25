@@ -378,8 +378,6 @@ Closes an open connection.
 
 Called once a connection is closed. The callback should be a function that looks like: `function (error) { ... }` If called without an callback and there is an error, an error event will be emitted.
 
-**Note:** Currently closing a connection will also remove all event listeners.
-
 ### .set (options, callback)
 
 Sets flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363257(v=vs.85).aspx) for windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for mac and linux.
@@ -416,8 +414,6 @@ Callback is called with an error object whenever there is an error.
 
 ### .on('disconnect', callback)
 Callback is called with an error object.
-
-**Note:** Currently disconnections will also remove all event listeners on some platforms.
 
 ## Command Line Tools
 If you install `serialport` globally. (eg, `npm install -g serialport`) you'll receive two command line tools.
