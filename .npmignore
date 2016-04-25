@@ -7,11 +7,10 @@ changelog.md
 CODE_OF_CONDUCT.md
 examples/
 Gruntfile.js
-publish-binaries.md
+PUBLISHING.md
 test/
 
 # MIRRORED FROM .gitignore PLEASE MAINTAIN
-.lock-wscript
 *.node
 .DS_Store
 build/

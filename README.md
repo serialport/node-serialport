@@ -8,9 +8,9 @@ For support you can open a [github issue](https://github.com/voodootikigod/node-
 
 ***
 
-You're reading the latest README for `serialport@2.1.0` the latest `2.x` release.
+You're reading the latest README for `serialport@2.1.1` the latest `2.x` release.
 
- - [`serialport@1.7.4` docs are here](https://github.com/voodootikigod/node-serialport/blob/v1.7.4/README.md) it was the latest `1.x` release
+ - [`serialport@1.7.4` docs are here](https://github.com/voodootikigod/node-serialport/blob/v1.7.4/README.md) it was the last `1.x` release
 
 ***
 

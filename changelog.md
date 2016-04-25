@@ -1,3 +1,9 @@
+Version 2.1.1
+-------------
+- `.list` errors are consistent across platforms and no longer has blocking `statSync` calls
+- Stop bundling node-pre-gyp to prevent issues when it's already installed
+- Internal restructuring
+
 Version 2.1.0
 -------------
 - Major refactor, bug fixes and docs improvements thanks to @ecksun, @fivdi, @gfcittolin, @jacobrosenthal, @mhart, @nebrius, @pabigot, @paulkaplan, @reconbot, @rodovich, @rwaldron, @sayanee, @tigoe and everyone who reported and helped debug issues!
