@@ -1,6 +1,6 @@
 {
   "name": "serialport",
-  "version": "2.1.2",
+  "version": "3.0.0",
   "description": "Node.js package to access serial ports. Welcome your robotic javascript overlords. Better yet, program them!",
   "author": {
     "name": "Chris Williams",
@@ -10,7 +10,7 @@
   "binary": {
     "module_name": "serialport",
     "module_path": "build/{configuration}/",
-    "host": "https://github.com/voodootikigod/node-serialport/releases/download/2.1.2"
+    "host": "https://github.com/voodootikigod/node-serialport/releases/download/3.0.0"
   },
   "main": "./lib/serialport",
   "repository": {
