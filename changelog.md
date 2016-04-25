@@ -1,3 +1,7 @@
+Version 2.1.2
+-------------
+- Start bundling node-pre-gyp but upgrade it to the latest as the previous version doesn't install
+
 Version 2.1.1
 -------------
 - `.list` errors are consistent across platforms and no longer has blocking `statSync` calls
