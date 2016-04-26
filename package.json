@@ -50,11 +50,10 @@
   ],
   "dependencies": {
     "bindings": "1.2.1",
-    "bluebird": "^3.3.5",
     "debug": "^2.1.1",
+    "es6-promise": "^3.1.2",
     "nan": "~2.2.1",
     "node-pre-gyp": "^0.6.26",
-    "node-pre-gyp-github": "^1.1.0",
     "object.assign": "^4.0.3",
     "optimist": "~0.6.1",
     "sf": "0.1.7"
@@ -69,13 +68,13 @@
     "grunt-mocha-test": "^0.12.7",
     "gruntify-eslint": "^2.0.0",
     "mocha": "^2.4.5",
+    "node-pre-gyp-github": "^1.1.2",
     "sandboxed-module": "^2.0.3",
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0"
   },
   "bundledDependencies": [
-    "node-pre-gyp",
-    "node-pre-gyp-github"
+    "node-pre-gyp"
   ],
   "engines": {
     "node": ">= 0.10.0"
@@ -87,7 +86,7 @@
   "license": "MIT",
   "scripts": {
     "install": "node-pre-gyp install --fallback-to-build",
-    "rebuild": "npm rebuild && node-pre-gyp rebuild",
+    "rebuild-all": "npm rebuild && node-pre-gyp rebuild",
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
     "grunt": "grunt",
     "test": "grunt --verbose"
