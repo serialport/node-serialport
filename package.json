@@ -67,6 +67,7 @@
     "grunt": "^1.0.0",
     "grunt-mocha-test": "^0.12.7",
     "gruntify-eslint": "^2.0.0",
+    "memwatch-next": "^0.3.0",
     "mocha": "^2.4.5",
     "node-pre-gyp-github": "^1.1.2",
     "sandboxed-module": "^2.0.3",
