@@ -1,3 +1,8 @@
+Version 3.0.1
+-------------
+ - Change from BlueBird to es6-promise to save 9.5MB from the package size (19M -> 9.5) and 130k bundle size (186.1kb -> 55.2kb)
+ - Experimental node 6 support
+
 Version 3.0.0
 -------------
 - `close` and `disconnect` events no longer call `removeAllListeners` and removes your event listeners. This was particularly bad for the `error` event. This is the only change and if you didn't have a special code to deal with this behavior you should probably upgrade from v2.1.2
