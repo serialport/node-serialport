@@ -1,47 +1,45 @@
 #!/usr/bin/env node
-
 'use strict';
 
-var SerialPort = require('../').SerialPort;
-var optimist = require('optimist');
+var serialport = require('../');
+var version = require('../package.json').version;
+var args = require('commander');
 
-var args = optimist
-  .alias('h', 'help')
-  .alias('h', '?')
-  .options('portname', {
-    alias: 'p',
-    describe: 'Name of serial port. See serialPortList.js for open serial ports.'
-  })
-  .options('baud', {
-    describe: 'Baud rate.',
-    default: 9600
-  })
-  .options('databits', {
-    describe: 'Data bits.',
-    default: 8
-  })
-  .options('parity', {
-    describe: 'Parity.',
-    default: 'none'
-  })
-  .options('stopbits', {
-    describe: 'Stop bits.',
-    default: 1
-  })
-  .options('localecho', {
-    describe: 'Enable local echo.',
-    boolean: true
-  })
-  .argv;
+args
+  .version(version)
+  .usage('-p <port> [options]')
+  .description('A basic terminal interface for communicating over a serial port. Pressing ctrl+c exits.')
+  .option('-l --list', 'List available ports then exit')
+  // TODO make the port not a flag as it's always required
+  .option('-p, --port, --portname <port>', 'Path or Name of serial port')
+  .option('-b, --baud <baudrate>', 'Baud rate default: 9600', parseInt, 9600)
+  .option('--databits <databits>', 'Data bits default: 8', parseInt, 8)
+  .option('--parity <parity>', 'Parity default: none', 'none')
+  .option('--stopbits <bits>', 'Stop bits default: 1', parseInt, 1)
+  // TODO make this on by default
+  .option('--echo --localecho', 'Print characters as you type them.')
+  .parse(process.argv);
 
-if (args.help) {
-  optimist.showHelp();
-  return process.exit(-1);
+function listPorts() {
+  serialport.list(function(err, ports) {
+    if (err) {
+      console.error('Error listing ports', err);
+    } else {
+      ports.forEach(function(port) {
+        console.log(port.comName + '\t' + (port.pnpId || '') + '\t' + (port.manufacturer || ''));
+      });
+    }
+  });
+};
+
+if (args.list) {
+  return listPorts();
 }
 
-if (!args.portname) {
-  console.error('Serial port name is required.');
-  return process.exit(-1);
+if (!args.port) {
+  args.outputHelp();
+  args.missingArgument('port');
+  process.exit(-1);
 }
 
 var openOptions = {
@@ -51,7 +49,7 @@ var openOptions = {
   stopBits: args.stopbits
 };
 
-var port = new SerialPort(args.portname, openOptions);
+var port = new serialport.SerialPort(args.port, openOptions);
 
 process.stdin.resume();
 process.stdin.setRawMode(true);
@@ -67,11 +65,7 @@ process.stdin.on('data', function (s) {
       process.stdout.write(s);
     }
   }
-  port.write(s, function (err) {
-    if (err) {
-      console.log(err);
-    }
-  });
+  port.write(s);
 });
 
 port.on('data', function (data) {
@@ -79,5 +73,6 @@ port.on('data', function (data) {
 });
 
 port.on('error', function (err) {
-  console.log(err);
+  console.log('Error', err);
+  process.exit(1);
 });

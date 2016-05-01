@@ -436,7 +436,57 @@ Callback is called with an error object.
 If you install `serialport` globally. (eg, `npm install -g serialport`) you'll receive two command line tools.
 
 ### Serial Port List
-`serialportlist` will list all available serialports
+`serialportlist` will list all available serial ports in different formats.
+
+```bash
+$ serialportlist -h
+
+  Usage: serialport-list [options]
+
+  List available serial ports
+
+  Options:
+
+    -h, --help           output usage information
+    -V, --version        output the version number
+    -f, --format <type>  Format the output as text, json, or jsonline. default: text
+
+
+$ serialportlist
+/dev/cu.Bluetooth-Incoming-Port
+/dev/cu.usbmodem1421    Arduino (www.arduino.cc)
+
+$ serialportlist -f json
+[{"comName":"/dev/cu.Bluetooth-Incoming-Port"},{"comName":"/dev/cu.usbmodem1421","manufacturer":"Arduino (www.arduino.cc)","serialNumber":"752303138333518011C1","locationId":"0x14200000","vendorId":"0x2341","productId":"0x0043"}]
+
+$ serialportlist -f jsonline
+{"comName":"/dev/cu.Bluetooth-Incoming-Port"}
+{"comName":"/dev/cu.usbmodem1421","manufacturer":"Arduino (www.arduino.cc)","serialNumber":"752303138333518011C1","locationId":"0x14200000","vendorId":"0x2341","productId":"0x0043"}
+```
 
 ### Serial Port Terminal
-`serialportterm` provides a basic terminal interface for a serialport. `ctrl+c` will exit.
+`serialportterm` provides a basic terminal interface for communicating over a serial port. `ctrl+c` will exit.
+
+```bash
+$ serialportterminal -h
+
+  Usage: serialport-terminal -p <port> [options]
+
+  A basic terminal interface for communicating over a serial port. Pressing ctrl+c exits.
+
+  Options:
+
+    -h, --help                     output usage information
+    -V, --version                  output the version number
+    -l --list                      List available ports then exit
+    -p, --port, --portname <port>  Path or Name of serial port
+    -b, --baud <baudrate>          Baud rate default: 9600
+    --databits <databits>          Data bits default: 8
+    --parity <parity>              Parity default: none
+    --stopbits <bits>              Stop bits default: 1
+    --echo --localecho             Print characters as you type them.
+
+$ serialportterminal -l
+/dev/cu.Bluetooth-Incoming-Port
+/dev/cu.usbmodem1421    Arduino (www.arduino.cc)
+```
