@@ -30,8 +30,12 @@ env:
   - TRAVIS_NODE_VERSION="6" ARCH="x86"
 matrix:
   allow_failures:
-    - TRAVIS_NODE_VERSION="6"
-    - TRAVIS_NODE_VERSION="6" ARCH="x86"
+  - os: linux
+    env: TRAVIS_NODE_VERSION="6"
+  - os: linux
+    env: TRAVIS_NODE_VERSION="6" ARCH="x86"
+  - os: osx
+    env: TRAVIS_NODE_VERSION="6"
   exclude:
   - os: osx
     env: TRAVIS_NODE_VERSION="0.10" ARCH="x86"
