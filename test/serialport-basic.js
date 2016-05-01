@@ -329,6 +329,17 @@ describe('SerialPort', function () {
       });
     });
 
+    describe('#write', function() {
+      it('errors when the port is not open', function (done) {
+        var cb = function () {};
+        var port = new SerialPort('/dev/exists', false, cb);
+        port.write(null, function(err) {
+          assert.instanceOf(err, Error);
+          done();
+        });
+      });
+    });
+
     describe('#set', function() {
       it('errors when serialport not open', function (done) {
         var cb = function () {};
@@ -401,15 +412,6 @@ describe('SerialPort', function () {
       });
     });
 
-    it('write errors when serialport not open', function (done) {
-      var cb = function () {};
-      var port = new SerialPort('/dev/exists', {}, false, cb);
-      port.write(null, function(err) {
-        assert.instanceOf(err, Error);
-        done();
-      });
-    });
-
     it('flush errors when serialport not open', function (done) {
       var cb = function () {};
       var port = new SerialPort('/dev/exists', {}, false, cb);
@@ -425,13 +427,6 @@ describe('SerialPort', function () {
       port.drain(function(err) {
         assert.instanceOf(err, Error);
         done();
-      });
-    });
-
-    it('write should consider 0 to be a valid fd', function(done) {
-      var port = new SerialPort('/dev/exists', function() {
-        expect(port.fd).to.equal(0);
-        port.write(new Buffer(0), done);
       });
     });
 
