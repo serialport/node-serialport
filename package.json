@@ -53,7 +53,7 @@
     "commander": "^2.9.0",
     "debug": "^2.1.1",
     "es6-promise": "^3.1.2",
-    "nan": "~2.2.1",
+    "nan": "^2.3.2",
     "node-pre-gyp": "^0.6.26",
     "object.assign": "^4.0.3"
   },
@@ -66,7 +66,6 @@
     "grunt": "^1.0.0",
     "grunt-mocha-test": "^0.12.7",
     "gruntify-eslint": "^2.0.0",
-    "memwatch-next": "^0.3.0",
     "mocha": "^2.4.5",
     "node-pre-gyp-github": "^1.1.2",
     "sandboxed-module": "^2.0.3",

@@ -61,12 +61,10 @@ void SerialportPoller::Init(Handle<Object> target) {
   // Prototype
 
   // SerialportPoller.close()
-  Nan::SetPrototypeTemplate(tpl, "close",
-      Nan::GetFunction(Nan::New<FunctionTemplate>(Close)).ToLocalChecked());
+  Nan::SetPrototypeMethod(tpl, "close", Close);
 
   // SerialportPoller.start()
-  Nan::SetPrototypeTemplate(tpl, "start",
-      Nan::GetFunction(Nan::New<FunctionTemplate>(Start)).ToLocalChecked());
+  Nan::SetPrototypeMethod(tpl, "start", Start);
 
   serialportpoller_constructor.Reset(tpl);
 
