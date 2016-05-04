@@ -1,3 +1,8 @@
+Version 3.1.0
+-------------
+ - Upgrade nan and fix warnings for node 6.0
+ - Update the cli tools. serialport-term can now list ports, serialport-list can now output in different formats
+
 Version 3.0.1
 -------------
  - Change from BlueBird to es6-promise to save 9.5MB from the package size (19M -> 9.5) and 130k bundle size (186.1kb -> 55.2kb)
