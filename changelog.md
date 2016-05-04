@@ -1,3 +1,7 @@
+Version 3.1.1
+-------------
+ - fix an issue with bundled deps for node-pre-gyp on npm
+
 Version 3.1.0
 -------------
  - Upgrade nan and fix warnings for node 6.0

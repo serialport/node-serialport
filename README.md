@@ -10,7 +10,7 @@ For support you can open a [github issue](https://github.com/voodootikigod/node-
 
 You're reading the README for the master branch of serialport. You might want to look at the README of our latest release. See our [change log](changelog.md) for what's new.
 
- - [`serialport@3.1.0` docs are here](https://github.com/voodootikigod/node-serialport/blob/3.1.0/README.md) it is the latest `3.x` releases.
+ - [`serialport@3.1.1` docs are here](https://github.com/voodootikigod/node-serialport/blob/3.1.0/README.md) it is the latest `3.x` releases.
  - [`serialport@2.1.2` docs are here](https://github.com/voodootikigod/node-serialport/blob/2.1.2/README.md) it was the last `2.x` release
  - [`serialport@1.7.4` docs are here](https://github.com/voodootikigod/node-serialport/blob/v1.7.4/README.md) it was the last `1.x` release
 
