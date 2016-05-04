@@ -1,3 +1,27 @@
+Version 3.1.0
+-------------
+ - Upgrade nan and fix warnings for node 6.0
+ - Update the cli tools. serialport-term can now list ports, serialport-list can now output in different formats
+
+Version 3.0.1
+-------------
+ - Change from BlueBird to es6-promise to save 9.5MB from the package size (19M -> 9.5) and 130k bundle size (186.1kb -> 55.2kb)
+ - Experimental node 6 support
+
+Version 3.0.0
+-------------
+- `close` and `disconnect` events no longer call `removeAllListeners` and removes your event listeners. This was particularly bad for the `error` event. This is the only change and if you didn't have a special code to deal with this behavior you should probably upgrade from v2.1.2
+
+Version 2.1.2
+-------------
+- Start bundling node-pre-gyp but upgrade it to the latest as the previous version doesn't install
+
+Version 2.1.1
+-------------
+- `.list` errors are consistent across platforms and no longer has blocking `statSync` calls
+- Stop bundling node-pre-gyp to prevent issues when it's already installed
+- Internal restructuring
+
 Version 2.1.0
 -------------
 - Major refactor, bug fixes and docs improvements thanks to @ecksun, @fivdi, @gfcittolin, @jacobrosenthal, @mhart, @nebrius, @pabigot, @paulkaplan, @reconbot, @rodovich, @rwaldron, @sayanee, @tigoe and everyone who reported and helped debug issues!

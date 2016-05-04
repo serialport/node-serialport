@@ -1,13 +1,12 @@
-
 #ifndef _serialport_h_
 #define _serialport_h_
 
-#include <nan.h>
-#include <list>
-#include <string>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <nan.h>
+#include <list>
+#include <string>
 
 
 enum SerialPortParity {
@@ -62,13 +61,10 @@ void EIO_AfterDrain(uv_work_t* req);
 SerialPortParity ToParityEnum(const v8::Local<v8::String>& str);
 SerialPortStopBits ToStopBitEnum(double stopBits);
 
-struct OpenBatonPlatformOptions
-{
-};
+struct OpenBatonPlatformOptions { };
 OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& options);
 
 struct OpenBaton {
-public:
   char path[1024];
   Nan::Callback* callback;
   Nan::Callback* dataCallback;
@@ -92,7 +88,6 @@ public:
 };
 
 struct WriteBaton {
-public:
   int fd;
   char* bufferData;
   size_t bufferLength;
@@ -104,7 +99,6 @@ public:
 };
 
 struct QueuedWrite {
-public:
   uv_work_t req;
   QueuedWrite *prev;
   QueuedWrite *next;
@@ -115,11 +109,11 @@ public:
     next = this;
 
     baton = 0;
-  };
+  }
 
   ~QueuedWrite() {
     remove();
-  };
+  }
 
   void remove() {
     prev->next = next;
@@ -127,30 +121,27 @@ public:
 
     next = this;
     prev = this;
-  };
+  }
 
   void insert_tail(QueuedWrite *qw) {
     qw->next = this;
     qw->prev = this->prev;
     qw->prev->next = qw;
     this->prev = qw;
-  };
+  }
 
   bool empty() {
     return next == this;
-  };
-
+  }
 };
 
 struct CloseBaton {
-public:
   int fd;
   Nan::Callback* callback;
   char errorString[ERROR_STRING_SIZE];
 };
 
 struct ListResultItem {
-public:
   std::string comName;
   std::string manufacturer;
   std::string serialNumber;
@@ -161,14 +152,12 @@ public:
 };
 
 struct ListBaton {
-public:
   Nan::Callback* callback;
   std::list<ListResultItem*> results;
   char errorString[ERROR_STRING_SIZE];
 };
 
 struct FlushBaton {
-public:
   int fd;
   Nan::Callback* callback;
   int result;
@@ -176,7 +165,6 @@ public:
 };
 
 struct SetBaton {
-public:
   int fd;
   Nan::Callback* callback;
   int result;
@@ -186,11 +174,9 @@ public:
   bool dtr;
   bool dsr;
   bool brk;
-
 };
 
 struct DrainBaton {
-public:
   int fd;
   Nan::Callback* callback;
   int result;

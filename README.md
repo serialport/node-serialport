@@ -8,6 +8,14 @@ For support you can open a [github issue](https://github.com/voodootikigod/node-
 
 ***
 
+You're reading the README for the master branch of serialport. You might want to look at the README of our latest release. See our [change log](changelog.md) for what's new.
+
+ - [`serialport@3.1.0` docs are here](https://github.com/voodootikigod/node-serialport/blob/3.1.0/README.md) it is the latest `3.x` releases.
+ - [`serialport@2.1.2` docs are here](https://github.com/voodootikigod/node-serialport/blob/2.1.2/README.md) it was the last `2.x` release
+ - [`serialport@1.7.4` docs are here](https://github.com/voodootikigod/node-serialport/blob/v1.7.4/README.md) it was the last `1.x` release
+
+***
+
 Imagine a world where you can write JavaScript to control blenders, lights, security systems, or even robots. Yes, I said robots. That world is here and now with node-serialport. It provides a very simple interface to the low level serial port code necessary to program [Arduino](http://www.arduino.cc/) chipsets, [X10](http://www.smarthome.com/manuals/protocol.txt) wireless communications, or even the rising [Z-Wave](http://www.z-wave.com/modules/ZwaveStart/) and [Zigbee](http://www.zigbee.org/) standards. The physical world is your oyster with this goodie. For a full break down of why we made this, please read [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics).
 
 ***
@@ -20,6 +28,7 @@ For getting started with node-serialport, we recommend you begin with the follow
 
 ***
 
+* [Platform Support](#platform-support)
 * [Installation](#installation-instructions)
 * [Installation Special Cases](#installation-special-cases)
   * [Windows](#windows)
@@ -48,9 +57,24 @@ For getting started with node-serialport, we recommend you begin with the follow
 
 ***
 
+## Platform Support
+`serialport` supports and tests against the following platforms, architectures and node versions. Node V6 works but isn't officially supported yet.
+
+| Platform / Arch | Node v0.10.x | Node v0.12.x | Node v4.x | Node v5.x | Node v6.x |
+| --- | --- | --- | --- | --- | --- |
+| Linux / ia32 | ☑ | ☑ | ☑ | ☑ | ☐ |
+| Linux / x64 | ☑ | ☑ | ☑ | ☑ | ☐ |
+| Windows¹ / x86 | ☑ | ☑ | ☑ | ☑ | ☐ |
+| Windows¹ / x64 | ☑ | ☑ | ☑ | ☑ | ☐ |
+| OSX² / x64 | ☑ | ☑ | ☑ | ☑ | ☐ |
+
+¹ Windows 7, 8, 10, and 10 IoT are supported but only Windows Server 2012 R2 is tested by our CI.
+
+² OSX 10.4 Tiger and above are supported but only 10.9.5 Mavericks with Xcode 6.1 is tested in our CI.
+
 ## Installation Instructions
 
-For most "standard" use cases (node v0.10.x on mac, linux, windows on a x86 or x64 processor), node-serialport will install nice and easy with a simple
+For most "standard" use cases (node v4.x on mac, linux, windows on a x86 or x64 processor), node-serialport will install nice and easy with a simple
 
 ```
 npm install serialport
@@ -372,8 +396,6 @@ Closes an open connection.
 
 Called once a connection is closed. The callback should be a function that looks like: `function (error) { ... }` If called without an callback and there is an error, an error event will be emitted.
 
-**Note:** Currently closing a connection will also remove all event listeners.
-
 ### .set (options, callback)
 
 Sets flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363257(v=vs.85).aspx) for windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for mac and linux.
@@ -411,13 +433,61 @@ Callback is called with an error object whenever there is an error.
 ### .on('disconnect', callback)
 Callback is called with an error object.
 
-**Note:** Currently disconnections will also remove all event listeners on some platforms.
-
 ## Command Line Tools
 If you install `serialport` globally. (eg, `npm install -g serialport`) you'll receive two command line tools.
 
 ### Serial Port List
-`serialportlist` will list all available serialports
+`serialportlist` will list all available serial ports in different formats.
+
+```bash
+$ serialportlist -h
+
+  Usage: serialport-list [options]
+
+  List available serial ports
+
+  Options:
+
+    -h, --help           output usage information
+    -V, --version        output the version number
+    -f, --format <type>  Format the output as text, json, or jsonline. default: text
+
+
+$ serialportlist
+/dev/cu.Bluetooth-Incoming-Port
+/dev/cu.usbmodem1421    Arduino (www.arduino.cc)
+
+$ serialportlist -f json
+[{"comName":"/dev/cu.Bluetooth-Incoming-Port"},{"comName":"/dev/cu.usbmodem1421","manufacturer":"Arduino (www.arduino.cc)","serialNumber":"752303138333518011C1","locationId":"0x14200000","vendorId":"0x2341","productId":"0x0043"}]
+
+$ serialportlist -f jsonline
+{"comName":"/dev/cu.Bluetooth-Incoming-Port"}
+{"comName":"/dev/cu.usbmodem1421","manufacturer":"Arduino (www.arduino.cc)","serialNumber":"752303138333518011C1","locationId":"0x14200000","vendorId":"0x2341","productId":"0x0043"}
+```
 
 ### Serial Port Terminal
-`serialportterm` provides a basic terminal interface for a serialport. `ctrl+c` will exit.
+`serialportterm` provides a basic terminal interface for communicating over a serial port. `ctrl+c` will exit.
+
+```bash
+$ serialportterminal -h
+
+  Usage: serialport-terminal -p <port> [options]
+
+  A basic terminal interface for communicating over a serial port. Pressing ctrl+c exits.
+
+  Options:
+
+    -h, --help                     output usage information
+    -V, --version                  output the version number
+    -l --list                      List available ports then exit
+    -p, --port, --portname <port>  Path or Name of serial port
+    -b, --baud <baudrate>          Baud rate default: 9600
+    --databits <databits>          Data bits default: 8
+    --parity <parity>              Parity default: none
+    --stopbits <bits>              Stop bits default: 1
+    --echo --localecho             Print characters as you type them.
+
+$ serialportterminal -l
+/dev/cu.Bluetooth-Incoming-Port
+/dev/cu.usbmodem1421    Arduino (www.arduino.cc)
+```

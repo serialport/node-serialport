@@ -12,12 +12,18 @@ var listUnix = SandboxedModule.require('../../lib/list-unix', {
     fs: {
       readdir: function(path, cb) {
         if (error) {
-          return process.nextTick(cb.bind(null, new Error('bad')));
+          return process.nextTick(function() {
+            cb(new Error('bad'));
+          });
         }
-        process.nextTick(cb.bind(null, null, Object.keys(mockPorts)));
+        process.nextTick(function() {
+          cb(null, Object.keys(mockPorts));
+        });
       },
-      statSync: function() {
-        return { isCharacterDevice: function() { return true } };
+      stat: function(path, cb) {
+        process.nextTick(function() {
+          cb(null, { isCharacterDevice: function() { return true } });
+        });
       }
     },
     path: {

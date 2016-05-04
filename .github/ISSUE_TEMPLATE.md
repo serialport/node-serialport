@@ -1,7 +1,7 @@
 Operating System and Hardware:
 NodeJS Version:
 Serialport version:
-Python Version:
+Python Version (if you're having trouble building serialport):
 (Run `node -v && npm -v && python --version` to get the version numbers.)
 
 ### Expected behavior
