@@ -37,6 +37,15 @@ var testPort = process.env.TEST_PORT;
 
 describe('SerialPortBinding', function () {
   describe('#open', function() {
+    it('errors when providing a bad port', function(done) {
+      SerialPortBinding.open('COMBAD', defaultPortOpenOptions, function(err, fd) {
+        assert.instanceOf(err, Error);
+        assert.include(err.message, 'COMBAD');
+        assert.isUndefined(fd);
+        done();
+      });
+    });
+
     if (!testPort) {
       it('Cannot be tested as we have no test ports on ' + platform);
       return;

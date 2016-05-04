@@ -6,7 +6,6 @@
 #include "win/stdafx.h"
 #include "win/enumser.h"
 
-
 #ifdef WIN32
 
 #define MAX_BUFFER_SIZE 1000
@@ -27,19 +26,19 @@ int bufferSize;
 void ErrorCodeToString(const char* prefix, int errorCode, char *errorStr) {
   switch (errorCode) {
   case ERROR_FILE_NOT_FOUND:
-    _snprintf(errorStr, ERROR_STRING_SIZE, "%s: File not found", prefix);
+    _snprintf_s(errorStr, ERROR_STRING_SIZE, _TRUNCATE, "%s: File not found", prefix);
     break;
   case ERROR_INVALID_HANDLE:
-    _snprintf(errorStr, ERROR_STRING_SIZE, "%s: Invalid handle", prefix);
+    _snprintf_s(errorStr, ERROR_STRING_SIZE, _TRUNCATE, "%s: Invalid handle", prefix);
     break;
   case ERROR_ACCESS_DENIED:
-    _snprintf(errorStr, ERROR_STRING_SIZE, "%s: Access denied", prefix);
+    _snprintf_s(errorStr, ERROR_STRING_SIZE, _TRUNCATE, "%s: Access denied", prefix);
     break;
   case ERROR_OPERATION_ABORTED:
-    _snprintf(errorStr, ERROR_STRING_SIZE, "%s: operation aborted", prefix);
+    _snprintf_s(errorStr, ERROR_STRING_SIZE, _TRUNCATE, "%s: operation aborted", prefix);
     break;
   default:
-    _snprintf(errorStr, ERROR_STRING_SIZE, "%s: Unknown error code %d", prefix, errorCode);
+    _snprintf_s(errorStr, ERROR_STRING_SIZE, _TRUNCATE, "%s: Unknown error code %d", prefix, errorCode);
     break;
   }
 }
@@ -47,6 +46,8 @@ void ErrorCodeToString(const char* prefix, int errorCode, char *errorStr) {
 void EIO_Open(uv_work_t* req) {
   OpenBaton* data = static_cast<OpenBaton*>(req->data);
 
+  char originalPath[1024];
+  strncpy_s(originalPath, sizeof(originalPath), data->path, _TRUNCATE);
   // data->path is char[1024] but on Windows it has the form "COMx\0" or "COMxx\0"
   // We want to prepend "\\\\.\\" to it before we call CreateFile
   strncpy(data->path + 20, data->path, 10);
@@ -64,7 +65,7 @@ void EIO_Open(uv_work_t* req) {
   if (file == INVALID_HANDLE_VALUE) {
     DWORD errorCode = GetLastError();
     char temp[100];
-    _snprintf(temp, sizeof(temp), "Opening %s", data->path);
+    _snprintf_s(temp, sizeof(temp), _TRUNCATE, "Opening %s", originalPath);
     ErrorCodeToString(temp, errorCode, data->errorString);
     return;
   }
@@ -486,7 +487,7 @@ void EIO_List(uv_work_t* req) {
   if (CEnumerateSerial::UsingQueryDosDevice(ports)) {
     for (size_t i = 0; i < ports.size(); i++) {
       char comname[64] = { 0 };
-      _snprintf(comname, sizeof(comname), "COM%u", ports[i]);
+      _snprintf_s(comname, sizeof(comname), _TRUNCATE, "COM%u", ports[i]);
       bool bFound = false;
       for (std::list<ListResultItem*>::iterator ri = data->results.begin(); ri != data->results.end(); ++ri) {
         if (stricmp((*ri)->comName.c_str(), comname) == 0) {
