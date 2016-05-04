@@ -26,7 +26,16 @@ env:
   - TRAVIS_NODE_VERSION="4" ARCH="x86"
   - TRAVIS_NODE_VERSION="5"
   - TRAVIS_NODE_VERSION="5" ARCH="x86"
+  - TRAVIS_NODE_VERSION="6"
+  - TRAVIS_NODE_VERSION="6" ARCH="x86"
 matrix:
+  allow_failures:
+  - os: linux
+    env: TRAVIS_NODE_VERSION="6"
+  - os: linux
+    env: TRAVIS_NODE_VERSION="6" ARCH="x86"
+  - os: osx
+    env: TRAVIS_NODE_VERSION="6"
   exclude:
   - os: osx
     env: TRAVIS_NODE_VERSION="0.10" ARCH="x86"
@@ -36,6 +45,8 @@ matrix:
     env: TRAVIS_NODE_VERSION="4" ARCH="x86"
   - os: osx
     env: TRAVIS_NODE_VERSION="5" ARCH="x86"
+  - os: osx
+    env: TRAVIS_NODE_VERSION="6" ARCH="x86"
 
 before_install:
 # reinstall latest nvm
@@ -76,13 +87,16 @@ install:
 
 script:
 # test our module
-- node serialport.js
+- node ./
 - npm test
+
 # if publishing, do it
 - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package; fi;
 - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp-github publish --release; fi;
+
 # cleanup
 - node-pre-gyp clean
 - node-gyp clean
+
 # test binary exists
 - if [[ $PUBLISH_BINARY == true ]]; then npm install --fallback-to-build=false; fi;

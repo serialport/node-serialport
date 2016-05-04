@@ -1,6 +1,6 @@
 {
   "name": "serialport",
-  "version": "2.1.0",
+  "version": "3.1.0",
   "description": "Node.js package to access serial ports. Welcome your robotic javascript overlords. Better yet, program them!",
   "author": {
     "name": "Chris Williams",
@@ -10,16 +10,19 @@
   "binary": {
     "module_name": "serialport",
     "module_path": "build/{configuration}/",
-    "package_name": "{node_abi}-{platform}-{arch}.tar.gz",
-    "host": "https://github.com/voodootikigod/node-serialport/releases/download/2.1.0"
+    "host": "https://github.com/voodootikigod/node-serialport/releases/download/3.1.0"
   },
-  "main": "./serialport",
+  "main": "./lib/serialport",
   "repository": {
     "type": "git",
     "url": "git://github.com/voodootikigod/node-serialport.git"
   },
   "keywords": [
     "serialport",
+    "johnny-five",
+    "serial port",
+    "hardware",
+    "iot",
     "nodebots"
   ],
   "maintainers": [
@@ -49,47 +52,45 @@
     }
   ],
   "dependencies": {
-    "async": "0.9.0",
     "bindings": "1.2.1",
+    "commander": "^2.9.0",
     "debug": "^2.1.1",
-    "nan": "~2.2.1",
-    "node-pre-gyp": "0.6.x",
-    "node-pre-gyp-github": "^1.1.0",
-    "object.assign": "^4.0.3",
-    "optimist": "~0.6.1",
-    "sf": "0.1.7"
+    "es6-promise": "^3.1.2",
+    "nan": "^2.3.3",
+    "node-pre-gyp": "^0.6.26",
+    "object.assign": "^4.0.3"
   },
-  "bundledDependencies": [
-    "node-pre-gyp",
-    "node-pre-gyp-github"
-  ],
   "devDependencies": {
-    "chai": "*",
+    "chai": "^3.5.0",
     "chai-subset": "^1.2.2",
     "eslint-config-standard": "^5.1.0",
     "eslint-plugin-promise": "^1.1.0",
     "eslint-plugin-standard": "^1.3.2",
-    "grunt": "0.4.5",
-    "grunt-cli": "1.1.0",
-    "grunt-mocha-test": "*",
+    "grunt": "^1.0.0",
+    "grunt-mocha-test": "^0.12.7",
     "gruntify-eslint": "^2.0.0",
-    "mocha": "*",
+    "mocha": "^2.4.5",
+    "node-pre-gyp-github": "^1.1.2",
     "sandboxed-module": "^2.0.3",
-    "sinon": "*",
-    "sinon-chai": "*"
+    "sinon": "^1.17.3",
+    "sinon-chai": "^2.8.0"
   },
+  "bundledDependencies": [
+    "node-pre-gyp"
+  ],
   "engines": {
     "node": ">= 0.10.0"
   },
   "bin": {
-    "serialportlist": "./bin/serialportList.js",
-    "serialportterm": "./bin/serialportTerminal.js"
+    "serialportlist": "./bin/serialport-list.js",
+    "serialportterm": "./bin/serialport-terminal.js"
   },
   "license": "MIT",
   "scripts": {
     "install": "node-pre-gyp install --fallback-to-build",
-    "rebuild": "npm rebuild && node-pre-gyp rebuild",
+    "rebuild-all": "npm rebuild && node-pre-gyp rebuild",
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
+    "grunt": "grunt",
     "test": "grunt --verbose"
   },
   "gypfile": true

@@ -1,4 +1,4 @@
-How to publish the pre compiled binaries.
+How to publish node Serialport
 =========================================
 
 ## Setup for Linux, Windows and OSX
@@ -6,32 +6,27 @@ How to publish the pre compiled binaries.
 Every time a new tag for the latest release is pushed to Github, the continuous integration
 builds in Travis-CI and AppVeyor will generate the binaries for each platform and architecture.
 We use [node-pre-gyp-github](https://github.com/bchr02/node-pre-gyp-github) on top of node-pre-gyp
-to publish these binaries on Github, instead of S3.
+to publish these binaries on Github.
 
 This can be checked in the .travis.yml file and appveyor.yml file. Within these files, there are two
 methods for publishing new binaries for each version: one is if a `git tag` is detected; the other
 can be triggered by passing the string `[publish binary]` in the commit message itself.
 
-We have an automated make task, we should always use this task to avoid forgetting any steps. The process for generating the binaries, publishing and releasing the npm module should be as follows:
-
 1. Merge all changes and new features into master.
 2. Fill out changelog.md.
 3. Bump up npm version *AND* binary host version in `package.json`, commit and push.
-4. Generate new tags based on package.json version number with `git tag 2.0.7 -a` and include the change log in the tag's annotation.
-5. Push tags to Github with `git push --tags`
-6. Publish to npm. BUT NOT YET. Builds can take hours and occasionally fail (mainly on Appveyor) for seemingly no reason. Restart any failures in the travis or appeveyor ui. While you wait, copy the changelog updates into the Github release field. When the entire matrix succeeds and all binaries exist run `npm publish`.
+4. Update the README.md to reference this current version and to previous major version docs.
+5. Generate new tags based on package.json version number with `git tag 2.0.7 -a` and include the change log in the tag's annotation.
+6. Push tags to Github with `git push --tags`
+7. Publish to npm. BUT NOT YET. Builds can an hour and occasionally fail (mainly on Appveyor) for seemingly no reason. Restart any failures in the travis or appeveyor ui. While you wait, copy the changelog updates into the Github release field. When the entire matrix succeeds and all binaries exist run `npm publish`.
 
 Differences for beta release
-* Work in a beta branch
 * Tag like: `git tag 2.0.7-beta1 -a` and include the change log in the tag's annotation.
 * Publish like `npm publish . --tag beta1`
 
 ## Config Travis, AppVeyor and Github to generate all of the binaries.
 
-Before we are able to run everything stated above some steps need to be taken.
-Specifically for being able to publish the pre compiled binaries to Github. The
-correct keys need to be setup in the `travis.yml` and `appveyor.yml` files. For Travis, this needs
-to be done by the admin of the Github repo. For AppVeyor, this will need to be done by the owner of the AppVeyor account.
+Before we are able to run everything stated above some steps need to be taken. Specifically for being able to publish the pre compiled binaries to Github. The correct keys need to be setup in the `travis.yml` and `appveyor.yml` files. For Travis, this needs to be done by the admin of the Github repo. For AppVeyor, this will need to be done by the owner of the AppVeyor account.
 
 ### Setting up secure keys in Travis.
 

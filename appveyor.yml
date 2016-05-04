@@ -16,7 +16,8 @@ environment:
   - nodejs_version: "0.10"
   - nodejs_version: "0.12"
   - nodejs_version: "4.3"
-  - nodejs_version: "5.10"
+  - nodejs_version: "5.11"
+  - nodejs_version: "6.0"
 
 platform:
   - x86
@@ -52,6 +53,7 @@ build_script:
   - cmd: npm install --build-from-source --msvs_version=2013
 
 test_script:
+  - cmd: node ./
   - cmd: npm test
 
 on_success:

@@ -7,25 +7,22 @@ Tests the functionality of the serial port library.
 To be used in conjunction with the Arduino sketch ArduinoEcho.ino
 */
 'use strict';
-var SerialPort = require('../../serialport').SerialPort;
-var optimist = require('optimist');
+var SerialPort = require('../../').SerialPort;
+var args = require('commander');
 
-var args = optimist
-  .alias('h', 'help')
-  .alias('h', '?')
-  .usage('Run printable characters through the serial port\n Usage: $0')
-  .options('p', {
-    describe: 'Name of serial port. See serialportlist for available serial ports.'
-  })
-  .demand(['p'])
-  .argv;
+args
+  .usage('-p <port>')
+  .description('Run printable characters through the serial port')
+  .option('-p, --port <port>', 'Path or Name of serial port. See serialportlist for available serial ports.')
+  .parse(process.argv);
 
-if (args.help) {
-  optimist.showHelp();
-  return process.exit(0);
+if (!args.port) {
+  args.outputHelp();
+  args.missingArgument('port');
+  process.exit(-1);
 }
 
-var port = new SerialPort(args.p);          // open the serial port:
+var port = new SerialPort(args.port);          // open the serial port:
 var output = 32;                                // ASCII space; lowest printable character
 var byteCount = 0;                              // number of bytes read
 
