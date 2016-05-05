@@ -29,7 +29,7 @@
         ],
         # Disable SIMD instruction sets for boards like Galileo
         ['"<!(node -p "process.platform + process.arch")"=="linuxia32"',
-          {'cflags': ['-mno-sse', '-mno-mmx']}
+          {'cflags': ['-march=pentium', '-mtune=pentium']}
         ],
         ['OS=="mac"',
           {'xcode_settings': {'OTHER_LDFLAGS': ['-framework CoreFoundation -framework IOKit']}}
