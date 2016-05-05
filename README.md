@@ -36,6 +36,7 @@ For getting started with node-serialport, we recommend you begin with the follow
   * [Ubuntu Linux](#ubuntu-linux)
   * [Alpine Linux](#alpine-linux)
   * [Raspberry Pi Linux](#raspberry-pi-linux)
+  * [Illegal Instruction](#illegal-instruction)
 * [Usage](#usage)
   * [Opening a Port](#opening-a-port)
   * [Listing Ports](#listing-ports)
@@ -136,6 +137,21 @@ npm install serialport --build-from-source=serialport
 #### Raspberry Pi Linux
 
 Follow the instructions for [setting up a Raspberry pi for use with Johnny-Five and Raspi IO](https://github.com/nebrius/raspi-io/wiki/Getting-a-Raspberry-Pi-ready-for-NodeBots). These projects use Node Serialport under the hood.
+
+#### Illegal Instruction
+
+The pre-compiled binaries assume a fully capable chip. The Galileo 2 for example lacks a few instruction sets from the `ia32` architecture. A few other platforms have similar issues. So if you get `Illegal Instruction` when trying to run serialport you'll need to rebuild the serialport binary by asking npm to rebuild it.
+
+```bash
+# Will ask npm to build serialport during install time
+npm install serialport --build-from-source
+
+# If you have a package that depends on serialport you can ask npm to rebuild it specifically.
+npm rebuild serialport --build-from-source
+
+# Or leave out the package name to rebuild everything.
+npm rebuild --build-from-source
+```
 
 ## Usage
 
