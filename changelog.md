@@ -1,3 +1,7 @@
+Version 3.1.2-beta1
+-------------
+ - Test for galileo prebuilt binaries
+
 Version 3.1.1
 -------------
  - fix an issue with bundled deps for node-pre-gyp on npm
