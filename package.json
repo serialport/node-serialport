@@ -75,9 +75,6 @@
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0"
   },
-  "bundledDependencies": [
-    "node-pre-gyp"
-  ],
   "engines": {
     "node": ">= 0.10.0"
   },
