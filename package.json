@@ -75,6 +75,9 @@
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0"
   },
+  "bundledDependencies":[
+    "node-pre-gyp"
+  ],
   "engines": {
     "node": ">= 0.10.0"
   },
@@ -88,7 +91,8 @@
     "rebuild-all": "npm rebuild && node-pre-gyp rebuild",
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
     "grunt": "grunt",
-    "test": "grunt --verbose"
+    "test": "grunt --verbose",
+    "prepublish": "npm ls"
   },
   "gypfile": true
 }
