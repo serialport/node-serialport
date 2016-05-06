@@ -57,8 +57,8 @@ test_script:
   - cmd: npm test
 
 on_success:
-  - cmd: IF %PUBLISH_BINARY%==true (node-pre-gyp package 2>&1)
-  - cmd: IF %PUBLISH_BINARY%==true (node-pre-gyp-github publish --release 2>&1)
+  - cmd: IF %PUBLISH_BINARY% == true (node-pre-gyp package 2>&1)
+  - cmd: IF %PUBLISH_BINARY% == true (node-pre-gyp-github publish --release 2>&1)
   - cmd: IF %PUBLISH_BINARY% == true (node-pre-gyp clean)
   - cmd: IF %PUBLISH_BINARY% == true (npm install --fallback-to-build=false)
 
