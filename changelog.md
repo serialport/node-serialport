@@ -1,3 +1,9 @@
+Version 3.1.2-beta1
+-------------
+ - Better windows error messages for opening ports
+ - Documentation around "Illegal Instruction" errors
+ - Unbundle node-pre-gyp which should solve a few install issues
+
 Version 3.1.1
 -------------
  - fix an issue with bundled deps for node-pre-gyp on npm

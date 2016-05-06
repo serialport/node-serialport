@@ -18,9 +18,7 @@ can be triggered by passing the string `[publish binary]` in the commit message 
 4. Update the README.md to reference this current version and to previous major version docs.
 5. Generate new tags based on package.json version number with `git tag 2.0.7 -a` and include the change log in the tag's annotation.
 6. Push tags to Github with `git push --tags`
-7. Switch to node v0.10
-8. `rm -rf node_modules && npm install` to ensure you have the node 0.10 versions of node-pre-gyp installed to be bundled and released with the package.
-9. Publish to npm. BUT NOT YET. Builds can an hour and occasionally fail (mainly on Appveyor) for seemingly no reason. Restart any failures in the travis or appeveyor ui. While you wait, copy the changelog updates into the Github release field. When the entire matrix succeeds and all binaries exist run `npm publish`.
+7. Publish to npm. BUT NOT YET. Builds can an hour and occasionally fail (mainly on Appveyor) for seemingly no reason. Restart any failures in the travis or appeveyor ui. While you wait, copy the changelog updates into the Github release field. When the entire matrix succeeds and all binaries exist run `npm publish`.
 
 Differences for beta release
 * Tag like: `git tag 2.0.7-beta1 -a` and include the change log in the tag's annotation.
