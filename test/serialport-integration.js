@@ -31,7 +31,7 @@ describe('SerialPort', function () {
     var testPort = process.env.TEST_PORT;
 
     if (!testPort) {
-      it('Cannot be tested as we have no test ports');
+      it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.');
       return;
     }
 

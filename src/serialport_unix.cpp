@@ -129,7 +129,7 @@ void EIO_Open(uv_work_t* req) {
   int fd = open(data->path, flags);
 
   if (-1 == fd) {
-    snprintf(data->errorString, sizeof(data->errorString), "Cannot open %s", data->path);
+    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot open %s", strerror(errno), data->path);
     return;
   }
 
@@ -353,7 +353,7 @@ void EIO_Write(uv_work_t* req) {
 
       // The write call might be interrupted, if it is we just try again immediately.
       if (errno != EINTR) {
-        snprintf(data->errorString, sizeof(data->errorString), "Error %s calling write(...)", strerror(errno) );
+        snprintf(data->errorString, sizeof(data->errorString), "Error: %s, calling write", strerror(errno));
         return;
       }
 
@@ -372,7 +372,7 @@ void EIO_Write(uv_work_t* req) {
 void EIO_Close(uv_work_t* req) {
   CloseBaton* data = static_cast<CloseBaton*>(req->data);
   if (-1 == close(data->fd)) {
-    snprintf(data->errorString, sizeof(data->errorString), "Unable to close fd %d, errno: %d", data->fd, errno);
+    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, unable to close fd %d", strerror(errno), data->fd);
   }
 }
 

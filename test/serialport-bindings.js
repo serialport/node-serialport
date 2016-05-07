@@ -15,6 +15,8 @@ switch (process.platform) {
     platform = 'unix';
 }
 
+console.log('Testing on ' + platform);
+
 var defaultPortOpenOptions = {
   baudRate: 9600,
   parity: 'none',
@@ -47,7 +49,7 @@ describe('SerialPortBinding', function () {
     });
 
     if (!testPort) {
-      it('Cannot be tested as we have no test ports on ' + platform);
+      it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.');
       return;
     }
 
@@ -56,6 +58,31 @@ describe('SerialPortBinding', function () {
         assert.isNull(err);
         assert.isNumber(fd);
         SerialPortBinding.close(fd, done);
+      });
+    });
+  });
+
+  describe('#close', function() {
+    it('errors when providing a bad file descriptor', function(done) {
+      SerialPortBinding.close(-1, function(err) {
+        assert.instanceOf(err, Error);
+        done();
+      });
+    });
+
+    if (!testPort) {
+      it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.');
+      return;
+    }
+
+    it('closes an open file descriptor', function(done) {
+      SerialPortBinding.open(testPort, defaultPortOpenOptions, function(err, fd) {
+        assert.isNull(err);
+        assert.isNumber(fd);
+        SerialPortBinding.close(fd, function(err) {
+          assert.isNull(err);
+          done();
+        });
       });
     });
   });
