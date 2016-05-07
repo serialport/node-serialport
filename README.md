@@ -193,7 +193,7 @@ port.on('open', function () {
 ```
 
 This could be moved to the constructor's callback.
-```
+```js
 var SerialPort = require('serialport').SerialPort;
 var port = new SerialPort('/dev/tty-usbserial1', function () {
   port.write('main screen turn on', function(err, bytesWritten) {
