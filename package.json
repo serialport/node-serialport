@@ -75,6 +75,7 @@
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0",
     "spawn-sync": "^1.0.15"
+    "udev": "git://github.com/Zensey/node-udev.git#master"
   },
   "bundledDependencies": [
     "node-pre-gyp"
