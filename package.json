@@ -58,7 +58,7 @@
     "es6-promise": "^3.1.2",
     "nan": "^2.3.3",
     "node-pre-gyp": "^0.6.26",
-    "object.assign": "^4.0.3"
+    "object.assign": "^4.0.3",
     "udev": "git://github.com/Zensey/node-udev.git#master"
   },
   "devDependencies": {
