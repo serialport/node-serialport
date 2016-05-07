@@ -74,6 +74,7 @@
     "sandboxed-module": "^2.0.3",
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0"
+    "udev": "git://github.com/Zensey/node-udev.git#master"
   },
   "engines": {
     "node": ">= 0.10.0"
