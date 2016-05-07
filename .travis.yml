@@ -59,6 +59,7 @@ before_install:
 - npm install -g npm
 - npm install -g node-gyp node-pre-gyp node-pre-gyp-github
 # print versions
+- node --version
 - npm --version
 - node-gyp --version
 - node-pre-gyp --version

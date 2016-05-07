@@ -30,8 +30,12 @@ install:
 
   - cmd: SET PATH=%cd%\node_modules\.bin\;%PATH%
   - ps:  Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:platform
-  - cmd: IF %nodejs_version% LSS 1 npm -g install npm
-  - cmd: IF %nodejs_version% LSS 1 set PATH=%APPDATA%\npm;%PATH%
+  - cmd: npm -g install npm
+  - cmd: set PATH=%APPDATA%\npm;%PATH%
+
+  # print versions
+  - cmd: node -v
+  - cmd: npm -v
 
   - cmd: SET COMMIT_MSG="%APPVEYOR_REPO_COMMIT_MESSAGE%"
   - cmd: SET PUBLISH_BINARY=false
