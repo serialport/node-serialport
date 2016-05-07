@@ -378,7 +378,7 @@ Resumes a paused connection.
 
 ### .flush (callback)
 
-Flushes data received but not read. See [`tcflush()`](http://linux.die.net/man/3/tcflush) for Mac/Linux and [`FlushFileBuffers`](http://msdn.microsoft.com/en-us/library/windows/desktop/aa364439) for Windows.
+Flushes data received but not read and flushes data written but not transmitted. See [`tcflush()`](http://linux.die.net/man/3/tcflush) for Mac/Linux and [`FlushFileBuffers`](http://msdn.microsoft.com/en-us/library/windows/desktop/aa364439) for Windows.
 
 **_callback (optional)_**
 
