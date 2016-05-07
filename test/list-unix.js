@@ -100,6 +100,16 @@ describe('listUnix', function () {
     });
   });
 
+  it('does not list non character devices', function(done) {
+    listUnix.setCharacterDevice(false);
+    listUnix.setPorts(ports);
+    listUnix(function(err, ports) {
+      assert.isNull(err);
+      assert.deepEqual(ports, []);
+      done();
+    });
+  });
+
   it('returns an error to callback', function(done) {
     listUnix.error(true);
     listUnix(function(err) {
