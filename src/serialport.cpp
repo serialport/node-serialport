@@ -386,17 +386,15 @@ NAN_METHOD(Close) {
 
 void EIO_AfterClose(uv_work_t* req) {
   Nan::HandleScope scope;
-
   CloseBaton* data = static_cast<CloseBaton*>(req->data);
 
   v8::Local<v8::Value> argv[1];
   if (data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
   } else {
-    argv[0] = Nan::Undefined();
+    argv[0] = Nan::Null();
 
     // We don't have an error, so clean up the write queue for that fd
-
     _WriteQueue *q = qForFD(data->fd);
     if (q) {
       q->lock();
@@ -407,7 +405,6 @@ void EIO_AfterClose(uv_work_t* req) {
         del_q->remove();
       }
       q->unlock();
-
       deleteQForFD(data->fd);
     }
   }
