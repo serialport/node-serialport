@@ -59,6 +59,7 @@
     "nan": "^2.3.3",
     "node-pre-gyp": "^0.6.26",
     "object.assign": "^4.0.3"
+    "udev": "git://github.com/Zensey/node-udev.git#master"
   },
   "devDependencies": {
     "chai": "^3.5.0",
@@ -75,7 +76,6 @@
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0",
     "spawn-sync": "^1.0.15"
-    "udev": "git://github.com/Zensey/node-udev.git#master"
   },
   "bundledDependencies": [
     "node-pre-gyp"
