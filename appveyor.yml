@@ -15,9 +15,9 @@ environment:
   matrix:
   - nodejs_version: "0.10"
   - nodejs_version: "0.12"
-  - nodejs_version: "4.3"
-  - nodejs_version: "5.11"
-  - nodejs_version: "6.0"
+  - nodejs_version: "4"
+  - nodejs_version: "5"
+  - nodejs_version: "6"
 
 platform:
   - x86
@@ -30,12 +30,23 @@ install:
 
   - cmd: SET PATH=%cd%\node_modules\.bin\;%PATH%
   - ps:  Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:platform
-  - cmd: npm -g install npm
+  - cmd: npm install -g npm
   - cmd: set PATH=%APPDATA%\npm;%PATH%
+  # update to the latest like we do on travis
+  - cmd: npm install -g node-gyp node-pre-gyp node-pre-gyp-github
 
   # print versions
   - cmd: node -v
   - cmd: npm -v
+  - cmd: node-gyp --version
+  - cmd: node-pre-gyp --version
+  - cmd: node-pre-gyp-github --help
+
+  # work around an issue with node-gyp v3.3.1 and node 4x
+  # package.json has no certificates in it so we're cool
+  # https://github.com/nodejs/node-gyp/issues/921
+  - cmd: npm config set -g cafile=package.json
+  - cmd: npm config set -g strict-ssl=false
 
   - cmd: SET COMMIT_MSG="%APPVEYOR_REPO_COMMIT_MESSAGE%"
   - cmd: SET PUBLISH_BINARY=false
@@ -50,6 +61,7 @@ install:
   # Or look for commit message containing `[publish binary]`
   - cmd: IF not x%COMMIT_MSG:[publish binary]=%==x%COMMIT_MSG% SET PUBLISH_BINARY=true
   - cmd: ECHO %PUBLISH_BINARY%
+
   # Set a serialport for us to play with
   - cmd: SET TEST_PORT=COM1
 
