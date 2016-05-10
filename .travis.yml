@@ -16,7 +16,7 @@ os:
 - osx
 env:
   global:
-  - secure: nFQKlcfG1rV/kQm1EJtgQyRefZb6scdn/9epEaJgAyaqDRXHSZIFSuoOh4d/P5GC6V0yi6dA8I+XJsoRy29qG+JXWxN2enwjp16IbpUri9Z5H8uZPur1N6QPby9BX+PX5/4HU+KRgWtFDdfqqzbLmObXsxIUGtZtBbRY9otiUt8=
+  - secure: "qEdwCY/ilHkqWkqasN5MgWCnzzop4lEYkbpxEiVMTZBY12p4uV6ysPQ+ZLZcx10Cg90RIQlsPeEANIhCzkWfnQi+ySmeiKY9JR2eSnb69wM7dBQ/uxv04eVChAlZSsDHwmTIIzIzZFsrWrcwwJaENGCJYKqZ9LKOiGFGQ8Is09A="
   matrix:
   - TRAVIS_NODE_VERSION="0.10"
   - TRAVIS_NODE_VERSION="0.10" ARCH="x86"

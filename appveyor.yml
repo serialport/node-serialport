@@ -10,7 +10,7 @@ init:
 # environment variables
 environment:
   NODE_PRE_GYP_GITHUB_TOKEN:
-    secure: azLeMAlIn7bfsIjPriD3O8kg3/uLPNOnAE6FgwPvIT+MWSlMsG3giURb7SxQ01tB
+    secure: VM4yc2j2L3KS5qWLZLY7WUAXoqdB9YkodmXlHC2I+LSF0Y8a2cZ70M0+2+Fd5GkQ
 
   matrix:
   - nodejs_version: "0.10"
