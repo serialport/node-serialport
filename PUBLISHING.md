@@ -8,9 +8,7 @@ builds in Travis-CI and AppVeyor will generate the binaries for each platform an
 We use [node-pre-gyp-github](https://github.com/bchr02/node-pre-gyp-github) on top of node-pre-gyp
 to publish these binaries on Github.
 
-This can be checked in the .travis.yml file and appveyor.yml file. Within these files, there are two
-methods for publishing new binaries for each version: one is if a `git tag` is detected; the other
-can be triggered by passing the string `[publish binary]` in the commit message itself.
+This can be checked in the .travis.yml file and appveyor.yml file. Within these files, if a git tag is detected a binary will be built and published for each version.
 
 1. Merge all changes and new features into master.
 2. Fill out changelog.md.

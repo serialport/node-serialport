@@ -1,3 +1,9 @@
+Version 3.1.2-beta2
+-------------
+ - Add back in the bundle dependency to support node 0.12 with npm3.
+ - bug fix in listUnix where we weren't filtering out non block devices that are named like serial ports
+ - Better unix error messages
+
 Version 3.1.2-beta1
 -------------
  - Better windows error messages for opening ports

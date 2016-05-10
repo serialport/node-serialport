@@ -58,8 +58,6 @@ install:
   - cmd: ECHO %APPVEYOR_REPO_BRANCH%
   - cmd: DEL _git_tag.tmp
   - cmd: IF x%APPVEYOR_REPO_BRANCH%==x%GIT_TAG% SET PUBLISH_BINARY=true
-  # Or look for commit message containing `[publish binary]`
-  - cmd: IF not x%COMMIT_MSG:[publish binary]=%==x%COMMIT_MSG% SET PUBLISH_BINARY=true
   - cmd: ECHO %PUBLISH_BINARY%
 
   # Set a serialport for us to play with
