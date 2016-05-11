@@ -55,9 +55,9 @@ install:
   - cmd: git describe --tags --always HEAD > _git_tag.tmp
   - cmd: SET /p GIT_TAG=<_git_tag.tmp
   - cmd: ECHO %GIT_TAG%
-  - cmd: ECHO %APPVEYOR_REPO_BRANCH%
+  - cmd: ECHO %APPVEYOR_REPO_TAG_NAME%
   - cmd: DEL _git_tag.tmp
-  - cmd: IF x%APPVEYOR_REPO_BRANCH%==x%GIT_TAG% SET PUBLISH_BINARY=true
+  - cmd: IF x%APPVEYOR_REPO_TAG_NAME%==x%GIT_TAG% SET PUBLISH_BINARY=true
   - cmd: ECHO %PUBLISH_BINARY%
 
   # Set a serialport for us to play with
