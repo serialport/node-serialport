@@ -45,8 +45,8 @@ install:
   # work around an issue with node-gyp v3.3.1 and node 4x
   # package.json has no certificates in it so we're cool
   # https://github.com/nodejs/node-gyp/issues/921
-  - cmd: npm config set -g cafile=package.json
-  - cmd: npm config set -g strict-ssl=false
+  # - cmd: npm config set -g cafile=package.json
+  # - cmd: npm config set -g strict-ssl=false
 
   - cmd: SET COMMIT_MSG="%APPVEYOR_REPO_COMMIT_MESSAGE%"
   - cmd: SET PUBLISH_BINARY=false
@@ -62,6 +62,7 @@ install:
 
   # Set a serialport for us to play with
   - cmd: SET TEST_PORT=COM1
+  - cmd: npm run print-env
 
 build_script:
   - cmd: npm install --build-from-source --msvs_version=2013

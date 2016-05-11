@@ -87,12 +87,13 @@
   },
   "license": "MIT",
   "scripts": {
-    "install": "node-pre-gyp install --fallback-to-build",
+    "install": "node -p process.env && node-gyp rebuild",
     "rebuild-all": "npm rebuild && node-pre-gyp rebuild",
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
     "grunt": "grunt",
     "test": "grunt --verbose",
-    "prepublish": "npm ls"
+    "prepublish": "npm ls",
+    "print-env": "node -p process.env"
   },
   "gypfile": true
 }
