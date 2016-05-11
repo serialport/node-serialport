@@ -22,7 +22,7 @@ This can be checked in the .travis.yml file and appveyor.yml file. Within these 
 
 Differences for beta release
 * Tag like: `git tag 2.0.7-beta1 -a` and include the change log in the tag's annotation.
-* Publish like `npm publish . --tag beta1`
+* Publish with `npm publish --tag beta`
 
 ## Config Travis, AppVeyor and Github to generate all of the binaries.
 
