@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 'use strict';
-var spawnSync = require('child_process').spawnSync;
+
+// polyfill for node 10
+var spawnSync = require('spawn-sync');
 var fs = require('fs');
-var semver = require('semver');
+// var semver = require('semver');
 
 // Log the packaging environment to be included in the npm bundle
 var lsExit = spawnSync('npm', ['ls']).status;

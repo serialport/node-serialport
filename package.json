@@ -74,7 +74,8 @@
     "sandboxed-module": "^2.0.3",
     "semver": "^5.1.0",
     "sinon": "^1.17.3",
-    "sinon-chai": "^2.8.0"
+    "sinon-chai": "^2.8.0",
+    "spawn-sync": "^1.0.15"
   },
   "bundledDependencies": [
     "node-pre-gyp"
