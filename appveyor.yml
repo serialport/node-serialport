@@ -68,15 +68,9 @@ build_script:
 test_script:
   - node ./
   - npm test
-  - ps: >
-      & {
-        $ErrorActionPreference = 'Stop'
-        if ($env:publish_binary -eq 1) {
-          node-pre-gyp package | Write-Host;
-          node-pre-gyp-github publish --release | Write-Host;
-          node-pre-gyp clean | Write-Host;
-          npm install --fallback-to-build=false | Write-Host;
-        }
-      }
+  - IF %PUBLISH_BINARY% == 1 (node-pre-gyp package 2>&1)
+  - IF %PUBLISH_BINARY% == 1 (node-pre-gyp-github publish --release 2>&1)
+  - IF %PUBLISH_BINARY% == 1 (node-pre-gyp clean)
+  - IF %PUBLISH_BINARY% == 1 (npm install --fallback-to-build=false)
 
 deploy: OFF
