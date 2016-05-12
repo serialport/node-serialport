@@ -72,10 +72,11 @@
     "mocha": "^2.4.5",
     "node-pre-gyp-github": "^1.1.2",
     "sandboxed-module": "^2.0.3",
+    "semver": "^5.1.0",
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0"
   },
-  "bundledDependencies":[
+  "bundledDependencies": [
     "node-pre-gyp"
   ],
   "engines": {
@@ -92,7 +93,8 @@
     "gyp-rebuild": "node-gyp rebuild",
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
     "grunt": "grunt",
-    "test": "grunt --verbose"
+    "test": "grunt --verbose",
+    "prepublish": "node bin/pre-publish.js"
   },
   "gypfile": true
 }
