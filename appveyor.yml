@@ -43,15 +43,17 @@ install:
   # then we publish the binaries if tests pass.
   - ps: >
       if ($env:appveyor_repo_tag -match "true" -and ("$(git describe --tags --always HEAD)" -eq $env:appveyor_repo_tag_name)) {
-        $env:publish_binary = true;
+        $env:publish_binary = 1;
       } else {
-        $env:publish_binary = false;
+        $env:publish_binary = 0;
       }
       true;
 
   - ps: >
-      if ($env:publish_binary) {
+      if ($env:publish_binary -eq 1) {
         "We're publising a binary!" | Write-Host
+      } else {
+        "We're not publising a binary" | Write-Host
       }
       true;
 
@@ -67,7 +69,7 @@ test_script:
   - ps: >
       & {
         $ErrorActionPreference = 'SilentlyContinue'
-        if ($env:publish_binary) {
+        if ($env:publish_binary -eq 1) {
           node-pre-gyp package | Write-Host;
           node-pre-gyp-github publish --release | Write-Host;
           node-pre-gyp clean | Write-Host;
