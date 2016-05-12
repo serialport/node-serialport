@@ -24,6 +24,8 @@ install:
         "node binary version" = $(node -v)
         "npm version" = $(npm -v)
         "APPVEYOR_REPO_COMMIT_MESSAGE" = $env:APPVEYOR_REPO_COMMIT_MESSAGE
+        "git latest tag" = "$(git describe --tags --always HEAD)"
+        "appveyor_repo_tag" = $env:appveyor_repo_tag
       } | Out-String | Write-Host;
 
   # work around bug in npm 2.15.1 where checksums were coming back bad (node 0.12)
@@ -68,7 +70,7 @@ test_script:
   - npm test
   - ps: >
       & {
-        $ErrorActionPreference = 'SilentlyContinue'
+        $ErrorActionPreference = 'Stop'
         if ($env:publish_binary -eq 1) {
           node-pre-gyp package | Write-Host;
           node-pre-gyp-github publish --release | Write-Host;
