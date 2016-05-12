@@ -4,7 +4,7 @@
 // polyfill for node 10
 var spawnSync = require('spawn-sync');
 var fs = require('fs');
-// var semver = require('semver');
+var semver = require('semver');
 
 // Log the packaging environment to be included in the npm bundle
 var lsExit = spawnSync('npm', ['ls']).status;
@@ -22,11 +22,11 @@ fs.writeFileSync('.pre-publish-info', JSON.stringify(info, null, 2) + '\n');
 
 if (lsExit !== 0) {
   console.error('ls exited with a', lsExit);
-  process.exit(1);
+  // process.exit(1);
 }
 
-// if (!semver.gt(npmVersion, '3.0.0') && !process.env.CI) {
-//   console.log('npm version must be above 3.0.0 <', npmVersion);
+if (!semver.gt(npmVersion, '3.0.0') && !process.env.CI) {
+  console.error('npm version must be above 3.0.0 <', npmVersion);
 //   process.exit(1);
-// }
+}
 
