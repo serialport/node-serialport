@@ -50,35 +50,28 @@ matrix:
 
 before_install:
 # reinstall latest nvm
-- rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
-- BASE_URL=$(node -p "v=parseInt(process.versions.node),(v>=1&&v<4?'https://iojs.org/dist/':'https://nodejs.org/dist/')+process.version")
-- X86_FILE=$(node -p "v=parseInt(process.versions.node),(v>=1&&v<4?'iojs':'node')+'-'+process.version+'-'+process.platform+'-x86'")
-# download node if testing x86 architecture
-- if [[ "$ARCH" == "x86" ]]; then wget $BASE_URL/$X86_FILE.tar.gz; tar -xf $X86_FILE.tar.gz; export PATH=$X86_FILE/bin:$PATH; fi
-# Install the latest npm node-pre-gyp and node-pre-gyp-github
-- npm install -g npm
-- npm install -g node-gyp node-pre-gyp node-pre-gyp-github
+- rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh
+- nvm install $TRAVIS_NODE_VERSION
+- PATH=$PATH:`pwd`/node_modules/.bin
+
 # print versions
 - node --version
 - npm --version
-- node-gyp --version
-- node-pre-gyp --version
-- node-pre-gyp-github --help
+
 # use g++-4.8 on Linux
 - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.8; fi
 - $CXX --version
-# get commit message
-- COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
-# Set a test serialport for integration testing when we run our tests if we have one
-- if [[ $TRAVIS_OS_NAME == "osx" ]]; then export TEST_PORT='/dev/cu.serial1'; fi
+
 # figure out if we should publish
 - PUBLISH_BINARY=false
 # if we are building a tag then publish
 - echo $TRAVIS_BRANCH
 - echo `git describe --tags --always HEAD`
-- echo $COMMIT_MESSAGE
 - if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then PUBLISH_BINARY=true; fi;
 - echo "Publishing native platform Binary Package? ->" $PUBLISH_BINARY
+
+# Set a test serialport for integration testing when we run our tests if we have one
+- if [[ $TRAVIS_OS_NAME == "osx" ]]; then export TEST_PORT='/dev/cu.serial1'; fi
 
 install:
 # ensure source install works
@@ -95,7 +88,6 @@ script:
 
 # cleanup
 - node-pre-gyp clean
-- node-gyp clean
 
 # test binary exists
 - if [[ $PUBLISH_BINARY == true ]]; then npm install --fallback-to-build=false; fi;

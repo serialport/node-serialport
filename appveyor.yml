@@ -1,13 +1,4 @@
-# AppVeyor file
-# http://www.appveyor.com/docs/appveyor-yml
-
 os: unstable
-
-# Fix line endings on Windows
-init:
-  - git config --global core.autocrlf true
-
-# environment variables
 environment:
   NODE_PRE_GYP_GITHUB_TOKEN:
     secure: VM4yc2j2L3KS5qWLZLY7WUAXoqdB9YkodmXlHC2I+LSF0Y8a2cZ70M0+2+Fd5GkQ
@@ -24,56 +15,69 @@ platform:
   - x64
 
 install:
-  - cmd: ECHO "%nodejs_version%"
-  - cmd: ECHO "%platform%"
-  - cmd: ECHO "%APPVEYOR_REPO_COMMIT_MESSAGE%"
+  - ps: Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:platform;
+  - ps: $env:Path += ";$(pwd)\node_modules\.bin";
+  - ps: >
+      @{
+        "nodejs_version" = $env:nodejs_version
+        "platform" = $env:platform
+        "node binary version" = $(node -v)
+        "npm version" = $(npm -v)
+        "APPVEYOR_REPO_COMMIT_MESSAGE" = $env:APPVEYOR_REPO_COMMIT_MESSAGE
+      } | Out-String | Write-Host;
 
-  - cmd: SET PATH=%cd%\node_modules\.bin\;%PATH%
-  - ps:  Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:platform
-  - cmd: npm install -g npm
-  - cmd: set PATH=%APPDATA%\npm;%PATH%
-  # update to the latest like we do on travis
-  - cmd: npm install -g node-gyp node-pre-gyp node-pre-gyp-github
-
-  # print versions
-  - cmd: node -v
-  - cmd: npm -v
-  - cmd: node-gyp --version
-  - cmd: node-pre-gyp --version
-  - cmd: node-pre-gyp-github --help
+  # work around bug in npm 2.15.1 where checksums were coming back bad (node 0.12)
+  - ps: >
+      if ($(npm -v) -eq "2.15.1") {
+        npm install -g npm@3 | Write-Host;
+      }
+      npm -v | Write-Host;
 
   # work around an issue with node-gyp v3.3.1 and node 4x
   # package.json has no certificates in it so we're cool
   # https://github.com/nodejs/node-gyp/issues/921
-  - cmd: npm config set -g cafile=package.json
-  - cmd: npm config set -g strict-ssl=false
+  - ps: npm config set -g cafile=package.json | Write-Host;
+  - ps: npm config set -g strict-ssl=false | Write-Host;
 
-  - cmd: SET COMMIT_MSG="%APPVEYOR_REPO_COMMIT_MESSAGE%"
-  - cmd: SET PUBLISH_BINARY=false
-  # Check to verify the branch is the same than latest tag, if so
-  # then we publish the binaries if everything else is successful.
-  - cmd: git describe --tags --always HEAD > _git_tag.tmp
-  - cmd: SET /p GIT_TAG=<_git_tag.tmp
-  - cmd: ECHO %GIT_TAG%
-  - cmd: ECHO %APPVEYOR_REPO_TAG_NAME%
-  - cmd: DEL _git_tag.tmp
-  - cmd: IF x%APPVEYOR_REPO_TAG_NAME%==x%GIT_TAG% SET PUBLISH_BINARY=true
-  - cmd: ECHO %PUBLISH_BINARY%
+  # Check if we're building the latest tag, if so
+  # then we publish the binaries if tests pass.
+  - ps: >
+      if ($env:appveyor_repo_tag -match "true" -and ("$(git describe --tags --always HEAD)" -eq $env:appveyor_repo_tag_name)) {
+        $env:publish_binary = true;
+      } else {
+        $env:publish_binary = false;
+      }
+      true;
+
+  - ps: >
+      if ($env:publish_binary) {
+        "We're publising a binary!" | Write-Host
+      }
+      true;
 
   # Set a serialport for us to play with
-  - cmd: SET TEST_PORT=COM1
+  - ps: $env:TEST_PORT = "COM1";
 
 build_script:
-  - cmd: npm install --build-from-source --msvs_version=2013
+  - ps: >
+      & {
+        # This ignores stderr and doesn't treat it as an error
+        # $errorActionPreference = 'SilentlyContinue';
+        npm install --build-from-source --msvs_version=2013 2>&1 | Write-Host;
+      }
 
 test_script:
-  - cmd: node ./
-  - cmd: npm test
-
-on_success:
-  - cmd: IF %PUBLISH_BINARY% == true (node-pre-gyp package 2>&1)
-  - cmd: IF %PUBLISH_BINARY% == true (node-pre-gyp-github publish --release 2>&1)
-  - cmd: IF %PUBLISH_BINARY% == true (node-pre-gyp clean)
-  - cmd: IF %PUBLISH_BINARY% == true (npm install --fallback-to-build=false)
+  - ps: node ./
+  - ps: npm test
+  - ps: >
+      & {
+        $ErrorActionPreference = 'SilentlyContinue'
+        if ($env:publish_binary) {
+          node-pre-gyp package | Write-Host;
+          node-pre-gyp-github publish --release | Write-Host;
+          node-pre-gyp clean | Write-Host;
+          npm install --fallback-to-build=false | Write-Host;
+        }
+      }
 
 deploy: OFF
