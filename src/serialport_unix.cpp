@@ -141,103 +141,109 @@ void EIO_Open(uv_work_t* req) {
   data->result = fd;
 }
 
-void EIO_Update(uv_work_t* req) {
-  OpenBaton* data = static_cast<OpenBaton*>(req->data);
-
+int setBaudRate(ConnectionOptionsBaton *data) {
+  // lookup the standard baudrates from the table
+  int baudRate = ToBaudConstant(data->baudRate);
   int fd = data->fd;
 
-  if (-1 == setup(fd, data)) {
-    return;
+  // get port options
+  struct termios options;
+  tcgetattr(fd, &options);
+
+  // If there is a custom baud rate on linux you can do the following trick with B38400
+  #if defined(__linux__) && defined(ASYNC_SPD_CUST)
+    if (baudRate == -1) {
+      struct serial_struct serinfo;
+      serinfo.reserved_char[0] = 0;
+      if (-1 != ioctl(fd, TIOCGSERIAL, &serinfo)) {
+        serinfo.flags &= ~ASYNC_SPD_MASK;
+        serinfo.flags |= ASYNC_SPD_CUST;
+        serinfo.custom_divisor = (serinfo.baud_base + (data->baudRate / 2)) / data->baudRate;
+        if (serinfo.custom_divisor < 1)
+          serinfo.custom_divisor = 1;
+
+        ioctl(fd, TIOCSSERIAL, &serinfo);
+        ioctl(fd, TIOCGSERIAL, &serinfo);
+      } else {
+        snprintf(data->errorString, sizeof(data->errorString), "Error: %s setting custom baud rate of %d", strerror(errno), data->baudRate);
+        return -1;
+      }
+
+      // Now we use "B38400" to trigger the special baud rate.
+      baudRate = B38400;
+    }
+  #endif
+
+  // On OS X, starting with Tiger, we can set a custom baud rate with ioctl
+  #if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
+    if (-1 == baudRate) {
+      speed_t speed = data->baudRate;
+      if (-1 == ioctl(fd, IOSSIOSPEED, &speed)) {
+        snprintf(data->errorString, sizeof(data->errorString), "Error: %s calling ioctl(.., IOSSIOSPEED, %ld )", strerror(errno), speed );
+        return -1;
+      } else {
+        return 1;
+      }
+    }
+  #endif
+
+  // If we have a good baud rate set it and lets go
+  if (-1 != baudRate) {
+    cfsetospeed(&options, baudRate);
+    cfsetispeed(&options, baudRate);
+    tcflush(fd, TCIFLUSH);
+    tcsetattr(fd, TCSANOW, &options);
+    return 1;
   }
 
-  data->result = fd;
+  snprintf(data->errorString, sizeof(data->errorString), "Error baud rate of %d is not supported on your platform", data->baudRate);
+  return -1;
+}
+
+void EIO_Update(uv_work_t* req) {
+  ConnectionOptionsBaton* data = static_cast<ConnectionOptionsBaton*>(req->data);
+  setBaudRate(data);
 }
 
 int setup(int fd, OpenBaton *data) {
   UnixPlatformOptions* platformOptions = static_cast<UnixPlatformOptions*>(data->platformOptions);
 
-  int baudRate = ToBaudConstant(data->baudRate);
   int dataBits = ToDataBitsConstant(data->dataBits);
-  if (dataBits == -1) {
+  if (-1 == dataBits) {
     snprintf(data->errorString, sizeof(data->errorString), "Invalid data bits setting %d", data->dataBits);
     return -1;
   }
 
   // Snow Leopard doesn't have O_CLOEXEC
-  int cloexec = fcntl(fd, F_SETFD, FD_CLOEXEC);
-  if (cloexec == -1) {
-    snprintf(data->errorString, sizeof(data->errorString), "Cannot open %s", data->path);
+  if (-1 == fcntl(fd, F_SETFD, FD_CLOEXEC)) {
+    snprintf(data->errorString, sizeof(data->errorString), "Error %s Cannot open %s", strerror(errno), data->path);
     return -1;
   }
 
-  // struct sigaction saio;
-  // saio.sa_handler = sigio_handler;
-  // sigemptyset(&saio.sa_mask);
-  // saio.sa_flags = 0;
-  // sigaction(SIGIO, &saio, NULL);
+  // Copy the connection options into the ConnectionOptionsBaton to set the baud rate
+  ConnectionOptionsBaton* connectionOptions = new ConnectionOptionsBaton();
+  memset(connectionOptions, 0, sizeof(ConnectionOptionsBaton));
+  connectionOptions->fd = fd;
+  connectionOptions->baudRate = data->baudRate;
 
-  // //all process to receive SIGIO
-  // fcntl(fd, F_SETOWN, getpid());
-  // int flflags = fcntl(fd, F_GETFL);
-  // fcntl(fd, F_SETFL, flflags | FNONBLOCK);
+  if (-1 == setBaudRate(connectionOptions)) {
+    strncpy(data->errorString, connectionOptions->errorString, sizeof(data->errorString));
+    delete(connectionOptions);
+    return -1;
+  }
+  delete(connectionOptions);
 
+  // Get port configuration for modification
   struct termios options;
-  // Set baud and other configuration.
   tcgetattr(fd, &options);
 
-// Removing check for valid BaudRates due to ticket: #140
-// #if not ( defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4) )
-  // Specify the baud rate
-
-
-  // On linux you can alter the meaning of B38400 to mean a custom baudrate...
-#if defined(__linux__) && defined(ASYNC_SPD_CUST)
-  if (baudRate == -1) {
-    struct serial_struct serinfo;
-    serinfo.reserved_char[0] = 0;
-    if (ioctl(fd, TIOCGSERIAL, &serinfo) != -1) {
-      serinfo.flags &= ~ASYNC_SPD_MASK;
-      serinfo.flags |= ASYNC_SPD_CUST;
-      serinfo.custom_divisor = (serinfo.baud_base + (data->baudRate / 2)) / data->baudRate;
-      if (serinfo.custom_divisor < 1)
-        serinfo.custom_divisor = 1;
-
-      ioctl(fd, TIOCSSERIAL, &serinfo);
-      ioctl(fd, TIOCGSERIAL, &serinfo);
-      // if (serinfo.custom_divisor * rate != serinfo.baud_base) {
-      //   warnx("actual baudrate is %d / %d = %f",
-      //     serinfo.baud_base, serinfo.custom_divisor,
-      //     (float)serinfo.baud_base / serinfo.custom_divisor);
-      // }
-    }
-
-    // Now we use "B38400" to trigger the special baud rate.
-    baudRate = B38400;
-  }
-#endif
-
-  if (baudRate != -1) {
-    cfsetispeed(&options, baudRate);
-    cfsetospeed(&options, baudRate);
-  }
-
-// Removing check for valid BaudRates due to ticket: #140
-// #endif
-
-  /*
-    IGNPAR  : ignore bytes with parity errors
-  */
+  // IGNPAR: ignore bytes with parity errors
   options.c_iflag = IGNPAR;
 
-  /*
-    ICRNL   : map CR to NL (otherwise a CR input on the other computer
-              will not terminate input)
-  */
-  // Pulling this for now. It should be an option, however. -Giseburt
+  // ICRNL: map CR to NL (otherwise a CR input on the other computer will not terminate input)
+  // Future potential option
   // options.c_iflag = ICRNL;
-
-  //  otherwise make device raw (no other input processing)
-
+  // otherwise make device raw (no other input processing)
 
   // Specify data bits
   options.c_cflag &= ~CSIZE;
@@ -263,7 +269,6 @@ int setup(int fd, OpenBaton *data) {
   if (data->xany) {
     options.c_iflag |= IXANY;
   }
-
 
   switch (data->parity) {
   case SERIALPORT_PARITY_NONE:
@@ -319,21 +324,8 @@ int setup(int fd, OpenBaton *data) {
   options.c_cc[VMIN]= platformOptions->vmin;
   options.c_cc[VTIME]= platformOptions->vtime;
 
-  // removed this unneeded sleep.
-  // sleep(1);
   tcflush(fd, TCIFLUSH);
   tcsetattr(fd, TCSANOW, &options);
-
-  // On OS X, starting in Tiger, we can set a custom baud rate, as follows:
-#if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
-  if (baudRate == -1) {
-    speed_t speed = data->baudRate;
-    if (ioctl(fd,  IOSSIOSPEED, &speed) == -1) {
-      snprintf(data->errorString, sizeof(data->errorString), "Error %s calling ioctl( ..., IOSSIOSPEED, %ld )", strerror(errno), speed );
-      return -1;
-    }
-  }
-#endif
 
   return 1;
 }

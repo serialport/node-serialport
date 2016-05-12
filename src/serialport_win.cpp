@@ -83,7 +83,6 @@ void EIO_Open(uv_work_t* req) {
     dcb.fDtrControl = DTR_CONTROL_ENABLE;
   }
 
-  dcb.BaudRate = CBR_9600;
   dcb.Parity = NOPARITY;
   dcb.ByteSize = 8;
   dcb.StopBits = ONESTOPBIT;
@@ -171,7 +170,9 @@ struct WatchPortBaton {
 };
 
 void EIO_Update(uv_work_t* req) {
-  // TODO always error or do an update
+  ConnectionOptionsBaton* data = static_cast<ConnectionOptionsBaton*>(req->data);
+  _snprintf(data->errorString, sizeof(data->errorString), "Update is not yet implemented on windows");
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/aa363260(v=vs.85).aspx
 }
 
 void EIO_Set(uv_work_t* req) {

@@ -43,14 +43,16 @@ For getting started with node-serialport, we recommend you begin with the follow
   * [Parsers](#parsers)
 * [Methods](#methods)
   * [SerialPort](#serialport-path-options-openimmediately-callback)
-  * [open()](#open-callback)
+  * [close()](#close-callback)
+  * [drain()](#drain-callback)
+  * [flush()](#flush-callback)
   * [isOpen()](#isopen)
-  * [write()](#write-buffer-callback)
+  * [open()](#open-callback)
   * [pause()](#pause-)
   * [resume()](#resume-)
-  * [flush()](#flush-callback)
-  * [drain()](#drain-callback)
-  * [close()](#close-callback)
+  * [set()](#set-options-callback)
+  * [update()](#update-options-callback)
+  * [write()](#write-buffer-callback)
 * [Events](#events)
 * [Command Line Tools](#command-line-tools)
   * [Serial Port List](#serial-port-list)
@@ -310,7 +312,7 @@ The system path of the serial port to open. For example, `/dev/tty` on Mac/Linux
 
 Port configuration options.
 
-* `baudRate` Baud Rate, defaults to 9600. Should be one of: 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, or 50. Custom rates as allowed by hardware is supported.
+* `baudRate` Baud Rate, defaults to 9600. Should be one of: 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, or 50. Custom rates as allowed by hardware is supported. Windows doesn't support custom baud rates.
 * `dataBits` Data Bits, defaults to 8. Must be one of: 8, 7, 6, or 5.
 * `stopBits` Stop Bits, defaults to 1. Must be one of: 1 or 2.
 * `parity` Parity, defaults to 'none'. Must be one of: 'none', 'even', 'mark', 'odd', 'space'
@@ -431,6 +433,20 @@ All options are operating system default when the port is opened. Every flag is 
 `callback: function(err, results)`
 
 Called once the port's flags have been set. `results` are the return of the underlying system command. If `.set` is called without an callback and there is an error, an error event will be emitted.
+
+### .update (options, callback)
+
+Changes the baudrate for an open port. Doesn't yet work on windows.
+
+**_options_**
+
+ * `baudRate` Baud Rate should be one of: 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, or 50. Custom rates as allowed by hardware is supported.
+
+**_callback (optional)_**
+
+`callback: function(err)`
+
+Called once the port's baud rate has been changed. If `.update` is called without an callback and there is an error, an error event will be emitted.
 
 ## Events
 
