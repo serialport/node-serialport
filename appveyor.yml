@@ -59,16 +59,11 @@ install:
   - ps: $env:TEST_PORT = "COM1";
 
 build_script:
-  - ps: >
-      & {
-        # This ignores stderr and doesn't treat it as an error
-        # $errorActionPreference = 'SilentlyContinue';
-        npm install --build-from-source --msvs_version=2013 2>&1 | Write-Host;
-      }
+  - npm install --build-from-source --msvs_version=2013
 
 test_script:
-  - ps: node ./
-  - ps: npm test
+  - node ./
+  - npm test
   - ps: >
       & {
         $ErrorActionPreference = 'SilentlyContinue'
