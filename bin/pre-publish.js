@@ -8,7 +8,7 @@ var semver = require('semver');
 
 // Log the packaging environment to be included in the npm bundle
 var lsExit = spawnSync('npm', ['ls']).status;
-var npmVersion = spawnSync('npm', ['-v']).stdout.toString().trim();
+var npmVersion = (spawnSync('npm', ['-v']).stdout || '0.0.0').toString().trim();
 
 var info = {
   'versions': process.versions,

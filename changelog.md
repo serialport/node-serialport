@@ -1,3 +1,9 @@
+Version 3.1.2-beta3
+-------------
+ - Add some pre-publish warnings to help bad builds from being published
+ - Add some pre-publish logging
+ - Refactor setBaudrate for Unix making it easier for custom baudRate support
+
 Version 3.1.2-beta2
 -------------
  - Add back in the bundle dependency to support node 0.12 with npm3.
