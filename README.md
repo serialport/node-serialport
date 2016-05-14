@@ -1,10 +1,11 @@
 # Node Serialport
 
 [![Build Status](https://travis-ci.org/voodootikigod/node-serialport.svg?branch=master)](https://travis-ci.org/voodootikigod/node-serialport)
+[![Build status](https://ci.appveyor.com/api/projects/status/u6xe3iao2crd7akn/branch/master?svg=true)](https://ci.appveyor.com/project/j5js/node-serialport/branch/master)
 [![Gitter chat](https://badges.gitter.im/voodootikigod/node-serialport.svg)](https://gitter.im/voodootikigod/node-serialport)
 [![Dependency Status](https://david-dm.org/voodootikigod/node-serialport.svg)](https://david-dm.org/voodootikigod/node-serialport)
 
-For support you can open a [github issue](https://github.com/voodootikigod/node-serialport/issues/new), for discussions, designs, and clarifications, we recommend you join our [Gitter Chat room](https://gitter.im/voodootikigod/node-serialport)
+For support you can open a [github issue](https://github.com/voodootikigod/node-serialport/issues/new), for discussions, designs, and clarifications, we recommend you join our [Gitter Chat room](https://gitter.im/voodootikigod/node-serialport). We have two related projects [Browser Serialport](https://github.com/garrows/browser-serialport) "just like Node Serialport but for browser apps", and [Serialport Test Piliot](https://github.com/j5js/serialport-test-pilot) which helps us test serialport.
 
 ***
 
@@ -21,10 +22,9 @@ Imagine a world where you can write JavaScript to control blenders, lights, secu
 ***
 
 For getting started with node-serialport, we recommend you begin with the following articles:
-
+* [Johnny-Five](http://johnny-five.io/#hello-world) - The Johnny-Five Robotics and IoT platform's 6 line "Hello World" (awesome).
 * [Arduino Node Security Sensor Hacking](http://nexxylove.tumblr.com/post/20159263403/arduino-node-security-sensor-hacking) - A great all around "how do I use this" article.
-* [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics) - A survey article of why one would want to program robots in JS.
-* [Johnny-Five](https://github.com/rwaldron/johnny-five#hello-johnny) - The Johnny-Five Robotics and IoT library's introduction "Hello Johnny" (awesome).
+* [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics) - A survey article of why one would want to program robots in JS and how this all started.
 
 ***
 
