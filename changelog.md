@@ -1,3 +1,7 @@
+Version 3.1.2-beta4
+-------------
+ - Attempting to find a version of npm that lets us publish and be consumed by the most platforms
+
 Version 3.1.2-beta3
 -------------
  - Add some pre-publish warnings to help bad builds from being published
