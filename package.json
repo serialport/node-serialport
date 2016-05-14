@@ -1,6 +1,6 @@
 {
   "name": "serialport",
-  "version": "3.1.2-beta5",
+  "version": "3.1.2-beta6",
   "description": "Node.js package to access serial ports. Welcome your robotic javascript overlords. Better yet, program them!",
   "author": {
     "name": "Chris Williams",
@@ -72,7 +72,6 @@
     "mocha": "^2.4.5",
     "node-pre-gyp-github": "^1.1.2",
     "sandboxed-module": "^2.0.3",
-    "semver": "^5.1.0",
     "sinon": "^1.17.3",
     "sinon-chai": "^2.8.0",
     "spawn-sync": "^1.0.15"
