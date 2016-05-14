@@ -1,28 +1,12 @@
-Version 3.1.2-beta5
+Version 3.1.2
 -------------
- - remove the prepublish scripts because npm 2 can't guarantee they'll have the packages they need
-
-Version 3.1.2-beta4
--------------
- - Attempting to find a version of npm that lets us publish and be consumed by the most platforms
-
-Version 3.1.2-beta3
--------------
- - Add some pre-publish warnings to help bad builds from being published
- - Add some pre-publish logging
- - Refactor setBaudrate for Unix making it easier for custom baudRate support
-
-Version 3.1.2-beta2
--------------
- - Add back in the bundle dependency to support node 0.12 with npm3.
- - bug fix in listUnix where we weren't filtering out non block devices that are named like serial ports
- - Better unix error messages
-
-Version 3.1.2-beta1
--------------
- - Better windows error messages for opening ports
  - Documentation around "Illegal Instruction" errors
- - Unbundle node-pre-gyp which should solve a few install issues
+ - Resolve some ambiguities around publishing that was causing some issues on some versions and platforms of npm and node
+ - [linux] bug fix in `.list()` where we weren't filtering out non block devices that are named like serial ports
+ - [unix] Better unix error messages
+ - [unix] Refactor `setBaudrate` for Unix making it easier for custom baudRate support
+ - [unix] Update now has less memory leaks, documentation and better error messages
+ - [windows] Better error messages for opening ports
 
 Version 3.1.1
 -------------
