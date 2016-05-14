@@ -94,8 +94,7 @@
     "gyp-rebuild": "node-gyp rebuild",
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
     "grunt": "grunt",
-    "test": "grunt --verbose",
-    "prepublish": "node bin/pre-publish.js"
+    "test": "grunt --verbose"
   },
   "gypfile": true
 }
