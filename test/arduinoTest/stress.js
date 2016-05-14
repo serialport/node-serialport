@@ -31,7 +31,7 @@ describe('the stress', function() {
       return;
     }
 
-    it("doesn't leak memory", function (done) {
+    it("doesn't leak memory", function(done) {
       var data = new Buffer(1024);
       var hd = new memwatch.HeapDiff();
       var port = new serialPort.SerialPort(testPort, {}, false);
@@ -53,7 +53,7 @@ describe('the stress', function() {
         done();
       });
 
-      port.on('data', function () {});
+      port.on('data', function() {});
 
       var writing = true;
       var write = function() {

@@ -18,16 +18,16 @@ switch (process.platform) {
 
 var testPort = process.env.TEST_PORT;
 
-describe('SerialPort Integration', function () {
-  describe('Initialization', function () {
-    it('Throws an error in callback when trying to open an invalid port', function (done) {
-      this.port = new SerialPort('COM99', function (err) {
+describe('SerialPort Integration', function() {
+  describe('Initialization', function() {
+    it('Throws an error in callback when trying to open an invalid port', function(done) {
+      this.port = new SerialPort('COM99', function(err) {
         assert.instanceOf(err, Error);
         done();
       });
     });
 
-    it('Emits an error in an event when trying to open an invalid port', function (done) {
+    it('Emits an error in an event when trying to open an invalid port', function(done) {
       var port = new SerialPort('COM99');
       port.on('error', function(err) {
         assert.instanceOf(err, Error);
@@ -61,7 +61,7 @@ describe('SerialPort Integration', function () {
       });
 
       it('cannot be opened twice in the callback', function(done) {
-        var port = new SerialPort(testPort, function () {
+        var port = new SerialPort(testPort, function() {
           port.open(function(err) {
             assert.instanceOf(err, Error);
             port.close(done);

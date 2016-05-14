@@ -86,7 +86,7 @@ var portOutput = [
   }
 ];
 
-describe('listUnix', function () {
+describe('listUnix', function() {
   beforeEach(function() {
     listUnix.reset();
   });

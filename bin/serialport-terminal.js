@@ -53,7 +53,7 @@ var port = new serialport.SerialPort(args.port, openOptions);
 
 process.stdin.resume();
 process.stdin.setRawMode(true);
-process.stdin.on('data', function (s) {
+process.stdin.on('data', function(s) {
   if (s[0] === 0x03) {
     port.close();
     process.exit(0);
@@ -68,11 +68,11 @@ process.stdin.on('data', function (s) {
   port.write(s);
 });
 
-port.on('data', function (data) {
+port.on('data', function(data) {
   process.stdout.write(data.toString());
 });
 
-port.on('error', function (err) {
+port.on('error', function(err) {
   console.log('Error', err);
   process.exit(1);
 });
