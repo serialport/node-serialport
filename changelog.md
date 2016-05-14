@@ -1,3 +1,7 @@
+Version 3.1.2-beta5
+-------------
+ - remove the prepublish scripts because npm 2 can't guarantee they'll have the packages they need
+
 Version 3.1.2-beta4
 -------------
  - Attempting to find a version of npm that lets us publish and be consumed by the most platforms
