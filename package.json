@@ -60,7 +60,7 @@
     "object.assign": "^4.0.3"
   },
   "optionalDependencies": {
-    "udev": "git://github.com/Zensey/node-udev.git#master"
+    "udev": "^0.3.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
