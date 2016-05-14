@@ -57,8 +57,10 @@
     "debug": "^2.1.1",
     "nan": "^2.3.3",
     "node-pre-gyp": "^0.6.26",
-    "object.assign": "^4.0.3",
-    "udev": "git://github.com/Zensey/node-udev.git#master"
+    "object.assign": "^4.0.3"
+  },
+  "optionalDependencies": {
+    "udev": "^0.3.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
