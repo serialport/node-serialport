@@ -61,15 +61,15 @@ For getting started with node-serialport, we recommend you begin with the follow
 ***
 
 ## Platform Support
-`serialport` supports and tests against the following platforms, architectures and node versions. Node V6 works but isn't officially supported yet.
+`serialport` supports and tests against the following platforms, architectures and node versions.
 
 | Platform / Arch | Node v0.10.x | Node v0.12.x | Node v4.x | Node v5.x | Node v6.x |
-| --- | --- | --- | --- | --- | --- |
-| Linux / ia32 | ☑ | ☑ | ☑ | ☑ | ☐ |
-| Linux / x64 | ☑ | ☑ | ☑ | ☑ | ☐ |
-| Windows¹ / x86 | ☑ | ☑ | ☑ | ☑ | ☐ |
-| Windows¹ / x64 | ☑ | ☑ | ☑ | ☑ | ☐ |
-| OSX² / x64 | ☑ | ☑ | ☑ | ☑ | ☐ |
+|       ---       | --- | --- | --- | --- | --- |
+| Linux / ia32    |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
+| Linux / x64     |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
+| Windows¹ / x86  |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
+| Windows¹ / x64  |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
+| OSX² / x64      |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
 
 ¹ Windows 7, 8, 10, and 10 IoT are supported but only Windows Server 2012 R2 is tested by our CI.
 
