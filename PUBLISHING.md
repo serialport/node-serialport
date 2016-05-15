@@ -19,6 +19,8 @@ This can be checked in the .travis.yml file and appveyor.yml file. Within these 
 7. Switch to node v0.10 and npm 3
 8. Ensure you have node 0.12 and npm@2 loaded `rm -rf node_modules && npm install`
 9. Publish to npm. BUT NOT YET. Builds can an hour and occasionally fail (mainly on Appveyor) for seemingly no reason. Restart any failures in the travis or appeveyor ui. While you wait, copy the changelog updates into the Github release field. When the entire matrix succeeds and all binaries exist run `npm publish`.
+10. Kick off the build matrix for either the master or beta branch on [serialport-test-pilot](https://travis-ci.org/j5js/serialport-test-pilot). It will install serialport from npm on a wide range of systems.
+
 
 Differences for beta release
 * Tag like: `git tag 2.0.7-beta1 -a` and include the change log in the tag's annotation.
