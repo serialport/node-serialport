@@ -93,7 +93,8 @@
     "gyp-rebuild": "node-gyp rebuild",
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
     "grunt": "grunt",
-    "test": "grunt --verbose"
+    "test": "grunt --verbose",
+    "valgrind": "valgrind --leak-check=full --show-possibly-lost=no node --expose-gc --trace-gc node_modules/.bin/grunt test"
   },
   "gypfile": true
 }
