@@ -17,6 +17,7 @@ module.exports = {
     "no-caller": 2,
     "no-cond-assign": 2,
     "no-else-return": 2,
+    "no-undef": 2,
     "no-unused-vars": [2, { "args": "after-used" }],
     "no-use-before-define": 2,
     "quotes": [2, "single", "avoid-escape"],
