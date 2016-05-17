@@ -57,11 +57,12 @@ void EIO_Open(uv_work_t* req) {
   HANDLE file = CreateFile(
     data->path,
     GENERIC_READ | GENERIC_WRITE,
-    0,
+    0, // dwShareMode 0 Prevents other processes from opening if they request delete, read, or write access
     NULL,
     OPEN_EXISTING,
-    FILE_FLAG_OVERLAPPED,
-    NULL);
+    FILE_FLAG_OVERLAPPED, // allows for reading and writing at the same time and sets the handle for asynchronous I/O
+    NULL
+  );
   if (file == INVALID_HANDLE_VALUE) {
     DWORD errorCode = GetLastError();
     char temp[100];
@@ -368,35 +369,31 @@ void EIO_Write(uv_work_t* req) {
     ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
     // Start write operation - synchrounous or asynchronous
-    DWORD bytesWrittenSync = 0;
-    if (!WriteFile((HANDLE)data->fd, data->bufferData, static_cast<DWORD>(data->bufferLength), &bytesWrittenSync, &ov)) {
+    DWORD bytesWritten = 0;
+    if (!WriteFile((HANDLE)data->fd, data->bufferData, static_cast<DWORD>(data->bufferLength), &bytesWritten, &ov)) {
       DWORD lastError = GetLastError();
       if (lastError != ERROR_IO_PENDING) {
         // Write operation error
         ErrorCodeToString("Writing to COM port (WriteFile)", lastError, data->errorString);
+        CloseHandle(ov.hEvent);
         return;
-      } else {
-        // Write operation is asynchronous and is pending
-        // We MUST wait for operation completion before deallocation of OVERLAPPED struct
-        // or write data buffer
-
-        // Wait for async write operation completion or timeout
-        DWORD bytesWrittenAsync = 0;
-        if (!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesWrittenAsync, TRUE)) {
-          // Write operation error
-          DWORD lastError = GetLastError();
-          ErrorCodeToString("Writing to COM port (GetOverlappedResult)", lastError, data->errorString);
-          return;
-        } else {
-          // Write operation completed asynchronously
-          data->result = bytesWrittenAsync;
-        }
       }
-    } else {
-      // Write operation completed synchronously
-      data->result = bytesWrittenSync;
-    }
+      // Write operation is completing asynchronously
+      // We MUST wait for the operation completion before deallocation of OVERLAPPED struct
+      // or write data buffer
 
+      // block for async write operation completion
+      bytesWritten = 0;
+      if (!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesWritten, TRUE)) {
+        // Write operation error
+        DWORD lastError = GetLastError();
+        ErrorCodeToString("Writing to COM port (GetOverlappedResult)", lastError, data->errorString);
+        CloseHandle(ov.hEvent);
+        return;
+      }
+    }
+    // Write operation completed synchronously
+    data->result = bytesWritten;
     data->offset += data->result;
     CloseHandle(ov.hEvent);
   } while (data->bufferLength > data->offset);

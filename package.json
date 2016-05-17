@@ -1,6 +1,6 @@
 {
   "name": "serialport",
-  "version": "3.1.2",
+  "version": "3.2.0-beta1",
   "description": "Node.js package to access serial ports. Welcome your robotic javascript overlords. Better yet, program them!",
   "author": {
     "name": "Chris Williams",
@@ -10,7 +10,7 @@
   "binary": {
     "module_name": "serialport",
     "module_path": "build/{configuration}/",
-    "host": "https://github.com/voodootikigod/node-serialport/releases/download/3.1.2"
+    "host": "https://github.com/voodootikigod/node-serialport/releases/download/3.2.0-beta1"
   },
   "main": "./lib/serialport",
   "repository": {
@@ -92,6 +92,7 @@
     "rebuild-all": "npm rebuild && node-gyp rebuild",
     "gyp-rebuild": "node-gyp rebuild",
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
+    "integration": "mocha test/arduinoTest/integration.js test/integration-lite.js",
     "grunt": "grunt",
     "test": "grunt --verbose",
     "valgrind": "valgrind --leak-check=full --show-possibly-lost=no node --expose-gc --trace-gc node_modules/.bin/grunt test"

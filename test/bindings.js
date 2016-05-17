@@ -178,4 +178,42 @@ describe('SerialPortBinding', function() {
       });
     });
   });
+  describe('#write', function() {
+    if (!testPort) {
+      it('Cannot be tested as we have no test ports on ' + platform);
+      return;
+    }
+
+    beforeEach(function(done) {
+      SerialPortBinding.open(testPort, defaultPortOpenOptions, function(err, fd) {
+        assert.isNull(err);
+        assert.isNumber(fd);
+        this.fd = fd;
+        done();
+      }.bind(this));
+    });
+
+    afterEach(function(done) {
+      var fd = this.fd;
+      this.fd = null;
+      SerialPortBinding.close(fd, done);
+    });
+
+    it('calls the write callback once after a small write', function(done){
+      var data = new Buffer('simple write of 24 bytes');
+      SerialPortBinding.write(this.fd, data, function(err){
+        assert.isNull(err);
+        done();
+      });
+    });
+
+    it('calls the write callback once after a 5k write', function(done){
+      this.timeout(20000);
+      var data = new Buffer(1024 * 5);
+      SerialPortBinding.write(this.fd, data, function(err){
+        assert.isNull(err);
+        done();
+      });
+    });
+  });
 });

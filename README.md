@@ -364,7 +364,7 @@ The `buffer` parameter accepts a [`Buffer` ](http://nodejs.org/api/buffer.html) 
 
 **_callback (optional)_**
 
-Called once the write operation returns. The callback should be a function that looks like: `function (error, bytesWritten) { ... }`
+Called once the write operation returns. The callback should be a function that looks like: `function (error) { ... }`
 
 **Note:** The write operation is non-blocking. When it returns, data may still have not actually been written to the serial port. See `drain()`.
 

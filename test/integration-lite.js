@@ -1,5 +1,7 @@
 'use strict';
 
+// These tests require an empty serialport to exist. Nothing needs to respond on the other end.
+
 var assert = require('chai').assert;
 var serialPort = require('../');
 var SerialPort = serialPort.SerialPort;
@@ -18,7 +20,7 @@ switch (process.platform) {
 
 var testPort = process.env.TEST_PORT;
 
-describe('SerialPort Integration', function() {
+describe('SerialPort light integration', function() {
   describe('Initialization', function() {
     it('Throws an error in callback when trying to open an invalid port', function(done) {
       this.port = new SerialPort('COM99', function(err) {
@@ -35,6 +37,7 @@ describe('SerialPort Integration', function() {
       });
     });
   });
+
   it('.list', function(done) {
     serialPort.list(done);
   });
@@ -104,7 +107,7 @@ describe('SerialPort Integration', function() {
       });
     });
 
-    describe('update', function() {
+    describe('#update', function() {
       if (platform === 'win32') {
         return it("Isn't supported on windows yet");
       }

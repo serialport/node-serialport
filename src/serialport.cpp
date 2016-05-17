@@ -289,15 +289,12 @@ void EIO_AfterWrite(uv_work_t* req) {
   QueuedWrite* queuedWrite = static_cast<QueuedWrite*>(req->data);
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
 
-  v8::Local<v8::Value> argv[2];
+  v8::Local<v8::Value> argv[1];
   if (data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
-    argv[1] = Nan::Undefined();
   } else {
-    argv[0] = Nan::Undefined();
-    argv[1] = Nan::New<v8::Int32>(data->result);
+    argv[0] = Nan::Null();
   }
-  data->callback->Call(2, argv);
 
   if (data->offset < data->bufferLength && !data->errorString[0]) {
     // We're not done with this baton, so throw it right back onto the queue.
@@ -308,6 +305,7 @@ void EIO_AfterWrite(uv_work_t* req) {
     return;
   }
 
+  // throwing errors instead of returning them at this point is rude
   int fd = data->fd;
   _WriteQueue *q = qForFD(fd);
   if (!q) {
@@ -320,6 +318,8 @@ void EIO_AfterWrite(uv_work_t* req) {
 
   // remove this one from the list
   queuedWrite->remove();
+
+  data->callback->Call(1, argv);
 
   // If there are any left, start a new thread to write the next one.
   if (!write_queue.empty()) {

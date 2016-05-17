@@ -333,31 +333,33 @@ int setup(int fd, OpenBaton *data) {
 void EIO_Write(uv_work_t* req) {
   QueuedWrite* queuedWrite = static_cast<QueuedWrite*>(req->data);
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
+  int bytesWritten = 0;
 
-  data->result = 0;
-  errno = 0;
-
-  // We carefully *DON'T* break out of this loop.
   do {
-    if ((data->result = write(data->fd, data->bufferData + data->offset, data->bufferLength - data->offset)) == -1) {
-      if (errno == EAGAIN || errno == EWOULDBLOCK)
-        return;
-
-      // The write call might be interrupted, if it is we just try again immediately.
-      if (errno != EINTR) {
-        snprintf(data->errorString, sizeof(data->errorString), "Error: %s, calling write", strerror(errno));
-        return;
-      }
-
-      // try again...
+    errno = 0; // probably don't need this
+    bytesWritten = write(data->fd, data->bufferData + data->offset, data->bufferLength - data->offset);
+    if (-1 != bytesWritten) {
+      // there wasn't an error, do the math on what we actually wrote and keep writing until finished
+      data->offset += bytesWritten;
       continue;
-    } else {
-      // there wasn't an error, do the math on what we actually wrote...
-      data->offset += data->result;
     }
 
-    // if we get there, we really don't want to loop
-    // break;
+    // The write call was interrupted before anything was written, try again immediately.
+    if (errno == EINTR) {
+      // why try again right away instead of in another event loop?
+      continue;
+    }
+
+    // Try again in another event loop
+    if (errno == EAGAIN || errno == EWOULDBLOCK){
+      return;
+    }
+
+    // EBAD would mean we're "disconnected"
+
+    // a real error so lets bail
+    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, calling write", strerror(errno));
+    return;
   } while (data->bufferLength > data->offset);
 }
 
