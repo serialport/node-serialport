@@ -1,3 +1,10 @@
+Version 3.2.0-beta1
+-------------
+ - Fix bug where write callback was being called multiple times when write operations blocked
+ - [windows] refactored write code to be less complex
+ - [unix] refactored write code to be less complex
+ - added arduino required integration tests
+
 Version 3.1.2
 -------------
  - Documentation around "Illegal Instruction" errors
