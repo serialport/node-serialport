@@ -81,6 +81,27 @@ static void deleteQForFD(const int fd) {
   // It wasn't found...
 }
 
+v8::Local<v8::Value> getValueFromObject(v8::Local<v8::Object> options, std::string key) {
+  v8::Local<v8::String> v8str = Nan::New<v8::String>(key).ToLocalChecked();
+  return Nan::Get(options, v8str).ToLocalChecked();
+}
+
+int getIntFromObject(v8::Local<v8::Object> options, std::string key) {
+  return getValueFromObject(options, key)->ToInt32()->Int32Value();
+}
+
+bool getBoolFromObject(v8::Local<v8::Object> options, std::string key) {
+  return getValueFromObject(options, key)->ToBoolean()->BooleanValue();
+}
+
+v8::Local<v8::String> getStringFromObj(v8::Local<v8::Object> options, std::string key) {
+  return getValueFromObject(options, key)->ToString();
+}
+
+double getDoubleFromObject(v8::Local<v8::Object> options, std::string key) {
+  return getValueFromObject(options, key)->ToNumber()->NumberValue();
+}
+
 NAN_METHOD(Open) {
   // path
   if (!info[0]->IsString()) {
@@ -106,24 +127,24 @@ NAN_METHOD(Open) {
   OpenBaton* baton = new OpenBaton();
   memset(baton, 0, sizeof(OpenBaton));
   strcpy(baton->path, *path);
-  baton->baudRate = Nan::Get(options, Nan::New<v8::String>("baudRate").ToLocalChecked()).ToLocalChecked()->ToInt32()->Int32Value();
-  baton->dataBits = Nan::Get(options, Nan::New<v8::String>("dataBits").ToLocalChecked()).ToLocalChecked()->ToInt32()->Int32Value();
-  baton->bufferSize = Nan::Get(options, Nan::New<v8::String>("bufferSize").ToLocalChecked()).ToLocalChecked()->ToInt32()->Int32Value();
-  baton->parity = ToParityEnum(Nan::Get(options, Nan::New<v8::String>("parity").ToLocalChecked()).ToLocalChecked()->ToString());
-  baton->stopBits = ToStopBitEnum(Nan::Get(options, Nan::New<v8::String>("stopBits").ToLocalChecked()).ToLocalChecked()->ToNumber()->NumberValue());
-  baton->rtscts = Nan::Get(options, Nan::New<v8::String>("rtscts").ToLocalChecked()).ToLocalChecked()->ToBoolean()->BooleanValue();
-  baton->xon = Nan::Get(options, Nan::New<v8::String>("xon").ToLocalChecked()).ToLocalChecked()->ToBoolean()->BooleanValue();
-  baton->xoff = Nan::Get(options, Nan::New<v8::String>("xoff").ToLocalChecked()).ToLocalChecked()->ToBoolean()->BooleanValue();
-  baton->xany = Nan::Get(options, Nan::New<v8::String>("xany").ToLocalChecked()).ToLocalChecked()->ToBoolean()->BooleanValue();
-  baton->hupcl = Nan::Get(options, Nan::New<v8::String>("hupcl").ToLocalChecked()).ToLocalChecked()->ToBoolean()->BooleanValue();
+  baton->baudRate = getIntFromObject(options, "baudRate");
+  baton->dataBits = getIntFromObject(options, "dataBits");
+  baton->bufferSize = getIntFromObject(options, "bufferSize");
+  baton->parity = ToParityEnum(getStringFromObj(options, "parity"));
+  baton->stopBits = ToStopBitEnum(getDoubleFromObject(options, "stopBits"));
+  baton->rtscts = getBoolFromObject(options, "rtscts");
+  baton->xon = getBoolFromObject(options, "xon");
+  baton->xoff = getBoolFromObject(options, "xoff");
+  baton->xany = getBoolFromObject(options, "xany");
+  baton->hupcl = getBoolFromObject(options, "hupcl");
 
-  v8::Local<v8::Object> platformOptions = Nan::Get(options, Nan::New<v8::String>("platformOptions").ToLocalChecked()).ToLocalChecked()->ToObject();
+  v8::Local<v8::Object> platformOptions = getValueFromObject(options, "platformOptions")->ToObject();
   baton->platformOptions = ParsePlatformOptions(platformOptions);
 
   baton->callback = new Nan::Callback(callback);
-  baton->dataCallback = new Nan::Callback(Nan::Get(options, Nan::New<v8::String>("dataCallback").ToLocalChecked()).ToLocalChecked().As<v8::Function>());
-  baton->disconnectedCallback = new Nan::Callback(Nan::Get(options, Nan::New<v8::String>("disconnectedCallback").ToLocalChecked()).ToLocalChecked().As<v8::Function>());
-  baton->errorCallback = new Nan::Callback(Nan::Get(options, Nan::New<v8::String>("errorCallback").ToLocalChecked()).ToLocalChecked().As<v8::Function>());
+  baton->dataCallback = new Nan::Callback(getValueFromObject(options, "dataCallback").As<v8::Function>());
+  baton->disconnectedCallback = new Nan::Callback(getValueFromObject(options, "disconnectedCallback").As<v8::Function>());
+  baton->errorCallback = new Nan::Callback(getValueFromObject(options, "errorCallback").As<v8::Function>());
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
@@ -411,6 +432,16 @@ NAN_METHOD(List) {
   return;
 }
 
+void setIfNotEmpty(v8::Local<v8::Object> item, std::string key, const char *value) {
+  v8::Local<v8::String> v8key = Nan::New<v8::String>(key).ToLocalChecked();
+  if (strlen(value) > 0) {
+    Nan::Set(item, v8key, Nan::New<v8::String>(value).ToLocalChecked());
+  } else {
+    Nan::Set(item, v8key, Nan::Undefined());
+  }
+
+}
+
 void EIO_AfterList(uv_work_t* req) {
   Nan::HandleScope scope;
 
@@ -426,47 +457,13 @@ void EIO_AfterList(uv_work_t* req) {
     for (std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it, i++) {
       v8::Local<v8::Object> item = Nan::New<v8::Object>();
 
-      if (strlen((*it)->comName.c_str()) > 0) {
-        Nan::Set(item, Nan::New<v8::String>("comName").ToLocalChecked(), Nan::New<v8::String>((*it)->comName.c_str()).ToLocalChecked());
-      } else {
-        Nan::Set(item, Nan::New<v8::String>("comName").ToLocalChecked(), Nan::Undefined());
-      }
-
-      if (strlen((*it)->manufacturer.c_str()) > 0) {
-        Nan::Set(item, Nan::New<v8::String>("manufacturer").ToLocalChecked(), Nan::New<v8::String>((*it)->manufacturer.c_str()).ToLocalChecked());
-      } else {
-        Nan::Set(item, Nan::New<v8::String>("manufacturer").ToLocalChecked(), Nan::Undefined());
-      }
-
-      if (strlen((*it)->serialNumber.c_str()) > 0) {
-        Nan::Set(item, Nan::New<v8::String>("serialNumber").ToLocalChecked(), Nan::New<v8::String>((*it)->serialNumber.c_str()).ToLocalChecked());
-      } else {
-        Nan::Set(item, Nan::New<v8::String>("serialNumber").ToLocalChecked(), Nan::Undefined());
-      }
-
-      if (strlen((*it)->pnpId.c_str()) > 0) {
-        Nan::Set(item, Nan::New<v8::String>("pnpId").ToLocalChecked(), Nan::New<v8::String>((*it)->pnpId.c_str()).ToLocalChecked());
-      } else {
-        Nan::Set(item, Nan::New<v8::String>("pnpId").ToLocalChecked(), Nan::Undefined());
-      }
-
-      if (strlen((*it)->locationId.c_str()) > 0) {
-        Nan::Set(item, Nan::New<v8::String>("locationId").ToLocalChecked(), Nan::New<v8::String>((*it)->locationId.c_str()).ToLocalChecked());
-      } else {
-        Nan::Set(item, Nan::New<v8::String>("locationId").ToLocalChecked(), Nan::Undefined());
-      }
-
-      if (strlen((*it)->vendorId.c_str()) > 0) {
-        Nan::Set(item, Nan::New<v8::String>("vendorId").ToLocalChecked(), Nan::New<v8::String>((*it)->vendorId.c_str()).ToLocalChecked());
-      } else {
-        Nan::Set(item, Nan::New<v8::String>("vendorId").ToLocalChecked(), Nan::Undefined());
-      }
-
-      if (strlen((*it)->productId.c_str()) > 0) {
-        Nan::Set(item, Nan::New<v8::String>("productId").ToLocalChecked(), Nan::New<v8::String>((*it)->productId.c_str()).ToLocalChecked());
-      } else {
-        Nan::Set(item, Nan::New<v8::String>("productId").ToLocalChecked(), Nan::Undefined());
-      }
+      setIfNotEmpty(item, "comName", (*it)->comName.c_str());
+      setIfNotEmpty(item, "manufacturer", (*it)->manufacturer.c_str());
+      setIfNotEmpty(item, "serialNumber", (*it)->serialNumber.c_str());
+      setIfNotEmpty(item, "pnpId", (*it)->pnpId.c_str());
+      setIfNotEmpty(item, "locationId", (*it)->locationId.c_str());
+      setIfNotEmpty(item, "vendorId", (*it)->vendorId.c_str());
+      setIfNotEmpty(item, "productId", (*it)->productId.c_str());
 
       Nan::Set(results, i, item);
     }
@@ -557,11 +554,11 @@ NAN_METHOD(Set) {
   memset(baton, 0, sizeof(SetBaton));
   baton->fd = fd;
   baton->callback = new Nan::Callback(callback);
-  baton->brk = Nan::Get(options, Nan::New<v8::String>("brk").ToLocalChecked()).ToLocalChecked()->ToBoolean()->BooleanValue();
-  baton->rts = Nan::Get(options, Nan::New<v8::String>("rts").ToLocalChecked()).ToLocalChecked()->ToBoolean()->BooleanValue();
-  baton->cts = Nan::Get(options, Nan::New<v8::String>("cts").ToLocalChecked()).ToLocalChecked()->ToBoolean()->BooleanValue();
-  baton->dtr = Nan::Get(options, Nan::New<v8::String>("dtr").ToLocalChecked()).ToLocalChecked()->ToBoolean()->BooleanValue();
-  baton->dsr = Nan::Get(options, Nan::New<v8::String>("dsr").ToLocalChecked()).ToLocalChecked()->ToBoolean()->BooleanValue();
+  baton->brk = getBoolFromObject(options, "brk");
+  baton->rts = getBoolFromObject(options, "rts");
+  baton->cts = getBoolFromObject(options, "cts");
+  baton->dtr = getBoolFromObject(options, "dtr");
+  baton->dsr = getBoolFromObject(options, "dsr");
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
@@ -639,27 +636,24 @@ void EIO_AfterDrain(uv_work_t* req) {
   delete req;
 }
 
-// Change request for ticket #401 - credit to @sguilly
 SerialPortParity NAN_INLINE(ToParityEnum(const v8::Local<v8::String>& v8str)) {
   Nan::HandleScope scope;
   Nan::Utf8String *str = new Nan::Utf8String(v8str);
   size_t count = strlen(**str);
   SerialPortParity parity = SERIALPORT_PARITY_NONE;
   if (!strncasecmp(**str, "none", count)) {
-  parity = SERIALPORT_PARITY_NONE;
+    parity = SERIALPORT_PARITY_NONE;
   } else if (!strncasecmp(**str, "even", count)) {
-  parity = SERIALPORT_PARITY_EVEN;
+    parity = SERIALPORT_PARITY_EVEN;
   } else if (!strncasecmp(**str, "mark", count)) {
-  parity = SERIALPORT_PARITY_MARK;
+    parity = SERIALPORT_PARITY_MARK;
   } else if (!strncasecmp(**str, "odd", count)) {
-  parity = SERIALPORT_PARITY_ODD;
+    parity = SERIALPORT_PARITY_ODD;
   } else if (!strncasecmp(**str, "space", count)) {
-  parity = SERIALPORT_PARITY_SPACE;
+    parity = SERIALPORT_PARITY_SPACE;
   }
-  // delete[] str;
   return parity;
 }
-
 
 SerialPortStopBits NAN_INLINE(ToStopBitEnum(double stopBits)) {
   if (stopBits > 1.4 && stopBits < 1.6) {

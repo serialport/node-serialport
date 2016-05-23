@@ -8,20 +8,6 @@
 #include <list>
 #include <string>
 
-enum SerialPortParity {
-  SERIALPORT_PARITY_NONE = 1,
-  SERIALPORT_PARITY_MARK = 2,
-  SERIALPORT_PARITY_EVEN = 3,
-  SERIALPORT_PARITY_ODD = 4,
-  SERIALPORT_PARITY_SPACE = 5
-};
-
-enum SerialPortStopBits {
-  SERIALPORT_STOPBITS_ONE = 1,
-  SERIALPORT_STOPBITS_ONE_FIVE = 2,
-  SERIALPORT_STOPBITS_TWO = 3
-};
-
 #define ERROR_STRING_SIZE 1024
 
 NAN_METHOD(List);
@@ -56,6 +42,20 @@ void EIO_AfterSet(uv_work_t* req);
 NAN_METHOD(Drain);
 void EIO_Drain(uv_work_t* req);
 void EIO_AfterDrain(uv_work_t* req);
+
+enum SerialPortParity {
+  SERIALPORT_PARITY_NONE = 1,
+  SERIALPORT_PARITY_MARK = 2,
+  SERIALPORT_PARITY_EVEN = 3,
+  SERIALPORT_PARITY_ODD = 4,
+  SERIALPORT_PARITY_SPACE = 5
+};
+
+enum SerialPortStopBits {
+  SERIALPORT_STOPBITS_ONE = 1,
+  SERIALPORT_STOPBITS_ONE_FIVE = 2,
+  SERIALPORT_STOPBITS_TWO = 3
+};
 
 SerialPortParity ToParityEnum(const v8::Local<v8::String>& str);
 SerialPortStopBits ToStopBitEnum(double stopBits);
@@ -190,5 +190,5 @@ struct DrainBaton {
 };
 
 int setup(int fd, OpenBaton *data);
-
+int setBaudRate(ConnectionOptionsBaton *data);
 #endif
