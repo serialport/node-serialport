@@ -185,11 +185,11 @@ var SerialPort = require('serialport').SerialPort;
 var port = new SerialPort('/dev/tty-usbserial1');
 
 port.on('open', function () {
-  port.write('main screen turn on', function(err, bytesWritten) {
+  port.write('main screen turn on', function(err) {
     if (err) {
       return console.log('Error: ', err.message);
     }
-    console.log(bytesWritten, 'bytes written');
+    console.log('message written');
   });
 });
 ```
@@ -198,11 +198,11 @@ This could be moved to the constructor's callback.
 ```js
 var SerialPort = require('serialport').SerialPort;
 var port = new SerialPort('/dev/tty-usbserial1', function () {
-  port.write('main screen turn on', function(err, bytesWritten) {
+  port.write('main screen turn on', function(err) {
     if (err) {
       return console.log('Error: ', err.message);
     }
-    console.log(bytesWritten, 'bytes written');
+    console.log('message written');
   });
 });
 ```
