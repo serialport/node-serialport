@@ -77,7 +77,14 @@ void EIO_Open(uv_work_t* req) {
   }
 
   DCB dcb = { 0 };
+  SecureZeroMemory(&dcb, sizeof(DCB));
   dcb.DCBlength = sizeof(DCB);
+  
+  if (!GetCommState(file, &dcb)) {
+	printf("error getting comm state");
+	return;
+  }
+  
   if (data->hupcl == false) {
     dcb.fDtrControl = DTR_CONTROL_DISABLE;  // disable DTR to avoid reset
   } else {
