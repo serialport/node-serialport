@@ -6,9 +6,8 @@ chai.use(require('chai-subset'));
 var assert = chai.assert;
 var expect = chai.expect;
 
-var MockedSerialPort = require('./mocks/darwin-hardware');
-var SerialPort = MockedSerialPort.SerialPort;
-var hardware = MockedSerialPort.hardware;
+var SerialPort = require('./mocks/darwin-hardware');
+var hardware = SerialPort.hardware;
 var bindings = hardware.mockBinding;
 
 describe('SerialPort', function() {
@@ -26,6 +25,12 @@ describe('SerialPort', function() {
     sandbox.restore();
   });
 
+  describe('Legacy Constructor', function() {
+    it('still works', function(done){
+      this.port = new SerialPort.SerialPort('/dev/exists', done);
+    });
+  });
+
   describe('Constructor', function() {
     it('opens the port immediately', function(done) {
       this.port = new SerialPort('/dev/exists', function(err) {
@@ -39,15 +44,14 @@ describe('SerialPort', function() {
       port.on('open', done);
     });
 
-    it('emits an error on the factory when erroring without a callback', function(done) {
-      MockedSerialPort.once('error', function(err) {
+    it('passes the error to the callback when an bad port is provided', function(done) {
+      this.port = new SerialPort('/bad/port', function(err) {
         assert.instanceOf(err, Error);
         done();
       });
-      this.port = new SerialPort('/bad/port');
     });
 
-    it('emits an error when an invalid port is provided', function(done) {
+    it('emits an error when an bad port is provided', function(done) {
       var port = new SerialPort('/bad/port');
       port.once('error', function(err) {
         assert.instanceOf(err, Error);
@@ -55,32 +59,67 @@ describe('SerialPort', function() {
       });
     });
 
-    it('errors with invalid databits', function(done) {
-      this.port = new SerialPort('/dev/exists', { databits: 19 }, false, function(err) {
+    it('throws an error when no port is provided', function(done) {
+      try {
+        this.port = new SerialPort('');
+      } catch(err){
         assert.instanceOf(err, Error);
         done();
-      });
+      }
+    });
+
+    it('throws an error when given bad options even with a callback', function(done) {
+      try {
+        this.port = new SerialPort('/dev/exists', { baudRate: 'whatever'}, function() {});
+      } catch(err){
+        assert.instanceOf(err, Error);
+        done();
+      }
+    });
+
+    it('errors with a non number baudRate', function(done) {
+      try {
+        this.port = new SerialPort('/bad/port', { baudRate: 'whatever'});
+      } catch(err){
+        assert.instanceOf(err, Error);
+        done();
+      }
+    });
+
+    it('errors with invalid databits', function(done) {
+      try {
+        this.port = new SerialPort('/dev/exists', { databits: 19 });
+      } catch(err){
+        assert.instanceOf(err, Error);
+        done();
+      }
     });
 
     it('errors with invalid stopbits', function(done) {
-      this.port = new SerialPort('/dev/exists', { stopbits: 19 }, function(err) {
+      try {
+        this.port = new SerialPort('/dev/exists', { stopbits: 19 });
+      } catch(err){
         assert.instanceOf(err, Error);
         done();
-      });
+      }
     });
 
     it('errors with invalid parity', function(done) {
-      this.port = new SerialPort('/dev/exists', { parity: 'pumpkins' }, false, function(err) {
+      try {
+        this.port = new SerialPort('/dev/exists', { parity: 'pumpkins' });
+      } catch(err){
         assert.instanceOf(err, Error);
         done();
-      });
+      }
     });
 
     it('errors with invalid flow control', function(done) {
-      this.port = new SerialPort('/dev/exists', { xon: 'pumpkins' }, false, function(err) {
+      try {
+        this.port = new SerialPort('/dev/exists', { xon: 'pumpkins' });
+      } catch(err){
         assert.instanceOf(err, Error);
         done();
-      });
+      }
     });
 
     it('sets valid flow control individually', function(done) {

@@ -3,8 +3,7 @@
 // These tests require an empty serialport to exist. Nothing needs to respond on the other end.
 
 var assert = require('chai').assert;
-var serialPort = require('../');
-var SerialPort = serialPort.SerialPort;
+var SerialPort = require('../');
 
 var platform;
 switch (process.platform) {
@@ -39,7 +38,7 @@ describe('SerialPort light integration', function() {
   });
 
   it('.list', function(done) {
-    serialPort.list(done);
+    SerialPort.list(done);
   });
 
   // Be careful to close the ports when you're done with them

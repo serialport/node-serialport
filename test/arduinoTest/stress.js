@@ -4,7 +4,7 @@
 
 var assert = require('chai').assert;
 var util = require('util');
-var serialPort = require('../../');
+var SerialPort = require('../../');
 require('colors'); // this modifies String.prototype
 // var fs = require('fs');
 
@@ -34,7 +34,7 @@ describe('the stress', function() {
     it("doesn't leak memory", function(done) {
       var data = new Buffer(1024);
       var hd = new memwatch.HeapDiff();
-      var port = new serialPort.SerialPort(testPort, {}, false);
+      var port = new SerialPort(testPort, {}, false);
       port.on('close', done);
 
       var leaks = 0;
@@ -87,7 +87,7 @@ describe('the stress', function() {
   // describe('of opening and closing ports', function() {
   //   it("doesn't leak memory", function(done) {
   //     var hd = new memwatch.HeapDiff();
-  //     var port = new serialPort.SerialPort(testPort, {}, false);
+  //     var port = new SerialPort(testPort, {}, false);
 
   //     memwatch.on('leak', function(info) {
   //       // fs.appendFile('leak.log', util.inspect(info));

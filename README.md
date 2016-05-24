@@ -160,8 +160,8 @@ npm rebuild --build-from-source
 Opening a serial port:
 
 ```js
-var SerialPort = require("serialport").SerialPort
-var serialPort = new SerialPort("/dev/tty-usbserial1", {
+var SerialPort = require("serialport");
+var port = new SerialPort("/dev/tty-usbserial1", {
   baudrate: 57600
 });
 ```
@@ -181,7 +181,7 @@ Constructing a `SerialPort` object will open a port, eventually. You can bind ev
 
 
 ```js
-var SerialPort = require('serialport').SerialPort;
+var SerialPort = require('serialport');
 var port = new SerialPort('/dev/tty-usbserial1');
 
 port.on('open', function () {
@@ -196,7 +196,7 @@ port.on('open', function () {
 
 This could be moved to the constructor's callback.
 ```js
-var SerialPort = require('serialport').SerialPort;
+var SerialPort = require('serialport');
 var port = new SerialPort('/dev/tty-usbserial1', function () {
   port.write('main screen turn on', function(err) {
     if (err) {
@@ -210,7 +210,7 @@ var port = new SerialPort('/dev/tty-usbserial1', function () {
 When disabling the `openImmediately` flag you'll need to open the port on your own. Note, in order to disable the `openImmediately` flag, we have to pass an options object.
 
 ```js
-var SerialPort = require('serialport').SerialPort;
+var SerialPort = require('serialport');
 var port = new SerialPort('/dev/tty-usbserial1', {}, false);
 
 port.open(function (err) {
@@ -246,8 +246,8 @@ Retrieves a list of available serial ports with metadata.
 ```
 
 ```js
-var serialPort = require('serialport');
-serialPort.list(function (err, ports) {
+var SerialPort = require('serialport');
+SerialPort.list(function (err, ports) {
   ports.forEach(function(port) {
     console.log(port.comName);
     console.log(port.pnpId);
@@ -261,22 +261,20 @@ serialPort.list(function (err, ports) {
 Out of the box, node-serialport provides two parsers one that simply emits the raw buffer as a data event and the other which provides familiar "readline" style parsing. To use the readline parser, you must provide a delimiter as such:
 
 ```js
-var serialport = require('serialport');
-var SerialPort = serialport.SerialPort;
+var SerialPort = require('serialport');
 
 var port = new SerialPort('/dev/tty-usbserial1', {
-  parser: serialport.parsers.readline('\n')
+  parser: SerialPort.parsers.readline('\n')
 });
 ```
 
 To use the raw parser, you just provide the function definition (or leave undefined):
 
 ```js
-var serialport = require('serialport');
-var SerialPort = serialport.SerialPort;
+var SerialPort = require('serialport');
 
 var port = new SerialPort('/dev/tty-usbserial1', {
-  parser: serialport.parsers.raw
+  parser: SerialPort.parsers.raw
 });
 ```
 
@@ -300,9 +298,9 @@ Enjoy and do cool things with this code.
 
 ## Methods
 
-### SerialPort (path, options, openImmediately, callback)
+### SerialPort (path, options, openImmediately, openCallback)
 
-Create a new serial port on `path`.
+Create a new serial port on `path`. In the case of invalid arguments or invalid options constructing a new serialport will throw an error. If `openImmediately` is true (the default) the `openCallback` will be passed to `.open()`
 
 **_path_**
 
@@ -333,7 +331,7 @@ These properties are ignored for windows. An object with the following propertie
 
 **_openImmediately (optional)_**
 
-Attempts to open a connection to the serial port on `process.nextTick`. The default is `true`. Set to `false` to manually call `open()` at a later time, but note you'll need to use factory error listener in the case of constructor errors.
+Attempts to open a connection to the serial port on `process.nextTick`. The default is `true`. If you've provided a `openCallback` it will be given to `open()`. Set to `false` to manually call `open()`.
 
 **_callback (optional)_**
 
@@ -435,7 +433,7 @@ Called once the port's flags have been set. `results` are the return of the unde
 
 ### .update (options, callback)
 
-Changes the baudrate for an open port. Doesn't yet work on windows.
+Changes the baudrate for an open port. Throws if you provide a bad argument. Emits an error or calls the callback if the baud rate isn't supported. Doesn't yet work on windows.
 
 **_options_**
 

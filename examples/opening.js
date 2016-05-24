@@ -2,7 +2,7 @@
 
 // Open event example
 
-// var SerialPort = require('serialport').SerialPort;
+// var SerialPort = require('serialport');
 // var port = new SerialPort('/dev/tty-usbserial1');
 
 // port.on('open', function () {
@@ -18,7 +18,7 @@
 
 // Constructor callback example
 
-// var SerialPort = require('serialport').SerialPort;
+// var SerialPort = require('serialport');
 // var port = new SerialPort('/dev/tty-usbserial1', function () {
 //   port.write('main screen turn on', function(err) {
 //     if (err) {
@@ -30,7 +30,7 @@
 
 // When disabling open immediately.
 
-// var SerialPort = require('serialport').SerialPort;
+// var SerialPort = require('serialport');
 // var port = new SerialPort('/dev/tty-usbserial1', {}, false);
 
 // port.open(function (err) {
