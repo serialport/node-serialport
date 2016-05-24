@@ -316,11 +316,10 @@ Port configuration options.
 * `dataBits` Data Bits, defaults to 8. Must be one of: 8, 7, 6, or 5.
 * `stopBits` Stop Bits, defaults to 1. Must be one of: 1 or 2.
 * `parity` Parity, defaults to 'none'. Must be one of: 'none', 'even', 'mark', 'odd', 'space'
-* `rtscts` defaults to false
-* `xon` defaults to false
-* `xoff` defaults to false
-* `xany` defaults to false
-* `flowControl` `true` for `rtscts` or an array with one or more of the following strings to enable them `xon`, `xoff`, `xany`, `rtscts`. Overwrites any individual settings.
+* `rtscts` flow control, defaults to false
+* `xon` flow control, defaults to false
+* `xoff` flow control, defaults to false
+* `xany` flow control, defaults to false
 * `bufferSize` Size of read buffer, defaults to 65536. Must be an integer value.
 * `parser` The parser engine to use with read data, defaults to rawPacket strategy which just emits the raw buffer as a "data" event. Can be any function that accepts EventEmitter as first parameter and the raw buffer as the second parameter.
 * `platformOptions` - sets platform specific options, see below.

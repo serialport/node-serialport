@@ -29,7 +29,7 @@ describe('SerialPort', function() {
   describe('Constructor', function() {
     it('opens the port immediately', function(done) {
       this.port = new SerialPort('/dev/exists', function(err) {
-        expect(err).to.not.be.ok;
+        assert.isNull(err);
         done();
       });
     });
@@ -76,47 +76,26 @@ describe('SerialPort', function() {
       });
     });
 
-    describe('flowControl', function() {
-      it('errors with invalid flow control', function(done) {
-        var opts = { flowcontrol: ['pumpkins'] };
-        this.port = new SerialPort('/dev/exists', opts, false, function(err) {
-          assert.instanceOf(err, Error);
-          done();
-        });
-      });
-
-      it('sets valid flow control', function(done) {
-        var port = new SerialPort('/dev/exists', { flowcontrol: ['xon', 'XOFF', 'xany', 'RTSCTS'] }, false);
-        assert.isTrue(port.options.xon);
-        assert.isTrue(port.options.xoff);
-        assert.isTrue(port.options.xany);
-        assert.isTrue(port.options.rtscts);
+    it('errors with invalid flow control', function(done) {
+      this.port = new SerialPort('/dev/exists', { xon: 'pumpkins' }, false, function(err) {
+        assert.instanceOf(err, Error);
         done();
       });
+    });
 
-      it('sets rtscts to true if flow control is true', function(done) {
-        var port = new SerialPort('/dev/exists', { flowcontrol: true }, false);
-        assert.isFalse(port.options.xon);
-        assert.isFalse(port.options.xoff);
-        assert.isFalse(port.options.xany);
-        assert.isTrue(port.options.rtscts);
-        done();
-      });
-
-      it('sets valid flow control individually', function(done) {
-        var options = {
-          xon: true,
-          xoff: true,
-          xany: true,
-          rtscts: true
-        };
-        var port = new SerialPort('/dev/exists', options, false);
-        assert.isTrue(port.options.xon);
-        assert.isTrue(port.options.xoff);
-        assert.isTrue(port.options.xany);
-        assert.isTrue(port.options.rtscts);
-        done();
-      });
+    it('sets valid flow control individually', function(done) {
+      var options = {
+        xon: true,
+        xoff: true,
+        xany: true,
+        rtscts: true
+      };
+      var port = new SerialPort('/dev/exists', options, false);
+      assert.isTrue(port.options.xon);
+      assert.isTrue(port.options.xoff);
+      assert.isTrue(port.options.xany);
+      assert.isTrue(port.options.rtscts);
+      done();
     });
 
     it('allows optional options', function(done) {
