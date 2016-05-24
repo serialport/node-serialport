@@ -29,7 +29,7 @@ describe('SerialPort', function() {
   describe('Constructor', function() {
     it('opens the port immediately', function(done) {
       this.port = new SerialPort('/dev/exists', function(err) {
-        expect(err).to.not.be.ok;
+        assert.isNull(err);
         done();
       });
     });
