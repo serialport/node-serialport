@@ -1,4 +1,4 @@
-Version 4.0.0-beta1
+Version 4.0.0-beta2
 -------------
  - [windows] Fixed a bug where we weren't properly opening ports (provides better support virtual com ports too) thanks to @RogerHardiman
  - Remove extra flow control settings
