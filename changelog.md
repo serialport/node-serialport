@@ -1,3 +1,8 @@
+Version 4.0.0-beta1
+-------------
+ - [windows] Fixed a bug where we weren't properly opening ports (provides better support virtual com ports too) thanks to @RogerHardiman
+ - Remove extra flow control settings
+
 Version 3.2.0-beta1
 -------------
  - Fix bug where write callback was being called multiple times when write operations blocked
