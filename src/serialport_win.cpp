@@ -81,8 +81,8 @@ void EIO_Open(uv_work_t* req) {
   dcb.DCBlength = sizeof(DCB);
   
   if (!GetCommState(file, &dcb)) {
-	printf("error getting comm state");
-	return;
+    ErrorCodeToString("GetCommState", GetLastError(), data->errorString);
+    return;
   }
   
   if (data->hupcl == false) {
