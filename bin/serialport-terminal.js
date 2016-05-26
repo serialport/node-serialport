@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-var serialport = require('../');
+var SerialPort = require('../');
 var version = require('../package.json').version;
 var args = require('commander');
 
@@ -21,7 +21,7 @@ args
   .parse(process.argv);
 
 function listPorts() {
-  serialport.list(function(err, ports) {
+  SerialPort.list(function(err, ports) {
     if (err) {
       console.error('Error listing ports', err);
     } else {
@@ -49,7 +49,7 @@ var openOptions = {
   stopBits: args.stopbits
 };
 
-var port = new serialport.SerialPort(args.port, openOptions);
+var port = new SerialPort(args.port, openOptions);
 
 process.stdin.resume();
 process.stdin.setRawMode(true);

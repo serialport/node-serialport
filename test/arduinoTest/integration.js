@@ -1,8 +1,7 @@
 'use strict';
 var crypto = require('crypto');
 var assert = require('chai').assert;
-var serialPort = require('../../');
-var SerialPort = serialPort.SerialPort;
+var SerialPort = require('../../');
 
 var platform;
 switch (process.platform) {
@@ -24,7 +23,7 @@ if (!testPort) {
 
 describe('SerialPort Integration tests', function() {
   it('.list', function(done) {
-    serialPort.list(function(err, ports) {
+    SerialPort.list(function(err, ports) {
       var foundPort = false;
       ports.forEach(function(port) {
         if (port.comName === testPort){
