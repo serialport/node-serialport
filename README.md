@@ -7,9 +7,13 @@
 
 For support you can open a [github issue](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/new), for discussions, designs, and clarifications, we recommend you join our [Gitter Chat room](https://gitter.im/EmergingTechnologyAdvisors/node-serialport). We have two related projects [Browser Serialport](https://github.com/garrows/browser-serialport) "just like Node Serialport but for browser apps", and [Serialport Test Piliot](https://github.com/j5js/serialport-test-pilot) which helps us test serialport.
 
+If you'd like to contriubte please take a look at our code of coduct, then our road map. We also have issues tagged "good first PR" if you'd like to start somewhere specific. We'll do our best to support you until your PR is merged.
+
 ***
 
-You're reading the README for the master branch of serialport. You might want to look at the README of our latest release. See our [change log](changelog.md) for what's new.
+# Which version of Serialport would you like documentation for?
+
+You're reading the README for the master branch of serialport. You probably want to be looking at the README of our latest release. See our [change log](changelog.md) for what's new.
 
  - [`serialport@3.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/3.1.2/README.md) it is the latest `3.x` releases.
  - [`serialport@2.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/2.1.2/README.md) it was the last `2.x` release
