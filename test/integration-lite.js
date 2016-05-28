@@ -72,7 +72,7 @@ describe('SerialPort light integration', function() {
       });
 
       it('cannot be opened twice', function(done) {
-        var port = new SerialPort(testPort, {}, false);
+        var port = new SerialPort(testPort, { autoOpen: false });
         var calls = 0;
         var errors = 0;
         var spy = function(err) {
@@ -92,7 +92,7 @@ describe('SerialPort light integration', function() {
       });
 
       it('can open and close ports repetitively', function(done) {
-        var port = new SerialPort(testPort, {}, false);
+        var port = new SerialPort(testPort, { autoOpen: false });
         port.open(function(err) {
           assert.isNull(err);
           port.close(function(err) {

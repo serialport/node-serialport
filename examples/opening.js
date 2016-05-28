@@ -31,7 +31,7 @@
 // When disabling open immediately.
 
 // var SerialPort = require('serialport');
-// var port = new SerialPort('/dev/tty-usbserial1', {}, false);
+// var port = new SerialPort('/dev/tty-usbserial1', { autoOpen: false });
 
 // port.open(function (err) {
 //   if (err) {
