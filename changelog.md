@@ -1,7 +1,16 @@
+Version 4.0.0-beta3
+-------------
+ - Contributors guide
+ - Requiring `serialport` now returns the SerialPort constructor function instead of a factory object. `SerialPort.SerialPort` is now depreciated.
+ - `SerialPort` constructor now throws on argument errors.
+ - `openImmediately` is now part of the options object and renamed to `autoOpen`
+ - [unix] `.drain` and `.set` now properly report errors
+ - [windows] `.update()` now supports windows for changing baud rates
+
 Version 4.0.0-beta2
 -------------
- - [windows] Fixed a bug where we weren't properly opening ports (provides better support virtual com ports too) thanks to @RogerHardiman
  - Remove extra flow control settings
+ - [windows] Fixed a bug where we weren't properly opening ports (provides better support virtual com ports too) thanks to @RogerHardiman
 
 Version 3.2.0-beta1
 -------------
