@@ -197,7 +197,6 @@ void EIO_Update(uv_work_t* req) {
     ErrorCodeToString("SetCommState", GetLastError(), data->errorString);
     return;
   }
-
 }
 
 void EIO_Set(uv_work_t* req) {
@@ -234,8 +233,11 @@ void EIO_Set(uv_work_t* req) {
   if (data->dsr) {
     bits |= EV_DSR;
   }
-  // TODO check for error
-  data->result = SetCommMask((HANDLE)data->fd, bits);
+
+  if (!SetCommMask((HANDLE)data->fd, bits)) {
+    ErrorCodeToString("Setting options on COM port (SetCommMask)", GetLastError(), data->errorString);
+    return;
+  }
 }
 
 
@@ -532,7 +534,7 @@ void EIO_Flush(uv_work_t* req) {
   FlushBaton* data = static_cast<FlushBaton*>(req->data);
 
   if (!FlushFileBuffers((HANDLE)data->fd)) {
-    ErrorCodeToString("flushing connection", GetLastError(), data->errorString);
+    ErrorCodeToString("flushing connection (FlushFileBuffers)", GetLastError(), data->errorString);
     return;
   }
 }
@@ -541,7 +543,7 @@ void EIO_Drain(uv_work_t* req) {
   DrainBaton* data = static_cast<DrainBaton*>(req->data);
 
   if (!FlushFileBuffers((HANDLE)data->fd)) {
-    ErrorCodeToString("draining connection", GetLastError(), data->errorString);
+    ErrorCodeToString("draining connection (FlushFileBuffers)", GetLastError(), data->errorString);
     return;
   }
 }
