@@ -85,10 +85,10 @@ void EIO_Open(uv_work_t* req) {
     return;
   }
 
-  if (data->hupcl == false) {
-    dcb.fDtrControl = DTR_CONTROL_DISABLE;  // disable DTR to avoid reset
-  } else {
+  if (data->hupcl) {
     dcb.fDtrControl = DTR_CONTROL_ENABLE;
+  } else {
+    dcb.fDtrControl = DTR_CONTROL_DISABLE;  // disable DTR to avoid reset
   }
 
   dcb.Parity = NOPARITY;
@@ -103,6 +103,7 @@ void EIO_Open(uv_work_t* req) {
   dcb.fBinary = true;
   dcb.BaudRate = data->baudRate;
   dcb.ByteSize = data->dataBits;
+
   switch (data->parity) {
   case SERIALPORT_PARITY_NONE:
     dcb.Parity = NOPARITY;
@@ -120,6 +121,7 @@ void EIO_Open(uv_work_t* req) {
     dcb.Parity = SPACEPARITY;
     break;
   }
+
   switch (data->stopBits) {
   case SERIALPORT_STOPBITS_ONE:
     dcb.StopBits = ONESTOPBIT;
@@ -179,8 +181,23 @@ struct WatchPortBaton {
 
 void EIO_Update(uv_work_t* req) {
   ConnectionOptionsBaton* data = static_cast<ConnectionOptionsBaton*>(req->data);
-  _snprintf(data->errorString, sizeof(data->errorString), "Update is not yet implemented on windows");
-  // https://msdn.microsoft.com/en-us/library/windows/desktop/aa363260(v=vs.85).aspx
+
+  DCB dcb = { 0 };
+  SecureZeroMemory(&dcb, sizeof(DCB));
+  dcb.DCBlength = sizeof(DCB);
+
+  if (!GetCommState((HANDLE)data->fd, &dcb)) {
+    ErrorCodeToString("GetCommState", GetLastError(), data->errorString);
+    return;
+  }
+
+  dcb.BaudRate = data->baudRate;
+
+  if (!SetCommState((HANDLE)data->fd, &dcb)) {
+    ErrorCodeToString("SetCommState", GetLastError(), data->errorString);
+    return;
+  }
+
 }
 
 void EIO_Set(uv_work_t* req) {
