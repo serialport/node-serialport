@@ -127,17 +127,6 @@ describe('SerialPortBinding', function() {
   });
 
   describe('#update', function() {
-    if (platform === 'win32') {
-      it('on windows it returns an error', function(done) {
-        SerialPortBinding.update(99, defaultPortOpenOptions, function(err, data) {
-          assert.instanceOf(err, Error);
-          assert.isUndefined(data);
-          done();
-        });
-      });
-      return;
-    }
-
     it('errors when updating nothing', function(done) {
       try {
         SerialPortBinding.update(99, {}, function() {});
@@ -171,6 +160,11 @@ describe('SerialPortBinding', function() {
       SerialPortBinding.update(this.fd, {baudRate: 57600}, done);
     });
 
+    if (platform === 'win32') {
+      it("doesn't yet support custom rates");
+      return;
+    }
+
     it('updates baudRate to a custom rate', function(done) {
       SerialPortBinding.update(this.fd, {baudRate: 25000}, function(err) {
         assert.isNull(err);
@@ -178,6 +172,7 @@ describe('SerialPortBinding', function() {
       });
     });
   });
+
   describe('#write', function() {
     if (!testPort) {
       it('Cannot be tested as we have no test ports on ' + platform);

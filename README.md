@@ -447,7 +447,7 @@ Called once the port's flags have been set. `results` are the return of the unde
 
 ### .update (options, callback)
 
-Changes the baudrate for an open port. Throws if you provide a bad argument. Emits an error or calls the callback if the baud rate isn't supported. Doesn't yet work on windows.
+Changes the baudrate for an open port. Throws if you provide a bad argument. Emits an error or calls the callback if the baud rate isn't supported.
 
 **_options_**
 
