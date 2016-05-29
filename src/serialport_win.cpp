@@ -79,12 +79,12 @@ void EIO_Open(uv_work_t* req) {
   DCB dcb = { 0 };
   SecureZeroMemory(&dcb, sizeof(DCB));
   dcb.DCBlength = sizeof(DCB);
-  
+
   if (!GetCommState(file, &dcb)) {
     ErrorCodeToString("GetCommState", GetLastError(), data->errorString);
     return;
   }
-  
+
   if (data->hupcl == false) {
     dcb.fDtrControl = DTR_CONTROL_DISABLE;  // disable DTR to avoid reset
   } else {
@@ -375,7 +375,7 @@ void EIO_Write(uv_work_t* req) {
     // on the same handle (i.e. ReadFile and WriteFile)
     ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
-    // Start write operation - synchrounous or asynchronous
+    // Start write operation - synchronous or asynchronous
     DWORD bytesWritten = 0;
     if (!WriteFile((HANDLE)data->fd, data->bufferData, static_cast<DWORD>(data->bufferLength), &bytesWritten, &ov)) {
       DWORD lastError = GetLastError();
