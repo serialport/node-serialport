@@ -690,18 +690,29 @@ void EIO_Set(uv_work_t* req) {
     bits |= TIOCM_DSR;
   }
 
-  // TODO check these returns
+  int result = 0;
   if (data->brk) {
-    ioctl(data->fd, TIOCSBRK, NULL);
+    result = ioctl(data->fd, TIOCSBRK, NULL);
   } else {
-    ioctl(data->fd, TIOCCBRK, NULL);
+    result = ioctl(data->fd, TIOCCBRK, NULL);
   }
 
-  data->result = ioctl(data->fd, TIOCMSET, &bits);
+  if (-1 == result) {
+    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot drain", strerror(errno));
+    return;
+  }
+
+  if (-1 == ioctl(data->fd, TIOCMSET, &bits)) {
+    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot drain", strerror(errno));
+    return;
+  }
 }
 
 void EIO_Drain(uv_work_t* req) {
   DrainBaton* data = static_cast<DrainBaton*>(req->data);
 
-  data->result = tcdrain(data->fd);
+  if (-1 == tcdrain(data->fd)) {
+    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot drain", strerror(errno));
+    return;
+  }
 }

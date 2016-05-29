@@ -34,6 +34,15 @@ var defaultPortOpenOptions = {
   disconnectedCallback: function() {}
 };
 
+var defaultSetFlags = {
+  brk: false,
+  cts: false,
+  dtr: true,
+  dts: false,
+  rts: true
+};
+
+
 var testPort = process.env.TEST_PORT;
 
 describe('SerialPortBinding', function() {
@@ -151,9 +160,8 @@ describe('SerialPortBinding', function() {
     });
 
     afterEach(function(done) {
-      var fd = this.fd;
+      SerialPortBinding.close(this.fd, done);
       this.fd = null;
-      SerialPortBinding.close(fd, done);
     });
 
     it('updates baudRate', function(done) {
@@ -189,9 +197,8 @@ describe('SerialPortBinding', function() {
     });
 
     afterEach(function(done) {
-      var fd = this.fd;
+      SerialPortBinding.close(this.fd, done);
       this.fd = null;
-      SerialPortBinding.close(fd, done);
     });
 
     it('calls the write callback once after a small write', function(done){
@@ -206,6 +213,76 @@ describe('SerialPortBinding', function() {
       this.timeout(20000);
       var data = new Buffer(1024 * 5);
       SerialPortBinding.write(this.fd, data, function(err){
+        assert.isNull(err);
+        done();
+      });
+    });
+  });
+
+  describe('#drain', function() {
+    it('errors when given a bad fd', function(done) {
+      SerialPortBinding.drain(44, function(err) {
+        assert.instanceOf(err, Error);
+        done();
+      });
+    });
+
+    if (!testPort) {
+      it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.');
+      return;
+    }
+
+    beforeEach(function(done) {
+      SerialPortBinding.open(testPort, defaultPortOpenOptions, function(err, fd) {
+        assert.isNull(err);
+        assert.isNumber(fd);
+        this.fd = fd;
+        done();
+      }.bind(this));
+    });
+
+    afterEach(function(done) {
+      SerialPortBinding.close(this.fd, done);
+      this.fd = null;
+    });
+
+    it('drains the port', function(done) {
+      SerialPortBinding.drain(this.fd, function(err) {
+        assert.isNull(err);
+        done();
+      });
+    });
+  });
+
+  describe('#set', function() {
+    it('errors when given a bad fd', function(done) {
+      SerialPortBinding.drain(44, function(err) {
+        assert.instanceOf(err, Error);
+        done();
+      });
+    });
+
+    if (!testPort) {
+      it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.');
+      return;
+    }
+
+    beforeEach(function(done) {
+      SerialPortBinding.open(testPort, defaultPortOpenOptions, function(err, fd) {
+        assert.isNull(err);
+        assert.isNumber(fd);
+        this.fd = fd;
+        done();
+      }.bind(this));
+    });
+
+    afterEach(function(done) {
+      SerialPortBinding.close(this.fd, done);
+      this.fd = null;
+    });
+
+    it('sets flags on the port', function(done) {
+      SerialPortBinding.set(this.fd, defaultSetFlags, function(err) {
         assert.isNull(err);
         done();
       });

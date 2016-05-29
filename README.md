@@ -399,7 +399,7 @@ Called once the flush operation returns. The callback should be a function that 
 
 ### .drain (callback)
 
-Waits until all output data has been transmitted to the serial port. See [`tcdrain()`](http://linux.die.net/man/3/tcdrain) for more information.
+Waits until all output data has been transmitted to the serial port. See [`tcdrain()`](http://linux.die.net/man/3/tcdrain) or [FlushFileBuffers()](https://msdn.microsoft.com/en-us/library/windows/desktop/aa364439(v=vs.85).aspx) for more information.
 
 **_callback (optional)_**
 
@@ -441,9 +441,9 @@ All options are operating system default when the port is opened. Every flag is 
 
 **_callback (optional)_**
 
-`callback: function(err, results)`
+`function(err) {}`
 
-Called once the port's flags have been set. `results` are the return of the underlying system command. If `.set` is called without an callback and there is an error, an error event will be emitted.
+Called once the port's flags have been set. If `.set` is called without an callback and there is an error, an error event will be emitted.
 
 ### .update (options, callback)
 

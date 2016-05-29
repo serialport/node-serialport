@@ -572,16 +572,14 @@ void EIO_AfterSet(uv_work_t* req) {
 
   SetBaton* data = static_cast<SetBaton*>(req->data);
 
-  v8::Local<v8::Value> argv[2];
+  v8::Local<v8::Value> argv[1];
 
   if (data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
-    argv[1] = Nan::Undefined();
   } else {
-    argv[0] = Nan::Undefined();
-    argv[1] = Nan::New<v8::Int32>(data->result);
+    argv[0] = Nan::Null();
   }
-  data->callback->Call(2, argv);
+  data->callback->Call(1, argv);
 
   delete data->callback;
   delete data;
@@ -620,16 +618,14 @@ void EIO_AfterDrain(uv_work_t* req) {
 
   DrainBaton* data = static_cast<DrainBaton*>(req->data);
 
-  v8::Local<v8::Value> argv[2];
+  v8::Local<v8::Value> argv[1];
 
   if (data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
-    argv[1] = Nan::Undefined();
   } else {
-    argv[0] = Nan::Undefined();
-    argv[1] = Nan::New<v8::Int32>(data->result);
+    argv[0] = Nan::Null();
   }
-  data->callback->Call(2, argv);
+  data->callback->Call(1, argv);
 
   delete data->callback;
   delete data;
