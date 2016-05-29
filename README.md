@@ -21,7 +21,7 @@ You're reading the README for the master branch of serialport. You probably want
 
 ***
 
-Imagine a world where you can write JavaScript to control blenders, lights, security systems, or even robots. Yes, I said robots. That world is here and now with node-serialport. It provides a very simple interface to the low level serial port code necessary to program [Arduino](http://www.arduino.cc/) chipsets, [X10](http://www.smarthome.com/manuals/protocol.txt) wireless communications, or even the rising [Z-Wave](http://www.z-wave.com/modules/ZwaveStart/) and [Zigbee](http://www.zigbee.org/) standards. The physical world is your oyster with this goodie. For a full break down of why we made this, please read [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics).
+Imagine a world where you can write JavaScript to control blenders, lights, security systems, or even robots. Yes, I said robots. That world is here and now with node serialport. It provides a very simple interface to the low level serial port code necessary to program [Arduino](http://www.arduino.cc/) chipsets, [X10](http://www.smarthome.com/manuals/protocol.txt) wireless communications, or even the rising [Z-Wave](http://www.z-wave.com/modules/ZwaveStart/) and [Zigbee](http://www.zigbee.org/) standards. The physical world is your oyster with this goodie. For a full break down of why we made this, please read [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics).
 
 ***
 
@@ -46,7 +46,7 @@ For getting started with node-serialport, we recommend you begin with the follow
   * [Listing Ports](#listing-ports)
   * [Parsers](#parsers)
 * [Methods](#methods)
-  * [SerialPort](#serialport-path-options-openimmediately-callback)
+  * [SerialPort](#serialport-path-options-opencallback)
   * [close()](#close-callback)
   * [drain()](#drain-callback)
   * [flush()](#flush-callback)
@@ -177,53 +177,66 @@ When opening a serial port, you can specify (in this order).
 
 ### Opening a Port
 
-Constructing a `SerialPort` object will open a port, eventually. You can bind events while the port is opening but you must wait until it is open to `write()` to it. (Most port functions require an open port.) You can call code when a port is opened in three ways.
+Constructing a `SerialPort` object will open a port on `nextTick`. You can bind events while the port is opening but you must wait until it is open to `write()` to it. (Most port functions require an open port.) You can call code when a port is opened in three ways.
 
  - The `open` event is always emitted when the port is opened
- - The constructor callback is called when the port is opened and you haven't disabled the `openImmediately` option, if you have disabled it, the callback is only used for errors.
- - The `.open()` function takes a callback that is called when the port is opened. This can be used if you disabled the `openImmediately` option or have previously closed an open port.
+ - The constructor's openCallback is passed to `.open()` when the `autoOpen` option hasn't been disabled, if you have disabled it the callback is ignored.
+ - The `.open()` function takes a callback that is called after the port is opened. This can be used if you disabled the `autoOpen` option or have previously closed an open port.
 
 
 ```js
 var SerialPort = require('serialport');
 var port = new SerialPort('/dev/tty-usbserial1');
 
-port.on('open', function () {
+port.on('open', function() {
   port.write('main screen turn on', function(err) {
     if (err) {
-      return console.log('Error: ', err.message);
+      return console.log('Error on write: ', err.message);
     }
     console.log('message written');
   });
 });
+
+// open errors will be emitted as an error event
+port.on('error', function(err) {
+  console.log('Error: ', err.message);
+})
 ```
 
 This could be moved to the constructor's callback.
 ```js
 var SerialPort = require('serialport');
-var port = new SerialPort('/dev/tty-usbserial1', function () {
+var port = new SerialPort('/dev/tty-usbserial1', function (err) {
+  if (err) {
+    return console.log('Error: ', err.message);
+  }
   port.write('main screen turn on', function(err) {
     if (err) {
-      return console.log('Error: ', err.message);
+      return console.log('Error on write: ', err.message);
     }
     console.log('message written');
   });
 });
 ```
 
-When disabling the `openImmediately` flag you'll need to open the port on your own. Note, in order to disable the `openImmediately` flag, we have to pass an options object.
+When disabling the `autoOpen` option you'll need to open the port on your own.
 
 ```js
 var SerialPort = require('serialport');
-var port = new SerialPort('/dev/tty-usbserial1', {}, false);
+var port = new SerialPort('/dev/tty-usbserial1', { autoOpen: false });
 
 port.open(function (err) {
   if (err) {
     return console.log('Error opening port: ', err.message);
   }
 
-  // errors will be emitted on the port since there is no callback to write
+  // write errors will be emitted on the port since there is no callback to write
   port.write('main screen turn on');
+});
+
+// the open event will always be emitted
+port.on('open', function() {
+  // open logic
 });
 ```
 
@@ -272,7 +285,7 @@ var port = new SerialPort('/dev/tty-usbserial1', {
 });
 ```
 
-To use the raw parser, you just provide the function definition (or leave undefined):
+To use the raw parser don't specify any parser, however if you really want to you can:
 
 ```js
 var SerialPort = require('serialport');
@@ -302,9 +315,9 @@ Enjoy and do cool things with this code.
 
 ## Methods
 
-### SerialPort (path, options, openImmediately, openCallback)
+### SerialPort (path, options, openCallback)
 
-Create a new serial port on `path`. In the case of invalid arguments or invalid options constructing a new serialport will throw an error. If `openImmediately` is true (the default) the `openCallback` will be passed to `.open()`
+Create a new serial port object for the `path`. In the case of invalid arguments or invalid options when constructing a new SerialPort it will throw an error. The port will open automatically by default which is the equivalent of calling `port.open(openCallback)` in the next tick. This can be disabled by setting the option `autoOpen` to false.
 
 **_path_**
 
@@ -314,6 +327,7 @@ The system path of the serial port to open. For example, `/dev/tty` on Mac/Linux
 
 Port configuration options.
 
+* `autoOpen` Automatically opens the port on `nextTick`, defaults to `true`.
 * `baudRate` Baud Rate, defaults to 9600. Should be one of: 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, or 50. Custom rates as allowed by hardware is supported. Windows doesn't support custom baud rates.
 * `dataBits` Data Bits, defaults to 8. Must be one of: 8, 7, 6, or 5.
 * `stopBits` Stop Bits, defaults to 1. Must be one of: 1 or 2.
@@ -333,15 +347,11 @@ These properties are ignored for windows. An object with the following propertie
 * `vmin` (default: 1) - see [`man termios`](http://linux.die.net/man/3/termios)
 * `vtime` (default: 0) - see [`man termios`](http://linux.die.net/man/3/termios)
 
-**_openImmediately (optional)_**
+**_`openCallback` (optional)_**
 
-Attempts to open a connection to the serial port on `process.nextTick`. The default is `true`. If you've provided a `openCallback` it will be given to `open()`. Set to `false` to manually call `open()`.
+This function is passed to `.open()` and called when a connection has been opened. The callback should be a function that looks like: `function (error) { ... }`
 
-**_callback (optional)_**
-
-Called when a connection has been opened. The callback should be a function that looks like: `function (error) { ... }`
-
-**Note:** The callback will NOT be called if openImmediately is set to false as the open will not be performed.
+**Note:** The callback will NOT be called if autoOpen is set to false as the open will not be performed.
 
 ### .open (callback)
 
