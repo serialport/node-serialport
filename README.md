@@ -351,6 +351,7 @@ The system path of the serial port to open. For example, `/dev/tty` on Mac/Linux
 Port configuration options.
 
 * `autoOpen` Automatically opens the port on `nextTick`, defaults to `true`.
+* `lock` Prevent other processes from opening the port, defaults to `true`. `false` is not currently supported on windows.
 * `baudRate` Baud Rate, defaults to 9600. Should be one of: 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, or 50. Custom rates as allowed by hardware is supported. Windows doesn't support custom baud rates.
 * `dataBits` Data Bits, defaults to 8. Must be one of: 8, 7, 6, or 5.
 * `stopBits` Stop Bits, defaults to 1. Must be one of: 1 or 2.

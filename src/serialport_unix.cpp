@@ -1,5 +1,6 @@
 #include "./serialport.h"
 #include "./serialport_poller.h"
+#include <sys/file.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -324,8 +325,18 @@ int setup(int fd, OpenBaton *data) {
   options.c_cc[VMIN]= platformOptions->vmin;
   options.c_cc[VTIME]= platformOptions->vtime;
 
+  // why?
   tcflush(fd, TCIFLUSH);
+
+  // check for error?
   tcsetattr(fd, TCSANOW, &options);
+
+  if (data->lock){
+    if (-1 == flock(fd, LOCK_EX | LOCK_NB)) {
+      snprintf(data->errorString, sizeof(data->errorString), "Error %s Cannot lock port", strerror(errno));
+      return -1;
+    }
+  }
 
   return 1;
 }
@@ -336,7 +347,7 @@ void EIO_Write(uv_work_t* req) {
   int bytesWritten = 0;
 
   do {
-    errno = 0; // probably don't need this
+    errno = 0;  // probably don't need this
     bytesWritten = write(data->fd, data->bufferData + data->offset, data->bufferLength - data->offset);
     if (-1 != bytesWritten) {
       // there wasn't an error, do the math on what we actually wrote and keep writing until finished
