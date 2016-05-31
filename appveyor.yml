@@ -22,6 +22,7 @@ install:
         "nodejs_version" = $env:nodejs_version
         "platform" = $env:platform
         "node binary version" = $(node -v)
+        "node platform@arch" = $(node -p 'process.platform + "@" + process.arch')
         "npm version" = $(npm -v)
         "APPVEYOR_REPO_COMMIT_MESSAGE" = $env:APPVEYOR_REPO_COMMIT_MESSAGE
         "git latest tag" = "$(git describe --tags --always HEAD)"

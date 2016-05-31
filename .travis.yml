@@ -49,6 +49,7 @@ before_install:
 
 # print versions
 - node --version
+- node -p 'process.platform + "@" + process.arch'
 - npm --version
 
 # use g++-4.8 on Linux
