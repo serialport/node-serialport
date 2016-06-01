@@ -2,6 +2,8 @@ os: unstable
 environment:
   NODE_PRE_GYP_GITHUB_TOKEN:
     secure: VM4yc2j2L3KS5qWLZLY7WUAXoqdB9YkodmXlHC2I+LSF0Y8a2cZ70M0+2+Fd5GkQ
+  COVERALLS_REPO_TOKEN:
+    secure: iDcAJCYgJK4tffyzEHbMVR8DatJcIN8eY0h29p9JQkl43TcEcm6Z6JLOBpGDk1MJ
 
   matrix:
   - nodejs_version: "0.10"
