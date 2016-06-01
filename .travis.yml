@@ -73,6 +73,7 @@ install:
 
 script:
 # test our module
+- npm run lint
 - node ./
 - npm test
 

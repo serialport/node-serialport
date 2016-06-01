@@ -67,6 +67,7 @@ build_script:
   - npm install --build-from-source --msvs_version=2013
 
 test_script:
+  - npm run lint
   - node ./
   - npm test
   - IF %PUBLISH_BINARY% == 1 (node-pre-gyp package 2>&1)
