@@ -167,7 +167,7 @@ Opening a serial port:
 ```js
 var SerialPort = require("serialport");
 var port = new SerialPort("/dev/tty-usbserial1", {
-  baudrate: 57600
+  baudRate: 57600
 });
 ```
 
