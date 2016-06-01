@@ -86,3 +86,6 @@ script:
 
 # test binary exists
 - if [[ $PUBLISH_BINARY == true ]]; then npm install --fallback-to-build=false; fi;
+
+after_success:
+- npm run coverage
