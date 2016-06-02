@@ -277,7 +277,9 @@ SerialPort.list(function (err, ports) {
 
 ### Parsers
 
-Out of the box, node-serialport provides two parsers one that simply emits the raw buffer as a data event and the other which provides familiar "readline" style parsing. To use the readline parser, you must provide a delimiter as such:
+Out of the box, node-serialport provides four parsers: one that simply emits the raw buffer as a data event, one that emits a data event when a specfic byte sequence is received, one that emits a data event every 'length' bytes, and one which provides familiar "readline" style parsing.
+
+To use the readline parser, you must provide a delimiter as such:
 
 ```js
 var SerialPort = require('serialport');
@@ -297,6 +299,25 @@ var port = new SerialPort('/dev/tty-usbserial1', {
 });
 ```
 
+Note that the raw parser does not guarantee that all data it receives will come in a single event.
+
+To use the byte sequence parser, you must provide a delimiter as an array of bytes:
+```js
+var SerialPort = require('serialport');
+
+var port = new SerialPort('/dev/tty-usbserial1', {
+  parser: SerialPort.parsers.byteDelimiter([10,13])
+});
+```
+
+To use the byte length parser, you must provide a delimiter as a length in bytes:
+```js
+var SerialPort = require('serialport');
+
+var port = new SerialPort('/dev/tty-usbserial1', {
+  parser: SerialPort.parsers.byteLength(5)
+});
+```
 
 You can get updates of new data from the Serial Port as follows:
 
