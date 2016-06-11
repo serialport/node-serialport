@@ -80,6 +80,15 @@ describe('SerialPortBinding', function() {
           SerialPortBinding.close(fd, done);
         });
       });
+
+      it('supports a custom baudRate of 250000', function(done) {
+        var customRates = assign({}, defaultPortOpenOptions, {baudRate: 250000});
+        SerialPortBinding.open(testPort, customRates, function(err, fd) {
+          assert.isNull(err);
+          assert.isNumber(fd);
+          SerialPortBinding.close(fd, done);
+        });
+      });
     }
   });
 

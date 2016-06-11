@@ -146,6 +146,16 @@ int setBaudRate(ConnectionOptionsBaton *data) {
   int baudRate = ToBaudConstant(data->baudRate);
   int fd = data->fd;
 
+  #if defined(__linux__)
+  struct termios2 t;
+    ioctl(fd, TCGETS2, &t);
+    t.c_ospeed = t.c_ispeed = 543210;
+    t.c_cflag &= ~CBAUD;
+    t.c_cflag |= BOTHER;
+    ioctl(fd, TCSETS2, &t);
+  #endif
+
+
   // get port options
   struct termios options;
   tcgetattr(fd, &options);
