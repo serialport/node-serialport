@@ -47,7 +47,14 @@ before_install:
 - nvm install $TRAVIS_NODE_VERSION
 - PATH=$PATH:`pwd`/node_modules/.bin
 
+- BASE_URL=$(node -p "'https://nodejs.org/dist/' + process.version")
+- X86_FILE=$(node -p "'node-' + process.version + '-' + process.platform + '-x86'")
+# download node if testing x86 architecture
+- if [[ "$ARCH" == "x86" ]]; then wget $BASE_URL/$X86_FILE.tar.gz; tar -xf $X86_FILE.tar.gz; export PATH=$X86_FILE/bin:$PATH; fi
+
 # print versions
+- uname -a
+- file `which node`
 - node --version
 - node -p 'process.platform + "@" + process.arch'
 - npm --version
