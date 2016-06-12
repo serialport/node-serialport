@@ -137,6 +137,7 @@ NAN_METHOD(Open) {
   baton->xoff = getBoolFromObject(options, "xoff");
   baton->xany = getBoolFromObject(options, "xany");
   baton->hupcl = getBoolFromObject(options, "hupcl");
+  baton->lock = getBoolFromObject(options, "lock");
 
   v8::Local<v8::Object> platformOptions = getValueFromObject(options, "platformOptions")->ToObject();
   baton->platformOptions = ParsePlatformOptions(platformOptions);

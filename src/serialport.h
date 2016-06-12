@@ -78,6 +78,7 @@ struct OpenBaton {
   bool xany;
   bool dsrdtr;
   bool hupcl;
+  bool lock;
   Nan::Callback* dataCallback;
   Nan::Callback* disconnectedCallback;
   Nan::Callback* errorCallback;

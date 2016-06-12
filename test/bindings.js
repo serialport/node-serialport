@@ -27,6 +27,7 @@ var defaultPortOpenOptions = {
   dataBits: 8,
   stopBits: 1,
   bufferSize: 64 * 1024,
+  lock: true,
   platformOptions: {},
   // required for windows
   dataCallback: function() {},
@@ -70,7 +71,7 @@ describe('SerialPortBinding', function() {
     });
 
     if (platform === 'win32') {
-      it('doesn\'t supports a custom baudRates');
+      it('doesn\'t supports a custom baudRates of 25000');
     } else {
       it('supports a custom baudRate of 25000', function(done) {
         var customRates = assign({}, defaultPortOpenOptions, {baudRate: 25000});
@@ -81,6 +82,57 @@ describe('SerialPortBinding', function() {
         });
       });
     }
+
+
+    describe('optional locking', function(){
+      // This section ensures that if we fail, we still close the fd
+      var fileDescriptor = null;
+      afterEach(function(done) {
+        if (fileDescriptor) {
+          SerialPortBinding.close(fileDescriptor, function(){
+            done();
+          });
+        } else {
+          done();
+        }
+      });
+
+      it('locks the port by default', function(done) {
+        SerialPortBinding.open(testPort, defaultPortOpenOptions, function(err, fd) {
+          fileDescriptor = fd;
+          assert.isNull(err);
+          assert.isNumber(fd);
+          SerialPortBinding.open(testPort, defaultPortOpenOptions, function(err, badFd) {
+            SerialPortBinding.close(fd, function(){
+              assert.instanceOf(err, Error);
+              assert.isUndefined(badFd);
+              done();
+            });
+          });
+        });
+      });
+
+      if (platform === 'win32') {
+        it('Ports currently cannot be unlocked on windows');
+      } else {
+        it('can unlock the port', function(done) {
+          var noLock = assign({}, defaultPortOpenOptions, {lock: false});
+          SerialPortBinding.open(testPort, noLock, function(err, fd) {
+            fileDescriptor = fd;
+            assert.isNull(err);
+            assert.isNumber(fd);
+            SerialPortBinding.open(testPort, defaultPortOpenOptions, function(err, otherFd) {
+              assert.isNull(err);
+              assert.isNumber(otherFd);
+              SerialPortBinding.close(fd, function(err){
+                assert.isNull(err);
+                SerialPortBinding.close(otherFd, done);
+              });
+            });
+          });
+        });
+      }
+    });
   });
 
   describe('#close', function() {
