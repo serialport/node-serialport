@@ -494,30 +494,18 @@ describe('SerialPort', function() {
   });
 
   describe('disconnections', function() {
-    it('emits a disconnect event', function(done) {
+    it('emits a disconnect event and closes the port', function(done) {
       var port = new SerialPort('/dev/exists', function() {
+        assert.isTrue(port.isOpen());
         hardware.disconnect('/dev/exists');
       });
-      port.on('disconnect', function(err) {
-        assert.instanceOf(err, Error);
+      var spy = sandbox.spy();
+      port.on('disconnect', spy);
+      port.on('close', function() {
+        assert.isFalse(port.isOpen());
+        assert(spy.calledOnce);
         done();
       });
     });
-
-    // Disconnects are inconsistent bananas
-    // it('closes the port', function(done) {
-    //   var port = new SerialPort('/dev/exists', function () {
-    //     expect(port.fd).to.equal(0);
-    //     hardware.disconnect('/dev/exists');
-    //   });
-    //   var spy = sandbox.spy();
-    //   port.on('disconnect', spy);
-    //   port.on('close', function(err) {
-    //     assert.instanceOf(err, Error);
-    //     assert.isFalse(port.isOpen());
-    //     assert(spy.calledOnce);
-    //     done();
-    //   });
-    // });
   });
 });
