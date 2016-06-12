@@ -491,30 +491,9 @@ describe('SerialPort', function() {
         hardware.emitData('/dev/exists', testData);
       });
     });
-
-    it('calls the dataCallback if set', function(done) {
-      var testData = new Buffer('I am a really short string');
-      var opt = {
-        dataCallback: function(recvData) {
-          expect(recvData).to.eql(testData);
-          done();
-        }
-      };
-      this.port = new SerialPort('/dev/exists', opt, function() {
-        hardware.emitData('/dev/exists', testData);
-      });
-    });
   });
 
   describe('disconnections', function() {
-    it('calls the disconnect callback', function(done) {
-      this.port = new SerialPort('/dev/exists', {
-        disconnectedCallback: done
-      }, function() {
-        hardware.disconnect('/dev/exists');
-      });
-    });
-
     it('emits a disconnect event', function(done) {
       var port = new SerialPort('/dev/exists', function() {
         hardware.disconnect('/dev/exists');

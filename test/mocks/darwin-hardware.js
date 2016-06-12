@@ -93,7 +93,8 @@ Hardware.prototype.disconnect = function(path) {
   if (!port) {
     throw new Error(path + ' does not exist - please call hardware.createPort(path) first');
   }
-  port.openOpt.disconnectedCallback && port.openOpt.disconnectedCallback();
+  var err = new Error('disconnected');
+  port.openOpt.disconnectedCallback(err);
 };
 
 Hardware.prototype.list = function(cb) {
