@@ -39,7 +39,7 @@ For getting started with node-serialport, we recommend you begin with the follow
 * [Installation Special Cases](#installation-special-cases)
   * [Windows](#windows)
   * [Mac OS X](#mac-os-x)
-  * [Ubuntu Linux](#ubuntu-linux)
+  * [Ubuntu/Debian Linux](#ubuntudebian-linux)
   * [Alpine Linux](#alpine-linux)
   * [Raspberry Pi Linux](#raspberry-pi-linux)
   * [Illegal Instruction](#illegal-instruction)
@@ -109,22 +109,21 @@ This assumes you have everything on your system necessary to compile ANY native 
 
 Ensure that you have at a minimum the xCode Command Line Tools installed appropriate for your system configuration. If you recently upgraded the OS, it probably removed your installation of Command Line Tools, please verify before submitting a ticket. To compile `node-serialport` with Node.js 4.x+, you will need to use g++ v4.8 or higher.
 
-#### Ubuntu Linux
+#### Ubuntu/Debian Linux
 
-You know what you need for your system, basically your appropriate analog of build-essential. Keep rocking! Ubuntu renamed the `node` binary `nodejs` which can cause problems building `node-serialport`. The fix is simple, install the [nodejs-legacy package](https://packages.debian.org/sid/nodejs-legacy) that symlinks `/usr/bin/nodejs => /usr/bin/node` or install the more up to date nodejs package from [Chris Lea's PPA](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager#ubuntu-mint-elementary-os).
+The best way to install any version of NodeJS is to use the [NodeSource Node.js Binary Distributions](https://github.com/nodesource/distributions#installation-instructions). Older versions of Ubuntu install nodejs with the wrong version and binary name. If you node binary is `nodejs` not `node` or if your node version is [`v0.10.29`](https://github.com/fivdi/onoff/wiki/Node.js-v0.10.29-and-native-addons-on-the-Raspberry-Pi) then you should follow these instructions.
+
+The package `build-essential` is necessary to compile `serialport`. If there's a binary for your platform you won't need it. Keep rocking!
 
 
 ```
-# Ubuntu node
-sudo apt-get install nodejs nodejs-legacy
+# Using Ubuntu and node 6
+curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+sudo apt-get install -y nodejs
 
-# Or Chris Lea's PPA Node (more up to date)
-sudo add-apt-repository ppa:chris-lea/node.js
-sudo apt-get update
-sudo apt-get install nodejs
-
-sudo apt-get install build-essential
-npm install serialport
+# Using Debian and node 6, as root
+curl -sL https://deb.nodesource.com/setup_6.x | bash -
+apt-get install -y nodejs
 ```
 
 #### Alpine Linux
