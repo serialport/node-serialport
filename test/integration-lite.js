@@ -63,7 +63,8 @@ describe('SerialPort light integration', function() {
       });
 
       it('cannot be opened twice in the callback', function(done) {
-        var port = new SerialPort(testPort, function() {
+        var port = new SerialPort(testPort, function(err) {
+          assert.isNull(err);
           port.open(function(err) {
             assert.instanceOf(err, Error);
             port.close(done);
@@ -80,7 +81,6 @@ describe('SerialPort light integration', function() {
           if (err) {
             errors++;
             assert.instanceOf(err, Error);
-            assert.strictEqual(err.message, 'Port is opening');
           }
           if (calls === 2) {
             assert.strictEqual(errors, 1);
