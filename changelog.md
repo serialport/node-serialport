@@ -2,6 +2,7 @@ Version 4.0.0-beta4
 -------------
  - All callbacks now have the port as `this`
  - Disconnections now always attempt to close the port, and you'll always get a `close` event after a `disconnect` event
+ - Removed undocumented callbacks from the options object `disconnectedCallback` and `dataCallback`
  - [unix] Ports are now locked by default with the new `lock` options matches windows default behavior
  - [windows] known issue `lock` false doesn't work (no change in behavior)
 
