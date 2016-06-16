@@ -497,7 +497,7 @@ Callback is called with no arguments when the port is closed. In the event of an
 Callback is called with an error object whenever there is an error.
 
 ### .on('disconnect', callback)
-Callback is called with an error object.
+Callback is called with an error object. This will always happen before a `close` event if a disconnection is detected.
 
 ## Command Line Tools
 If you install `serialport` globally. (eg, `npm install -g serialport`) you'll receive two command line tools.
