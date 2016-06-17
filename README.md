@@ -503,10 +503,10 @@ Callback is called with an error object. This will always happen before a `close
 If you install `serialport` globally. (eg, `npm install -g serialport`) you'll receive two command line tools.
 
 ### Serial Port List
-`serialportlist` will list all available serial ports in different formats.
+`serialport-list` will list all available serial ports in different formats.
 
 ```bash
-$ serialportlist -h
+$ serialport-list -h
 
   Usage: serialport-list [options]
 
@@ -519,25 +519,25 @@ $ serialportlist -h
     -f, --format <type>  Format the output as text, json, or jsonline. default: text
 
 
-$ serialportlist
+$ serialport-list
 /dev/cu.Bluetooth-Incoming-Port
 /dev/cu.usbmodem1421    Arduino (www.arduino.cc)
 
-$ serialportlist -f json
+$ serialport-list -f json
 [{"comName":"/dev/cu.Bluetooth-Incoming-Port"},{"comName":"/dev/cu.usbmodem1421","manufacturer":"Arduino (www.arduino.cc)","serialNumber":"752303138333518011C1","locationId":"0x14200000","vendorId":"0x2341","productId":"0x0043"}]
 
-$ serialportlist -f jsonline
+$ serialport-list -f jsonline
 {"comName":"/dev/cu.Bluetooth-Incoming-Port"}
 {"comName":"/dev/cu.usbmodem1421","manufacturer":"Arduino (www.arduino.cc)","serialNumber":"752303138333518011C1","locationId":"0x14200000","vendorId":"0x2341","productId":"0x0043"}
 ```
 
 ### Serial Port Terminal
-`serialportterm` provides a basic terminal interface for communicating over a serial port. `ctrl+c` will exit.
+`serialport-term provides a basic terminal interface for communicating over a serial port. `ctrl+c` will exit.
 
 ```bash
-$ serialportterminal -h
+$ serialport-term -h
 
-  Usage: serialport-terminal -p <port> [options]
+  Usage: serialport-term -p <port> [options]
 
   A basic terminal interface for communicating over a serial port. Pressing ctrl+c exits.
 
@@ -553,7 +553,7 @@ $ serialportterminal -h
     --stopbits <bits>              Stop bits default: 1
     --echo --localecho             Print characters as you type them.
 
-$ serialportterminal -l
+$ serialport-term -l
 /dev/cu.Bluetooth-Incoming-Port
 /dev/cu.usbmodem1421    Arduino (www.arduino.cc)
 ```
