@@ -10,6 +10,7 @@ examples/
 Gruntfile.js
 PUBLISHING.md
 test/
+UPGRADE_GUIDE.md
 
 # MIRRORED FROM .gitignore PLEASE MAINTAIN
 *.node

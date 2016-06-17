@@ -1,31 +1,22 @@
-Version 4.0.0-beta4
+Version 4.0.0-rc1
 -------------
- - All callbacks now have the port as `this`
- - Disconnections now always attempt to close the port, and you'll always get a `close` event after a `disconnect` event
- - Removed undocumented callbacks from the options object `disconnectedCallback` and `dataCallback`
- - [unix] Ports are now locked by default with the new `lock` options matches windows default behavior
- - [windows] known issue `lock` false doesn't work (no change in behavior)
-
-Version 4.0.0-beta3
--------------
- - Contributors guide
  - Requiring `serialport` now returns the SerialPort constructor function instead of a factory object. `SerialPort.SerialPort` is now depreciated.
- - `SerialPort` constructor now throws on argument errors.
- - `openImmediately` is now part of the options object and renamed to `autoOpen`
+ - `SerialPort` constructor now throws on argument errors immediately.
+ - Removed `openImmediately` from the constructor's api, the functionality is now named `autoOpen` on the options object.
+ - Removed extraneous flow control settings from the `flowControl` option, use the specific options to set these flags now.
+ - Removed undocumented callbacks from the options object `disconnectedCallback` and `dataCallback`
+ - `.write(writeCallback)` now only calls it's callback once after the entire write operation, it used to be called for each write cycle and return the bytes written. This reduces the number of callbacks by hundreds of thousands over a megabyte at low bandwidth.
+ - All callbacks are called in the context of the port, `this` now equals the port.
+ - Disconnections now always attempt to close the port, and you'll always get a `close` event after a `disconnect` event
+ - Reanmed `serialportlist` to `serialport-list`
+ - Renamed `serialportterm` to `serialport-term`
  - [unix] `.drain` and `.set` now properly report errors
+ - [unix] Ports are now locked by default with the new `lock` options matches windows default behavior
  - [windows] `.update()` now supports windows for changing baud rates
-
-Version 4.0.0-beta2
--------------
- - Remove extra flow control settings
  - [windows] Fixed a bug where we weren't properly opening ports (provides better support virtual com ports too) thanks to @RogerHardiman
-
-Version 3.2.0-beta1
--------------
- - Fix bug where write callback was being called multiple times when write operations blocked
- - [windows] refactored write code to be less complex
- - [unix] refactored write code to be less complex
- - added arduino required integration tests
+ - [windows] known issue `lock: false` doesn't work (no change in behavior)
+ - Added our first arduino required integration tests
+ - Added a contributors guide
 
 Version 3.1.2
 -------------
