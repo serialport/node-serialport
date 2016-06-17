@@ -85,8 +85,8 @@
     "node": ">= 0.10.0"
   },
   "bin": {
-    "serialportlist": "./bin/serialport-list.js",
-    "serialportterm": "./bin/serialport-terminal.js"
+    "serialport-list": "./bin/serialport-list.js",
+    "serialport-term": "./bin/serialport-terminal.js"
   },
   "license": "MIT",
   "scripts": {
