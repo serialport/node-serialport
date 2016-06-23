@@ -5,10 +5,12 @@ appveyor.yml
 AUTHORS.md
 changelog.md
 CODE_OF_CONDUCT.md
+CONTRIBUTING.md
 examples/
 Gruntfile.js
 PUBLISHING.md
 test/
+UPGRADE_GUIDE.md
 
 # MIRRORED FROM .gitignore PLEASE MAINTAIN
 *.node
@@ -19,3 +21,4 @@ npm-debug.log
 gyp-mac-tool
 .node_pre_gyprc
 /.idea
+.nyc_output

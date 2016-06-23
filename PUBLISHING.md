@@ -8,9 +8,7 @@ builds in Travis-CI and AppVeyor will generate the binaries for each platform an
 We use [node-pre-gyp-github](https://github.com/bchr02/node-pre-gyp-github) on top of node-pre-gyp
 to publish these binaries on Github.
 
-This can be checked in the .travis.yml file and appveyor.yml file. Within these files, there are two
-methods for publishing new binaries for each version: one is if a `git tag` is detected; the other
-can be triggered by passing the string `[publish binary]` in the commit message itself.
+This can be checked in the .travis.yml file and appveyor.yml file. Within these files, if a git tag is detected a binary will be built and published for each version.
 
 1. Merge all changes and new features into master.
 2. Fill out changelog.md.
@@ -18,11 +16,15 @@ can be triggered by passing the string `[publish binary]` in the commit message 
 4. Update the README.md to reference this current version and to previous major version docs.
 5. Generate new tags based on package.json version number with `git tag 2.0.7 -a` and include the change log in the tag's annotation.
 6. Push tags to Github with `git push --tags`
-7. Publish to npm. BUT NOT YET. Builds can an hour and occasionally fail (mainly on Appveyor) for seemingly no reason. Restart any failures in the travis or appeveyor ui. While you wait, copy the changelog updates into the Github release field. When the entire matrix succeeds and all binaries exist run `npm publish`.
+7. Switch to node v0.12 and npm 2
+8. `rm -rf node_modules && npm install`
+9. Publish to npm. BUT NOT YET. Builds can an hour and occasionally fail (mainly on Appveyor) for seemingly no reason. Restart any failures in the travis or appeveyor ui. While you wait, copy the changelog updates into the Github release field. When the entire matrix succeeds and all binaries exist run `npm publish`.
+10. Kick off the build matrix for either the master or beta branch on [serialport-test-pilot](https://travis-ci.org/j5js/serialport-test-pilot). It will install serialport from npm on a wide range of systems.
+
 
 Differences for beta release
 * Tag like: `git tag 2.0.7-beta1 -a` and include the change log in the tag's annotation.
-* Publish like `npm publish . --tag beta1`
+* Publish with `npm publish --tag beta`
 
 ## Config Travis, AppVeyor and Github to generate all of the binaries.
 

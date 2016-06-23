@@ -6,7 +6,6 @@
 #include "win/stdafx.h"
 #include "win/enumser.h"
 
-
 #ifdef WIN32
 
 #define MAX_BUFFER_SIZE 1000
@@ -27,19 +26,19 @@ int bufferSize;
 void ErrorCodeToString(const char* prefix, int errorCode, char *errorStr) {
   switch (errorCode) {
   case ERROR_FILE_NOT_FOUND:
-    _snprintf(errorStr, ERROR_STRING_SIZE, "%s: File not found", prefix);
+    _snprintf_s(errorStr, ERROR_STRING_SIZE, _TRUNCATE, "%s: File not found", prefix);
     break;
   case ERROR_INVALID_HANDLE:
-    _snprintf(errorStr, ERROR_STRING_SIZE, "%s: Invalid handle", prefix);
+    _snprintf_s(errorStr, ERROR_STRING_SIZE, _TRUNCATE, "%s: Invalid handle", prefix);
     break;
   case ERROR_ACCESS_DENIED:
-    _snprintf(errorStr, ERROR_STRING_SIZE, "%s: Access denied", prefix);
+    _snprintf_s(errorStr, ERROR_STRING_SIZE, _TRUNCATE, "%s: Access denied", prefix);
     break;
   case ERROR_OPERATION_ABORTED:
-    _snprintf(errorStr, ERROR_STRING_SIZE, "%s: operation aborted", prefix);
+    _snprintf_s(errorStr, ERROR_STRING_SIZE, _TRUNCATE, "%s: operation aborted", prefix);
     break;
   default:
-    _snprintf(errorStr, ERROR_STRING_SIZE, "%s: Unknown error code %d", prefix, errorCode);
+    _snprintf_s(errorStr, ERROR_STRING_SIZE, _TRUNCATE, "%s: Unknown error code %d", prefix, errorCode);
     break;
   }
 }
@@ -47,24 +46,33 @@ void ErrorCodeToString(const char* prefix, int errorCode, char *errorStr) {
 void EIO_Open(uv_work_t* req) {
   OpenBaton* data = static_cast<OpenBaton*>(req->data);
 
+  char originalPath[1024];
+  strncpy_s(originalPath, sizeof(originalPath), data->path, _TRUNCATE);
   // data->path is char[1024] but on Windows it has the form "COMx\0" or "COMxx\0"
   // We want to prepend "\\\\.\\" to it before we call CreateFile
   strncpy(data->path + 20, data->path, 10);
   strncpy(data->path, "\\\\.\\", 4);
   strncpy(data->path + 4, data->path + 20, 10);
 
+  int shareMode = FILE_SHARE_READ | FILE_SHARE_WRITE;
+  if (data->lock) {
+    shareMode = 0;
+  }
+
   HANDLE file = CreateFile(
     data->path,
     GENERIC_READ | GENERIC_WRITE,
-    0,
+    shareMode,  // dwShareMode 0 Prevents other processes from opening if they request delete, read, or write access
     NULL,
     OPEN_EXISTING,
-    FILE_FLAG_OVERLAPPED,
-    NULL);
+    FILE_FLAG_OVERLAPPED,  // allows for reading and writing at the same time and sets the handle for asynchronous I/O
+    NULL
+  );
+
   if (file == INVALID_HANDLE_VALUE) {
     DWORD errorCode = GetLastError();
     char temp[100];
-    _snprintf(temp, sizeof(temp), "Opening %s", data->path);
+    _snprintf_s(temp, sizeof(temp), _TRUNCATE, "Opening %s", originalPath);
     ErrorCodeToString(temp, errorCode, data->errorString);
     return;
   }
@@ -75,14 +83,20 @@ void EIO_Open(uv_work_t* req) {
   }
 
   DCB dcb = { 0 };
+  SecureZeroMemory(&dcb, sizeof(DCB));
   dcb.DCBlength = sizeof(DCB);
-  if (data->hupcl == false) {
-    dcb.fDtrControl = DTR_CONTROL_DISABLE;  // disable DTR to avoid reset
-  } else {
-    dcb.fDtrControl = DTR_CONTROL_ENABLE;
+
+  if (!GetCommState(file, &dcb)) {
+    ErrorCodeToString("GetCommState", GetLastError(), data->errorString);
+    return;
   }
 
-  dcb.BaudRate = CBR_9600;
+  if (data->hupcl) {
+    dcb.fDtrControl = DTR_CONTROL_ENABLE;
+  } else {
+    dcb.fDtrControl = DTR_CONTROL_DISABLE;  // disable DTR to avoid reset
+  }
+
   dcb.Parity = NOPARITY;
   dcb.ByteSize = 8;
   dcb.StopBits = ONESTOPBIT;
@@ -95,6 +109,7 @@ void EIO_Open(uv_work_t* req) {
   dcb.fBinary = true;
   dcb.BaudRate = data->baudRate;
   dcb.ByteSize = data->dataBits;
+
   switch (data->parity) {
   case SERIALPORT_PARITY_NONE:
     dcb.Parity = NOPARITY;
@@ -112,6 +127,7 @@ void EIO_Open(uv_work_t* req) {
     dcb.Parity = SPACEPARITY;
     break;
   }
+
   switch (data->stopBits) {
   case SERIALPORT_STOPBITS_ONE:
     dcb.StopBits = ONESTOPBIT;
@@ -170,7 +186,23 @@ struct WatchPortBaton {
 };
 
 void EIO_Update(uv_work_t* req) {
-  // TODO always error or do an update
+  ConnectionOptionsBaton* data = static_cast<ConnectionOptionsBaton*>(req->data);
+
+  DCB dcb = { 0 };
+  SecureZeroMemory(&dcb, sizeof(DCB));
+  dcb.DCBlength = sizeof(DCB);
+
+  if (!GetCommState((HANDLE)data->fd, &dcb)) {
+    ErrorCodeToString("GetCommState", GetLastError(), data->errorString);
+    return;
+  }
+
+  dcb.BaudRate = data->baudRate;
+
+  if (!SetCommState((HANDLE)data->fd, &dcb)) {
+    ErrorCodeToString("SetCommState", GetLastError(), data->errorString);
+    return;
+  }
 }
 
 void EIO_Set(uv_work_t* req) {
@@ -207,8 +239,11 @@ void EIO_Set(uv_work_t* req) {
   if (data->dsr) {
     bits |= EV_DSR;
   }
-  // TODO check for error
-  data->result = SetCommMask((HANDLE)data->fd, bits);
+
+  if (!SetCommMask((HANDLE)data->fd, bits)) {
+    ErrorCodeToString("Setting options on COM port (SetCommMask)", GetLastError(), data->errorString);
+    return;
+  }
 }
 
 
@@ -365,36 +400,32 @@ void EIO_Write(uv_work_t* req) {
     // on the same handle (i.e. ReadFile and WriteFile)
     ov.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 
-    // Start write operation - synchrounous or asynchronous
-    DWORD bytesWrittenSync = 0;
-    if (!WriteFile((HANDLE)data->fd, data->bufferData, static_cast<DWORD>(data->bufferLength), &bytesWrittenSync, &ov)) {
+    // Start write operation - synchronous or asynchronous
+    DWORD bytesWritten = 0;
+    if (!WriteFile((HANDLE)data->fd, data->bufferData, static_cast<DWORD>(data->bufferLength), &bytesWritten, &ov)) {
       DWORD lastError = GetLastError();
       if (lastError != ERROR_IO_PENDING) {
         // Write operation error
         ErrorCodeToString("Writing to COM port (WriteFile)", lastError, data->errorString);
+        CloseHandle(ov.hEvent);
         return;
-      } else {
-        // Write operation is asynchronous and is pending
-        // We MUST wait for operation completion before deallocation of OVERLAPPED struct
-        // or write data buffer
-
-        // Wait for async write operation completion or timeout
-        DWORD bytesWrittenAsync = 0;
-        if (!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesWrittenAsync, TRUE)) {
-          // Write operation error
-          DWORD lastError = GetLastError();
-          ErrorCodeToString("Writing to COM port (GetOverlappedResult)", lastError, data->errorString);
-          return;
-        } else {
-          // Write operation completed asynchronously
-          data->result = bytesWrittenAsync;
-        }
       }
-    } else {
-      // Write operation completed synchronously
-      data->result = bytesWrittenSync;
-    }
+      // Write operation is completing asynchronously
+      // We MUST wait for the operation completion before deallocation of OVERLAPPED struct
+      // or write data buffer
 
+      // block for async write operation completion
+      bytesWritten = 0;
+      if (!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesWritten, TRUE)) {
+        // Write operation error
+        DWORD lastError = GetLastError();
+        ErrorCodeToString("Writing to COM port (GetOverlappedResult)", lastError, data->errorString);
+        CloseHandle(ov.hEvent);
+        return;
+      }
+    }
+    // Write operation completed synchronously
+    data->result = bytesWritten;
     data->offset += data->result;
     CloseHandle(ov.hEvent);
   } while (data->bufferLength > data->offset);
@@ -486,7 +517,7 @@ void EIO_List(uv_work_t* req) {
   if (CEnumerateSerial::UsingQueryDosDevice(ports)) {
     for (size_t i = 0; i < ports.size(); i++) {
       char comname[64] = { 0 };
-      _snprintf(comname, sizeof(comname), "COM%u", ports[i]);
+      _snprintf_s(comname, sizeof(comname), _TRUNCATE, "COM%u", ports[i]);
       bool bFound = false;
       for (std::list<ListResultItem*>::iterator ri = data->results.begin(); ri != data->results.end(); ++ri) {
         if (stricmp((*ri)->comName.c_str(), comname) == 0) {
@@ -509,7 +540,7 @@ void EIO_Flush(uv_work_t* req) {
   FlushBaton* data = static_cast<FlushBaton*>(req->data);
 
   if (!FlushFileBuffers((HANDLE)data->fd)) {
-    ErrorCodeToString("flushing connection", GetLastError(), data->errorString);
+    ErrorCodeToString("flushing connection (FlushFileBuffers)", GetLastError(), data->errorString);
     return;
   }
 }
@@ -518,7 +549,7 @@ void EIO_Drain(uv_work_t* req) {
   DrainBaton* data = static_cast<DrainBaton*>(req->data);
 
   if (!FlushFileBuffers((HANDLE)data->fd)) {
-    ErrorCodeToString("draining connection", GetLastError(), data->errorString);
+    ErrorCodeToString("draining connection (FlushFileBuffers)", GetLastError(), data->errorString);
     return;
   }
 }

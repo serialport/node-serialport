@@ -86,7 +86,7 @@ var portOutput = [
   }
 ];
 
-describe('listUnix', function () {
+describe('listUnix', function() {
   beforeEach(function() {
     listUnix.reset();
   });
@@ -96,6 +96,16 @@ describe('listUnix', function () {
     listUnix(function(err, ports) {
       assert.isNull(err);
       assert.deepEqual(ports, portOutput);
+      done();
+    });
+  });
+
+  it('does not list non character devices', function(done) {
+    listUnix.setCharacterDevice(false);
+    listUnix.setPorts(ports);
+    listUnix(function(err, ports) {
+      assert.isNull(err);
+      assert.deepEqual(ports, []);
       done();
     });
   });

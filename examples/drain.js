@@ -1,6 +1,6 @@
 'use strict';
 
-var SerialPort = require('serialport').SerialPort;
+var SerialPort = require('serialport');
 var port = new SerialPort('/dev/cu.Cubelet-RGB');
 
 port.on('open', function() {

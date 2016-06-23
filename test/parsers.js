@@ -8,9 +8,9 @@ chai.use(sinonChai);
 
 var parsers = require('../lib/parsers');
 
-describe('parsers', function () {
-  describe('#raw', function () {
-    it('emits data exactly as it\'s written', function () {
+describe('parsers', function() {
+  describe('#raw', function() {
+    it('emits data exactly as it\'s written', function() {
       var data = new Buffer('BOGUS');
       var spy = sinon.spy();
       parsers.raw({ emit: spy }, data);
@@ -18,8 +18,8 @@ describe('parsers', function () {
     });
   });
 
-  describe('#readline', function () {
-    it('emits data events split on a delimiter', function () {
+  describe('#readline', function() {
+    it('emits data events split on a delimiter', function() {
       var data = new Buffer('I love robots\rEach and Every One\r');
       var spy = sinon.spy();
       var parser = parsers.readline();
@@ -30,7 +30,7 @@ describe('parsers', function () {
   });
 
   describe('#byteLength', function() {
-    it('emits data events every 8 bytes', function () {
+    it('emits data events every 8 bytes', function() {
       var data = new Buffer('Robots are so freaking cool!');
       var spy = sinon.spy();
       var parser = parsers.byteLength(8);

@@ -1,6 +1,6 @@
 {
   "name": "serialport",
-  "version": "3.1.0",
+  "version": "4.0.0-rc1",
   "description": "Node.js package to access serial ports. Welcome your robotic javascript overlords. Better yet, program them!",
   "author": {
     "name": "Chris Williams",
@@ -10,12 +10,12 @@
   "binary": {
     "module_name": "serialport",
     "module_path": "build/{configuration}/",
-    "host": "https://github.com/voodootikigod/node-serialport/releases/download/3.1.0"
+    "host": "https://github.com/EmergingTechnologyAdvisors/node-serialport/releases/download/4.0.0-rc1"
   },
   "main": "./lib/serialport",
   "repository": {
     "type": "git",
-    "url": "git://github.com/voodootikigod/node-serialport.git"
+    "url": "git://github.com/EmergingTechnologyAdvisors/node-serialport.git"
   },
   "keywords": [
     "serialport",
@@ -56,13 +56,14 @@
     "commander": "^2.9.0",
     "debug": "^2.1.1",
     "es6-promise": "^3.1.2",
-    "nan": "^2.3.3",
+    "nan": "^2.3.5",
     "node-pre-gyp": "^0.6.26",
     "object.assign": "^4.0.3"
   },
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-subset": "^1.2.2",
+    "coveralls": "^2.11.9",
     "eslint-config-standard": "^5.1.0",
     "eslint-plugin-promise": "^1.1.0",
     "eslint-plugin-standard": "^1.3.2",
@@ -71,9 +72,11 @@
     "gruntify-eslint": "^2.0.0",
     "mocha": "^2.4.5",
     "node-pre-gyp-github": "^1.1.2",
+    "nyc": "^6.4.4",
     "sandboxed-module": "^2.0.3",
     "sinon": "^1.17.3",
-    "sinon-chai": "^2.8.0"
+    "sinon-chai": "^2.8.0",
+    "spawn-sync": "^1.0.15"
   },
   "bundledDependencies": [
     "node-pre-gyp"
@@ -82,16 +85,21 @@
     "node": ">= 0.10.0"
   },
   "bin": {
-    "serialportlist": "./bin/serialport-list.js",
-    "serialportterm": "./bin/serialport-terminal.js"
+    "serialport-list": "./bin/serialport-list.js",
+    "serialport-term": "./bin/serialport-terminal.js"
   },
   "license": "MIT",
   "scripts": {
     "install": "node-pre-gyp install --fallback-to-build",
-    "rebuild-all": "npm rebuild && node-pre-gyp rebuild",
+    "rebuild-all": "npm rebuild && node-gyp rebuild",
+    "gyp-rebuild": "node-gyp rebuild",
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
+    "integration": "mocha test/arduinoTest/integration.js test/integration-lite.js",
     "grunt": "grunt",
-    "test": "grunt --verbose"
+    "lint": "grunt --verbose lint",
+    "test": "nyc grunt --verbose test",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "valgrind": "valgrind --leak-check=full --show-possibly-lost=no node --expose-gc --trace-gc node_modules/.bin/grunt test"
   },
   "gypfile": true
 }

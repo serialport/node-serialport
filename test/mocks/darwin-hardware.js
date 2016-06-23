@@ -10,8 +10,8 @@ function callLater() {
   });
 }
 
-var mockSerialportPoller = function (hardware) {
-  var Poller = function (fd, cb) {
+var mockSerialportPoller = function(hardware) {
+  var Poller = function(fd, cb) {
     this.port = hardware.fds[fd];
     if (!this.port) {
       throw new Error(fd + ' does not exist - please call hardware.createPort(path) first');
@@ -20,19 +20,19 @@ var mockSerialportPoller = function (hardware) {
     this.polling = null;
     this.cb = cb;
   };
-  Poller.prototype.start = function () {
+  Poller.prototype.start = function() {
     this.polling = true;
   };
-  Poller.prototype.close = function () {
+  Poller.prototype.close = function() {
     this.polling = false;
   };
-  Poller.prototype.detectRead = function () {
+  Poller.prototype.detectRead = function() {
     this.cb();
   };
   return Poller;
 };
 
-var Hardware = function () {
+var Hardware = function() {
   this.nextFd = 0;
   this.fds = {};
   this.ports = {};
@@ -49,13 +49,13 @@ var Hardware = function () {
   };
 };
 
-Hardware.prototype.reset = function () {
+Hardware.prototype.reset = function() {
   this.ports = {};
   this.fds = {};
   this.nextFd = 0;
 };
 
-Hardware.prototype.createPort = function (path) {
+Hardware.prototype.createPort = function(path) {
   if (this.ports[path]) {
     delete this.fds[this.ports[path].fd];
   }
@@ -79,7 +79,7 @@ Hardware.prototype.createPort = function (path) {
   this.fds[fd] = this.ports[path];
 };
 
-Hardware.prototype.emitData = function (path, data) {
+Hardware.prototype.emitData = function(path, data) {
   var port = this.ports[path];
   if (!port) {
     throw new Error(path + ' does not exist - please call hardware.createPort(path) first');
@@ -88,23 +88,24 @@ Hardware.prototype.emitData = function (path, data) {
   port.poller && port.poller.detectRead();
 };
 
-Hardware.prototype.disconnect = function (path) {
+Hardware.prototype.disconnect = function(path) {
   var port = this.ports[path];
   if (!port) {
     throw new Error(path + ' does not exist - please call hardware.createPort(path) first');
   }
-  port.openOpt.disconnectedCallback && port.openOpt.disconnectedCallback();
+  var err = new Error('disconnected');
+  port.openOpt.disconnectedCallback(err);
 };
 
-Hardware.prototype.list = function (cb) {
+Hardware.prototype.list = function(cb) {
   var ports = this.ports;
-  var info = Object.keys(ports).map(function (path) {
+  var info = Object.keys(ports).map(function(path) {
     return ports[path].info;
   });
   callLater(cb, null, info);
 };
 
-Hardware.prototype.open = function (path, opt, cb) {
+Hardware.prototype.open = function(path, opt, cb) {
   var port = this.ports[path];
   if (!port) {
     return cb(new Error(path + ' does not exist - please call hardware.createPort(path) first'));
@@ -122,7 +123,7 @@ Hardware.prototype.update = function(fd, opt, cb) {
   callLater(cb, null);
 };
 
-Hardware.prototype.write = function (fd, buffer, cb) {
+Hardware.prototype.write = function(fd, buffer, cb) {
   var port = this.fds[fd];
   if (!port) {
     return cb(new Error(fd + ' does not exist - please call hardware.createPort(path) first'));
@@ -131,7 +132,7 @@ Hardware.prototype.write = function (fd, buffer, cb) {
   callLater(cb, null, buffer.length);
 };
 
-Hardware.prototype.close = function (fd, cb) {
+Hardware.prototype.close = function(fd, cb) {
   var port = this.fds[fd];
   if (!port) {
     return cb(new Error(fd + ' does not exist - please call hardware.createPort(path) first'));
@@ -143,7 +144,7 @@ Hardware.prototype.close = function (fd, cb) {
   callLater(cb, null);
 };
 
-Hardware.prototype.flush = function (fd, cb) {
+Hardware.prototype.flush = function(fd, cb) {
   var port = this.fds[fd];
   if (!port) {
     return cb(new Error(fd + ' does not exist - please call hardware.createPort(path) first'));
@@ -151,7 +152,7 @@ Hardware.prototype.flush = function (fd, cb) {
   callLater(cb, null, undefined);
 };
 
-Hardware.prototype.set = function (fd, options, cb) {
+Hardware.prototype.set = function(fd, options, cb) {
   var port = this.fds[fd];
   if (!port) {
     return cb(new Error(fd + ' does not exist - please call hardware.createPort(path) first'));
@@ -159,7 +160,7 @@ Hardware.prototype.set = function (fd, options, cb) {
   callLater(cb, null, undefined);
 };
 
-Hardware.prototype.drain = function (fd, cb) {
+Hardware.prototype.drain = function(fd, cb) {
   var port = this.fds[fd];
   if (!port) {
     return cb(new Error(fd + ' does not exist - please call hardware.createPort(path) first'));
@@ -167,7 +168,7 @@ Hardware.prototype.drain = function (fd, cb) {
   callLater(cb, null, undefined);
 };
 
-Hardware.prototype.fakeRead = function (fd, buffer, offset, length, position, cb) {
+Hardware.prototype.fakeRead = function(fd, buffer, offset, length, position, cb) {
   var port = this.fds[fd];
   if (!port) {
     return cb(new Error(fd + ' does not exist - please call hardware.createPort(path) first'));
