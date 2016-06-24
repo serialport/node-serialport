@@ -1,8 +1,10 @@
 #include "serialport.h"
 #include <nan.h>
 #include <ppltasks.h>
+#include <array>
 
 #define MAX_BUFFER_SIZE 1000
+const int MAX_DEVICES = 256; 
 
 using namespace concurrency;
 using namespace Platform;
@@ -21,36 +23,11 @@ OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& opti
 }
 
 int bufferSize;
-SerialDevice^ g_device;
+std::array<SerialDevice^, MAX_DEVICES> g_devices{};
 
-void ParseUSBSerialDeviceId(String^ deviceId, UINT16* vid, UINT16* pid, std::wstring& serialStr) {
-  if (0 == deviceId->Length()) {
-    return;
-  }
-  std::wstring wStr(deviceId->Data());
-  std::wstring idPrefix = wStr.substr(0, 3);
-
-  // Parse string in the format of USB\VID_XXXX&PID_XXXX\XXXXXXXXXX or USB#VID_XXXX&PID_XXXX#XXXXXXXXXX
-  if (0 == idPrefix.compare(L"USB")) {
-    *vid = wcstol(wStr.substr(8, 4).c_str(), NULL, 16);
-    *pid = wcstol(wStr.substr(17, 4).c_str(), NULL, 16);
-    serialStr = wStr.substr(22);
-  // Parse string in the format of \\?\USB#VID_XXXX&PID_XXXX#XXXXXXXXXX{XXXXX-XXXXX}
-  } else if (0 == idPrefix.compare(L"\\\\?")) {
-    *vid = wcstol(wStr.substr(12, 4).c_str(), NULL, 16);
-    *pid = wcstol(wStr.substr(21, 4).c_str(), NULL, 16);
-    serialStr = wStr.substr(26);
-    int index = -1;
-    index = serialStr.find_last_of(L"#", std::wstring::npos);
-    if (-1 != index) {
-      serialStr.erase(index);
-    }	  
-  }
-}
-
-void PlatformStringToChar(String^ platStr, char* charStr) {
+std::string PlatformStringToStdStr(String^ platStr) {
   if (0 == platStr->Length()) {
-      return;
+      return "";
   }
   std::wstring wStr(platStr->Data());
   auto wideData = wStr.c_str();
@@ -59,7 +36,7 @@ void PlatformStringToChar(String^ platStr, char* charStr) {
   if (0 == WideCharToMultiByte(CP_UTF8, 0, wideData, -1, utf8.get(), bufferSize, NULL, NULL)) {
     throw std::exception("Can't convert string to UTF8");
   }
-  strcpy(charStr, utf8.get());
+  return std::string(utf8.get());
 }
 
 void EIO_Open(uv_work_t* req) {
@@ -75,47 +52,19 @@ void EIO_Open(uv_work_t* req) {
   }
   
   // data->path (name of the device passed in to the 'open' function of serialport)
-  // can either be a regular port name like "COM1" or "UART2" or it can be in a 
-  // format describing a USB-Serial device that has not been assigned a port name.
-  // The format is:
-  // USB[#|\]VID_<Vendor ID>&PID_<Product ID>[#|\]<Serial String>
-  // Example:
-  // USB#VID_2341&PID_0043#85436323631351311141
-  // This string can be found by either:
-  // 1. Calling the serialport list function.
-  // 2. (On Windows 10 IoT Core) Running "devcon status usb*"
+  // can either be a regular port name like "COM1" or "UART2" or it can be the device
+  // ID (if not port name is assigned). serialport.list method should be used to get
+  // the name or ID to use.
+
   std::string s_str = std::string(data->path);
   std::wstring wid_str = std::wstring(s_str.begin(), s_str.end());
   const wchar_t* w_char = wid_str.c_str();
   String^ deviceId = ref new String(w_char);
-  ParseUSBSerialDeviceId(deviceId, &vid, &pid, serialStr); // Get USB-Serial info if it exists
-  String ^aqs = SerialDevice::GetDeviceSelector();
 
-  auto deviceInfoCollection = concurrency::create_task(DeviceInformation::FindAllAsync(aqs)).get();
-  if (deviceInfoCollection->Size < 1) {
-    return;
-  }
-
-  for (int i = 0; i < deviceInfoCollection->Size; i++) {
-    device = concurrency::create_task(SerialDevice::FromIdAsync(deviceInfoCollection->GetAt(i)->Id)).get();
-    if (device) {
-      if (0 == String::CompareOrdinal(device->PortName, deviceId)) {
-        break;
-      }
-      else {
-        if (device->UsbVendorId == vid && device->UsbProductId == pid) {
-          std::wstring wStr(deviceId->Data());
-          int index = -1;
-          index = wStr.find(serialStr, 0);
-          if (-1 != index) {
-              break;
-          }
-        }
-      }
-    }
-  }
-
-  if (!device) {
+  try {
+    device = create_task(SerialDevice::FromIdAsync(deviceId)).get();
+  } catch (Exception^ e) {
+    _snprintf(data->errorString, ERROR_STRING_SIZE, "unable to open %s", data->path);
     return;
   }
 
@@ -170,12 +119,27 @@ void EIO_Open(uv_work_t* req) {
   device->ReadTimeout = commTimeout;
   device->WriteTimeout = commTimeout;
 
-  g_device = device;
-  data->result = 0;
+  int i = 0;
+  bool deviceSpaceFull = true;
+
+  for (; i < MAX_DEVICES; i++) {
+    if(g_devices[i] == nullptr) { 
+      g_devices[i] = device;
+      deviceSpaceFull = false;
+      break;
+    }
+  }
+
+  if (deviceSpaceFull) {
+    _snprintf(data->errorString, ERROR_STRING_SIZE, "limit reached for open serial devices");
+    return;
+  }
+
+  data->result = i;
 }
 
 struct WatchPortBaton {
-public:
+  int deviceIndex;
   DWORD bytesRead;
   char buffer[MAX_BUFFER_SIZE];
   char errorString[ERROR_STRING_SIZE];
@@ -197,7 +161,7 @@ void EIO_WatchPort(uv_work_t* req) {
   data->bytesRead = 0;
   data->disconnected = false;
 
-  DataReader^ dataReader = ref new DataReader(g_device->InputStream);
+  DataReader^ dataReader = ref new DataReader(g_devices[data->deviceIndex]->InputStream);
   dataReader->InputStreamOptions = InputStreamOptions::Partial;
 
   auto bytesToRead = concurrency::create_task(dataReader->LoadAsync((unsigned int)bufferSize)).get();
@@ -212,7 +176,7 @@ void EIO_WatchPort(uv_work_t* req) {
   }
   catch (Exception^ e) {
     data->errorCode = e->HResult;
-    PlatformStringToChar(e->Message, data->errorString);
+	_snprintf(data->errorString, ERROR_STRING_SIZE, PlatformStringToStdStr(e->Message).data());
   }
   dataReader->DetachStream();
 }
@@ -250,17 +214,12 @@ void EIO_AfterWatchPort(uv_work_t* req) {
     skipCleanup = true;
     data->dataCallback->Call(1, argv);
   } else if(data->errorCode > 0) {
-    if(data->errorCode == ERROR_INVALID_HANDLE) {
-      DisposeWatchPortCallbacks(data);
-      goto cleanup;
-    } else {
-      v8::Local<v8::Value> argv[1];
-      argv[0] = Nan::Error(data->errorString);
-      data->errorCallback->Call(1, argv);
-      Sleep(100); // prevent the errors from occurring too fast
-    }
+    v8::Local<v8::Value> argv[1];
+    argv[0] = Nan::Error(data->errorString);
+    data->errorCallback->Call(1, argv);
+    Sleep(100); // prevent the errors from occurring too fast
   }
-  AfterOpenSuccess(NULL, data->dataCallback, data->disconnectedCallback, data->errorCallback);
+  AfterOpenSuccess(data->deviceIndex, data->dataCallback, data->disconnectedCallback, data->errorCallback);
 
 cleanup:
   if (!skipCleanup) {
@@ -269,9 +228,10 @@ cleanup:
   }
 }
 
-void AfterOpenSuccess(int unused, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, Nan::Callback* errorCallback) {
+void AfterOpenSuccess(int deviceIndex, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, Nan::Callback* errorCallback) {
   WatchPortBaton* baton = new WatchPortBaton();
   memset(baton, 0, sizeof(WatchPortBaton));
+  baton->deviceIndex = deviceIndex;
   baton->dataCallback = dataCallback;
   baton->errorCallback = errorCallback;
   baton->disconnectedCallback = disconnectedCallback;
@@ -287,10 +247,18 @@ void EIO_Write(uv_work_t* req) {
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
   data->result = 0;
 
-  if (!g_device) {
+  try {
+    if (!g_devices[data->fd]) {
+      _snprintf(data->errorString, ERROR_STRING_SIZE, "%d: write failed, invalid device", data->fd);
+      return;
+    }
+  }
+  catch (const std::out_of_range& e) {
+    _snprintf(data->errorString, ERROR_STRING_SIZE, "%d: write failed, out of range", data->fd);
     return;
   }
-  DataWriter^ dataWriter = ref new DataWriter(g_device->OutputStream);
+
+  DataWriter^ dataWriter = ref new DataWriter(g_devices[data->fd]->OutputStream);
   dataWriter->WriteBytes(ref new Array<byte>((byte*)data->bufferData, data->bufferLength));
   auto bytesStored = concurrency::create_task(dataWriter->StoreAsync()).get();
   data->result = bytesStored;
@@ -301,9 +269,11 @@ void EIO_Write(uv_work_t* req) {
 }
 
 void EIO_Close(uv_work_t* req) {
-  if (g_device) {
-    delete g_device;
-	g_device = nullptr;
+  CloseBaton* data = static_cast<CloseBaton*>(req->data);
+
+  if (g_devices[data->fd]) {
+    delete g_devices[data->fd];
+    g_devices[data->fd] = nullptr;
   }
 }
 
@@ -314,6 +284,7 @@ void EIO_List(uv_work_t* req) {
   
   auto deviceInfoCollection = concurrency::create_task(DeviceInformation::FindAllAsync(aqs)).get();
   if (deviceInfoCollection->Size < 1) {
+    _snprintf(data->errorString, ERROR_STRING_SIZE, "no serial devices found to list");
     return;
   }
 
@@ -325,19 +296,34 @@ void EIO_List(uv_work_t* req) {
       continue;
     }
 
-    char* comName = new char[MAX_PATH];
-    memset(comName, 0, MAX_PATH);
-    PlatformStringToChar(serialDevice->PortName, comName);
-    if (0 == strcmp(comName, "")) {
+    // Get the port name or ID
+    String^ comName = serialDevice->PortName;
+    if (comName == nullptr) {
       // Show the device ID if a port name has not been assigned
-      PlatformStringToChar(deviceInfoCollection->GetAt(i)->Id, comName);
-      resultItem->comName = comName;
+      comName = deviceInfoCollection->GetAt(i)->Id;
     }
-    else {
-      resultItem->comName = comName;
+
+    resultItem->comName = PlatformStringToStdStr(comName);
+    std::string nameToPrint;
+
+    // Double the backslashes so printed port name includes escape characters
+    for (int i = 0; i < resultItem->comName.length(); i++) {
+      if ('\\' == resultItem->comName.at(i)) {
+        nameToPrint += '\\';
+      }
+      nameToPrint += resultItem->comName.at(i);
     }
-    resultItem->manufacturer = "";
-    resultItem->pnpId = "";
+    resultItem->comName = nameToPrint;
+
+    // Get the vendor ID
+    resultItem->vendorId = std::to_string(serialDevice->UsbVendorId);
+
+    // Get the product ID
+    resultItem->productId = std::to_string(serialDevice->UsbProductId);
+
+    resultItem->manufacturer = ""; // Property not available in SerialDevice class
+    resultItem->pnpId = ""; // Property not available in SerialDevice class
+
     data->results.push_back(resultItem);
   }
 }
