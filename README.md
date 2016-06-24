@@ -73,13 +73,20 @@ For getting started with node-serialport, we recommend you begin with the follow
 |       ---       | --- | --- | --- | --- | --- |
 | Linux / ia32    |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
 | Linux / x64     |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
-| Windows¹ / x86  |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
-| Windows¹ / x64  |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
-| OSX² / x64      |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
+| Linux / ARM v6¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / ARM v7¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / ARM v8¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / MIPSel¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / PPC64¹  |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
+| Windows² / x86  |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
+| Windows² / x64  |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
+| OSX³ / x64      |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
 
-¹ Windows 7, 8, 10, and 10 IoT are supported but only Windows Server 2012 R2 is tested by our CI.
+¹ ARM, MIPSel and PPC64¹ platforms are known to work but are not currently part of our test or build matrix. [#846](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/846) ARM v4 and v5 was dropped from NodeJS after Node v0.10.
 
-² OSX 10.4 Tiger and above are supported but only 10.9.5 Mavericks with Xcode 6.1 is tested in our CI.
+² Windows 7, 8, 10, and 10 IoT are supported but only Windows Server 2012 R2 is tested by our CI.
+
+³ OSX 10.4 Tiger and above are supported but only 10.9.5 Mavericks with Xcode 6.1 is tested in our CI.
 
 ## Installation Instructions
 
@@ -144,6 +151,15 @@ npm install serialport --build-from-source=serialport
 #### Raspberry Pi Linux
 
 Follow the instructions for [setting up a Raspberry pi for use with Johnny-Five and Raspi IO](https://github.com/nebrius/raspi-io/wiki/Getting-a-Raspberry-Pi-ready-for-NodeBots). These projects use Node Serialport under the hood.
+
+| Revision       |      CPU              | Arm Version |
+|   ----         |      ---              |     ---     |
+| A, A+, B, B+   | 32-bit ARM1176JZF-S   |    ARMv6    |
+| Compute Module | 32-bit ARM1176JZF-S   |    ARMv6    |
+| Zero           | 32-bit ARM1176JZF-S   |    ARMv6    |
+| B2             | 32-bit ARM Cortex-A7  |    ARMv7    |
+| B3             | 32-bit ARM Cortex-A53 |    ARMv8    |
+
 
 #### Illegal Instruction
 
