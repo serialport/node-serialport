@@ -2,6 +2,7 @@
 #include <nan.h>
 #include <ppltasks.h>
 #include <array>
+#include <unordered_map>
 
 #define MAX_BUFFER_SIZE 1000
 const int MAX_DEVICES = 256; 
@@ -23,20 +24,40 @@ OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& opti
 }
 
 int bufferSize;
-std::array<SerialDevice^, MAX_DEVICES> g_devices{};
+std::unordered_map<int, SerialDevice^> g_device_map;
+std::unordered_map<int, DataReaderLoadOperation^> g_operations;
+int g_device_index = 0;
+std::mutex g_mutex;
 
-std::string PlatformStringToStdStr(String^ platStr) {
+std::string PlatStrToStdStr(String^ platStr) {
   if (0 == platStr->Length()) {
-      return "";
+    return "";
   }
-  std::wstring wStr(platStr->Data());
-  auto wideData = wStr.c_str();
-  int bufferSize = WideCharToMultiByte(CP_UTF8, 0, wideData, -1, nullptr, 0, NULL, NULL);
+  int bufferSize = WideCharToMultiByte(CP_UTF8, 0, platStr->Data(), -1, nullptr, 0, NULL, NULL);
+  if (bufferSize == 0) {
+    return "";
+  }
   auto utf8 = std::make_unique<char[]>(bufferSize);
-  if (0 == WideCharToMultiByte(CP_UTF8, 0, wideData, -1, utf8.get(), bufferSize, NULL, NULL)) {
-    throw std::exception("Can't convert string to UTF8");
+  if (0 == WideCharToMultiByte(CP_UTF8, 0, platStr->Data(), -1, utf8.get(), bufferSize, NULL, NULL)) {
+    return "";
   }
   return std::string(utf8.get());
+}
+
+String^ StdStrToPlatStr(char* str) {
+  if (!str) {
+    return "";
+  }
+  int bufferSize = MultiByteToWideChar(CP_UTF8, 0, str, -1, nullptr, 0);
+  if (bufferSize == 0) {
+    return "";
+  }
+  auto utf8 = std::make_unique<wchar_t[]>(bufferSize);
+  bufferSize = MultiByteToWideChar(CP_UTF8,0, str, -1, utf8.get(), bufferSize);
+  if (bufferSize == 0) {
+    return "";
+  }
+  return ref new String(utf8.get());
 }
 
 void EIO_Open(uv_work_t* req) {
@@ -45,6 +66,7 @@ void EIO_Open(uv_work_t* req) {
   UINT16 pid = 0;
   std::wstring serialStr;
   SerialDevice^ device;
+  DeviceInformationCollection^ dis;
 
   bufferSize = data->bufferSize;
   if (bufferSize > MAX_BUFFER_SIZE || bufferSize == 0) {
@@ -56,23 +78,53 @@ void EIO_Open(uv_work_t* req) {
   // ID (if not port name is assigned). serialport.list method should be used to get
   // the name or ID to use.
 
-  std::string s_str = std::string(data->path);
-  std::wstring wid_str = std::wstring(s_str.begin(), s_str.end());
-  const wchar_t* w_char = wid_str.c_str();
-  String^ deviceId = ref new String(w_char);
-
-  try {
-    device = create_task(SerialDevice::FromIdAsync(deviceId)).get();
-  } catch (Exception^ e) {
-    _snprintf(data->errorString, ERROR_STRING_SIZE, "unable to open %s", data->path);
+  String^ deviceId = StdStrToPlatStr(data->path);
+  if (deviceId->IsEmpty()) {
+    _snprintf(data->errorString, ERROR_STRING_SIZE, "StdStrToPlatStr failed. error: %d", 
+              GetLastError());
     return;
   }
 
-  if (data->hupcl == false) {
-    device->IsDataTerminalReadyEnabled = false; // disable DTR to avoid reset 
+  try {
+    device = create_task(SerialDevice::FromIdAsync(deviceId)).get();
+  } 
+  catch (Exception^ e) {
+    if (HRESULT_FROM_WIN32(ERROR_INVALID_DATA) != e->HResult) {
+      _snprintf(data->errorString, ERROR_STRING_SIZE, "unable to open %s. error: %d",
+                data->path, e->HResult);
+      return;
+    }
   }
-  else {
-    device->IsDataTerminalReadyEnabled = true;
+
+  // Check if it's a fixed serial port (e.g. UART0) before giving up
+  if (nullptr == device) {
+    String^ aqs = SerialDevice::GetDeviceSelector(deviceId);
+    dis = create_task(DeviceInformation::FindAllAsync(aqs)).get();
+
+    try {
+      device = create_task(SerialDevice::FromIdAsync(dis->GetAt(0)->Id)).get();
+    }
+    catch (Exception^ e) {
+      _snprintf(data->errorString, ERROR_STRING_SIZE, "unable to open %s. error: %d",
+                data->path, e->HResult);
+      return;
+    }
+  }
+
+  try {
+    if (data->hupcl == false) {
+      device->IsDataTerminalReadyEnabled = false; // disable DTR to avoid reset 
+    }
+    else {
+      device->IsDataTerminalReadyEnabled = true;
+    }
+  } 
+  catch (Exception^ e) {
+    // IsDataTerminalReadyEnabled not supported for fixed ports
+    if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
+      _snprintf(data->errorString, ERROR_STRING_SIZE, "failed to set dts. error: %d", e->HResult);
+      return;
+    }
   }
 
   device->BaudRate = CBR_9600;
@@ -80,7 +132,17 @@ void EIO_Open(uv_work_t* req) {
   device->DataBits = 8;
   device->StopBits = SerialStopBitCount::One;
   device->Handshake = SerialHandshake::None;
-  device->IsRequestToSendEnabled = true;
+
+  try {
+    device->IsRequestToSendEnabled = true;
+  } 
+  catch (Exception^ e) {
+    // IsRequestToSendEnabled not supported for fixed ports
+    if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
+      _snprintf(data->errorString, ERROR_STRING_SIZE, "failed to set rts. error: %d", e->HResult);
+      return;
+    }
+  }
 
   device->BaudRate = data->baudRate;
   device->DataBits = data->dataBits;
@@ -119,27 +181,13 @@ void EIO_Open(uv_work_t* req) {
   device->ReadTimeout = commTimeout;
   device->WriteTimeout = commTimeout;
 
-  int i = 0;
-  bool deviceSpaceFull = true;
-
-  for (; i < MAX_DEVICES; i++) {
-    if(g_devices[i] == nullptr) { 
-      g_devices[i] = device;
-      deviceSpaceFull = false;
-      break;
-    }
-  }
-
-  if (deviceSpaceFull) {
-    _snprintf(data->errorString, ERROR_STRING_SIZE, "limit reached for open serial devices");
-    return;
-  }
-
-  data->result = i;
+  std::lock_guard<std::mutex> log(g_mutex);
+  g_device_map[g_device_index] = device;
+  data->result = g_device_index++;
 }
 
 struct WatchPortBaton {
-  int deviceIndex;
+  int fd;
   DWORD bytesRead;
   char buffer[MAX_BUFFER_SIZE];
   char errorString[ERROR_STRING_SIZE];
@@ -151,9 +199,67 @@ struct WatchPortBaton {
 };
 
 void EIO_Update(uv_work_t* req) {
+  ConnectionOptionsBaton* data = static_cast<ConnectionOptionsBaton*>(req->data);
+  try {
+    g_device_map[data->fd]->BaudRate = data->baudRate;
+  } catch (Exception^ e) {
+    _snprintf(data->errorString, ERROR_STRING_SIZE, "invalid baud rate: %d", data->baudRate);
+    return;
+  }
 }
 
 void EIO_Set(uv_work_t* req) {
+  SetBaton* data = static_cast<SetBaton*>(req->data);
+
+  // SerialDevice::ClearToSendState and SerialDevice::DataSetReadyState 
+  // have no set accessors
+  if (data->cts || data->dsr) {
+    _snprintf(data->errorString, ERROR_STRING_SIZE, "setting cts or dsr is not supported");
+    return;
+  }
+
+  try {
+    if (data->rts) {
+      g_device_map[data->fd]->IsRequestToSendEnabled = true;
+    }
+    else {
+      g_device_map[data->fd]->IsRequestToSendEnabled = false;
+    }
+  } 
+  catch (Exception^ e) {
+    if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
+      _snprintf(data->errorString, ERROR_STRING_SIZE, "failed to set rts. error: %d", e->HResult);
+      return;
+    }
+  }
+
+  try {
+    if (data->dtr) {
+      g_device_map[data->fd]->IsDataTerminalReadyEnabled = true;
+    } else {
+      g_device_map[data->fd]->IsDataTerminalReadyEnabled = false;
+    }
+  } 
+  catch (Exception^ e) {
+    if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
+      _snprintf(data->errorString, ERROR_STRING_SIZE, "failed to set dtr. error: %d", e->HResult);
+      return;
+    }
+  }
+
+  try {
+    if (data->brk) {
+      g_device_map[data->fd]->BreakSignalState = true;
+    } else {
+      g_device_map[data->fd]->BreakSignalState = false;
+    }
+  } 
+  catch (Exception^ e) {
+    if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
+      _snprintf(data->errorString, ERROR_STRING_SIZE, "failed to set brk. error: %d", e->HResult);
+      return;
+    }
+  }
 }
 
 void EIO_WatchPort(uv_work_t* req) {
@@ -161,10 +267,13 @@ void EIO_WatchPort(uv_work_t* req) {
   data->bytesRead = 0;
   data->disconnected = false;
 
-  DataReader^ dataReader = ref new DataReader(g_devices[data->deviceIndex]->InputStream);
+  DataReader^ dataReader = ref new DataReader(g_device_map[data->fd]->InputStream);
   dataReader->InputStreamOptions = InputStreamOptions::Partial;
 
-  auto bytesToRead = concurrency::create_task(dataReader->LoadAsync((unsigned int)bufferSize)).get();
+  DataReaderLoadOperation^ operation = dataReader->LoadAsync((unsigned int)bufferSize);
+  g_operations[data->fd] = operation;
+
+  size_t bytesToRead = concurrency::create_task(operation).get();
   try {
     memset(data->buffer, 0, MAX_BUFFER_SIZE);
     // Keep reading until we consume the complete stream.
@@ -176,7 +285,7 @@ void EIO_WatchPort(uv_work_t* req) {
   }
   catch (Exception^ e) {
     data->errorCode = e->HResult;
-	_snprintf(data->errorString, ERROR_STRING_SIZE, PlatformStringToStdStr(e->Message).data());
+    _snprintf(data->errorString, ERROR_STRING_SIZE, PlatStrToStdStr(e->Message).data());
   }
   dataReader->DetachStream();
 }
@@ -219,7 +328,7 @@ void EIO_AfterWatchPort(uv_work_t* req) {
     data->errorCallback->Call(1, argv);
     Sleep(100); // prevent the errors from occurring too fast
   }
-  AfterOpenSuccess(data->deviceIndex, data->dataCallback, data->disconnectedCallback, data->errorCallback);
+  AfterOpenSuccess(data->fd, data->dataCallback, data->disconnectedCallback, data->errorCallback);
 
 cleanup:
   if (!skipCleanup) {
@@ -228,10 +337,10 @@ cleanup:
   }
 }
 
-void AfterOpenSuccess(int deviceIndex, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, Nan::Callback* errorCallback) {
+void AfterOpenSuccess(int fd, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, Nan::Callback* errorCallback) {
   WatchPortBaton* baton = new WatchPortBaton();
   memset(baton, 0, sizeof(WatchPortBaton));
-  baton->deviceIndex = deviceIndex;
+  baton->fd = fd;
   baton->dataCallback = dataCallback;
   baton->errorCallback = errorCallback;
   baton->disconnectedCallback = disconnectedCallback;
@@ -248,7 +357,7 @@ void EIO_Write(uv_work_t* req) {
   data->result = 0;
 
   try {
-    if (!g_devices[data->fd]) {
+    if (!g_device_map[data->fd]) {
       _snprintf(data->errorString, ERROR_STRING_SIZE, "%d: write failed, invalid device", data->fd);
       return;
     }
@@ -258,7 +367,7 @@ void EIO_Write(uv_work_t* req) {
     return;
   }
 
-  DataWriter^ dataWriter = ref new DataWriter(g_devices[data->fd]->OutputStream);
+  DataWriter^ dataWriter = ref new DataWriter(g_device_map[data->fd]->OutputStream);
   dataWriter->WriteBytes(ref new Array<byte>((byte*)data->bufferData, data->bufferLength));
   auto bytesStored = concurrency::create_task(dataWriter->StoreAsync()).get();
   data->result = bytesStored;
@@ -271,9 +380,13 @@ void EIO_Write(uv_work_t* req) {
 void EIO_Close(uv_work_t* req) {
   CloseBaton* data = static_cast<CloseBaton*>(req->data);
 
-  if (g_devices[data->fd]) {
-    delete g_devices[data->fd];
-    g_devices[data->fd] = nullptr;
+  if (g_device_map[data->fd]) {
+    if (g_operations[data->fd]) {
+      g_operations[data->fd]->Cancel();
+      g_operations[data->fd]->Close();
+    }
+    delete g_device_map[data->fd];
+    g_device_map[data->fd] = nullptr;
   }
 }
 
@@ -303,7 +416,7 @@ void EIO_List(uv_work_t* req) {
       comName = deviceInfoCollection->GetAt(i)->Id;
     }
 
-    resultItem->comName = PlatformStringToStdStr(comName);
+    resultItem->comName = PlatStrToStdStr(comName);
     std::string nameToPrint;
 
     // Double the backslashes so printed port name includes escape characters
@@ -329,7 +442,11 @@ void EIO_List(uv_work_t* req) {
 }
 
 void EIO_Flush(uv_work_t* req) {
+  FlushBaton* data = static_cast<FlushBaton*>(req->data);
+  _snprintf(data->errorString, ERROR_STRING_SIZE, "not implemented");
 }
 
 void EIO_Drain(uv_work_t* req) {
+  DrainBaton* data = static_cast<DrainBaton*>(req->data);
+  _snprintf(data->errorString, ERROR_STRING_SIZE, "not implemented");
 }
