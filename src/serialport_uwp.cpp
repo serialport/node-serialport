@@ -29,32 +29,36 @@ std::unordered_map<int, DataReaderLoadOperation^> g_operations;
 int g_device_index = 0;
 std::mutex g_mutex;
 
-std::string PlatStrToStdStr(String^ platStr) {
+std::string PlatStrToStdStr(String^ platStr, DWORD* const &err) {
   if (0 == platStr->Length()) {
     return "";
   }
   int bufferSize = WideCharToMultiByte(CP_UTF8, 0, platStr->Data(), -1, nullptr, 0, NULL, NULL);
   if (bufferSize == 0) {
+    *err = GetLastError();
     return "";
   }
   auto utf8 = std::make_unique<char[]>(bufferSize);
   if (0 == WideCharToMultiByte(CP_UTF8, 0, platStr->Data(), -1, utf8.get(), bufferSize, NULL, NULL)) {
+    *err = GetLastError();
     return "";
   }
   return std::string(utf8.get());
 }
 
-String^ StdStrToPlatStr(char* str) {
+String^ StdStrToPlatStr(char* str, DWORD* const &err) {
   if (!str) {
     return "";
   }
   int bufferSize = MultiByteToWideChar(CP_UTF8, 0, str, -1, nullptr, 0);
   if (bufferSize == 0) {
+    *err = GetLastError();
     return "";
   }
   auto utf8 = std::make_unique<wchar_t[]>(bufferSize);
   bufferSize = MultiByteToWideChar(CP_UTF8,0, str, -1, utf8.get(), bufferSize);
   if (bufferSize == 0) {
+    *err = GetLastError();
     return "";
   }
   return ref new String(utf8.get());
@@ -78,10 +82,10 @@ void EIO_Open(uv_work_t* req) {
   // ID (if not port name is assigned). serialport.list method should be used to get
   // the name or ID to use.
 
-  String^ deviceId = StdStrToPlatStr(data->path);
-  if (deviceId->IsEmpty()) {
-    _snprintf(data->errorString, ERROR_STRING_SIZE, "StdStrToPlatStr failed. error: %d", 
-              GetLastError());
+  DWORD err = ERROR_SUCCESS;
+  String^ deviceId = StdStrToPlatStr(data->path, &err);
+  if (ERROR_SUCCESS != err) {
+    _snprintf(data->errorString, ERROR_STRING_SIZE, "StdStrToPlatStr failed. error: %d", err);
     return;
   }
 
@@ -181,7 +185,7 @@ void EIO_Open(uv_work_t* req) {
   device->ReadTimeout = commTimeout;
   device->WriteTimeout = commTimeout;
 
-  std::lock_guard<std::mutex> log(g_mutex);
+  std::lock_guard<std::mutex> lk(g_mutex);
   g_device_map[g_device_index] = device;
   data->result = g_device_index++;
 }
@@ -201,7 +205,10 @@ struct WatchPortBaton {
 void EIO_Update(uv_work_t* req) {
   ConnectionOptionsBaton* data = static_cast<ConnectionOptionsBaton*>(req->data);
   try {
-    g_device_map[data->fd]->BaudRate = data->baudRate;
+    if(g_device_map[data->fd]) {
+      std::lock_guard<std::mutex> lk(g_mutex);
+      g_device_map[data->fd]->BaudRate = data->baudRate;
+    }
   } catch (Exception^ e) {
     _snprintf(data->errorString, ERROR_STRING_SIZE, "invalid baud rate: %d", data->baudRate);
     return;
@@ -218,13 +225,9 @@ void EIO_Set(uv_work_t* req) {
     return;
   }
 
+  std::lock_guard<std::mutex> lk(g_mutex);
   try {
-    if (data->rts) {
-      g_device_map[data->fd]->IsRequestToSendEnabled = true;
-    }
-    else {
-      g_device_map[data->fd]->IsRequestToSendEnabled = false;
-    }
+    g_device_map[data->fd]->IsRequestToSendEnabled = data->rts;
   } 
   catch (Exception^ e) {
     if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
@@ -234,11 +237,7 @@ void EIO_Set(uv_work_t* req) {
   }
 
   try {
-    if (data->dtr) {
-      g_device_map[data->fd]->IsDataTerminalReadyEnabled = true;
-    } else {
-      g_device_map[data->fd]->IsDataTerminalReadyEnabled = false;
-    }
+    g_device_map[data->fd]->IsDataTerminalReadyEnabled = data->dtr;
   } 
   catch (Exception^ e) {
     if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
@@ -248,11 +247,7 @@ void EIO_Set(uv_work_t* req) {
   }
 
   try {
-    if (data->brk) {
-      g_device_map[data->fd]->BreakSignalState = true;
-    } else {
-      g_device_map[data->fd]->BreakSignalState = false;
-    }
+    g_device_map[data->fd]->BreakSignalState = data->brk;
   } 
   catch (Exception^ e) {
     if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
@@ -271,7 +266,9 @@ void EIO_WatchPort(uv_work_t* req) {
   dataReader->InputStreamOptions = InputStreamOptions::Partial;
 
   DataReaderLoadOperation^ operation = dataReader->LoadAsync((unsigned int)bufferSize);
+  g_mutex.lock();
   g_operations[data->fd] = operation;
+  g_mutex.unlock();
 
   size_t bytesToRead = concurrency::create_task(operation).get();
   try {
@@ -285,7 +282,7 @@ void EIO_WatchPort(uv_work_t* req) {
   }
   catch (Exception^ e) {
     data->errorCode = e->HResult;
-    _snprintf(data->errorString, ERROR_STRING_SIZE, PlatStrToStdStr(e->Message).data());
+    _snprintf(data->errorString, ERROR_STRING_SIZE, "failed to read. error: %d", e->HResult);
   }
   dataReader->DetachStream();
 }
@@ -380,13 +377,15 @@ void EIO_Write(uv_work_t* req) {
 void EIO_Close(uv_work_t* req) {
   CloseBaton* data = static_cast<CloseBaton*>(req->data);
 
+  std::lock_guard<std::mutex> lk(g_mutex);
   if (g_device_map[data->fd]) {
     if (g_operations[data->fd]) {
       g_operations[data->fd]->Cancel();
       g_operations[data->fd]->Close();
+	  //TODO: This causes addon to crash: g_operations.erase(data->fd);
     }
     delete g_device_map[data->fd];
-    g_device_map[data->fd] = nullptr;
+    g_device_map.erase(data->fd);
   }
 }
 
@@ -416,7 +415,12 @@ void EIO_List(uv_work_t* req) {
       comName = deviceInfoCollection->GetAt(i)->Id;
     }
 
-    resultItem->comName = PlatStrToStdStr(comName);
+	DWORD err = ERROR_SUCCESS;
+    resultItem->comName = PlatStrToStdStr(comName, &err);
+    if (ERROR_SUCCESS != err) {
+      _snprintf(data->errorString, ERROR_STRING_SIZE, "PlatStrToStdStr failed. error: %d", err);
+	  continue;
+    }
     std::string nameToPrint;
 
     // Double the backslashes so printed port name includes escape characters
