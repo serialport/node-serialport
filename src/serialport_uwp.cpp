@@ -85,7 +85,8 @@ void EIO_Open(uv_work_t* req) {
   DWORD err = ERROR_SUCCESS;
   String^ deviceId = StdStrToPlatStr(data->path, &err);
   if (ERROR_SUCCESS != err) {
-    _snprintf(data->errorString, ERROR_STRING_SIZE, "StdStrToPlatStr failed. error: %d", err);
+    _snprintf(data->errorString, ERROR_STRING_SIZE,
+              "failed to convert data->path to Platform::String. error: %d", err);
     return;
   }
 
@@ -418,8 +419,9 @@ void EIO_List(uv_work_t* req) {
 	DWORD err = ERROR_SUCCESS;
     resultItem->comName = PlatStrToStdStr(comName, &err);
     if (ERROR_SUCCESS != err) {
-      _snprintf(data->errorString, ERROR_STRING_SIZE, "PlatStrToStdStr failed. error: %d", err);
-	  continue;
+      _snprintf(data->errorString, ERROR_STRING_SIZE,
+                "failed to convert comName to std::string. error: %d", err);
+	  break;
     }
     std::string nameToPrint;
 
@@ -438,8 +440,37 @@ void EIO_List(uv_work_t* req) {
     // Get the product ID
     resultItem->productId = std::to_string(serialDevice->UsbProductId);
 
-    resultItem->manufacturer = ""; // Property not available in SerialDevice class
-    resultItem->pnpId = ""; // Property not available in SerialDevice class
+    // Use DeviceInformation class to get pnpId and manufacturer if available.
+    auto deviceInfo = concurrency::create_task(DeviceInformation::CreateFromIdAsync(
+                                               deviceInfoCollection->GetAt(i)->Id)).get();
+    if (deviceInfo) {
+      if (DeviceInformationKind::DeviceInterface == deviceInfo->Kind) {
+        resultItem->pnpId = PlatStrToStdStr((String^)deviceInfo->Properties->Lookup(
+                                            "System.Devices.DeviceInstanceId"), &err);
+        if (ERROR_SUCCESS != err) {
+          _snprintf(data->errorString, ERROR_STRING_SIZE, 
+                    "failed to convert DeviceInstanceId to std::string. error: %d", err);
+          break;
+        }
+
+        resultItem->displayName = PlatStrToStdStr((String^)deviceInfo->Properties->Lookup(
+                                                  "System.ItemNameDisplay"), &err);
+        if (ERROR_SUCCESS != err) {
+          _snprintf(data->errorString, ERROR_STRING_SIZE,
+                    "failed to convert ItemNameDisplay to std::string. error: %d", err);
+          break;
+        }
+      }
+      if (DeviceInformationKind::Device == deviceInfo->Kind) {
+        resultItem->manufacturer = PlatStrToStdStr((String^)deviceInfo->Properties->Lookup(
+                                                   "System.Devices.DeviceManufacturer"), &err);
+        if (ERROR_SUCCESS != err) {
+          _snprintf(data->errorString, ERROR_STRING_SIZE, 
+                    "failed to convert DeviceManufacturer to std::string. error: %d", err);
+          break;
+        }
+      }
+    }
 
     data->results.push_back(resultItem);
   }

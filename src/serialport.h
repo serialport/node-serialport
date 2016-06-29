@@ -156,6 +156,9 @@ struct ListResultItem {
   std::string locationId;
   std::string vendorId;
   std::string productId;
+#ifdef UWP
+  std::string displayName;
+#endif
 };
 
 struct ListBaton {

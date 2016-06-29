@@ -33,6 +33,9 @@
               ],
               ['uwp=="true"',
                 {
+                  'defines': [
+                    'UWP=1',
+                  ],
                   'sources': [
                     'src/serialport_uwp.cpp',
                   ],
