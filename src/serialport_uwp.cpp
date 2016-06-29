@@ -29,39 +29,37 @@ std::unordered_map<int, DataReaderLoadOperation^> g_operations;
 int g_device_index = 0;
 std::mutex g_mutex;
 
-std::string PlatStrToStdStr(String^ platStr, DWORD* const &err) {
+ DWORD PlatStrToStdStr(String^ platStr, std::string* str) {
   if (0 == platStr->Length()) {
-    return "";
+    return ERROR_INVALID_PARAMETER;
   }
   int bufferSize = WideCharToMultiByte(CP_UTF8, 0, platStr->Data(), -1, nullptr, 0, NULL, NULL);
   if (bufferSize == 0) {
-    *err = GetLastError();
-    return "";
+    return GetLastError();
   }
   auto utf8 = std::make_unique<char[]>(bufferSize);
   if (0 == WideCharToMultiByte(CP_UTF8, 0, platStr->Data(), -1, utf8.get(), bufferSize, NULL, NULL)) {
-    *err = GetLastError();
-    return "";
+    return GetLastError();
   }
-  return std::string(utf8.get());
+  *str = std::string(utf8.get());
+  return ERROR_SUCCESS;
 }
 
-String^ StdStrToPlatStr(char* str, DWORD* const &err) {
+ DWORD CharStrToPlatStr(char* str, String^& platStr) {
   if (!str) {
-    return "";
+    return ERROR_INVALID_PARAMETER;
   }
   int bufferSize = MultiByteToWideChar(CP_UTF8, 0, str, -1, nullptr, 0);
   if (bufferSize == 0) {
-    *err = GetLastError();
-    return "";
+    return GetLastError();
   }
   auto utf8 = std::make_unique<wchar_t[]>(bufferSize);
   bufferSize = MultiByteToWideChar(CP_UTF8,0, str, -1, utf8.get(), bufferSize);
   if (bufferSize == 0) {
-    *err = GetLastError();
-    return "";
+    return GetLastError();
   }
-  return ref new String(utf8.get());
+  platStr = ref new String(utf8.get());
+  return ERROR_SUCCESS;
 }
 
 void EIO_Open(uv_work_t* req) {
@@ -82,11 +80,11 @@ void EIO_Open(uv_work_t* req) {
   // ID (if not port name is assigned). serialport.list method should be used to get
   // the name or ID to use.
 
-  DWORD err = ERROR_SUCCESS;
-  String^ deviceId = StdStrToPlatStr(data->path, &err);
+  String^ deviceId;
+  DWORD err = CharStrToPlatStr(data->path, deviceId);
   if (ERROR_SUCCESS != err) {
     _snprintf(data->errorString, ERROR_STRING_SIZE,
-              "failed to convert data->path to Platform::String. error: %d", err);
+              "failed to convert %s to Platform::String. error: %d", data->path, err);
     return;
   }
 
@@ -206,8 +204,8 @@ struct WatchPortBaton {
 void EIO_Update(uv_work_t* req) {
   ConnectionOptionsBaton* data = static_cast<ConnectionOptionsBaton*>(req->data);
   try {
+    std::lock_guard<std::mutex> lk(g_mutex);
     if(g_device_map[data->fd]) {
-      std::lock_guard<std::mutex> lk(g_mutex);
       g_device_map[data->fd]->BaudRate = data->baudRate;
     }
   } catch (Exception^ e) {
@@ -227,33 +225,35 @@ void EIO_Set(uv_work_t* req) {
   }
 
   std::lock_guard<std::mutex> lk(g_mutex);
-  try {
-    g_device_map[data->fd]->IsRequestToSendEnabled = data->rts;
-  } 
-  catch (Exception^ e) {
-    if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
-      _snprintf(data->errorString, ERROR_STRING_SIZE, "failed to set rts. error: %d", e->HResult);
-      return;
+  if (g_device_map[data->fd]) {
+    try {
+      g_device_map[data->fd]->IsRequestToSendEnabled = data->rts;
+    } 
+    catch (Exception^ e) {
+      if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
+        _snprintf(data->errorString, ERROR_STRING_SIZE, "failed to set rts. error: %d", e->HResult);
+        return;
+      }
     }
-  }
-
-  try {
-    g_device_map[data->fd]->IsDataTerminalReadyEnabled = data->dtr;
-  } 
-  catch (Exception^ e) {
-    if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
-      _snprintf(data->errorString, ERROR_STRING_SIZE, "failed to set dtr. error: %d", e->HResult);
-      return;
+    
+    try {
+      g_device_map[data->fd]->IsDataTerminalReadyEnabled = data->dtr;
+    } 
+    catch (Exception^ e) {
+      if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
+        _snprintf(data->errorString, ERROR_STRING_SIZE, "failed to set dtr. error: %d", e->HResult);
+        return;
+      }
     }
-  }
-
-  try {
-    g_device_map[data->fd]->BreakSignalState = data->brk;
-  } 
-  catch (Exception^ e) {
-    if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
-      _snprintf(data->errorString, ERROR_STRING_SIZE, "failed to set brk. error: %d", e->HResult);
-      return;
+    
+    try {
+      g_device_map[data->fd]->BreakSignalState = data->brk;
+    } 
+    catch (Exception^ e) {
+      if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
+        _snprintf(data->errorString, ERROR_STRING_SIZE, "failed to set brk. error: %d", e->HResult);
+        return;
+      }
     }
   }
 }
@@ -383,7 +383,7 @@ void EIO_Close(uv_work_t* req) {
     if (g_operations[data->fd]) {
       g_operations[data->fd]->Cancel();
       g_operations[data->fd]->Close();
-	  //TODO: This causes addon to crash: g_operations.erase(data->fd);
+      //TODO: This causes addon to crash: g_operations.erase(data->fd);
     }
     delete g_device_map[data->fd];
     g_device_map.erase(data->fd);
@@ -416,12 +416,11 @@ void EIO_List(uv_work_t* req) {
       comName = deviceInfoCollection->GetAt(i)->Id;
     }
 
-	DWORD err = ERROR_SUCCESS;
-    resultItem->comName = PlatStrToStdStr(comName, &err);
+    DWORD err = PlatStrToStdStr(comName, &resultItem->comName);
     if (ERROR_SUCCESS != err) {
       _snprintf(data->errorString, ERROR_STRING_SIZE,
                 "failed to convert comName to std::string. error: %d", err);
-	  break;
+      break;
     }
     std::string nameToPrint;
 
@@ -445,16 +444,16 @@ void EIO_List(uv_work_t* req) {
                                                deviceInfoCollection->GetAt(i)->Id)).get();
     if (deviceInfo) {
       if (DeviceInformationKind::DeviceInterface == deviceInfo->Kind) {
-        resultItem->pnpId = PlatStrToStdStr((String^)deviceInfo->Properties->Lookup(
-                                            "System.Devices.DeviceInstanceId"), &err);
+        err = PlatStrToStdStr((String^)deviceInfo->Properties->Lookup(
+                              "System.Devices.DeviceInstanceId"), &resultItem->pnpId);
         if (ERROR_SUCCESS != err) {
           _snprintf(data->errorString, ERROR_STRING_SIZE, 
                     "failed to convert DeviceInstanceId to std::string. error: %d", err);
           break;
         }
 
-        resultItem->displayName = PlatStrToStdStr((String^)deviceInfo->Properties->Lookup(
-                                                  "System.ItemNameDisplay"), &err);
+        err = PlatStrToStdStr((String^)deviceInfo->Properties->Lookup(
+                              "System.ItemNameDisplay"), &resultItem->displayName);
         if (ERROR_SUCCESS != err) {
           _snprintf(data->errorString, ERROR_STRING_SIZE,
                     "failed to convert ItemNameDisplay to std::string. error: %d", err);
@@ -462,8 +461,8 @@ void EIO_List(uv_work_t* req) {
         }
       }
       if (DeviceInformationKind::Device == deviceInfo->Kind) {
-        resultItem->manufacturer = PlatStrToStdStr((String^)deviceInfo->Properties->Lookup(
-                                                   "System.Devices.DeviceManufacturer"), &err);
+        err = PlatStrToStdStr((String^)deviceInfo->Properties->Lookup(
+                              "System.Devices.DeviceManufacturer"), &resultItem->manufacturer);
         if (ERROR_SUCCESS != err) {
           _snprintf(data->errorString, ERROR_STRING_SIZE, 
                     "failed to convert DeviceManufacturer to std::string. error: %d", err);
