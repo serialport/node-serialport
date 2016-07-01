@@ -24,7 +24,7 @@ OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& opti
 }
 
 int bufferSize;
-std::unordered_map<int, SerialDevice^> g_device_map;
+std::unordered_map<int, SerialDevice^> g_devices;
 std::unordered_map<int, DataReaderLoadOperation^> g_operations;
 int g_device_index = 0;
 std::mutex g_mutex;
@@ -84,7 +84,7 @@ void EIO_Open(uv_work_t* req) {
   DWORD err = CharStrToPlatStr(data->path, deviceId);
   if (ERROR_SUCCESS != err) {
     _snprintf(data->errorString, ERROR_STRING_SIZE,
-              "failed to convert %s to Platform::String. error: %d", data->path, err);
+              "EIO_Open() failed to convert %s to Platform::String. error: %d", data->path, err);
     return;
   }
 
@@ -93,7 +93,7 @@ void EIO_Open(uv_work_t* req) {
   } 
   catch (Exception^ e) {
     if (HRESULT_FROM_WIN32(ERROR_INVALID_DATA) != e->HResult) {
-      _snprintf(data->errorString, ERROR_STRING_SIZE, "unable to open %s. error: %d",
+      _snprintf(data->errorString, ERROR_STRING_SIZE, "EIO_Open() unable to open %s. error: %d",
                 data->path, e->HResult);
       return;
     }
@@ -108,7 +108,7 @@ void EIO_Open(uv_work_t* req) {
       device = create_task(SerialDevice::FromIdAsync(dis->GetAt(0)->Id)).get();
     }
     catch (Exception^ e) {
-      _snprintf(data->errorString, ERROR_STRING_SIZE, "unable to open %s. error: %d",
+      _snprintf(data->errorString, ERROR_STRING_SIZE, "EIO_Open() unable to open %s. error: %d",
                 data->path, e->HResult);
       return;
     }
@@ -125,7 +125,7 @@ void EIO_Open(uv_work_t* req) {
   catch (Exception^ e) {
     // IsDataTerminalReadyEnabled not supported for fixed ports
     if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
-      _snprintf(data->errorString, ERROR_STRING_SIZE, "failed to set dts. error: %d", e->HResult);
+      _snprintf(data->errorString, ERROR_STRING_SIZE, "EIO_Open() failed to set dts. error: %d", e->HResult);
       return;
     }
   }
@@ -142,7 +142,7 @@ void EIO_Open(uv_work_t* req) {
   catch (Exception^ e) {
     // IsRequestToSendEnabled not supported for fixed ports
     if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
-      _snprintf(data->errorString, ERROR_STRING_SIZE, "failed to set rts. error: %d", e->HResult);
+      _snprintf(data->errorString, ERROR_STRING_SIZE, "EIO_Open() failed to set rts. error: %d", e->HResult);
       return;
     }
   }
@@ -185,7 +185,7 @@ void EIO_Open(uv_work_t* req) {
   device->WriteTimeout = commTimeout;
 
   std::lock_guard<std::mutex> lk(g_mutex);
-  g_device_map[g_device_index] = device;
+  g_devices[g_device_index] = device;
   data->result = g_device_index++;
 }
 
@@ -205,11 +205,16 @@ void EIO_Update(uv_work_t* req) {
   ConnectionOptionsBaton* data = static_cast<ConnectionOptionsBaton*>(req->data);
   try {
     std::lock_guard<std::mutex> lk(g_mutex);
-    if(g_device_map[data->fd]) {
-      g_device_map[data->fd]->BaudRate = data->baudRate;
+    std::unordered_map<int, SerialDevice^>::const_iterator it = g_devices.find(data->fd);
+    if(g_devices.end() == it) {
+      _snprintf(data->errorString, ERROR_STRING_SIZE, "EIO_Update() out of range error. fd: %d", data->fd);
+      return;
+    }
+    else {
+      g_devices[data->fd]->BaudRate = data->baudRate;
     }
   } catch (Exception^ e) {
-    _snprintf(data->errorString, ERROR_STRING_SIZE, "invalid baud rate: %d", data->baudRate);
+    _snprintf(data->errorString, ERROR_STRING_SIZE, "EIO_Update() invalid baud rate: %d", data->baudRate);
     return;
   }
 }
@@ -220,40 +225,44 @@ void EIO_Set(uv_work_t* req) {
   // SerialDevice::ClearToSendState and SerialDevice::DataSetReadyState 
   // have no set accessors
   if (data->cts || data->dsr) {
-    _snprintf(data->errorString, ERROR_STRING_SIZE, "setting cts or dsr is not supported");
+    _snprintf(data->errorString, ERROR_STRING_SIZE, "EIO_Set() setting cts or dsr is not supported");
     return;
   }
 
   std::lock_guard<std::mutex> lk(g_mutex);
-  if (g_device_map[data->fd]) {
-    try {
-      g_device_map[data->fd]->IsRequestToSendEnabled = data->rts;
-    } 
-    catch (Exception^ e) {
-      if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
-        _snprintf(data->errorString, ERROR_STRING_SIZE, "failed to set rts. error: %d", e->HResult);
-        return;
-      }
+  std::unordered_map<int, SerialDevice^>::const_iterator it = g_devices.find(data->fd);
+  if(g_devices.end() == it) {
+    _snprintf(data->errorString, ERROR_STRING_SIZE, "EIO_Set() out of range error. fd: %d", data->fd);
+    return;
+  }
+
+  try {
+    g_devices[data->fd]->IsRequestToSendEnabled = data->rts;
+  } 
+  catch (Exception^ e) {
+    if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
+      _snprintf(data->errorString, ERROR_STRING_SIZE, "EIO_Set() failed to set rts. error: %d", e->HResult);
+      return;
     }
-    
-    try {
-      g_device_map[data->fd]->IsDataTerminalReadyEnabled = data->dtr;
-    } 
-    catch (Exception^ e) {
-      if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
-        _snprintf(data->errorString, ERROR_STRING_SIZE, "failed to set dtr. error: %d", e->HResult);
-        return;
-      }
+  }
+  
+  try {
+    g_devices[data->fd]->IsDataTerminalReadyEnabled = data->dtr;
+  } 
+  catch (Exception^ e) {
+    if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
+      _snprintf(data->errorString, ERROR_STRING_SIZE, "EIO_Set() failed to set dtr. error: %d", e->HResult);
+      return;
     }
-    
-    try {
-      g_device_map[data->fd]->BreakSignalState = data->brk;
-    } 
-    catch (Exception^ e) {
-      if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
-        _snprintf(data->errorString, ERROR_STRING_SIZE, "failed to set brk. error: %d", e->HResult);
-        return;
-      }
+  }
+  
+  try {
+    g_devices[data->fd]->BreakSignalState = data->brk;
+  } 
+  catch (Exception^ e) {
+    if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
+      _snprintf(data->errorString, ERROR_STRING_SIZE, "EIO_Set() failed to set brk. error: %d", e->HResult);
+      return;
     }
   }
 }
@@ -263,8 +272,16 @@ void EIO_WatchPort(uv_work_t* req) {
   data->bytesRead = 0;
   data->disconnected = false;
 
-  DataReader^ dataReader = ref new DataReader(g_device_map[data->fd]->InputStream);
+  g_mutex.lock();
+  std::unordered_map<int, SerialDevice^>::const_iterator it = g_devices.find(data->fd);
+  if (g_devices.end() == it) {
+    _snprintf(data->errorString, ERROR_STRING_SIZE, "EIO_WatchPort() out of range error. fd: %d", data->fd);
+    return;
+  }
+
+  DataReader^ dataReader = ref new DataReader(g_devices[data->fd]->InputStream);
   dataReader->InputStreamOptions = InputStreamOptions::Partial;
+  g_mutex.unlock();
 
   DataReaderLoadOperation^ operation = dataReader->LoadAsync((unsigned int)bufferSize);
   g_mutex.lock();
@@ -283,7 +300,7 @@ void EIO_WatchPort(uv_work_t* req) {
   }
   catch (Exception^ e) {
     data->errorCode = e->HResult;
-    _snprintf(data->errorString, ERROR_STRING_SIZE, "failed to read. error: %d", e->HResult);
+    _snprintf(data->errorString, ERROR_STRING_SIZE, "EIO_WatchPort() failed to read. error: %d", e->HResult);
   }
   dataReader->DetachStream();
 }
@@ -354,18 +371,15 @@ void EIO_Write(uv_work_t* req) {
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
   data->result = 0;
 
-  try {
-    if (!g_device_map[data->fd]) {
-      _snprintf(data->errorString, ERROR_STRING_SIZE, "%d: write failed, invalid device", data->fd);
-      return;
-    }
-  }
-  catch (const std::out_of_range& e) {
-    _snprintf(data->errorString, ERROR_STRING_SIZE, "%d: write failed, out of range", data->fd);
+  g_mutex.lock();
+  std::unordered_map<int, SerialDevice^>::const_iterator it = g_devices.find(data->fd);
+  if (g_devices.end() == it) {
+    _snprintf(data->errorString, ERROR_STRING_SIZE, "EIO_Write() out of range error. fd: %d", data->fd);
     return;
   }
 
-  DataWriter^ dataWriter = ref new DataWriter(g_device_map[data->fd]->OutputStream);
+  DataWriter^ dataWriter = ref new DataWriter(g_devices[data->fd]->OutputStream);
+  g_mutex.unlock();
   dataWriter->WriteBytes(ref new Array<byte>((byte*)data->bufferData, data->bufferLength));
   auto bytesStored = concurrency::create_task(dataWriter->StoreAsync()).get();
   data->result = bytesStored;
@@ -378,16 +392,24 @@ void EIO_Write(uv_work_t* req) {
 void EIO_Close(uv_work_t* req) {
   CloseBaton* data = static_cast<CloseBaton*>(req->data);
 
-  std::lock_guard<std::mutex> lk(g_mutex);
-  if (g_device_map[data->fd]) {
-    if (g_operations[data->fd]) {
-      g_operations[data->fd]->Cancel();
-      g_operations[data->fd]->Close();
-      //TODO: This causes addon to crash: g_operations.erase(data->fd);
-    }
-    delete g_device_map[data->fd];
-    g_device_map.erase(data->fd);
+  std::unordered_map<int, SerialDevice^>::const_iterator dit = g_devices.find(data->fd);
+  if (g_devices.end() == dit) {
+    _snprintf(data->errorString, ERROR_STRING_SIZE, 
+              "EIO_Close() out of range error in g_devices. fd: %d", data->fd);
+    return;
   }
+  std::unordered_map<int, DataReaderLoadOperation^>::const_iterator oit = g_operations.find(data->fd);
+  if (g_operations.end() == oit) {
+    _snprintf(data->errorString, ERROR_STRING_SIZE, 
+              "EIO_Close() out of range error in g_operations. fd: %d", data->fd);
+    return;
+  }
+
+  g_operations[data->fd]->Cancel();
+  g_operations[data->fd]->Close();
+  g_operations.erase(data->fd);
+  delete g_devices[data->fd];
+  g_devices.erase(data->fd);
 }
 
 void EIO_List(uv_work_t* req) {
@@ -397,7 +419,7 @@ void EIO_List(uv_work_t* req) {
   
   auto deviceInfoCollection = concurrency::create_task(DeviceInformation::FindAllAsync(aqs)).get();
   if (deviceInfoCollection->Size < 1) {
-    _snprintf(data->errorString, ERROR_STRING_SIZE, "no serial devices found to list");
+    _snprintf(data->errorString, ERROR_STRING_SIZE, "EIO_List() no serial devices found to list");
     return;
   }
 
@@ -419,7 +441,7 @@ void EIO_List(uv_work_t* req) {
     DWORD err = PlatStrToStdStr(comName, &resultItem->comName);
     if (ERROR_SUCCESS != err) {
       _snprintf(data->errorString, ERROR_STRING_SIZE,
-                "failed to convert comName to std::string. error: %d", err);
+                "EIO_List() failed to convert comName to std::string. error: %d", err);
       break;
     }
     std::string nameToPrint;
@@ -448,7 +470,7 @@ void EIO_List(uv_work_t* req) {
                               "System.Devices.DeviceInstanceId"), &resultItem->pnpId);
         if (ERROR_SUCCESS != err) {
           _snprintf(data->errorString, ERROR_STRING_SIZE, 
-                    "failed to convert DeviceInstanceId to std::string. error: %d", err);
+                    "EIO_List() failed to convert DeviceInstanceId to std::string. error: %d", err);
           break;
         }
 
@@ -456,7 +478,7 @@ void EIO_List(uv_work_t* req) {
                               "System.ItemNameDisplay"), &resultItem->displayName);
         if (ERROR_SUCCESS != err) {
           _snprintf(data->errorString, ERROR_STRING_SIZE,
-                    "failed to convert ItemNameDisplay to std::string. error: %d", err);
+                    "EIO_List() failed to convert ItemNameDisplay to std::string. error: %d", err);
           break;
         }
       }
@@ -465,7 +487,7 @@ void EIO_List(uv_work_t* req) {
                               "System.Devices.DeviceManufacturer"), &resultItem->manufacturer);
         if (ERROR_SUCCESS != err) {
           _snprintf(data->errorString, ERROR_STRING_SIZE, 
-                    "failed to convert DeviceManufacturer to std::string. error: %d", err);
+                    "EIO_List() failed to convert DeviceManufacturer to std::string. error: %d", err);
           break;
         }
       }
@@ -477,10 +499,10 @@ void EIO_List(uv_work_t* req) {
 
 void EIO_Flush(uv_work_t* req) {
   FlushBaton* data = static_cast<FlushBaton*>(req->data);
-  _snprintf(data->errorString, ERROR_STRING_SIZE, "not implemented");
+  _snprintf(data->errorString, ERROR_STRING_SIZE, "EIO_Flush() not implemented");
 }
 
 void EIO_Drain(uv_work_t* req) {
   DrainBaton* data = static_cast<DrainBaton*>(req->data);
-  _snprintf(data->errorString, ERROR_STRING_SIZE, "not implemented");
+  _snprintf(data->errorString, ERROR_STRING_SIZE, "EIO_Drain() not implemented");
 }
