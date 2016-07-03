@@ -55,7 +55,7 @@
     "bindings": "1.2.1",
     "commander": "^2.9.0",
     "debug": "^2.1.1",
-    "es6-promise": "^3.1.2",
+    "es6-promise": "^3.2.1",
     "nan": "^2.3.5",
     "node-pre-gyp": "^0.6.26",
     "object.assign": "^4.0.3"
