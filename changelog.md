@@ -1,3 +1,7 @@
+Version 4.0.1
+-------------
+ - [linux] Do not replace the native Promise when it is available thanks to @zewish for the fix
+
 Version 4.0.0
 -------------
  - Requiring `serialport` now returns the SerialPort constructor function instead of a factory object. `SerialPort.SerialPort` is now depreciated.
