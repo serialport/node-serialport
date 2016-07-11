@@ -1,9 +1,10 @@
 # Node Serialport
 
-[![Build Status](https://travis-ci.org/EmergingTechnologyAdvisors/node-serialport.svg?branch=master)](https://travis-ci.org/EmergingTechnologyAdvisors/node-serialport)
-[![Build status](https://ci.appveyor.com/api/projects/status/u6xe3iao2crd7akn/branch/master?svg=true)](https://ci.appveyor.com/project/j5js/node-serialport/branch/master)
+[![npm](https://img.shields.io/npm/dm/serialport.svg?maxAge=2592000)](http://npmjs.com/package/serialport)
 [![Gitter chat](https://badges.gitter.im/EmergingTechnologyAdvisors/node-serialport.svg)](https://gitter.im/EmergingTechnologyAdvisors/node-serialport)
 [![Dependency Status](https://david-dm.org/EmergingTechnologyAdvisors/node-serialport.svg)](https://david-dm.org/EmergingTechnologyAdvisors/node-serialport)
+[![Build Status](https://travis-ci.org/EmergingTechnologyAdvisors/node-serialport.svg?branch=master)](https://travis-ci.org/EmergingTechnologyAdvisors/node-serialport)
+[![Build status](https://ci.appveyor.com/api/projects/status/u6xe3iao2crd7akn/branch/master?svg=true)](https://ci.appveyor.com/project/j5js/node-serialport/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/EmergingTechnologyAdvisors/node-serialport/badge.svg?branch=master)](https://coveralls.io/github/EmergingTechnologyAdvisors/node-serialport?branch=master)
 
 For support you can open a [github issue](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/new), for discussions, designs, and clarifications, we recommend you join our [Gitter Chat room](https://gitter.im/EmergingTechnologyAdvisors/node-serialport). We have two related projects [Browser Serialport](https://github.com/garrows/browser-serialport) "just like Node Serialport but for browser apps", and [Serialport Test Piliot](https://github.com/j5js/serialport-test-pilot) which helps us test serialport.
@@ -16,7 +17,7 @@ If you'd like to contribute please take a look at [contribution guide](CONTRIBUT
 
 You're reading the README for the master branch of serialport. You probably want to be looking at the README of our latest release. See our [change log](changelog.md) for what's new and our [upgrade guide](UPGRADE_GUIDE.md) for a walk through on what to look out for between major versions.
 
- - [`serialport@4.0.0-rc1` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/4.0.0-rc1/README.md) it is the latest `4.x` releases.
+ - [`serialport@4.0.1` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/4.0.1/README.md) it is the latest `4.x` releases.
  - [`serialport@3.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/3.1.2/README.md) it is the latest `3.x` releases.
  - [`serialport@2.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/2.1.2/README.md) it was the last `2.x` release
  - [`serialport@1.7.4` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/v1.7.4/README.md) it was the last `1.x` release
@@ -73,13 +74,20 @@ For getting started with node-serialport, we recommend you begin with the follow
 |       ---       | --- | --- | --- | --- | --- |
 | Linux / ia32    |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
 | Linux / x64     |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
-| Windows¹ / x86  |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
-| Windows¹ / x64  |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
-| OSX² / x64      |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
+| Linux / ARM v6¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / ARM v7¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / ARM v8¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / MIPSel¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / PPC64¹  |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
+| Windows² / x86  |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
+| Windows² / x64  |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
+| OSX³ / x64      |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
 
-¹ Windows 7, 8, 10, and 10 IoT are supported but only Windows Server 2012 R2 is tested by our CI.
+¹ ARM, MIPSel and PPC64¹ platforms are known to work but are not currently part of our test or build matrix. [#846](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/846) ARM v4 and v5 was dropped from NodeJS after Node v0.10.
 
-² OSX 10.4 Tiger and above are supported but only 10.9.5 Mavericks with Xcode 6.1 is tested in our CI.
+² Windows 7, 8, 10, and 10 IoT are supported but only Windows Server 2012 R2 is tested by our CI.
+
+³ OSX 10.4 Tiger and above are supported but only 10.9.5 Mavericks with Xcode 6.1 is tested in our CI.
 
 ## Installation Instructions
 
@@ -144,6 +152,15 @@ npm install serialport --build-from-source=serialport
 #### Raspberry Pi Linux
 
 Follow the instructions for [setting up a Raspberry pi for use with Johnny-Five and Raspi IO](https://github.com/nebrius/raspi-io/wiki/Getting-a-Raspberry-Pi-ready-for-NodeBots). These projects use Node Serialport under the hood.
+
+| Revision       |      CPU              | Arm Version |
+|   ----         |      ---              |     ---     |
+| A, A+, B, B+   | 32-bit ARM1176JZF-S   |    ARMv6    |
+| Compute Module | 32-bit ARM1176JZF-S   |    ARMv6    |
+| Zero           | 32-bit ARM1176JZF-S   |    ARMv6    |
+| B2             | 32-bit ARM Cortex-A7  |    ARMv7    |
+| B3             | 32-bit ARM Cortex-A53 |    ARMv8    |
+
 
 #### Illegal Instruction
 
