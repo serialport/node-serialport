@@ -74,8 +74,7 @@
     "node-pre-gyp-github": "^1.1.2",
     "nyc": "^6.4.4",
     "sandboxed-module": "^2.0.3",
-    "sinon": "^1.17.3",
-    "sinon-chai": "^2.8.0"
+    "sinon": "^1.17.3"
   },
   "bundledDependencies": [
     "node-pre-gyp"
