@@ -16,7 +16,7 @@
         ['OS=="win"',
           {
             'conditions': [
-              ['uwp!="true"',
+              ['node_uwp_dll!="true"',
                 {
                   'sources': [
                     'src/serialport_win.cpp',
@@ -31,7 +31,7 @@
                   },
                 }
               ],
-              ['uwp=="true"',
+              ['node_uwp_dll=="true"',
                 {
                   'defines': [
                     'UWP=1',
