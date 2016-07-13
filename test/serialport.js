@@ -4,7 +4,6 @@ var sinon = require('sinon');
 var chai = require('chai');
 chai.use(require('chai-subset'));
 var assert = chai.assert;
-var expect = chai.expect;
 
 var SerialPort = require('./mocks/darwin-hardware');
 var hardware = SerialPort.hardware;
@@ -41,16 +40,26 @@ describe('SerialPort', function() {
   });
 
   describe('Constructor', function() {
-    it('opens the port immediately', function(done) {
-      this.port = new SerialPort('/dev/exists', function(err) {
-        assert.isNull(err);
-        done();
+    describe('autoOpen', function() {
+      it('opens the port automatically', function(done) {
+        this.port = new SerialPort('/dev/exists', function(err) {
+          assert.isNull(err);
+          done();
+        });
       });
-    });
 
-    it('emits the open event', function(done) {
-      var port = new SerialPort('/dev/exists');
-      port.on('open', done);
+      it('emits the open event', function(done) {
+        var port = new SerialPort('/dev/exists');
+        port.on('open', done);
+      });
+
+      it("doesn't open if told not to", function(done){
+        var port = new SerialPort('/dev/exists', { autoOpen: false });
+        port.on('open', function() {
+          throw new Error("this shouldn't be opening");
+        });
+        process.nextTick(done);
+      });
     });
 
     it('passes the error to the callback when an bad port is provided', function(done) {
@@ -157,11 +166,11 @@ describe('SerialPort', function() {
       it('passes the port to the bindings', function(done) {
         var openSpy = sandbox.spy(bindings, 'open');
         var port = new SerialPort('/dev/exists', { autoOpen: false });
-        expect(port.isOpen()).to.be.false;
+        assert.isFalse(port.isOpen());
         port.open(function(err) {
-          expect(err).to.not.be.ok;
-          expect(port.isOpen()).to.be.true;
-          expect(openSpy.calledWith('/dev/exists'));
+          assert.isNull(err);
+          assert.isTrue(port.isOpen());
+          assert.isTrue(openSpy.calledWith('/dev/exists'));
           done();
         });
       });
@@ -192,7 +201,7 @@ describe('SerialPort', function() {
       it('calls back an error when opening an invalid port', function(done) {
         var port = new SerialPort('/dev/unhappy', { autoOpen: false });
         port.open(function(err) {
-          expect(err).to.be.ok;
+          assert.instanceOf(err, Error);
           done();
         });
       });
@@ -203,7 +212,7 @@ describe('SerialPort', function() {
           port.close(function() {
             port.open(function() {
               port.once('data', function(res) {
-                expect(res).to.eql(data);
+                assert.deepEqual(res, data);
                 done();
               });
               hardware.emitData('/dev/exists', data);
@@ -294,7 +303,7 @@ describe('SerialPort', function() {
           port.close(function() {
             port.open(function() {
               port.close(function() {
-                expect(closeSpy.calledTwice);
+                assert.isTrue(closeSpy.calledTwice);
                 done();
               });
             });
@@ -460,21 +469,21 @@ describe('SerialPort', function() {
 
     it('flush should consider 0 to be a valid fd', function(done) {
       var port = new SerialPort('/dev/exists', function() {
-        expect(port.fd).to.equal(0);
+        assert.strictEqual(port.fd, 0);
         port.flush(done);
       });
     });
 
     it('drain should consider 0 to be a valid fd', function(done) {
       var port = new SerialPort('/dev/exists', function() {
-        expect(port.fd).to.equal(0);
+        assert.strictEqual(port.fd, 0);
         port.drain(done);
       });
     });
 
     it('update should consider 0 a valid file descriptor', function() {
       var port = new SerialPort('/dev/exists', function(done) {
-        expect(port.fd).to.equal(0);
+        assert.strictEqual(port.fd, 0);
         port.update({}, done);
       });
     });
@@ -485,7 +494,7 @@ describe('SerialPort', function() {
       var testData = new Buffer('I am a really short string');
       var port = new SerialPort('/dev/exists', function() {
         port.once('data', function(recvData) {
-          expect(recvData).to.eql(testData);
+          assert.deepEqual(recvData, testData);
           done();
         });
         hardware.emitData('/dev/exists', testData);
@@ -503,7 +512,7 @@ describe('SerialPort', function() {
       port.on('disconnect', spy);
       port.on('close', function() {
         assert.isFalse(port.isOpen());
-        assert(spy.calledOnce);
+        assert.isTrue(spy.calledOnce);
         done();
       });
     });
