@@ -457,16 +457,6 @@ void EIO_List(uv_work_t* req) {
                 "EIO_List() failed to convert comName to std::string. error: %d", err);
       break;
     }
-    std::string nameToPrint;
-
-    // Double the backslashes so printed port name includes escape characters
-    for (int i = 0; i < resultItem->comName.length(); i++) {
-      if ('\\' == resultItem->comName.at(i)) {
-        nameToPrint += '\\';
-      }
-      nameToPrint += resultItem->comName.at(i);
-    }
-    resultItem->comName = nameToPrint;
 
     // Get the vendor ID
     resultItem->vendorId = std::to_string(serialDevice->UsbVendorId);
