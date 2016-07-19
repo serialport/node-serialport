@@ -8,11 +8,11 @@ module.exports = {
   },
   rules: {
     "brace-style": [2, "1tbs", {"allowSingleLine": true} ],
-    "complexity": [2, 32],
+    "complexity": [2, 12],
     "curly": 2,
     "eqeqeq": 2,
     "max-depth": 2,
-    "max-statements": [2, 41],
+    "max-statements": [2, 34],
     "new-cap": 2,
     "no-caller": 2,
     "no-cond-assign": 2,
