@@ -161,7 +161,7 @@ describe('SerialPort', function() {
     });
   });
 
-  describe('Functions', function() {
+  describe('Methods', function() {
     describe('#open', function() {
       it('passes the port to the bindings', function(done) {
         var openSpy = sandbox.spy(bindings, 'open');
