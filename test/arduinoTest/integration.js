@@ -17,11 +17,12 @@ switch (process.platform) {
 
 var testPort = process.env.TEST_PORT;
 
-if (!testPort) {
-  throw 'These test require an arduino loaded with the arduinoEcho program on a serialport set to the TEST_PORT env var';
-}
+describe('SerialPort Integration Tests', function() {
+  if (!testPort) {
+    it('Requires an Arduino loaded with the arduinoEcho program on a serialport set to the TEST_PORT env var');
+    return;
+  }
 
-describe('SerialPort Integration tests', function() {
   it('.list', function(done) {
     SerialPort.list(function(err, ports) {
       var foundPort = false;
