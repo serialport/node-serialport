@@ -1,12 +1,14 @@
-Operating System and Hardware:
+SerialPort version:
 NodeJS Version:
-Serialport version:
-Python Version (if you're having trouble building serialport):
-(Run `node -v && npm -v && python --version` to get the version numbers.)
+Operating System and Hardware:
+Are you using Electron/Atom/NwJS?:
 
-### Expected behavior
+(Run `node -v && npm -v && python --version` to get version numbers)
 
-### Actual behavior
+### Summary of Problem
 
-### Steps and/or code to reproduce the issue
+### Expected Behavior
 
+### Actual Behavior
+
+### Steps and Code to Reproduce the Issue
