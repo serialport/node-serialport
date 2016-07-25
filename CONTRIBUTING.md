@@ -24,7 +24,7 @@ Python Version (if you're having trouble building serialport):
 
 
 **Operating System:** (e.g Windows, OSX, Linux)
-**NodeJS Version:** 
+**NodeJS Version:**
 **SerialPort Version**
 **Hardware you are having an issue with:** (e.g. arduino, another computer, etc)
 **What your expectations are:**
@@ -49,10 +49,9 @@ All contributions must adhere to the eslint rules by maintaining the existing co
 
 If you are contributing code, it must include unit tests that fail if the working code isn't present and succeed when it is.
 
-When contributing new features you must include documentation. 
+When contributing new features you must include documentation.
 
 It's very important that your pull requests include all of the above in order for users to be able to use your code. Pull requests with undocumented code will not be accepted.
-
 
 <a name="writing-tests"></a>
 ## Writing Tests
@@ -63,6 +62,8 @@ Tests are written using [mocha](https://mochajs.org/), [chai](http://chaijs.com/
 ## Writing Documentation
 
 We are always looking to improve our docs.  If you find that any are lacking information or have wrong information, fix and submit a PR.  If you're looking for areas to start writing docs for, see the [docs](https://github.com/EmergingTechnologyAdvisors/node-serialport/labels/docs) label in issues.
+
+We use [jsdoc](http://usejsdoc.org/) and [jsdoc-to-markdown](https://github.com/jsdoc2md/jsdoc-to-markdown) to generate our docs. Make your changes to `.README.hbs` or the documentation blocks in the JavaScript files and run `npm run docs` to update `README.md`.
 
 Docs should have tested and working sample code. Many people using SerialPort are learning how to work with hardware for the first time, so write for a beginner audience.
 

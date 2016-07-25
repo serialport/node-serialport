@@ -1,6 +1,7 @@
 .github
 .jshintrc
 .travis.yml
+.README.hbs
 appveyor.yml
 AUTHORS.md
 changelog.md
