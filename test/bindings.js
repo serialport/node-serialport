@@ -137,7 +137,7 @@ describe('SerialPortBinding', function() {
 
   describe('#close', function() {
     it('errors when providing a bad file descriptor', function(done) {
-      SerialPortBinding.close(-1, function(err) {
+      SerialPortBinding.close(999991, function(err) {
         assert.instanceOf(err, Error);
         done();
       });
