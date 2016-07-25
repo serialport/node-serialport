@@ -37,9 +37,21 @@ describe('SerialPort', function() {
         done();
       }
     });
+
+    it('takes lowercase options', function(done) {
+      var port = new SerialPort.SerialPort('/dev/exists', { baudrate: 14400, autoOpen: false });
+      assert.equal(port.options.baudRate, 14400);
+      done();
+    });
+
   });
 
   describe('Constructor', function() {
+    it('provides auto construction', function(done) {
+      var serialPort = SerialPort;
+      this.port = serialPort('/dev/exists', done);
+    });
+
     describe('autoOpen', function() {
       it('opens the port automatically', function(done) {
         this.port = new SerialPort('/dev/exists', function(err) {
@@ -161,7 +173,7 @@ describe('SerialPort', function() {
     });
   });
 
-  describe('Functions', function() {
+  describe('Methods', function() {
     describe('#open', function() {
       it('passes the port to the bindings', function(done) {
         var openSpy = sandbox.spy(bindings, 'open');

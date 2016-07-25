@@ -71,16 +71,13 @@ before_install:
 - if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then PUBLISH_BINARY=true; fi;
 - echo "Publishing native platform Binary Package? ->" $PUBLISH_BINARY
 
-# Set a test serialport for integration testing when we run our tests if we have one
-- if [[ $TRAVIS_OS_NAME == "osx" ]]; then export TEST_PORT='/dev/cu.serial1'; fi
-
 install:
 # ensure source install works
 - npm install --build-from-source
 
 script:
-# test our module
-- npm run lint
+  # linting no longer works on node 0.10
+- node bin/at-least-node-4.0.js && npm run lint || true
 - node ./
 - npm test
 
@@ -95,4 +92,4 @@ script:
 - if [[ $PUBLISH_BINARY == true ]]; then npm install --fallback-to-build=false; fi;
 
 after_success:
-- npm run coverage
+- npm run report-coverage

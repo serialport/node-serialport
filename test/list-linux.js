@@ -1,7 +1,7 @@
 'use strict';
 
 var assert = require('chai').assert;
-var listUnix = require('./mocks/list-unix');
+var listLinux = require('./mocks/list-linux');
 
 var ports = {
   'ttyS0':
@@ -86,14 +86,14 @@ var portOutput = [
   }
 ];
 
-describe('listUnix', function() {
+describe('listLinux', function() {
   beforeEach(function() {
-    listUnix.reset();
+    listLinux.reset();
   });
 
   it('lists available serialports', function(done) {
-    listUnix.setPorts(ports);
-    listUnix(function(err, ports) {
+    listLinux.setPorts(ports);
+    listLinux(function(err, ports) {
       assert.isNull(err);
       assert.deepEqual(ports, portOutput);
       done();
@@ -101,9 +101,9 @@ describe('listUnix', function() {
   });
 
   it('does not list non character devices', function(done) {
-    listUnix.setCharacterDevice(false);
-    listUnix.setPorts(ports);
-    listUnix(function(err, ports) {
+    listLinux.setCharacterDevice(false);
+    listLinux.setPorts(ports);
+    listLinux(function(err, ports) {
       assert.isNull(err);
       assert.deepEqual(ports, []);
       done();
@@ -111,8 +111,8 @@ describe('listUnix', function() {
   });
 
   it('returns an error to callback', function(done) {
-    listUnix.error(true);
-    listUnix(function(err) {
+    listLinux.error(true);
+    listLinux(function(err) {
       assert.instanceOf(err, Error);
       done();
     });
