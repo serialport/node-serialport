@@ -159,8 +159,8 @@ void EIO_Open(uv_work_t* req) {
   commTimeouts.ReadIntervalTimeout = msPerByte;  // Minimize chance of concatenating of separate serial port packets on read
   commTimeouts.ReadTotalTimeoutMultiplier = 0;  // Do not allow big read timeout when big read buffer used
   commTimeouts.ReadTotalTimeoutConstant = 1000;  // Total read timeout (period of read loop)
-  commTimeouts.WriteTotalTimeoutConstant = 1000;  // Const part of write timeout
-  commTimeouts.WriteTotalTimeoutMultiplier = msPerByte;  // Variable part of write timeout (per byte)
+  commTimeouts.WriteTotalTimeoutConstant = 0;  // Const part of write timeout
+  commTimeouts.WriteTotalTimeoutMultiplier = 0;  // Variable part of write timeout (per byte)
   if (!SetCommTimeouts(file, &commTimeouts)) {
     ErrorCodeToString("SetCommTimeouts", GetLastError(), data->errorString);
     return;
