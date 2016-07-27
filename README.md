@@ -49,22 +49,21 @@ For getting started with node-serialport, we recommend you begin with the follow
   * [Opening a Port](#opening-a-port)
   * [Listing Ports](#listing-ports)
   * [Parsers](#parsers)
-
+* API
 * [SerialPort](#SerialPort)
     * [`new SerialPort(path, [options], [openCallback])`](#new_SerialPort_new)
-    * [`.open([callback])`](#SerialPort+open)
-    * [`.update([options], [callback])`](#SerialPort+update)
-    * [`.isOpen()`](#SerialPort+isOpen) ⇒ <code>Boolean</code>
-    * [`.write(data, [callback])`](#SerialPort+write)
-    * [`.pause()`](#SerialPort+pause)
-    * [`.resume()`](#SerialPort+resume)
-    * [`.close(callback)`](#SerialPort+close)
-    * [`.flush([callback])`](#SerialPort+flush)
-    * [`.set([options], [callback])`](#SerialPort+set)
-    * [`.drain([callback])`](#SerialPort+drain)
-    * [`.errorCallback`](#SerialPort+errorCallback) : <code>function</code>
-    * [`.openOptions`](#SerialPort+openOptions) : <code>Object</code>
-
+    * [`serialPort.open([callback])`](#SerialPort+open)
+    * [`serialPort.update([options], [callback])`](#SerialPort+update)
+    * [`serialPort.isOpen()`](#SerialPort+isOpen) ⇒ <code>Boolean</code>
+    * [`serialPort.write(data, [callback])`](#SerialPort+write)
+    * [`serialPort.pause()`](#SerialPort+pause)
+    * [`serialPort.resume()`](#SerialPort+resume)
+    * [`serialPort.close(callback)`](#SerialPort+close)
+    * [`serialPort.flush([callback])`](#SerialPort+flush)
+    * [`serialPort.set([options], [callback])`](#SerialPort+set)
+    * [`serialPort.drain([callback])`](#SerialPort+drain)
+* [`errorCallback`](#errorCallback) : <code>function</code>
+* [`openOptions`](#openOptions) : <code>Object</code>
 * [Events](#events)
   * [close](#onclose-callback)
   * [data](#ondata-callback)
@@ -362,6 +361,7 @@ port.write(new Buffer('Hi Mom!'));
 
 Enjoy and do cool things with this code.
 
+## API
 <a name="SerialPort"></a>
 
 ## SerialPort
@@ -378,8 +378,8 @@ Create a new serial port object for the `path`. In the case of invalid arguments
 | Param | Type | Description |
 | --- | --- | --- |
 | path | <code>string</code> | The system path of the serial port to open. For example, `/dev/tty.XXX` on Mac/Linux or `COM1` on Windows. |
-| [options] | <code>[openOptions](#SerialPort+openOptions)</code> | Port configuration options |
-| [openCallback] | <code>[errorCallback](#SerialPort+errorCallback)</code> | Called when a connection has been opened. If this is not provided and an error occurs, it will be emitted on the ports `error` event. The callback will NOT be called if autoOpen is set to false in the openOptions as the open will not be performed. |
+| [options] | <code>[openOptions](#openOptions)</code> | Port configuration options |
+| [openCallback] | <code>[errorCallback](#errorCallback)</code> | Called when a connection has been opened. If this is not provided and an error occurs, it will be emitted on the ports `error` event. The callback will NOT be called if autoOpen is set to false in the openOptions as the open will not be performed. |
 
 
 -
@@ -394,7 +394,7 @@ Opens a connection to the given serial port.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| [callback] | <code>[errorCallback](#SerialPort+errorCallback)</code> | Called when a connection has been opened. If this is not provided and an error occurs, it will be emitted on the ports `error` event. |
+| [callback] | <code>[errorCallback](#errorCallback)</code> | Called when a connection has been opened. If this is not provided and an error occurs, it will be emitted on the ports `error` event. |
 
 
 -
@@ -410,7 +410,7 @@ Changes the baud rate for an open port. Throws if you provide a bad argument. Em
 | --- | --- | --- |
 | [options] | <code>object</code> | Only `baudRate` is currently supported |
 | [options.baudRate] | <code>number</code> | The baud rate of the port to be opened. This should match one of commonly available baud rates, such as 110, 300, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200. There is no guarantee, that the device connected to the serial port will support the requested baud rate, even if the port itself supports that baud rate. |
-| [callback] | <code>[errorCallback](#SerialPort+errorCallback)</code> | Called once the port's baud rate has been changed. If `.update` is called without an callback and there is an error, an error event will be emitted. |
+| [callback] | <code>[errorCallback](#errorCallback)</code> | Called once the port's baud rate has been changed. If `.update` is called without an callback and there is an error, an error event will be emitted. |
 
 
 -
@@ -434,7 +434,7 @@ Some devices like the Arduino reset when you open a connection to them. In these
 | Param | Type | Description |
 | --- | --- | --- |
 | data | <code>string</code> &#124; <code>array</code> &#124; <code>buffer</code> | Accepts a [`Buffer` ](http://nodejs.org/api/buffer.html) object, or a type that is accepted by the `Buffer` constructor (ex. an array of bytes or a string). |
-| [callback] | <code>[errorCallback](#SerialPort+errorCallback)</code> | Called once the write operation returns. |
+| [callback] | <code>[errorCallback](#errorCallback)</code> | Called once the write operation returns. |
 
 
 -
@@ -466,7 +466,7 @@ Closes an open connection
 
 | Param | Type | Description |
 | --- | --- | --- |
-| callback | <code>errorCallback</code> | Called once a connection is closed. |
+| callback | <code>[errorCallback](#errorCallback)</code> | Called once a connection is closed. |
 
 
 -
@@ -480,7 +480,7 @@ Flushes data received but not read. See [`tcflush()`](http://linux.die.net/man/3
 
 | Param | Type | Description |
 | --- | --- | --- |
-| [callback] | <code>[errorCallback](#SerialPort+errorCallback)</code> | Called once the flush operation finishes. |
+| [callback] | <code>[errorCallback](#errorCallback)</code> | Called once the flush operation finishes. |
 
 
 -
@@ -500,7 +500,7 @@ Sets flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.com/en-u
 | [options.dsr] | <code>Boolean</code> | <code>false</code> |  |
 | [options.dtr] | <code>Boolean</code> | <code>true</code> |  |
 | [options.rts] | <code>Boolean</code> | <code>true</code> |  |
-| [callback] | <code>[errorCallback](#SerialPort+errorCallback)</code> |  | Called once the port's flags have been set. |
+| [callback] | <code>[errorCallback](#errorCallback)</code> |  | Called once the port's flags have been set. |
 
 
 -
@@ -514,7 +514,7 @@ Waits until all output data has been transmitted to the serial port. See [`tcdra
 
 | Param | Type | Description |
 | --- | --- | --- |
-| [callback] | <code>[errorCallback](#SerialPort+errorCallback)</code> | Called once the drain operation returns. |
+| [callback] | <code>[errorCallback](#errorCallback)</code> | Called once the drain operation returns. |
 
 **Example**  
 Writes `data` and waits until it has finish transmitting to the target serial port before calling the callback.
@@ -529,47 +529,12 @@ function writeAndDrain (data, callback) {
 
 -
 
-<a name="SerialPort+errorCallback"></a>
+<a name="errorCallback"></a>
 
-### `serialPort.errorCallback` : <code>function</code>
-A callback called with an error or null.
+## `errorCallback` : <code>function</code>
+<a name="openOptions"></a>
 
-**Kind**: instance typedef of <code>[SerialPort](#SerialPort)</code>  
-
-| Param | Type |
-| --- | --- |
-| error | <code>error</code> | 
-
-
--
-
-<a name="SerialPort+openOptions"></a>
-
-### `serialPort.openOptions` : <code>Object</code>
-**Kind**: instance typedef of <code>[SerialPort](#SerialPort)</code>  
-**Properties**
-
-| Name | Type | Default | Description |
-| --- | --- | --- | --- |
-| autoOpen | <code>boolean</code> | <code>true</code> | Automatically opens the port on `nextTick` |
-| lock | <code>boolean</code> | <code>true</code> | Prevent other processes from opening the port. false is not currently supported on windows. |
-| baudRate | <code>number</code> | <code>9600</code> | The baud rate of the port to be opened. This should match one of commonly available baud rates, such as 110, 300, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200. There is no guarantee, that the device connected to the serial port will support the requested baud rate, even if the port itself supports that baud rate. |
-| dataBits | <code>number</code> | <code>8</code> | Must be one of: 8, 7, 6, or 5. |
-| stopBits | <code>number</code> | <code>1</code> | Must be one of: 1 or 2. |
-| parity | <code>string</code> | <code>&quot;none&quot;</code> | Must be one of: 'none', 'even', 'mark', 'odd', 'space' |
-| rtscts | <code>boolean</code> | <code>false</code> | flow control setting |
-| xon | <code>boolean</code> | <code>false</code> | flow control setting |
-| xoff | <code>boolean</code> | <code>false</code> | flow control setting |
-| xany | <code>boolean</code> | <code>false</code> | flow control setting |
-| bufferSize | <code>number</code> | <code>65536</code> | Size of read buffer |
-| parser | <code>function</code> | <code>Parsers.raw</code> | The parser to transform read data, defaults to the `raw` parser that emits data as it's received. |
-| platformOptions | <code>object</code> |  | sets platform specific options |
-| platformOptions.vmin | <code>number</code> | <code>1</code> | see [`man termios`](http://linux.die.net/man/3/termios) |
-| platformOptions.vtime | <code>number</code> | <code>0</code> | see [`man termios`](http://linux.die.net/man/3/termios) |
-
-
--
-
+## `openOptions` : <code>Object</code>
 
 ## Events
 
