@@ -70,6 +70,14 @@ describe('parsers', function() {
       assert.equal(spy.callCount, 3);
     });
 
+    it('should only emit if delimiters are strictly in row', function() {
+      var data = new Buffer('\0Hello\0World\0\0');
+      var parser = parsers.byteDelimiter([0, 0]);
+      var spy = sinon.spy();
+      parser({ emit: spy }, data);
+      assert.equal(spy.callCount, 1);
+    });
+
     it('continues looking for delimiters in the next buffers', function() {
       var data1 = new Buffer('This could be\0\0binary ');
       var data2 = new Buffer('data\0\0sent from a Moteino\0\0');
