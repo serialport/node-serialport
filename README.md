@@ -47,7 +47,6 @@ For getting started with node-serialport, we recommend you begin with the follow
   * [Illegal Instruction](#illegal-instruction)
 * [Usage](#usage)
   * [Opening a Port](#opening-a-port)
-  * [Parsers](#parsers)
 * [SerialPort](#exp_module_serialport--SerialPort) ⏏
     * [`new SerialPort(path, [options], [openCallback])`](#new_module_serialport--SerialPort_new)
     * _instance_
@@ -67,6 +66,7 @@ For getting started with node-serialport, we recommend you begin with the follow
         * [`"disconnect"`](#module_serialport--SerialPort+event_disconnect)
         * [`"close"`](#module_serialport--SerialPort+event_close)
     * _static_
+        * [`.parsers`](#module_serialport--SerialPort.parsers) : <code>object</code>
         * [`.list`](#module_serialport--SerialPort.list) : <code>function</code>
     * _inner_
         * [`~errorCallback`](#module_serialport--SerialPort..errorCallback) : <code>function</code>
@@ -269,50 +269,6 @@ port.on('open', function() {
 });
 ```
 
-### Parsers
-
-Out of the box, node-serialport provides four parsers: one that simply emits the raw buffer as a data event, one that emits a data event when a specfic byte sequence is received, one that emits a data event every 'length' bytes, and one which provides familiar "readline" style parsing.
-
-To use the readline parser, you must provide a delimiter as such:
-
-```js
-var SerialPort = require('serialport');
-
-var port = new SerialPort('/dev/tty-usbserial1', {
-  parser: SerialPort.parsers.readline('\n')
-});
-```
-
-To use the raw parser don't specify any parser, however if you really want to you can:
-
-```js
-var SerialPort = require('serialport');
-
-var port = new SerialPort('/dev/tty-usbserial1', {
-  parser: SerialPort.parsers.raw
-});
-```
-
-Note that the raw parser does not guarantee that all data it receives will come in a single event.
-
-To use the byte sequence parser, you must provide a delimiter as an array of bytes:
-```js
-var SerialPort = require('serialport');
-
-var port = new SerialPort('/dev/tty-usbserial1', {
-  parser: SerialPort.parsers.byteDelimiter([10,13])
-});
-```
-
-To use the byte length parser, you must provide a delimiter as a length in bytes:
-```js
-var SerialPort = require('serialport');
-
-var port = new SerialPort('/dev/tty-usbserial1', {
-  parser: SerialPort.parsers.byteLength(5)
-});
-```
-
 You can get updates of new data from the Serial Port as follows:
 
 ```js
@@ -330,9 +286,6 @@ port.write(new Buffer('Hi Mom!'));
 
 Enjoy and do cool things with this code.
 
-<a name="module_serialport"></a>
-
-## serialport
 <a name="exp_module_serialport--SerialPort"></a>
 
 ### SerialPort ⏏
@@ -551,10 +504,68 @@ The `close` event's callback is called with no arguments when the port is closed
 
 -
 
+<a name="module_serialport--SerialPort.parsers"></a>
+
+#### `SerialPort.parsers` : <code>object</code>
+Parsers will process incoming data in a variety of ways and are meant to be passed to a port during construction.
+
+**Kind**: static property of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| raw | <code>function</code> | emits a raw buffer as a data event as it's received. This is the default parser. |
+| readline | <code>function</code> | returns a function that emits a string as a data event after a newline delimiter is received. |
+| byteLength | <code>function</code> | returns a function that emits a data event as a buffer after a specific number of bytes are received. |
+| byteDelimiter | <code>function</code> | returns a function that emits a data event each time a byte sequence (an array of bytes) is received. |
+
+**Example**  
+To use the readline parser, you must provide a delimiter as such:
+
+```js
+var SerialPort = require('serialport');
+
+var port = new SerialPort('/dev/tty-usbserial1', {
+  parser: SerialPort.parsers.readline('\n')
+});
+```
+
+To use the raw parser don't specify any parser, however if you really want to you can:
+
+```js
+var SerialPort = require('serialport');
+
+var port = new SerialPort('/dev/tty-usbserial1', {
+  parser: SerialPort.parsers.raw
+});
+```
+
+Note that the raw parser does not guarantee that all data it receives will come in a single event.
+
+To use the byte sequence parser, you must provide a delimiter as an array of bytes:
+```js
+var SerialPort = require('serialport');
+
+var port = new SerialPort('/dev/tty-usbserial1', {
+  parser: SerialPort.parsers.byteDelimiter([10,13])
+});
+```
+
+To use the byte length parser, you must provide a delimiter as a length in bytes:
+```js
+var SerialPort = require('serialport');
+
+var port = new SerialPort('/dev/tty-usbserial1', {
+  parser: SerialPort.parsers.byteLength(5)
+});
+```
+
+-
+
 <a name="module_serialport--SerialPort.list"></a>
 
 #### `SerialPort.list` : <code>function</code>
-Retrieves a list of available serial ports with metadata. Only the `comName` is guaranteed, all the other fields undefined if unavailable. The `comName` is either the path or identifier (eg `COM1`) used to open the serialport.
+Retrieves a list of available serial ports with metadata. Only the `comName` is guaranteed, all the other fields will be undefined if they are unavailable. The `comName` is either the path or an identifier (eg `COM1`) used to open the serialport.
 
 **Kind**: static property of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
