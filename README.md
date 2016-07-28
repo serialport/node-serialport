@@ -47,33 +47,31 @@ For getting started with node-serialport, we recommend you begin with the follow
   * [Illegal Instruction](#illegal-instruction)
 * [Usage](#usage)
   * [Opening a Port](#opening-a-port)
-  * [Listing Ports](#listing-ports)
   * [Parsers](#parsers)
-* API
-    * [SerialPort](#exp_module_serialport--SerialPort) ⏏
-        * [`new SerialPort(path, [options], [openCallback])`](#new_module_serialport--SerialPort_new)
-        * _instance_
-            * [`.open([callback])`](#module_serialport--SerialPort+open)
-            * [`.update([options], [callback])`](#module_serialport--SerialPort+update)
-            * [`.isOpen()`](#module_serialport--SerialPort+isOpen) ⇒ <code>Boolean</code>
-            * [`.write(data, [callback])`](#module_serialport--SerialPort+write)
-            * [`.pause()`](#module_serialport--SerialPort+pause)
-            * [`.resume()`](#module_serialport--SerialPort+resume)
-            * [`.close(callback)`](#module_serialport--SerialPort+close)
-            * [`.flush([callback])`](#module_serialport--SerialPort+flush)
-            * [`.set([options], [callback])`](#module_serialport--SerialPort+set)
-            * [`.drain([callback])`](#module_serialport--SerialPort+drain)
-            * [`"open"`](#module_serialport--SerialPort+event_open)
-            * [`"close"`](#module_serialport--SerialPort+event_close)
-        * _inner_
-            * [`~errorCallback`](#module_serialport--SerialPort..errorCallback) : <code>function</code>
-            * [`~openOptions`](#module_serialport--SerialPort..openOptions) : <code>Object</code>
-* [Events](#events)
-  * [close](#onclose-callback)
-  * [data](#ondata-callback)
-  * [disconnect](#ondisconnect-callback)
-  * [error](#onerror-callback)
-  * [open](#onopen-callback)
+* [SerialPort](#exp_module_serialport--SerialPort) ⏏
+    * [`new SerialPort(path, [options], [openCallback])`](#new_module_serialport--SerialPort_new)
+    * _instance_
+        * [`.open([callback])`](#module_serialport--SerialPort+open)
+        * [`.update([options], [callback])`](#module_serialport--SerialPort+update)
+        * [`.isOpen()`](#module_serialport--SerialPort+isOpen) ⇒ <code>Boolean</code>
+        * [`.write(data, [callback])`](#module_serialport--SerialPort+write)
+        * [`.pause()`](#module_serialport--SerialPort+pause)
+        * [`.resume()`](#module_serialport--SerialPort+resume)
+        * [`.close(callback)`](#module_serialport--SerialPort+close)
+        * [`.flush([callback])`](#module_serialport--SerialPort+flush)
+        * [`.set([options], [callback])`](#module_serialport--SerialPort+set)
+        * [`.drain([callback])`](#module_serialport--SerialPort+drain)
+        * [`"data"`](#module_serialport--SerialPort+event_data)
+        * [`"error"`](#module_serialport--SerialPort+event_error)
+        * [`"open"`](#module_serialport--SerialPort+event_open)
+        * [`"disconnect"`](#module_serialport--SerialPort+event_disconnect)
+        * [`"close"`](#module_serialport--SerialPort+event_close)
+    * _static_
+        * [`.list`](#module_serialport--SerialPort.list) : <code>function</code>
+    * _inner_
+        * [`~errorCallback`](#module_serialport--SerialPort..errorCallback) : <code>function</code>
+        * [`~openOptions`](#module_serialport--SerialPort..openOptions) : <code>Object</code>
+        * [`~listCallback`](#module_serialport--SerialPort..listCallback) : <code>function</code>
 * [Command Line Tools](#command-line-tools)
   * [Serial Port List](#serial-port-list)
   * [Serial Port Terminal](#serial-port-terminal)
@@ -271,39 +269,6 @@ port.on('open', function() {
 });
 ```
 
-### Listing Ports
-
-`.list(callback)`
-
-Retrieves a list of available serial ports with metadata.
-
-* `callback` is a required function that looks should look like: `function (err, ports) { ... }`. `ports` will be an array of objects with port info. Only the `comName` is guaranteed, all the other fields undefined if unavailable. The `comName` is either the path or identifier (eg `COM1`) used to open the serialport.
-
-```js
-// example port information
-{
-  comName: '/dev/cu.usbmodem1421',
-  manufacturer: 'Arduino (www.arduino.cc)',
-  serialNumber: '757533138333964011C1',
-  pnpId: undefined,
-  locationId: '0x14200000',
-  vendorId: '0x2341',
-  productId: '0x0043'
-}
-
-```
-
-```js
-var SerialPort = require('serialport');
-SerialPort.list(function (err, ports) {
-  ports.forEach(function(port) {
-    console.log(port.comName);
-    console.log(port.pnpId);
-    console.log(port.manufacturer);
-  });
-});
-```
-
 ### Parsers
 
 Out of the box, node-serialport provides four parsers: one that simply emits the raw buffer as a data event, one that emits a data event when a specfic byte sequence is received, one that emits a data event every 'length' bytes, and one which provides familiar "readline" style parsing.
@@ -365,7 +330,6 @@ port.write(new Buffer('Hi Mom!'));
 
 Enjoy and do cool things with this code.
 
-## API
 <a name="module_serialport"></a>
 
 ## serialport
@@ -373,7 +337,7 @@ Enjoy and do cool things with this code.
 
 ### SerialPort ⏏
 **Kind**: Exported class  
-**Emits**: <code>[open](#module_serialport--SerialPort+event_open)</code>  
+**Emits**: <code>[open](#module_serialport--SerialPort+event_open)</code>, <code>[data](#module_serialport--SerialPort+event_data)</code>, <code>[close](#module_serialport--SerialPort+event_close)</code>, <code>[error](#module_serialport--SerialPort+event_error)</code>, <code>[disconnect](#module_serialport--SerialPort+event_disconnect)</code>  
 
 -
 
@@ -402,7 +366,7 @@ Create a new serial port object for the `path`. In the case of invalid arguments
 Opens a connection to the given serial port.
 
 **Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
-**Emits**: <code>SerialPort#event:open</code>  
+**Emits**: <code>[open](#module_serialport--SerialPort+event_open)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -475,6 +439,7 @@ Resumes a paused connection (unix only)
 Closes an open connection
 
 **Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Emits**: <code>[close](#module_serialport--SerialPort+event_close)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -541,10 +506,37 @@ function writeAndDrain (data, callback) {
 
 -
 
+<a name="module_serialport--SerialPort+event_data"></a>
+
+#### `"data"`
+The `data` event's callback is called with data depending on your chosen parser. The default `raw` parser will have a `Buffer` object with a varying amount of data in it. The `readLine` parser will provide a string of a received ASCII line. See the [parsers](#parsers) section for more information.
+
+**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+-
+
+<a name="module_serialport--SerialPort+event_error"></a>
+
+#### `"error"`
+The `error` event's callback is called with an error object whenever there is an error.
+
+**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+-
+
 <a name="module_serialport--SerialPort+event_open"></a>
 
 #### `"open"`
-Callback is called with no arguments when the port is opened and ready for writing. This happens if you have the constructor open immediately (which opens in the next tick) or if you open the port manually with `open()`. See [Useage/Opening a Port](#opening-a-port) for more information.
+The `open` event's callback is called with no arguments when the port is opened and ready for writing. This happens if you have the constructor open immediately (which opens in the next tick) or if you open the port manually with `open()`. See [Useage/Opening a Port](#opening-a-port) for more information.
+
+**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+-
+
+<a name="module_serialport--SerialPort+event_disconnect"></a>
+
+#### `"disconnect"`
+The `disconnect` event's callback is called with an error object. This will always happen before a `close` event if a disconnection is detected.
 
 **Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
@@ -553,9 +545,48 @@ Callback is called with no arguments when the port is opened and ready for writi
 <a name="module_serialport--SerialPort+event_close"></a>
 
 #### `"close"`
-Callback is called with data depending on your chosen parser. The default `raw` parser will have a `Buffer` object with a varying amount of data in it. The `readLine` parser will provide a string of your line. See the [parsers](#parsers) section for more information.
+The `close` event's callback is called with no arguments when the port is closed. In the event of an error, an error event will be triggered
 
 **Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+-
+
+<a name="module_serialport--SerialPort.list"></a>
+
+#### `SerialPort.list` : <code>function</code>
+Retrieves a list of available serial ports with metadata. Only the `comName` is guaranteed, all the other fields undefined if unavailable. The `comName` is either the path or identifier (eg `COM1`) used to open the serialport.
+
+**Kind**: static property of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+| Param | Type |
+| --- | --- |
+| callback | <code>listCallback</code> | 
+
+**Example**  
+```js
+// example port information
+{
+  comName: '/dev/cu.usbmodem1421',
+  manufacturer: 'Arduino (www.arduino.cc)',
+  serialNumber: '757533138333964011C1',
+  pnpId: undefined,
+  locationId: '0x14200000',
+  vendorId: '0x2341',
+  productId: '0x0043'
+}
+
+```
+
+```js
+var SerialPort = require('serialport');
+SerialPort.list(function (err, ports) {
+  ports.forEach(function(port) {
+    console.log(port.comName);
+    console.log(port.pnpId);
+    console.log(port.manufacturer);
+  });
+});
+```
 
 -
 
@@ -600,23 +631,21 @@ A callback called with an error or null.
 
 -
 
+<a name="module_serialport--SerialPort..listCallback"></a>
 
-## Events
+#### `SerialPort~listCallback` : <code>function</code>
+This callback type is called `requestCallback` and is displayed as a global symbol.
 
-### .on('open', callback)
-Callback is called with no arguments when the port is opened and ready for writing. This happens if you have the constructor open immediately (which opens in the next tick) or if you open the port manually with `open()`. See [Useage/Opening a Port](#opening-a-port) for more information.
+**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
-### .on('data', callback)
-Callback is called with data depending on your chosen parser. The default `raw` parser will have a `Buffer` object with a varying amount of data in it. The `readLine` parser will provide a string of your line. See the [parsers](#parsers) section for more information
+| Param | Type | Description |
+| --- | --- | --- |
+| error | <code>error</code> |  |
+| ports | <code>array</code> | an array of objects with port info. |
 
-### .on('close', callback)
-Callback is called with no arguments when the port is closed. In the event of an error, an error event will be triggered
 
-### .on('error', callback)
-Callback is called with an error object whenever there is an error.
+-
 
-### .on('disconnect', callback)
-Callback is called with an error object. This will always happen before a `close` event if a disconnection is detected.
 
 ## Command Line Tools
 If you install `serialport` globally. (eg, `npm install -g serialport`) you'll receive two command line tools.
