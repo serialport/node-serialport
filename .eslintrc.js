@@ -6,6 +6,9 @@ module.exports = {
   parserOptions: {
     sourceType: "script"
   },
+  globals: {
+    "Promise": false
+  },
   rules: {
     "brace-style": [2, "1tbs", {"allowSingleLine": true} ],
     "complexity": [2, 32],
