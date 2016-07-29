@@ -60,11 +60,11 @@ For getting started with node-serialport, we recommend you begin with the follow
         * [`.flush([callback])`](#module_serialport--SerialPort+flush)
         * [`.set([options], [callback])`](#module_serialport--SerialPort+set)
         * [`.drain([callback])`](#module_serialport--SerialPort+drain)
-        * [`"data"`](#module_serialport--SerialPort+event_data)
-        * [`"error"`](#module_serialport--SerialPort+event_error)
-        * [`"open"`](#module_serialport--SerialPort+event_open)
-        * [`"disconnect"`](#module_serialport--SerialPort+event_disconnect)
-        * [`"close"`](#module_serialport--SerialPort+event_close)
+        * [`Event: "data"`](#module_serialport--SerialPort+event_data)
+        * [`Event: "error"`](#module_serialport--SerialPort+event_error)
+        * [`Event: "open"`](#module_serialport--SerialPort+event_open)
+        * [`Event: "disconnect"`](#module_serialport--SerialPort+event_disconnect)
+        * [`Event: "close"`](#module_serialport--SerialPort+event_close)
     * _static_
         * [`.parsers`](#module_serialport--SerialPort.parsers) : <code>object</code>
         * [`.list`](#module_serialport--SerialPort.list) : <code>function</code>
@@ -461,7 +461,7 @@ function writeAndDrain (data, callback) {
 
 <a name="module_serialport--SerialPort+event_data"></a>
 
-#### `"data"`
+#### `Event: "data"`
 The `data` event's callback is called with data depending on your chosen parser. The default `raw` parser will have a `Buffer` object with a varying amount of data in it. The `readLine` parser will provide a string of a received ASCII line. See the [parsers](#parsers) section for more information.
 
 **Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
@@ -470,7 +470,7 @@ The `data` event's callback is called with data depending on your chosen parser.
 
 <a name="module_serialport--SerialPort+event_error"></a>
 
-#### `"error"`
+#### `Event: "error"`
 The `error` event's callback is called with an error object whenever there is an error.
 
 **Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
@@ -479,7 +479,7 @@ The `error` event's callback is called with an error object whenever there is an
 
 <a name="module_serialport--SerialPort+event_open"></a>
 
-#### `"open"`
+#### `Event: "open"`
 The `open` event's callback is called with no arguments when the port is opened and ready for writing. This happens if you have the constructor open immediately (which opens in the next tick) or if you open the port manually with `open()`. See [Useage/Opening a Port](#opening-a-port) for more information.
 
 **Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
@@ -488,7 +488,7 @@ The `open` event's callback is called with no arguments when the port is opened 
 
 <a name="module_serialport--SerialPort+event_disconnect"></a>
 
-#### `"disconnect"`
+#### `Event: "disconnect"`
 The `disconnect` event's callback is called with an error object. This will always happen before a `close` event if a disconnection is detected.
 
 **Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
@@ -497,7 +497,7 @@ The `disconnect` event's callback is called with an error object. This will alwa
 
 <a name="module_serialport--SerialPort+event_close"></a>
 
-#### `"close"`
+#### `Event: "close"`
 The `close` event's callback is called with no arguments when the port is closed. In the event of an error, an error event will be triggered
 
 **Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  

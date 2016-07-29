@@ -63,7 +63,7 @@ Tests are written using [mocha](https://mochajs.org/), [chai](http://chaijs.com/
 
 We are always looking to improve our docs.  If you find that any are lacking information or have wrong information, fix and submit a PR.  If you're looking for areas to start writing docs for, see the [docs](https://github.com/EmergingTechnologyAdvisors/node-serialport/labels/docs) label in issues.
 
-We use [jsdoc](http://usejsdoc.org/) and [jsdoc-to-markdown](https://github.com/jsdoc2md/jsdoc-to-markdown) to generate our docs. Make your changes to `.README.hbs` or the documentation blocks in the JavaScript files and run `npm run docs` to update `README.md`.
+We use [jsdoc](http://usejsdoc.org/) and [jsdoc-to-markdown](https://github.com/jsdoc2md/jsdoc-to-markdown) to generate our docs. Make your changes to `.docs/README.hbs` or the documentation blocks in the JavaScript files and run `npm run docs` to update `README.md`.
 
 Docs should have tested and working sample code. Many people using SerialPort are learning how to work with hardware for the first time, so write for a beginner audience.
 
