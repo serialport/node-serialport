@@ -47,17 +47,9 @@ For getting started with node-serialport, we recommend you begin with the follow
   * [Illegal Instruction](#illegal-instruction)
 * [Usage](#usage)
   * [Opening a Port](#opening-a-port)
-  * [Listing Ports](#listing-ports)
-  * [Parsers](#parsers)
-{{#class ~}}
-{{>member-index~}}
+{{#class name="SerialPort"}}
+{{>member-index-grouped baseLevel=0 ~}}
 {{/class}}
-* [Events](#events)
-  * [close](#onclose-callback)
-  * [data](#ondata-callback)
-  * [disconnect](#ondisconnect-callback)
-  * [error](#onerror-callback)
-  * [open](#onopen-callback)
 * [Command Line Tools](#command-line-tools)
   * [Serial Port List](#serial-port-list)
   * [Serial Port Terminal](#serial-port-terminal)
@@ -255,83 +247,6 @@ port.on('open', function() {
 });
 ```
 
-### Listing Ports
-
-`.list(callback)`
-
-Retrieves a list of available serial ports with metadata.
-
-* `callback` is a required function that looks should look like: `function (err, ports) { ... }`. `ports` will be an array of objects with port info. Only the `comName` is guaranteed, all the other fields undefined if unavailable. The `comName` is either the path or identifier (eg `COM1`) used to open the serialport.
-
-```js
-// example port information
-{
-  comName: '/dev/cu.usbmodem1421',
-  manufacturer: 'Arduino (www.arduino.cc)',
-  serialNumber: '757533138333964011C1',
-  pnpId: undefined,
-  locationId: '0x14200000',
-  vendorId: '0x2341',
-  productId: '0x0043'
-}
-
-```
-
-```js
-var SerialPort = require('serialport');
-SerialPort.list(function (err, ports) {
-  ports.forEach(function(port) {
-    console.log(port.comName);
-    console.log(port.pnpId);
-    console.log(port.manufacturer);
-  });
-});
-```
-
-### Parsers
-
-Out of the box, node-serialport provides four parsers: one that simply emits the raw buffer as a data event, one that emits a data event when a specfic byte sequence is received, one that emits a data event every 'length' bytes, and one which provides familiar "readline" style parsing.
-
-To use the readline parser, you must provide a delimiter as such:
-
-```js
-var SerialPort = require('serialport');
-
-var port = new SerialPort('/dev/tty-usbserial1', {
-  parser: SerialPort.parsers.readline('\n')
-});
-```
-
-To use the raw parser don't specify any parser, however if you really want to you can:
-
-```js
-var SerialPort = require('serialport');
-
-var port = new SerialPort('/dev/tty-usbserial1', {
-  parser: SerialPort.parsers.raw
-});
-```
-
-Note that the raw parser does not guarantee that all data it receives will come in a single event.
-
-To use the byte sequence parser, you must provide a delimiter as an array of bytes:
-```js
-var SerialPort = require('serialport');
-
-var port = new SerialPort('/dev/tty-usbserial1', {
-  parser: SerialPort.parsers.byteDelimiter([10,13])
-});
-```
-
-To use the byte length parser, you must provide a delimiter as a length in bytes:
-```js
-var SerialPort = require('serialport');
-
-var port = new SerialPort('/dev/tty-usbserial1', {
-  parser: SerialPort.parsers.byteLength(5)
-});
-```
-
 You can get updates of new data from the Serial Port as follows:
 
 ```js
@@ -349,27 +264,9 @@ port.write(new Buffer('Hi Mom!'));
 
 Enjoy and do cool things with this code.
 
-{{#class~}}
-{{>header~}}
+{{#modules~}}
 {{>members~}}
-{{/class}}
-
-## Events
-
-### .on('open', callback)
-Callback is called with no arguments when the port is opened and ready for writing. This happens if you have the constructor open immediately (which opens in the next tick) or if you open the port manually with `open()`. See [Useage/Opening a Port](#opening-a-port) for more information.
-
-### .on('data', callback)
-Callback is called with data depending on your chosen parser. The default `raw` parser will have a `Buffer` object with a varying amount of data in it. The `readLine` parser will provide a string of your line. See the [parsers](#parsers) section for more information
-
-### .on('close', callback)
-Callback is called with no arguments when the port is closed. In the event of an error, an error event will be triggered
-
-### .on('error', callback)
-Callback is called with an error object whenever there is an error.
-
-### .on('disconnect', callback)
-Callback is called with an error object. This will always happen before a `close` event if a disconnection is detected.
+{{/modules}}
 
 ## Command Line Tools
 If you install `serialport` globally. (eg, `npm install -g serialport`) you'll receive two command line tools.
