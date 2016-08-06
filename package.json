@@ -94,6 +94,7 @@
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
     "lint": "eslint *.js lib/**/*.js test/**/*.js bin/**/*.js examples/**/*.js",
     "test": "istanbul cover ./node_modules/mocha/bin/_mocha test/*.js test/arduinoTest/integration.js test/integration-lite.js",
+    "test:unit": "mocha test/*.js test/arduinoTest/integration.js test/integration-lite.js",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
     "valgrind": "valgrind --leak-check=full --show-possibly-lost=no node --expose-gc --trace-gc node_modules/.bin/grunt test"
   },

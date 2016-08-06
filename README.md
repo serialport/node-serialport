@@ -294,6 +294,12 @@ Enjoy and do cool things with this code.
 ### SerialPort ⏏
 **Kind**: Exported class  
 **Emits**: <code>[open](#module_serialport--SerialPort+event_open)</code>, <code>[data](#module_serialport--SerialPort+event_data)</code>, <code>[close](#module_serialport--SerialPort+event_close)</code>, <code>[error](#module_serialport--SerialPort+event_error)</code>, <code>[disconnect](#module_serialport--SerialPort+event_disconnect)</code>  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| path | <code>string</code> | The system path or name of the serial port. Read Only. |
+
 
 -
 
