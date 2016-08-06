@@ -14,6 +14,9 @@ module.exports = {
     "complexity": [2, 12],
     "curly": 2,
     "eqeqeq": 2,
+    "indent": [2, 2, {
+      SwitchCase: 1
+    }],
     "max-depth": 2,
     "max-statements": [2, 36],
     "new-cap": 2,
@@ -23,6 +26,7 @@ module.exports = {
     "no-undef": 2,
     "no-unused-vars": [2, { "args": "after-used" }],
     "no-use-before-define": 2,
+    "padded-blocks": [2, "never"],
     "quotes": [2, "single", "avoid-escape"],
     "semi": [2, "always", {"omitLastInOneLineBlock": true }],
     "space-before-function-paren": [2, "never"],
