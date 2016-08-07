@@ -71,6 +71,10 @@ before_install:
 - if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then PUBLISH_BINARY=true; fi;
 - echo "Publishing native platform Binary Package? ->" $PUBLISH_BINARY
 
+# Cleanup the output of npm
+- npm config set progress false
+- npm config set spin false
+
 install:
 # ensure source install works
 - npm install --build-from-source

@@ -37,13 +37,6 @@ describe('SerialPort', function() {
         done();
       }
     });
-
-    it('takes lowercase options', function(done) {
-      var port = new SerialPort.SerialPort('/dev/exists', { baudrate: 14400, autoOpen: false });
-      assert.equal(port.options.baudRate, 14400);
-      done();
-    });
-
   });
 
   describe('Constructor', function() {
@@ -118,7 +111,7 @@ describe('SerialPort', function() {
 
     it('errors with invalid databits', function(done) {
       try {
-        this.port = new SerialPort('/dev/exists', { databits: 19 });
+        this.port = new SerialPort('/dev/exists', { dataBits: 19 });
       } catch(err){
         assert.instanceOf(err, Error);
         done();
@@ -127,7 +120,7 @@ describe('SerialPort', function() {
 
     it('errors with invalid stopbits', function(done) {
       try {
-        this.port = new SerialPort('/dev/exists', { stopbits: 19 });
+        this.port = new SerialPort('/dev/exists', { stopBits: 19 });
       } catch(err){
         assert.instanceOf(err, Error);
         done();
@@ -170,6 +163,21 @@ describe('SerialPort', function() {
 
     it('allows optional options', function(done) {
       this.port = new SerialPort('/dev/exists', done);
+    });
+  });
+
+  describe('Properties', function() {
+    describe('.path', function(){
+      it('is a read only property set during construction', function(){
+        var port = new SerialPort('/dev/exists', {autoOpen: false});
+        assert.equal(port.path, '/dev/exists');
+        try {
+          port.path = 'foo';
+        } catch(e) {
+          assert.instanceOf(e, TypeError);
+        }
+        assert.equal(port.path, '/dev/exists');
+      });
     });
   });
 
