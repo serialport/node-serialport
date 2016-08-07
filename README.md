@@ -52,7 +52,6 @@ For getting started with node-serialport, we recommend you begin with the follow
     * _instance_
         * [`.open([callback])`](#module_serialport--SerialPort+open)
         * [`.update([options], [callback])`](#module_serialport--SerialPort+update)
-        * [`.isOpen()`](#module_serialport--SerialPort+isOpen) ⇒ <code>Boolean</code>
         * [`.write(data, [callback])`](#module_serialport--SerialPort+write)
         * [`.pause()`](#module_serialport--SerialPort+pause)
         * [`.resume()`](#module_serialport--SerialPort+resume)
@@ -299,6 +298,7 @@ Enjoy and do cool things with this code.
 | Name | Type | Description |
 | --- | --- | --- |
 | path | <code>string</code> | The system path or name of the serial port. Read Only. |
+| isOpen | <code>boolean</code> | true if the port is open, false otherwise. Read Only. |
 
 
 -
@@ -350,15 +350,6 @@ Changes the baud rate for an open port. Throws if you provide a bad argument. Em
 | [options.baudRate] | <code>number</code> | The baud rate of the port to be opened. This should match one of commonly available baud rates, such as 110, 300, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200. There is no guarantee, that the device connected to the serial port will support the requested baud rate, even if the port itself supports that baud rate. |
 | [callback] | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | Called once the port's baud rate has been changed. If `.update` is called without an callback and there is an error, an error event will be emitted. |
 
-
--
-
-<a name="module_serialport--SerialPort+isOpen"></a>
-
-#### `serialPort.isOpen()` ⇒ <code>Boolean</code>
-Returns `true` if the port is open.
-
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
 -
 

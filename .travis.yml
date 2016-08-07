@@ -82,7 +82,7 @@ install:
 script:
   # linting no longer works on node 0.10
 - node bin/at-least-node-4.0.js && npm run lint || true
-- npm run docs-diff
+- npm run docs:diff
 - node ./
 - npm test
 

@@ -53,11 +53,11 @@ describe('SerialPort light integration', function() {
       it('can open and close', function(done) {
         var port = new SerialPort(testPort);
         port.on('open', function() {
-          assert.isTrue(port.isOpen());
+          assert.isTrue(port.isOpen);
           port.close();
         });
         port.on('close', function() {
-          assert.isFalse(port.isOpen());
+          assert.isFalse(port.isOpen);
           done();
         });
       });

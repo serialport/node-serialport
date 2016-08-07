@@ -88,13 +88,12 @@
   "license": "MIT",
   "scripts": {
     "docs": "jsdoc2md -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs -r table --separators --name-format lib/* > README.md",
-    "docs-diff": "jsdoc2md -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs -r table --separators --name-format lib/* | diff README.md - || (echo 'Docs out of date, run `npm run docs` and commit the new README.md' && false)",
+    "docs:diff": "jsdoc2md -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs -r table --separators --name-format lib/* | diff README.md - || (echo 'Docs out of date, run `npm run docs` and commit the new README.md' && false)",
     "install": "node-pre-gyp install --fallback-to-build",
     "rebuild-all": "npm rebuild && node-gyp rebuild",
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
     "lint": "eslint *.js lib/**/*.js test/**/*.js bin/**/*.js examples/**/*.js",
     "test": "istanbul cover ./node_modules/mocha/bin/_mocha test/*.js test/arduinoTest/integration.js test/integration-lite.js",
-    "test:unit": "mocha test/*.js test/arduinoTest/integration.js test/integration-lite.js",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
     "valgrind": "valgrind --leak-check=full --show-possibly-lost=no node --expose-gc --trace-gc node_modules/.bin/grunt test"
   },
