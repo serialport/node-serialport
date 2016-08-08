@@ -402,10 +402,46 @@ describe('SerialPort', function() {
     describe('#write', function() {
       it('errors when the port is not open', function(done) {
         var cb = function() {};
-        var port = new SerialPort('/dev/exists', false, cb);
+        var port = new SerialPort('/dev/exists', {autoOpen: false}, cb);
         port.write(null, function(err) {
           assert.instanceOf(err, Error);
           done();
+        });
+      });
+
+      it('writes to the bindings layer', function(done){
+        var port = new SerialPort('/dev/exists');
+        port.on('open', function(){
+          var data = new Buffer('Crazy!');
+          port.write(data, function(){
+            var lastWrite = hardware.fds[port.fd].lastWrite;
+            assert.deepEqual(data, lastWrite);
+            done();
+          });
+        });
+      });
+
+      it('converts strings to buffers', function(done){
+        var port = new SerialPort('/dev/exists');
+        port.on('open', function(){
+          var data = 'Crazy!';
+          port.write(data, function(){
+            var lastWrite = hardware.fds[port.fd].lastWrite;
+            assert.deepEqual(new Buffer(data), lastWrite);
+            done();
+          });
+        });
+      });
+
+      it('converts arrays to buffers', function(done){
+        var port = new SerialPort('/dev/exists');
+        port.on('open', function(){
+          var data = [0,32,44,88];
+          port.write(data, function(){
+            var lastWrite = hardware.fds[port.fd].lastWrite;
+            assert.deepEqual(new Buffer(data), lastWrite);
+            done();
+          });
         });
       });
     });
