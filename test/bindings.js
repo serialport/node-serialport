@@ -306,6 +306,41 @@ describe('SerialPortBinding', function() {
     });
   });
 
+  describe('#flush', function() {
+    it('errors when given a bad fd', function(done) {
+      SerialPortBinding.flush(44, function(err) {
+        assert.instanceOf(err, Error);
+        done();
+      });
+    });
+
+    if (!testPort) {
+      it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.');
+      return;
+    }
+
+    beforeEach(function(done) {
+      SerialPortBinding.open(testPort, defaultPortOpenOptions, function(err, fd) {
+        assert.isNull(err);
+        assert.isNumber(fd);
+        this.fd = fd;
+        done();
+      }.bind(this));
+    });
+
+    afterEach(function(done) {
+      SerialPortBinding.close(this.fd, done);
+      this.fd = null;
+    });
+
+    it('flushes the port', function(done) {
+      SerialPortBinding.flush(this.fd, function(err) {
+        assert.isNull(err);
+        done();
+      });
+    });
+  });
+
   describe('#set', function() {
     it('errors when given a bad fd', function(done) {
       SerialPortBinding.drain(44, function(err) {

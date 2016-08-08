@@ -142,12 +142,6 @@ struct QueuedWrite {
   }
 };
 
-struct CloseBaton {
-  int fd;
-  Nan::Callback* callback;
-  char errorString[ERROR_STRING_SIZE];
-};
-
 struct ListResultItem {
   std::string comName;
   std::string manufacturer;
@@ -164,13 +158,6 @@ struct ListBaton {
   char errorString[ERROR_STRING_SIZE];
 };
 
-struct FlushBaton {
-  int fd;
-  Nan::Callback* callback;
-  int result;
-  char errorString[ERROR_STRING_SIZE];
-};
-
 struct SetBaton {
   int fd;
   Nan::Callback* callback;
@@ -183,10 +170,9 @@ struct SetBaton {
   bool brk;
 };
 
-struct DrainBaton {
+struct VoidBaton {
   int fd;
   Nan::Callback* callback;
-  int result;
   char errorString[ERROR_STRING_SIZE];
 };
 

@@ -56,8 +56,8 @@ For getting started with node-serialport, we recommend you begin with the follow
         * [`.pause()`](#module_serialport--SerialPort+pause)
         * [`.resume()`](#module_serialport--SerialPort+resume)
         * [`.close(callback)`](#module_serialport--SerialPort+close)
-        * [`.flush([callback])`](#module_serialport--SerialPort+flush)
         * [`.set([options], [callback])`](#module_serialport--SerialPort+set)
+        * [`.flush([callback])`](#module_serialport--SerialPort+flush)
         * [`.drain([callback])`](#module_serialport--SerialPort+drain)
         * [`Event: "data"`](#module_serialport--SerialPort+event_data)
         * [`Event: "error"`](#module_serialport--SerialPort+event_error)
@@ -401,20 +401,6 @@ Closes an open connection
 
 -
 
-<a name="module_serialport--SerialPort+flush"></a>
-
-#### `serialPort.flush([callback])`
-Flushes data received but not read. See [`tcflush()`](http://linux.die.net/man/3/tcflush) for Mac/Linux and [`FlushFileBuffers`](http://msdn.microsoft.com/en-us/library/windows/desktop/aa364439) for Windows.
-
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| [callback] | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | Called once the flush operation finishes. |
-
-
--
-
 <a name="module_serialport--SerialPort+set"></a>
 
 #### `serialPort.set([options], [callback])`
@@ -431,6 +417,20 @@ Sets flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.com/en-u
 | [options.dtr] | <code>Boolean</code> | <code>true</code> |  |
 | [options.rts] | <code>Boolean</code> | <code>true</code> |  |
 | [callback] | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> |  | Called once the port's flags have been set. |
+
+
+-
+
+<a name="module_serialport--SerialPort+flush"></a>
+
+#### `serialPort.flush([callback])`
+Flush discards data received but not read and written but not transmitted. For more technical details see [`tcflush(fd, TCIFLUSH)`](http://linux.die.net/man/3/tcflush) for Mac/Linux and [`FlushFileBuffers`](http://msdn.microsoft.com/en-us/library/windows/desktop/aa364439) for Windows.
+
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [callback] | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | Called once the flush operation finishes. |
 
 
 -

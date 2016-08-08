@@ -375,7 +375,8 @@ void EIO_Write(uv_work_t* req) {
 }
 
 void EIO_Close(uv_work_t* req) {
-  CloseBaton* data = static_cast<CloseBaton*>(req->data);
+  VoidBaton* data = static_cast<VoidBaton*>(req->data);
+
   if (-1 == close(data->fd)) {
     snprintf(data->errorString, sizeof(data->errorString), "Error: %s, unable to close fd %d", strerror(errno), data->fd);
   }
@@ -671,12 +672,6 @@ void EIO_List(uv_work_t* req) {
 #endif
 }
 
-void EIO_Flush(uv_work_t* req) {
-  FlushBaton* data = static_cast<FlushBaton*>(req->data);
-
-  data->result = tcflush(data->fd, TCIFLUSH);
-}
-
 void EIO_Set(uv_work_t* req) {
   SetBaton* data = static_cast<SetBaton*>(req->data);
 
@@ -719,8 +714,17 @@ void EIO_Set(uv_work_t* req) {
   }
 }
 
+void EIO_Flush(uv_work_t* req) {
+  VoidBaton* data = static_cast<VoidBaton*>(req->data);
+
+  if (-1 == tcflush(data->fd, TCIOFLUSH)) {
+    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot flush", strerror(errno));
+    return;
+  }
+}
+
 void EIO_Drain(uv_work_t* req) {
-  DrainBaton* data = static_cast<DrainBaton*>(req->data);
+  VoidBaton* data = static_cast<VoidBaton*>(req->data);
 
   if (-1 == tcdrain(data->fd)) {
     snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot drain", strerror(errno));
