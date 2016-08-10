@@ -28,6 +28,10 @@ env:
   - TRAVIS_NODE_VERSION="5" ARCH="x86"
   - TRAVIS_NODE_VERSION="6"
   - TRAVIS_NODE_VERSION="6" ARCH="x86"
+  - TRAVIS_ELECTRON_VERSION="0.37.8" ARCH="x64"TRAVIS_NODE_VERSION="6"
+  - TRAVIS_ELECTRON_VERSION="0.37.8" ARCH="ia32" TRAVIS_NODE_VERSION="6"
+  - TRAVIS_ELECTRON_VERSION="1.3.3" ARCH="x64"TRAVIS_NODE_VERSION="6"
+  - TRAVIS_ELECTRON_VERSION="1.3.3" ARCH="ia32" TRAVIS_NODE_VERSION="6"
 matrix:
   exclude:
   - os: osx
@@ -75,6 +79,9 @@ before_install:
 - npm config set progress false
 - npm config set spin false
 
+# Setup Electron variables
+- if [[ ! -z $TRAVIS_ELECTRON_VERSION ]]; then export npm_config_target=$TRAVIS_ELECTRON_VERSION; export npm_config_arch=$ARCH; export npm_config_disturl=https://atom.io/download/atom-shell; export npm_config_runtime=electron; export npm_config_build_from_source=true; fi
+
 install:
 # ensure source install works
 - npm install --build-from-source
@@ -83,8 +90,8 @@ script:
   # linting no longer works on node 0.10
 - node bin/at-least-node-4.0.js && npm run lint || true
 - npm run docs:diff
-- node ./
-- npm test
+- if [[ -z $TRAVIS_ELECTRON_VERSION ]]; then node ./; fi
+- if [[ -z $TRAVIS_ELECTRON_VERSION ]]; then npm test; fi
 
 # if publishing, do it
 - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package; fi;
