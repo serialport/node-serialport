@@ -80,7 +80,7 @@ before_install:
 - npm config set spin false
 
 # Setup Electron variables
-- if [[ ! -z $TRAVIS_ELECTRON_VERSION ]]; then export npm_config_target=$TRAVIS_ELECTRON_VERSION; export npm_config_arch=$ARCH; export npm_config_disturl=https://atom.io/download/atom-shell; export npm_config_runtime=electron; export npm_config_build_from_source=true; fi
+- if [[ ! -z $TRAVIS_ELECTRON_VERSION ]]; then export npm_config_target=$TRAVIS_ELECTRON_VERSION; export npm_config_arch=$ARCH; export npm_config_disturl=https://atom.io/download/atom-shell; export npm_config_runtime=electron; fi
 
 install:
 # ensure source install works

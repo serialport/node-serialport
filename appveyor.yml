@@ -80,7 +80,6 @@ install:
         $env:npm_config_target = $env:electron_version
         $env:npm_config_disturl = "https://atom.io/download/atom-shell"
         $env:npm_config_runtime = "electron"
-        $env:npm_config_build_from_source = true
         $env:run_tests = 0
 
         if ($env:plaftorm -eq "x86") {
