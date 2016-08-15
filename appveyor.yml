@@ -12,9 +12,9 @@ environment:
   - nodejs_version: "5"
   - nodejs_version: "6"
   - electron_version: "0.37.8"
-    nodejs_version: "6"
+    nodejs_version: "5"
   - electron_version: "1.3.3"
-    nodejs_version: "6"
+    nodejs_version: "5"
 
 platform:
   - x86
@@ -80,15 +80,15 @@ install:
         $env:npm_config_target = $env:electron_version
         $env:npm_config_disturl = "https://atom.io/download/atom-shell"
         $env:npm_config_runtime = "electron"
-        $env:run_tests = 0
 
         if ($env:plaftorm -eq "x86") {
           $env:npm_config_arch = "ia32"
         } else {
           $env:npm_config_arch = "x64"
         }
-      } else {
-        $env:run_tests = 1
+
+        npm install -g electron-prebuilt@$env:electron_version
+        npm install -g electron-mocha
       }
       true;
 
@@ -103,8 +103,14 @@ test_script:
         "Not linting because the linter doesn't run on this version of node" | Write-Host
       }
       true;
-  - IF %RUN_TESTS% == 1 (node ./)
-  - IF %RUN_TESTS% == 1 (npm test)
+  - ps: >
+      if ($env:electron_version) {
+        electron test/electron
+        electron-mocha test/*.js test/arduinoTest/integration.js test/integration-lite.js
+      } else {
+        node ./
+        npm test
+      }
   - IF %PUBLISH_BINARY% == 1 (node-pre-gyp package 2>&1)
   - IF %PUBLISH_BINARY% == 1 (node-pre-gyp-github publish --release 2>&1)
   - IF %PUBLISH_BINARY% == 1 (node-pre-gyp clean)
