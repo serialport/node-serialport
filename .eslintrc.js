@@ -29,6 +29,7 @@ module.exports = {
     "padded-blocks": [2, "never"],
     "quotes": [2, "single", "avoid-escape"],
     "semi": [2, "always", {"omitLastInOneLineBlock": true }],
+    "space-before-blocks": [2, "always"],
     "space-before-function-paren": [2, "never"],
     "strict": 2,
     "wrap-iife": [2, "inside"]
