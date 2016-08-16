@@ -38,7 +38,11 @@ describe('SerialPort light integration', function() {
   });
 
   it('.list', function(done) {
-    SerialPort.list(done);
+    SerialPort.list(function(err, ports) {
+      assert.equal(err, null);
+      assert.isTrue(Array.isArray(ports));
+      done();
+    });
   });
 
   // Be careful to close the ports when you're done with them

@@ -31,7 +31,7 @@ describe('SerialPort Integration Tests', function() {
           foundPort = true;
         }
       });
-      assert.isTrue(foundPort);
+      assert.isTrue(foundPort, 'Could not find the port: ' + testPort + " in \n" + JSON.stringify(ports));
       done();
     });
   });
@@ -44,26 +44,46 @@ describe('SerialPort Integration Tests', function() {
       return it("Isn't supported on windows yet");
     }
 
-    it('allows changing the baud rate of an open port', function(done) {
-      var port = new SerialPort(testPort, function() {
-        port.update({baudRate: 57600}, function(err) {
-          assert.isNull(err);
-          port.close(done);
-        });
-      });
-    });
-    it('can still read and write after a baud change');
+    // This can't be tested on an UNO because it resets the uno
+    it('can still read and write after a baud change');//, function(done) {
+    //   var port = new SerialPort(testPort, {
+    //     parser: SerialPort.parsers.byteLength(1)
+    //   });
+
+    //   port.once('data', function(message) {
+    //     assert.deepEqual(message, new Buffer([0]));
+    //     // set baud to 57600
+    //     port.write(new Buffer([130]), function(err){
+    //       assert.equal(err, null);
+    //     });
+    //     port.update({baudRate: 57600}, function(err){
+    //       assert.equal(err, null);
+    //     });
+
+    //     // The arduino will change rates after the write
+    //     // sleep 500ms and let us know it's done
+    //     port.once('data', function(message){
+    //       assert.deepEqual(message, new Buffer([130]));
+    //       // Then lets see if we can still chat
+    //       port.write('!');
+    //       port.once('data', function(message){
+    //         assert.deepEqual(message, new Buffer('!'));
+    //         port.close(done);
+    //       });
+    //     });
+    //   });
+    // });
   });
 
   describe('#read and #write', function() {
     it('writes 5k and reads it back', function(done) {
       this.timeout(20000);
-      // 5k of random ascii
+      // 5k of random ASCII
       var output = new Buffer(crypto.randomBytes(5000).toString('ascii'));
-      var expectedInput = Buffer.concat([new Buffer('READY'), output]);
+      var expectedInput = Buffer.concat([new Buffer([0]), output]);
       var port = new SerialPort(testPort);
 
-      // this will trigger from the "READY" the arduino sends when it's... ready
+      // this will trigger from the ready byte the arduino sends when it's... ready
       port.once('data', function(){
         port.write(output);
       });

@@ -61,6 +61,8 @@
     "object.assign": "^4.0.3"
   },
   "devDependencies": {
+    "avr-pizza": "^0.2.0",
+    "avrgirl-arduino": "^1.9.2",
     "chai": "^3.5.0",
     "chai-subset": "^1.2.2",
     "coveralls": "^2.11.9",
@@ -87,6 +89,9 @@
   },
   "license": "MIT",
   "scripts": {
+    "arduino:compile": "avr-pizza compile -a uno -s test/arduinoTest/arduinoEcho/arduinoEcho.ino -o test/arduinoTest/arduinoEcho",
+    "arduino:diff": "echo 'help me noopkat! && false",
+    "arduino:load": "node bin/require-test-port.js && avrgirl-arduino flash -f test/arduinoTest/arduinoEcho/arduinoEcho.ino.hex -a uno -p $TEST_PORT -v",
     "docs": "jsdoc2md -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs -r table --separators --name-format lib/* > README.md",
     "docs:diff": "jsdoc2md -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs -r table --separators --name-format lib/* | diff README.md - || (echo 'Docs out of date, run `npm run docs` and commit the new README.md' && false)",
     "install": "node-pre-gyp install --fallback-to-build",
