@@ -327,6 +327,18 @@ describe('SerialPort', function() {
         port.open(spy);
         port.open(spy);
       });
+
+      it('allows opening after an open error', function(done) {
+        var stub = sandbox.stub(bindings, 'open', function(path, opt, cb) {
+          cb(new Error('haha no'));
+        });
+        var port = new SerialPort('/dev/exists', { autoOpen: false });
+        port.open(function(err) {
+          assert.instanceOf(err, Error);
+          stub.restore();
+          port.open(done);
+        });
+      });
     });
 
     describe('#close', function() {
