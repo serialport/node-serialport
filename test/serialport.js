@@ -58,7 +58,7 @@ describe('SerialPort', function() {
         port.on('open', done);
       });
 
-      it("doesn't open if told not to", function(done){
+      it("doesn't open if told not to", function(done) {
         var port = new SerialPort('/dev/exists', { autoOpen: false });
         port.on('open', function() {
           throw new Error("this shouldn't be opening");
@@ -85,7 +85,7 @@ describe('SerialPort', function() {
     it('throws an error when no port is provided', function(done) {
       try {
         this.port = new SerialPort('');
-      } catch(err){
+      } catch(err) {
         assert.instanceOf(err, Error);
         done();
       }
@@ -94,7 +94,7 @@ describe('SerialPort', function() {
     it('throws an error when given bad options even with a callback', function(done) {
       try {
         this.port = new SerialPort('/dev/exists', { baudRate: 'whatever'}, function() {});
-      } catch(err){
+      } catch(err) {
         assert.instanceOf(err, Error);
         done();
       }
@@ -103,7 +103,7 @@ describe('SerialPort', function() {
     it('errors with a non number baudRate', function(done) {
       try {
         this.port = new SerialPort('/bad/port', { baudRate: 'whatever'});
-      } catch(err){
+      } catch(err) {
         assert.instanceOf(err, Error);
         done();
       }
@@ -112,7 +112,7 @@ describe('SerialPort', function() {
     it('errors with invalid databits', function(done) {
       try {
         this.port = new SerialPort('/dev/exists', { dataBits: 19 });
-      } catch(err){
+      } catch(err) {
         assert.instanceOf(err, Error);
         done();
       }
@@ -121,7 +121,7 @@ describe('SerialPort', function() {
     it('errors with invalid stopbits', function(done) {
       try {
         this.port = new SerialPort('/dev/exists', { stopBits: 19 });
-      } catch(err){
+      } catch(err) {
         assert.instanceOf(err, Error);
         done();
       }
@@ -130,7 +130,7 @@ describe('SerialPort', function() {
     it('errors with invalid parity', function(done) {
       try {
         this.port = new SerialPort('/dev/exists', { parity: 'pumpkins' });
-      } catch(err){
+      } catch(err) {
         assert.instanceOf(err, Error);
         done();
       }
@@ -139,7 +139,7 @@ describe('SerialPort', function() {
     it('errors with invalid flow control', function(done) {
       try {
         this.port = new SerialPort('/dev/exists', { xon: 'pumpkins' });
-      } catch(err){
+      } catch(err) {
         assert.instanceOf(err, Error);
         done();
       }
@@ -167,8 +167,8 @@ describe('SerialPort', function() {
   });
 
   describe('Properties', function() {
-    describe('.path', function(){
-      it('is a read only property set during construction', function(){
+    describe('.path', function() {
+      it('is a read only property set during construction', function() {
         var port = new SerialPort('/dev/exists', {autoOpen: false});
         assert.equal(port.path, '/dev/exists');
         try {
