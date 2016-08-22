@@ -88,7 +88,8 @@ install:
         }
 
         npm install -g electron-prebuilt@$env:electron_version
-        npm install -g electron-mocha
+        npm install -g istanbul
+        npm install electron-mocha
       }
       true;
 
@@ -106,7 +107,7 @@ test_script:
   - ps: >
       if ($env:electron_version) {
         electron test/electron
-        electron-mocha test/*.js test/arduinoTest/integration.js test/integration-lite.js
+        istanbul cover ./node_modules/electron-mocha/bin/electron-mocha test/*.js test/arduinoTest/integration.js test/integration-lite.js
       } else {
         node ./
         npm test
@@ -117,7 +118,7 @@ test_script:
   - IF %PUBLISH_BINARY% == 1 (npm install --fallback-to-build=false)
 
 on_success:
-  - IF %RUN_TESTS% == 1 (npm run report-coverage)
+  - npm run report-coverage
 
 deploy: OFF
 

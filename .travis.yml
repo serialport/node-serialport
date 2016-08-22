@@ -108,6 +108,7 @@ before_install:
     export npm_config_runtime=electron
 
     npm install --arch=$ARCH electron-prebuilt@$TRAVIS_ELECTRON_VERSION
+    npm install -g istanbul
     npm install electron-mocha
   fi
 
@@ -125,7 +126,7 @@ script:
     npm test
   else
     electron test/electron
-    electron-mocha test/*.js test/arduinoTest/integration.js test/integration-lite.js
+    istanbul cover ./node_modules/electron-mocha/bin/electron-mocha test/*.js test/arduinoTest/integration.js test/integration-lite.js
   fi
 
 # if publishing, do it
