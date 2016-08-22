@@ -31,7 +31,7 @@
 
   #define _AFX_ALL_WARNINGS // turns off MFC's hiding of some common and often safely ignored warning messages
 
-  #include <afxext.h> 
+  #include <afxext.h>
   #include <afxtempl.h>
   #include <atlbase.h>
 #else

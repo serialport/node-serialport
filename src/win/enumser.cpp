@@ -1,17 +1,17 @@
 /*
 Module : enumser.cpp
 Purpose: Implementation for a class to enumerate the serial ports installed on a PC using a number
-         of different approaches. 
+         of different approaches.
 Created: PJN / 03-10-1998
-History: PJN / 23-02-1999 Code now uses QueryDosDevice if running on NT to determine 
-                          which serial ports are available. This avoids having to open 
+History: PJN / 23-02-1999 Code now uses QueryDosDevice if running on NT to determine
+                          which serial ports are available. This avoids having to open
                           the ports at all. It should operate a lot faster in addition.
-         PJN / 12-12-1999 Fixed a problem in the Win9x code path when trying to detect 
-                          deactivated IRDA-ports. When trying to open those, you will 
+         PJN / 12-12-1999 Fixed a problem in the Win9x code path when trying to detect
+                          deactivated IRDA-ports. When trying to open those, you will
                           get the error-code ERROR_GEN_FAILURE.�
-         PJN / 17-05-2000 Code now uses GetDefaultCommConfig in all cases to detect 
+         PJN / 17-05-2000 Code now uses GetDefaultCommConfig in all cases to detect
                           the ports.
-         PJN / 29-03-2001 1. Reverted code to use CreateFile or QueryDosDevice as it is 
+         PJN / 29-03-2001 1. Reverted code to use CreateFile or QueryDosDevice as it is
                           much faster than using the GetDefaultCommConfig method
                           2. Updated copyright message
          PJN / 25-06-2001 1. Guess what, You now have the choice of using the GetDefaultCommConfig
@@ -19,10 +19,10 @@ History: PJN / 23-02-1999 Code now uses QueryDosDevice if running on NT to deter
                           2. Fixed problem where port fails to be reported thro the CreateFile
                           mechanism when the error code is ERROR_SHARING_VIOLATION i.e. someone
                           has the port already open
-         PJN / 11-08-2001 1. Made code path which uses QueryDosDevice more robust by checking to 
+         PJN / 11-08-2001 1. Made code path which uses QueryDosDevice more robust by checking to
                           make sure the device name is of the form "COMxyz.." where xyz are numeric
          PJN / 13-08-2001 1. Made the code in IsNumeric more robust when sent an empty string
-                          2. Optimized the code in EnumerateSerialPorts2 somewhat. Thanks to Dennis 
+                          2. Optimized the code in EnumerateSerialPorts2 somewhat. Thanks to Dennis
                           Lim for these suggestions.
          PJN / 22-05-2003 1. Updated copyright details.
                           2. Addition of a "EnumerateSerialPorts4" which uses Device Manager API
@@ -32,19 +32,19 @@ History: PJN / 23-02-1999 Code now uses QueryDosDevice if running on NT to deter
                           2. Addition of a "EnumerateSerialPorts6" (See Note 4 below) which uses WMI.
                           3. You can now optionally exclude each function using preprocessor defines
                           of the form "NO_ENUMSERIAL_USING_XYX".
-                          4. Made the functions members of a C++ class and renamed them to 
+                          4. Made the functions members of a C++ class and renamed them to
                           use more meaningful names
          PJN / 13-05-2004 1. Extended CEnumerateSerial::UsingSetupAPI to now also return the friendly
                           name of the port. Thanks to Jay C. Howard for prompting this update.
          PJN / 08-07-2006 1. Updated copyright details.
-                          2. Addition of a CENUMERATESERIAL_EXT_CLASS macro to allow the code to be 
+                          2. Addition of a CENUMERATESERIAL_EXT_CLASS macro to allow the code to be
                           easily added to an extension dll.
                           3. Code now uses newer C++ style casts instead of C style casts.
                           4. Updated the code to clean compile on VC 2005.
                           5. Updated the documentation to use the same style as the web site.
          PJN / 08-11-2006 1. Extended CEnumerateSerial::UsingWMI to now also return the friendly
                           name of the port. Thanks to Giovanni Bajo for providing this update.
-                          2. Fixed a bug where CEnumerateSerial::UsingSetupAPI forget to empty out 
+                          2. Fixed a bug where CEnumerateSerial::UsingSetupAPI forget to empty out
                           the Friendly name array on start.
                           3. VariantInit is now called for the 2 VARIANT structs used in the UsingWMI
                           method code.
@@ -54,13 +54,13 @@ History: PJN / 23-02-1999 Code now uses QueryDosDevice if running on NT to deter
                           3. Detection code which uses CreateFile call, now treats the error code
                           of ERROR_SEM_TIMEOUT as indication that a port is present.
          PJN / 09-06-2007 1. Following feedback from John Miles, it looks like my previous change of the
-                          29 January 2007 to use GUID_DEVINTERFACE_COMPORT in the UsingSetupAPI method 
-                          had the unintended consequence of causing this method not to work on any 
-                          versions of Windows prior to Windows 2000. What I have now done is reinstate 
-                          the old mechanism using the name UsingSetupAPI2 so that you can continue to use 
-                          this approach if you need to support NT 4 and Windows 9x. The new approach of 
+                          29 January 2007 to use GUID_DEVINTERFACE_COMPORT in the UsingSetupAPI method
+                          had the unintended consequence of causing this method not to work on any
+                          versions of Windows prior to Windows 2000. What I have now done is reinstate
+                          the old mechanism using the name UsingSetupAPI2 so that you can continue to use
+                          this approach if you need to support NT 4 and Windows 9x. The new approach of
                           using GUID_DEVINTERFACE_COMPORT has been renamed to UsingSetupAPI1.
-         PJN / 05-07-2007 1. Updated the code to work if the code does not include MFC. In this case, 
+         PJN / 05-07-2007 1. Updated the code to work if the code does not include MFC. In this case,
                           CUIntArray parameters becomes the ATL class CSimpleArray<UINT> and CStringArray
                           parameters become the ATL class CSimpleArray<CString>. Please note that this
                           support requires a recentish copy of Visual Studio and will not support Visual
@@ -73,42 +73,42 @@ History: PJN / 23-02-1999 Code now uses QueryDosDevice if running on NT to deter
                           UsingSetupAPI2 functionality
                           3. Updated sample app to clean compile on VC 2008
          PJN / 23-11-2008 1. Updated code to compile correctly using _ATL_CSTRING_EXPLICIT_CONSTRUCTORS define
-                          2. The code now only supports VC 2005 or later. 
+                          2. The code now only supports VC 2005 or later.
                           3. Code now compiles cleanly using Code Analysis (/analyze)
-                          4. Yes, Addition of another method called "UsingComDB" to enumerate serial ports!. 
-                          This function uses the so called "COM Database" functions which are part of the 
-                          Windows DDK which device drivers can use to support claiming an unused port number 
-                          when the device driver is being installed. Please note that the list returning from 
-                          this function will only report used port numbers. The device may or may not be 
-                          actually present, just that the associated port number is currently "claimed". 
-                          Thanks to Dmitry Nikitin for prompting this very nice addition. The code now 
+                          4. Yes, Addition of another method called "UsingComDB" to enumerate serial ports!.
+                          This function uses the so called "COM Database" functions which are part of the
+                          Windows DDK which device drivers can use to support claiming an unused port number
+                          when the device driver is being installed. Please note that the list returning from
+                          this function will only report used port numbers. The device may or may not be
+                          actually present, just that the associated port number is currently "claimed".
+                          Thanks to Dmitry Nikitin for prompting this very nice addition. The code now
                           supports a total of 8 different ways to enumerate serial ports!
          PJN / 29-11-2008 1. Addition of a ninth and hopefully final method to enumerate serial ports. The
-                          function is called "UsingRegistry" and enumerates the ports by examining the 
+                          function is called "UsingRegistry" and enumerates the ports by examining the
                           registry location at HKEY_LOCAL_MACHINE\HARDWARE\DEVICEMAP\SERIALCOMM. Thanks to
                           Martin Oberhuber for prompting this update.
-                          2. Fixed a bug where the last error value was not being preserved in 
+                          2. Fixed a bug where the last error value was not being preserved in
                           CEnumerateSerial::UsingComDB.
          PJN / 30-04-2009 1. Updated copyright details.
                           2. Updated the sample app's project settings to more modern default values.
                           3. Updated the sample app to log the time taken for the various methods.
          PJN / 27-03-2010 1. Updated copyright details.
-                          2. Code can now optionally use STL instead of MFC or ATL in the API. To use STL 
-                          containers instead of MFC or ATL versions, please define CENUMERATESERIAL_USE_STL before 
+                          2. Code can now optionally use STL instead of MFC or ATL in the API. To use STL
+                          containers instead of MFC or ATL versions, please define CENUMERATESERIAL_USE_STL before
                           you include enumser in your project. Please note that the code still internally uses ATL
                           in the UsingWMI method, but the other functions do not. This means that the class should
-                          now be partly compilable on VC Express (2005, 2008 or 2010) as none of these have support 
-                          for ATL or MFC. I do not personally have VC Express installed so people's feedback on 
-                          this would be appreciated. Thanks to Bill Adair for providing this update. 
+                          now be partly compilable on VC Express (2005, 2008 or 2010) as none of these have support
+                          for ATL or MFC. I do not personally have VC Express installed so people's feedback on
+                          this would be appreciated. Thanks to Bill Adair for providing this update.
          PJN / 28-03-2011 1. Updated copyright details.
-                          2. Updated the UsingComDB method to fix an off by one issue. This resulting in the list of 
-                          ports this function reported being incorrect. Thanks to "Jar, Min, Jeong" for reporting 
+                          2. Updated the UsingComDB method to fix an off by one issue. This resulting in the list of
+                          ports this function reported being incorrect. Thanks to "Jar, Min, Jeong" for reporting
                           this issue.
                           3. Updated sample app to compile cleanly on VC 2010
          PJN / 14-10-2012 1. Updated copyright details.
-                          2. Code no longer uses LoadLibrary without an absolute path when loading SETUPAPI and 
+                          2. Code no longer uses LoadLibrary without an absolute path when loading SETUPAPI and
                           MSPORTS dlls. This avoids DLL planting security issues.
-                          3. Added a new internal CAutoHandle and CAutoHModule classes which makes the implementation 
+                          3. Added a new internal CAutoHandle and CAutoHModule classes which makes the implementation
                           for CEnumerateSerial simpler
                           4. Code now uses an internal RegQueryValueString method to ensure that data returned
                           from raw Win32 API call RegQueryValueEx is null terminated before it is treated as such
@@ -122,20 +122,20 @@ History: PJN / 23-02-1999 Code now uses QueryDosDevice if running on NT to deter
                           5. Removed ATL usage completely from UsingQueryDevice, UsingSetupAPI2 and UsingEnumPorts.
                           This should allow these methods to support compilers which do not have support for ATL such
                           as VC Express SKUs.
-          PJN /28-07-2013 1. Did some very light cleanup of the code to reduce dependencies when #defining out parts of 
+          PJN /28-07-2013 1. Did some very light cleanup of the code to reduce dependencies when #defining out parts of
                           the code. Thanks to Jay Beavers for providing this update.
-         
+
 Copyright (c) 1998 - 2013 by PJ Naughter (Web: www.naughter.com, Email: pjna@naughter.com)
 
 All rights reserved.
 
 Copyright / Usage Details:
 
-You are allowed to include the source code in any product (commercial, shareware, freeware or otherwise) 
-when your product is released in binary form. You are allowed to modify the source code in any way you want 
-except you cannot modify the copyright details at the top of each module. If you want to distribute source 
-code with your application, then you are only allowed to distribute versions released by the author. This is 
-to maintain a single distribution point for the source code. 
+You are allowed to include the source code in any product (commercial, shareware, freeware or otherwise)
+when your product is released in binary form. You are allowed to modify the source code in any way you want
+except you cannot modify the copyright details at the top of each module. If you want to distribute source
+code with your application, then you are only allowed to distribute versions released by the author. This is
+to maintain a single distribution point for the source code.
 
 */
 
@@ -167,14 +167,14 @@ to maintain a single distribution point for the source code.
   #ifndef GUID_DEVINTERFACE_COMPORT
     DEFINE_GUID(GUID_DEVINTERFACE_COMPORT, 0x86E0D1E0L, 0x8089, 0x11D0, 0x9C, 0xE4, 0x08, 0x00, 0x3E, 0x30, 0x1F, 0x73);
   #endif
-  
+
   typedef HKEY (__stdcall SETUPDIOPENDEVREGKEY)(HDEVINFO, PSP_DEVINFO_DATA, DWORD, DWORD, DWORD, REGSAM);
   typedef BOOL (__stdcall SETUPDICLASSGUIDSFROMNAME)(LPCTSTR, LPGUID, DWORD, PDWORD);
   typedef BOOL (__stdcall SETUPDIDESTROYDEVICEINFOLIST)(HDEVINFO);
   typedef BOOL (__stdcall SETUPDIENUMDEVICEINFO)(HDEVINFO, DWORD, PSP_DEVINFO_DATA);
   typedef HDEVINFO (__stdcall SETUPDIGETCLASSDEVS)(LPGUID, LPCTSTR, HWND, DWORD);
   typedef BOOL (__stdcall SETUPDIGETDEVICEREGISTRYPROPERTY)(HDEVINFO, PSP_DEVINFO_DATA, DWORD, PDWORD, PBYTE, DWORD, PDWORD);
-#endif  
+#endif
 
 #ifndef NO_ENUMSERIAL_USING_ENUMPORTS
   #ifndef _WINSPOOL_
@@ -188,7 +188,7 @@ to maintain a single distribution point for the source code.
   #pragma message("To avoid this message, please put WBemCli.h in your pre compiled header (normally stdafx.h)")
   #include <WbemCli.h>
   #endif
-  
+
   #ifndef _INC_COMDEF
   #pragma message("To avoid this message, please put comdef.h in your pre compiled header (normally stdafx.h)")
   #include <comdef.h>
@@ -197,7 +197,7 @@ to maintain a single distribution point for the source code.
   #ifndef __ATLBASE_H__
   #pragma message("EnumSerialPorts as of v1.16 requires ATL support to implement its functionality. If your project is MFC only, then you need to update it to include ATL support")
   #endif
-  
+
   //Automatically pull in the library WbemUuid.Lib since we need the WBem Guids
   #pragma comment(lib, "WbemUuid.Lib")
 #endif
@@ -207,11 +207,11 @@ to maintain a single distribution point for the source code.
     DECLARE_HANDLE(HCOMDB);
     typedef HCOMDB *PHCOMDB;
   #endif
-  
+
   #ifndef CDB_REPORT_BYTES
-    #define CDB_REPORT_BYTES 0x1  
+    #define CDB_REPORT_BYTES 0x1
   #endif
-  
+
   typedef LONG (__stdcall COMDBOPEN)(PHCOMDB);
   typedef LONG (__stdcall COMDBCLOSE)(HCOMDB);
   typedef LONG (__stdcall COMDBGETCURRENTPORTUSAGE)(HCOMDB, PBYTE, DWORD, ULONG, LPDWORD);
@@ -234,11 +234,11 @@ BOOL CEnumerateSerial::UsingCreateFile(CSimpleArray<UINT>& ports)
   ports.clear();
 #else
   ports.RemoveAll();
-#endif  
+#endif
 
   //Up to 255 COM ports are supported so we iterate through all of them seeing
   //if we can open them or if we fail to open them, get an access denied or general error error.
-  //Both of these cases indicate that there is a COM port at that number. 
+  //Both of these cases indicate that there is a COM port at that number.
   for (UINT i=1; i<256; i++)
   {
     //Form the Raw device name
@@ -269,7 +269,7 @@ BOOL CEnumerateSerial::UsingCreateFile(CSimpleArray<UINT>& ports)
       ports.push_back(i);
     #else
       ports.Add(i);
-    #endif  
+    #endif
     }
   }
 
@@ -287,7 +287,7 @@ HMODULE CEnumerateSerial::LoadLibraryFromSystem32(LPCTSTR lpFileName)
   if (GetSystemDirectory(szFullPath, _countof(szFullPath)) == 0)
     return NULL;
 
-  //Setup the full path and delegate to LoadLibrary    
+  //Setup the full path and delegate to LoadLibrary
   _tcscat_s(szFullPath, _countof(szFullPath), _T("\\"));
   _tcscat_s(szFullPath, _countof(szFullPath), lpFileName);
   return LoadLibrary(szFullPath);
@@ -300,7 +300,7 @@ BOOL CEnumerateSerial::RegQueryValueString(HKEY kKey, LPCTSTR lpValueName, LPTST
   //Initialize the output parameter
   pszValue = NULL;
 
-  //First query for the size of the registry value 
+  //First query for the size of the registry value
   DWORD dwType = 0;
   DWORD dwDataSize = 0;
   LONG nError = RegQueryValueEx(kKey, lpValueName, NULL, &dwType, NULL, &dwDataSize);
@@ -319,7 +319,7 @@ BOOL CEnumerateSerial::RegQueryValueString(HKEY kKey, LPCTSTR lpValueName, LPTST
 
   //Allocate enough bytes for the return value
   DWORD dwAllocatedSize = dwDataSize + sizeof(TCHAR); //+sizeof(TCHAR) is to allow us to NULL terminate the data if it is not null terminated in the registry
-  pszValue = reinterpret_cast<LPTSTR>(LocalAlloc(LMEM_FIXED, dwAllocatedSize)); 
+  pszValue = reinterpret_cast<LPTSTR>(LocalAlloc(LMEM_FIXED, dwAllocatedSize));
   if (pszValue == NULL)
     return FALSE;
 
@@ -435,7 +435,7 @@ BOOL CEnumerateSerial::UsingQueryDosDevice(CSimpleArray<UINT>& ports)
   ports.clear();
 #else
   ports.RemoveAll();
-#endif  
+#endif
 
   //Determine what OS we are running on
   OSVERSIONINFO osvi;
@@ -473,7 +473,7 @@ BOOL CEnumerateSerial::UsingQueryDosDevice(CSimpleArray<UINT>& ports)
           bSuccess = TRUE;
           bWantStop = TRUE;
           size_t i=0;
-          
+
           while (pszDevices[i] != _T('\0'))
           {
             //Get the current device name
@@ -492,7 +492,7 @@ BOOL CEnumerateSerial::UsingQueryDosDevice(CSimpleArray<UINT>& ports)
                 ports.push_back(nPort);
               #else
                 ports.Add(nPort);
-              #endif  
+              #endif
               }
             }
 
@@ -504,7 +504,7 @@ BOOL CEnumerateSerial::UsingQueryDosDevice(CSimpleArray<UINT>& ports)
       else
       {
         bWantStop = TRUE;
-        SetLastError(ERROR_OUTOFMEMORY);        
+        SetLastError(ERROR_OUTOFMEMORY);
       }
     }
   }
@@ -529,7 +529,7 @@ BOOL CEnumerateSerial::UsingGetDefaultCommConfig(CSimpleArray<UINT>& ports)
   ports.clear();
 #else
   ports.RemoveAll();
-#endif  
+#endif
 
   //Up to 255 COM ports are supported so we iterate through all of them seeing
   //if we can get the default configuration
@@ -547,7 +547,7 @@ BOOL CEnumerateSerial::UsingGetDefaultCommConfig(CSimpleArray<UINT>& ports)
       ports.push_back(i);
     #else
       ports.Add(i);
-    #endif  
+    #endif
     }
   }
 
@@ -576,7 +576,7 @@ BOOL CEnumerateSerial::UsingSetupAPI1(CSimpleArray<UINT>& ports, CSimpleArray<CS
 #else
   ports.RemoveAll();
   friendlyNames.RemoveAll();
-#endif  
+#endif
 
   //Get the various function pointers we require from setupapi.dll
   CAutoHModule setupAPI(LoadLibraryFromSystem32(_T("SETUPAPI.DLL")));
@@ -602,7 +602,7 @@ BOOL CEnumerateSerial::UsingSetupAPI1(CSimpleArray<UINT>& ports, CSimpleArray<CS
 
     return FALSE;
   }
-  
+
   //Now create a "device information set" which is required to enumerate all the ports
   GUID guid = GUID_DEVINTERFACE_COMPORT;
   HDEVINFO hDevInfoSet = lpfnSETUPDIGETCLASSDEVS(&guid, NULL, NULL, DIGCF_PRESENT | DIGCF_DEVICEINTERFACE);
@@ -610,7 +610,7 @@ BOOL CEnumerateSerial::UsingSetupAPI1(CSimpleArray<UINT>& ports, CSimpleArray<CS
   {
     //Set the error to report
     setupAPI.m_dwError = GetLastError();
-  
+
     return FALSE;
   }
 
@@ -639,7 +639,7 @@ BOOL CEnumerateSerial::UsingSetupAPI1(CSimpleArray<UINT>& ports, CSimpleArray<CS
           ports.push_back(nPort);
         #else
           ports.Add(nPort);
-        #endif  
+        #endif
           bAdded = TRUE;
         }
 
@@ -660,7 +660,7 @@ BOOL CEnumerateSerial::UsingSetupAPI1(CSimpleArray<UINT>& ports, CSimpleArray<CS
           friendlyNames.push_back(szFriendlyName);
         #else
           friendlyNames.Add(szFriendlyName);
-        #endif  
+        #endif
         }
         else
         {
@@ -668,7 +668,7 @@ BOOL CEnumerateSerial::UsingSetupAPI1(CSimpleArray<UINT>& ports, CSimpleArray<CS
           friendlyNames.push_back(_T(""));
         #else
           friendlyNames.Add(_T(""));
-        #endif  
+        #endif
         }
       }
     }
@@ -704,9 +704,9 @@ BOOL CEnumerateSerial::UsingSetupAPI2(CSimpleArray<UINT>& ports, CSimpleArray<CS
 #else
   ports.RemoveAll();
   friendlyNames.RemoveAll();
-#endif  
+#endif
 
-  //Get the function pointers to "SetupDiGetClassDevs", "SetupDiGetClassDevs", "SetupDiEnumDeviceInfo", "SetupDiOpenDevRegKey" 
+  //Get the function pointers to "SetupDiGetClassDevs", "SetupDiGetClassDevs", "SetupDiEnumDeviceInfo", "SetupDiOpenDevRegKey"
   //and "SetupDiDestroyDeviceInfoList" in setupapi.dll
   CAutoHModule setupAPI(LoadLibraryFromSystem32(_T("SETUPAPI.DLL")));
   if (setupAPI == NULL)
@@ -733,7 +733,7 @@ BOOL CEnumerateSerial::UsingSetupAPI2(CSimpleArray<UINT>& ports, CSimpleArray<CS
 
     return FALSE;
   }
-  
+
   //First need to convert the name "Ports" to a GUID using SetupDiClassGuidsFromName
   DWORD dwGuids = 0;
   lpfnSETUPDICLASSGUIDSFROMNAME(_T("Ports"), NULL, 0, &dwGuids);
@@ -800,7 +800,7 @@ BOOL CEnumerateSerial::UsingSetupAPI2(CSimpleArray<UINT>& ports, CSimpleArray<CS
           ports.push_back(nPort);
         #else
           ports.Add(nPort);
-        #endif  
+        #endif
           bAdded = TRUE;
         }
 
@@ -821,7 +821,7 @@ BOOL CEnumerateSerial::UsingSetupAPI2(CSimpleArray<UINT>& ports, CSimpleArray<CS
           friendlyNames.push_back(szFriendlyName);
         #else
           friendlyNames.Add(szFriendlyName);
-        #endif  
+        #endif
         }
         else
         {
@@ -829,7 +829,7 @@ BOOL CEnumerateSerial::UsingSetupAPI2(CSimpleArray<UINT>& ports, CSimpleArray<CS
           friendlyNames.push_back(_T(""));
         #else
           friendlyNames.Add(_T(""));
-        #endif  
+        #endif
         }
       }
     }
@@ -859,7 +859,7 @@ BOOL CEnumerateSerial::UsingEnumPorts(CSimpleArray<UINT>& ports)
   ports.clear();
 #else
   ports.RemoveAll();
-#endif  
+#endif
 
   //Call the first time to determine the size of the buffer to allocate
   DWORD cbNeeded = 0;
@@ -893,7 +893,7 @@ BOOL CEnumerateSerial::UsingEnumPorts(CSimpleArray<UINT>& ports)
             ports.push_back(nPort);
           #else
             ports.Add(nPort);
-          #endif  
+          #endif
           }
         }
 
@@ -902,8 +902,8 @@ BOOL CEnumerateSerial::UsingEnumPorts(CSimpleArray<UINT>& ports)
     }
   }
   else
-    SetLastError(ERROR_OUTOFMEMORY);        
-  
+    SetLastError(ERROR_OUTOFMEMORY);
+
   return bSuccess;
 }
 #endif
@@ -928,7 +928,7 @@ BOOL CEnumerateSerial::UsingWMI(CSimpleArray<UINT>& ports, CSimpleArray<CString>
 #else
   ports.RemoveAll();
   friendlyNames.RemoveAll();
-#endif  
+#endif
 
   //What will be the return value
   BOOL bSuccess = FALSE;
@@ -980,16 +980,16 @@ BOOL CEnumerateSerial::UsingWMI(CSimpleArray<UINT>& ports, CSimpleArray<CString>
                   //Also get the friendly name of the port
                   ATL::CComVariant varProperty2;
                   if Nan::Get((SUCCEEDED(apObj[n], L"Name", 0, &varProperty2, NULL, NULL)) && (varProperty2.vt == VT_BSTR))
-                  {  
+                  {
                 #if defined CENUMERATESERIAL_USE_STL
-                  #if defined _UNICODE  
+                  #if defined _UNICODE
                     std::wstring szName(varProperty2.bstrVal);
                   #else
                     std::string szName(ATL::CW2A(varProperty2.bstrVal));
                   #endif
                     friendlyNames.push_back(szName);
                   #else
-                    friendlyNames.Add(CString(varProperty2.bstrVal));    
+                    friendlyNames.Add(CString(varProperty2.bstrVal));
                   #endif
                   }
                   else
@@ -998,7 +998,7 @@ BOOL CEnumerateSerial::UsingWMI(CSimpleArray<UINT>& ports, CSimpleArray<CString>
                     friendlyNames.push_back(_T(""));
                   #else
                     friendlyNames.Add(_T(""));
-                  #endif  
+                  #endif
                   }
                 }
               }
@@ -1008,7 +1008,7 @@ BOOL CEnumerateSerial::UsingWMI(CSimpleArray<UINT>& ports, CSimpleArray<CString>
       }
     }
   }
-  
+
   return bSuccess;
 }
 #endif
@@ -1027,11 +1027,11 @@ BOOL CEnumerateSerial::UsingComDB(CSimpleArray<UINT>& ports)
   ports.clear();
 #else
   ports.RemoveAll();
-#endif  
+#endif
 
   //What will be the return value from this function (assume the worst)
   BOOL bSuccess = FALSE;
-  
+
   //Get the function pointers to "ComDBOpen", "ComDBClose" & "ComDBGetCurrentPortUsage" in msports.dll
   CAutoHModule msPorts(LoadLibraryFromSystem32(_T("MSPORTS.DLL")));
   if (msPorts == NULL)
@@ -1080,7 +1080,7 @@ BOOL CEnumerateSerial::UsingComDB(CSimpleArray<UINT>& ports)
       }
       else
         msPorts.m_dwError = dwPortUsage;
-    
+
       //Close the DB
       lpfnLPCOMDBCLOSE(hComDB);
     }
@@ -1112,7 +1112,7 @@ BOOL CEnumerateSerial::UsingRegistry(CSimpleArray<CString>& ports)
   ports.clear();
 #else
   ports.RemoveAll();
-#endif  
+#endif
 
   //What will be the return value from this function (assume the worst)
   BOOL bSuccess = FALSE;
@@ -1130,8 +1130,8 @@ BOOL CEnumerateSerial::UsingRegistry(CSimpleArray<CString>& ports)
       DWORD dwMaxValueNameSizeInBytes = dwMaxValueNameSizeInChars * sizeof(TCHAR);
       DWORD dwMaxValueDataSizeInChars = dwMaxValueLen/sizeof(TCHAR) + 1; //Include space for the NULL terminator
       DWORD dwMaxValueDataSizeInBytes = dwMaxValueDataSizeInChars * sizeof(TCHAR);
-    
-      //Allocate some space for the value name and value data			
+
+      //Allocate some space for the value name and value data
       CAutoHeapAlloc valueName;
       CAutoHeapAlloc valueData;
       if (valueName.Allocate(dwMaxValueNameSizeInBytes) && valueData.Allocate(dwMaxValueDataSizeInBytes))
@@ -1158,7 +1158,7 @@ BOOL CEnumerateSerial::UsingRegistry(CSimpleArray<CString>& ports)
             ports.push_back(szPort);
           #else
             ports.Add(szPort);
-          #endif  						
+          #endif
           }
 
           //Prepare for the next time around
@@ -1173,14 +1173,14 @@ BOOL CEnumerateSerial::UsingRegistry(CSimpleArray<CString>& ports)
       else
         SetLastError(ERROR_OUTOFMEMORY);
     }
-    
-    //Close the registry key now that we are finished with it    
+
+    //Close the registry key now that we are finished with it
     RegCloseKey(hSERIALCOMM);
-    
+
     if (dwQueryInfo != ERROR_SUCCESS)
       SetLastError(dwQueryInfo);
   }
-  
+
   return bSuccess;
 }
 #endif
