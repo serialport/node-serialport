@@ -1,9 +1,9 @@
 #include "./serialport.h"
 
 #ifdef WIN32
-#define strncasecmp strnicmp
+  #define strncasecmp strnicmp
 #else
-#include "./serialport_poller.h"
+  #include "./read-poller.h"
 #endif
 
 struct _WriteQueue {
@@ -128,7 +128,6 @@ NAN_METHOD(Open) {
   strcpy(baton->path, *path);
   baton->baudRate = getIntFromObject(options, "baudRate");
   baton->dataBits = getIntFromObject(options, "dataBits");
-  baton->bufferSize = getIntFromObject(options, "bufferSize");
   baton->parity = ToParityEnum(getStringFromObj(options, "parity"));
   baton->stopBits = ToStopBitEnum(getDoubleFromObject(options, "stopBits"));
   baton->rtscts = getBoolFromObject(options, "rtscts");
@@ -137,21 +136,17 @@ NAN_METHOD(Open) {
   baton->xany = getBoolFromObject(options, "xany");
   baton->hupcl = getBoolFromObject(options, "hupcl");
   baton->lock = getBoolFromObject(options, "lock");
-
-  v8::Local<v8::Object> platformOptions = getValueFromObject(options, "platformOptions")->ToObject();
-  baton->platformOptions = ParsePlatformOptions(platformOptions);
-
   baton->callback.Reset(info[2].As<v8::Function>());
-  baton->dataCallback = new Nan::Callback(getValueFromObject(options, "dataCallback").As<v8::Function>());
-  baton->disconnectedCallback = new Nan::Callback(getValueFromObject(options, "disconnectedCallback").As<v8::Function>());
-  baton->errorCallback = new Nan::Callback(getValueFromObject(options, "errorCallback").As<v8::Function>());
+
+  #ifndef WIN32
+    baton->vmin = getIntFromObject(options, "vmin");
+    baton->vtime = getIntFromObject(options, "vtime");
+  #endif
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
 
   uv_queue_work(uv_default_loop(), req, EIO_Open, (uv_after_work_cb)EIO_AfterOpen);
-
-  return;
 }
 
 void EIO_AfterOpen(uv_work_t* req) {
@@ -163,23 +158,15 @@ void EIO_AfterOpen(uv_work_t* req) {
   if (data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
     argv[1] = Nan::Undefined();
-    // not needed because we're not calling AfterOpenSuccess
-    delete data->dataCallback;
-    delete data->errorCallback;
-    delete data->disconnectedCallback;
   } else {
     argv[0] = Nan::Null();
     argv[1] = Nan::New<v8::Int32>(data->result);
 
     int fd = argv[1]->ToInt32()->Int32Value();
     newQForFD(fd);
-
-    AfterOpenSuccess(data->result, data->dataCallback, data->disconnectedCallback, data->errorCallback);
   }
 
   data->callback.Call(2, argv);
-
-  delete data->platformOptions;
   delete data;
   delete req;
 }
@@ -221,8 +208,6 @@ NAN_METHOD(Update) {
   req->data = baton;
 
   uv_queue_work(uv_default_loop(), req, EIO_Update, (uv_after_work_cb)EIO_AfterUpdate);
-
-  return;
 }
 
 void EIO_AfterUpdate(uv_work_t* req) {
@@ -266,23 +251,26 @@ NAN_METHOD(Write) {
     return;
   }
 
-  WriteBaton* baton = new WriteBaton();
-  memset(baton, 0, sizeof(WriteBaton));
-  baton->fd = fd;
-  baton->buffer.Reset(buffer);
-  baton->bufferData = bufferData;
-  baton->bufferLength = bufferLength;
-  baton->offset = 0;
-  baton->callback.Reset(info[2].As<v8::Function>());
+  WriteBaton* data = new WriteBaton();
+  memset(data, 0, sizeof(WriteBaton));
+  data->fd = fd;
+  data->buffer.Reset(buffer);
+  data->bufferData = bufferData;
+  data->bufferLength = bufferLength;
+  data->offset = 0;
+  data->callback.Reset(info[2].As<v8::Function>());
 
   QueuedWrite* queuedWrite = new QueuedWrite();
   memset(queuedWrite, 0, sizeof(QueuedWrite));
-  queuedWrite->baton = baton;
+  queuedWrite->baton = data;
   queuedWrite->req.data = queuedWrite;
 
   _WriteQueue *q = qForFD(fd);
   if (!q) {
-    Nan::ThrowTypeError("There's no write queue for that file descriptor (write)!");
+    v8::Local<v8::Value> argv[1];
+    argv[0] = v8::Exception::Error(Nan::New<v8::String>("There's no write queue for file descriptor").ToLocalChecked());
+    data->callback.Call(1, argv);
+    delete data;
     return;
   }
 
@@ -296,8 +284,6 @@ NAN_METHOD(Write) {
     uv_queue_work(uv_default_loop(), &queuedWrite->req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
   }
   q->unlock();
-
-  return;
 }
 
 void EIO_AfterWrite(uv_work_t* req) {
@@ -317,7 +303,6 @@ void EIO_AfterWrite(uv_work_t* req) {
     // We're not done with this baton, so throw it right back onto the queue.
     // Don't re-push the write in the event loop if there was an error; because same error could occur again!
     // TODO: Add a uv_poll here for unix...
-    // fprintf(stderr, "Write again...\n");
     uv_queue_work(uv_default_loop(), req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
     return;
   }
@@ -372,8 +357,6 @@ NAN_METHOD(Close) {
   uv_work_t* req = new uv_work_t();
   req->data = baton;
   uv_queue_work(uv_default_loop(), req, EIO_Close, (uv_after_work_cb)EIO_AfterClose);
-
-  return;
 }
 
 void EIO_AfterClose(uv_work_t* req) {
@@ -420,8 +403,6 @@ NAN_METHOD(List) {
   uv_work_t* req = new uv_work_t();
   req->data = baton;
   uv_queue_work(uv_default_loop(), req, EIO_List, (uv_after_work_cb)EIO_AfterList);
-
-  return;
 }
 
 void setIfNotEmpty(v8::Local<v8::Object> item, std::string key, const char *value) {
@@ -431,7 +412,6 @@ void setIfNotEmpty(v8::Local<v8::Object> item, std::string key, const char *valu
   } else {
     Nan::Set(item, v8key, Nan::Undefined());
   }
-
 }
 
 void EIO_AfterList(uv_work_t* req) {
@@ -494,8 +474,6 @@ NAN_METHOD(Flush) {
   uv_work_t* req = new uv_work_t();
   req->data = baton;
   uv_queue_work(uv_default_loop(), req, EIO_Flush, (uv_after_work_cb)EIO_AfterFlush);
-
-  return;
 }
 
 void EIO_AfterFlush(uv_work_t* req) {
@@ -552,8 +530,6 @@ NAN_METHOD(Set) {
   uv_work_t* req = new uv_work_t();
   req->data = baton;
   uv_queue_work(uv_default_loop(), req, EIO_Set, (uv_after_work_cb)EIO_AfterSet);
-
-  return;
 }
 
 void EIO_AfterSet(uv_work_t* req) {
@@ -599,8 +575,6 @@ NAN_METHOD(Get) {
   uv_work_t* req = new uv_work_t();
   req->data = baton;
   uv_queue_work(uv_default_loop(), req, EIO_Get, (uv_after_work_cb)EIO_AfterGet);
-
-  return;
 }
 
 void EIO_AfterGet(uv_work_t* req) {
@@ -650,8 +624,6 @@ NAN_METHOD(Drain) {
   uv_work_t* req = new uv_work_t();
   req->data = baton;
   uv_queue_work(uv_default_loop(), req, EIO_Drain, (uv_after_work_cb)EIO_AfterDrain);
-
-  return;
 }
 
 void EIO_AfterDrain(uv_work_t* req) {
@@ -715,7 +687,7 @@ extern "C" {
     Nan::SetMethod(target, "drain", Drain);
 
 #ifndef WIN32
-    SerialportPoller::Init(target);
+    ReadPoller::Init(target);
 #endif
   }
 }

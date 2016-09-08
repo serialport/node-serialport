@@ -28,7 +28,7 @@
           {
             'sources': [
               'src/serialport_unix.cpp',
-              'src/serialport_poller.cpp',
+              'src/read-poller.cpp',
             ],
             'xcode_settings': {
               'OTHER_LDFLAGS': [
@@ -41,7 +41,7 @@
           {
             'sources': [
               'src/serialport_unix.cpp',
-              'src/serialport_poller.cpp',
+              'src/read-poller.cpp',
             ],
           }
         ],

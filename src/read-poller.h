@@ -2,28 +2,27 @@
 // serialport_poller.h Written as a part of https://github.com/voodootikigod/node-serialport
 // License to use this is the same as that of node-serialport.
 
-#ifndef SERIALPORT_POLLER_H
-#define SERIALPORT_POLLER_H
+#ifndef SRC_READ_POLLER_H_
+#define SRC_READ_POLLER_H_
 
 #include <nan.h>
 #include "./serialport.h"
 
-class SerialportPoller : public Nan::ObjectWrap {
+class ReadPoller : public Nan::ObjectWrap {
  public:
   static void Init(v8::Handle<v8::Object> target);
 
   void callCallback(int status);
 
   void _start();
-  void _stop();
+  void _close();
 
  private:
-  SerialportPoller();
-  ~SerialportPoller();
+  ReadPoller();
+  ~ReadPoller();
 
   static NAN_METHOD(New);
   static NAN_METHOD(Close);
-  static NAN_METHOD(Start);
 
   uv_poll_t poll_handle_;
   int fd_;
@@ -32,4 +31,4 @@ class SerialportPoller : public Nan::ObjectWrap {
   Nan::Callback* callback_;
 };
 
-#endif
+#endif  // SRC_READ_POLLER_H_

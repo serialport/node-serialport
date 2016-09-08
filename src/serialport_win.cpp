@@ -10,19 +10,11 @@
 
 #define MAX_BUFFER_SIZE 1000
 
-struct WindowsPlatformOptions : OpenBatonPlatformOptions {
-};
-
-OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& options) {
-  // currently none
-  return new WindowsPlatformOptions();
-}
-
 // Declare type of pointer to CancelIoEx function
 typedef BOOL (WINAPI *CancelIoExType)(HANDLE hFile, LPOVERLAPPED lpOverlapped);
 
 std::list<int> g_closingHandles;
-int bufferSize;
+
 void ErrorCodeToString(const char* prefix, int errorCode, char *errorStr) {
   switch (errorCode) {
   case ERROR_FILE_NOT_FOUND:
@@ -75,11 +67,6 @@ void EIO_Open(uv_work_t* req) {
     _snprintf_s(temp, sizeof(temp), _TRUNCATE, "Opening %s", originalPath);
     ErrorCodeToString(temp, errorCode, data->errorString);
     return;
-  }
-
-  bufferSize = data->bufferSize;
-  if (bufferSize > MAX_BUFFER_SIZE) {
-    bufferSize = MAX_BUFFER_SIZE;
   }
 
   DCB dcb = { 0 };
@@ -255,71 +242,6 @@ void EIO_Get(uv_work_t* req) {
   data->dcd = bits & MS_RLSD_ON;
 }
 
-void EIO_WatchPort(uv_work_t* req) {
-  WatchPortBaton* data = static_cast<WatchPortBaton*>(req->data);
-  data->bytesRead = 0;
-  data->disconnected = false;
-
-  // Event used by GetOverlappedResult(..., TRUE) to wait for incoming data or timeout
-  // Event MUST be used if program has several simultaneous asynchronous operations
-  // on the same handle (i.e. ReadFile and WriteFile)
-  HANDLE hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-  while (true) {
-    OVERLAPPED ov = {0};
-    ov.hEvent = hEvent;
-
-    // Start read operation - synchrounous or asynchronous
-    DWORD bytesReadSync = 0;
-    if (!ReadFile((HANDLE)data->fd, data->buffer, bufferSize, &bytesReadSync, &ov)) {
-      data->errorCode = GetLastError();
-      if (data->errorCode != ERROR_IO_PENDING) {
-        // Read operation error
-        if (data->errorCode == ERROR_OPERATION_ABORTED) {
-          data->disconnected = true;
-        } else {
-          ErrorCodeToString("Reading from COM port (ReadFile)", data->errorCode, data->errorString);
-          CloseHandle(hEvent);
-          return;
-        }
-        break;
-      }
-
-      // Read operation is asynchronous and is pending
-      // We MUST wait for operation completion before deallocation of OVERLAPPED struct
-      // or read data buffer
-
-      // Wait for async read operation completion or timeout
-      DWORD bytesReadAsync = 0;
-      if (!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesReadAsync, TRUE)) {
-        // Read operation error
-        data->errorCode = GetLastError();
-        if (data->errorCode == ERROR_OPERATION_ABORTED) {
-          data->disconnected = true;
-        } else {
-          ErrorCodeToString("Reading from COM port (GetOverlappedResult)", data->errorCode, data->errorString);
-          CloseHandle(hEvent);
-          return;
-        }
-        break;
-      } else {
-        // Read operation completed asynchronously
-        data->bytesRead = bytesReadAsync;
-      }
-    } else {
-      // Read operation completed synchronously
-      data->bytesRead = bytesReadSync;
-    }
-
-    // Return data received if any
-    if (data->bytesRead > 0) {
-      break;
-    }
-  }
-
-  CloseHandle(hEvent);
-}
-
 bool IsClosingHandle(int fd) {
   for (std::list<int>::iterator it = g_closingHandles.begin(); it != g_closingHandles.end(); ++it) {
     if (fd == *it) {
@@ -344,56 +266,6 @@ static void FinalizerCallback(char* data, void* hint) {
   WatchPortBaton* wpb = static_cast<WatchPortBaton*>(req->data);
   delete wpb;
   delete req;
-}
-
-void EIO_AfterWatchPort(uv_work_t* req) {
-  Nan::HandleScope scope;
-
-  WatchPortBaton* data = static_cast<WatchPortBaton*>(req->data);
-  if (data->disconnected) {
-    data->disconnectedCallback->Call(0, NULL);
-    DisposeWatchPortCallbacks(data);
-    goto cleanup;
-  }
-
-  bool skipCleanup = false;
-  if (data->bytesRead > 0) {
-    v8::Local<v8::Value> argv[1];
-    argv[0] = Nan::NewBuffer(data->buffer, data->bytesRead, FinalizerCallback, req).ToLocalChecked();
-    skipCleanup = true;
-    data->dataCallback->Call(1, argv);
-  } else if (data->errorCode > 0) {
-    if (data->errorCode == ERROR_INVALID_HANDLE && IsClosingHandle((int)data->fd)) {
-      DisposeWatchPortCallbacks(data);
-      goto cleanup;
-    } else {
-      v8::Local<v8::Value> argv[1];
-      argv[0] = Nan::Error(data->errorString);
-      data->errorCallback->Call(1, argv);
-      Sleep(100);  // prevent the errors from occurring too fast
-    }
-  }
-  AfterOpenSuccess((int)data->fd, data->dataCallback, data->disconnectedCallback, data->errorCallback);
-
-cleanup:
-  if (!skipCleanup) {
-    delete data;
-    delete req;
-  }
-}
-
-void AfterOpenSuccess(int fd, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, Nan::Callback* errorCallback) {
-  WatchPortBaton* baton = new WatchPortBaton();
-  memset(baton, 0, sizeof(WatchPortBaton));
-  baton->fd = (HANDLE)fd;
-  baton->dataCallback = dataCallback;
-  baton->errorCallback = errorCallback;
-  baton->disconnectedCallback = disconnectedCallback;
-
-  uv_work_t* req = new uv_work_t();
-  req->data = baton;
-
-  uv_queue_work(uv_default_loop(), req, EIO_WatchPort, (uv_after_work_cb)EIO_AfterWatchPort);
 }
 
 void EIO_Write(uv_work_t* req) {
