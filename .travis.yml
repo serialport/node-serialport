@@ -47,7 +47,14 @@ before_install:
 - nvm install $TRAVIS_NODE_VERSION
 - PATH=$PATH:`pwd`/node_modules/.bin
 
+- BASE_URL=$(node -p "'https://nodejs.org/dist/' + process.version")
+- X86_FILE=$(node -p "'node-' + process.version + '-' + process.platform + '-x86'")
+# download node if testing x86 architecture
+- if [[ "$ARCH" == "x86" ]]; then wget $BASE_URL/$X86_FILE.tar.gz; tar -xf $X86_FILE.tar.gz; export PATH=$X86_FILE/bin:$PATH; fi
+
 # print versions
+- uname -a
+- file `which node`
 - node --version
 - node -p 'process.platform + "@" + process.arch'
 - npm --version
@@ -64,16 +71,18 @@ before_install:
 - if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then PUBLISH_BINARY=true; fi;
 - echo "Publishing native platform Binary Package? ->" $PUBLISH_BINARY
 
-# Set a test serialport for integration testing when we run our tests if we have one
-- if [[ $TRAVIS_OS_NAME == "osx" ]]; then export TEST_PORT='/dev/cu.serial1'; fi
+# Cleanup the output of npm
+- npm config set progress false
+- npm config set spin false
 
 install:
 # ensure source install works
 - npm install --build-from-source
 
 script:
-# test our module
-- npm run lint
+  # linting no longer works on node 0.10
+- node bin/at-least-node-4.0.js && npm run lint || true
+- npm run docs:diff
 - node ./
 - npm test
 
@@ -88,4 +97,4 @@ script:
 - if [[ $PUBLISH_BINARY == true ]]; then npm install --fallback-to-build=false; fi;
 
 after_success:
-- npm run coverage
+- npm run report-coverage

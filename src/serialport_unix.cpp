@@ -1,9 +1,10 @@
 #include "./serialport.h"
 #include "./serialport_poller.h"
+#include <sys/file.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <termios.h>
+#include <asm/termios.h>
 
 #ifdef __APPLE__
 #include <AvailabilityMacros.h>
@@ -27,7 +28,7 @@ Boolean lockInitialised = FALSE;
 #endif
 
 #if defined(__linux__)
-#include <sys/ioctl.h>
+#include <stropts.h>
 #include <linux/serial.h>
 #endif
 
@@ -141,7 +142,7 @@ void EIO_Open(uv_work_t* req) {
   data->result = fd;
 }
 
-int setBaudRate(ConnectionOptionsBaton *data) {
+/*int setBaudRate(ConnectionOptionsBaton *data) {
   // lookup the standard baudrates from the table
   int baudRate = ToBaudConstant(data->baudRate);
   int fd = data->fd;
@@ -208,7 +209,7 @@ int setBaudRate(ConnectionOptionsBaton *data) {
 
   snprintf(data->errorString, sizeof(data->errorString), "Error baud rate of %d is not supported on your platform", data->baudRate);
   return -1;
-}
+}*/
 
 void EIO_Update(uv_work_t* req) {
   ConnectionOptionsBaton* data = static_cast<ConnectionOptionsBaton*>(req->data);
@@ -236,16 +237,22 @@ int setup(int fd, OpenBaton *data) {
   connectionOptions->fd = fd;
   connectionOptions->baudRate = data->baudRate;
 
-  if (-1 == setBaudRate(connectionOptions)) {
+  /*if (-1 == setBaudRate(connectionOptions)) {
     strncpy(data->errorString, connectionOptions->errorString, sizeof(data->errorString));
     delete(connectionOptions);
     return -1;
-  }
+  }*/
   delete(connectionOptions);
 
   // Get port configuration for modification
-  struct termios options;
-  tcgetattr(fd, &options);
+  struct termios2 options;
+  ioctl(fd, TCGETS2, &options);
+
+  // Set baudrate
+  options.c_cflag &= ~CBAUD;
+  options.c_cflag |= BOTHER;
+  options.c_ispeed = data->baudRate;
+  options.c_ospeed = data->baudRate;
 
   // IGNPAR: ignore bytes with parity errors
   options.c_iflag = IGNPAR;
@@ -334,8 +341,18 @@ int setup(int fd, OpenBaton *data) {
   options.c_cc[VMIN]= platformOptions->vmin;
   options.c_cc[VTIME]= platformOptions->vtime;
 
-  tcflush(fd, TCIFLUSH);
-  tcsetattr(fd, TCSANOW, &options);
+  // why?
+  //tcflush(fd, TCIFLUSH);
+
+  // check for error?
+  ioctl(fd, TCSETS2, &options);
+
+  if (data->lock){
+    if (-1 == flock(fd, LOCK_EX | LOCK_NB)) {
+      snprintf(data->errorString, sizeof(data->errorString), "Error %s Cannot lock port", strerror(errno));
+      return -1;
+    }
+  }
 
   return 1;
 }
@@ -346,7 +363,7 @@ void EIO_Write(uv_work_t* req) {
   int bytesWritten = 0;
 
   do {
-    errno = 0; // probably don't need this
+    errno = 0;  // probably don't need this
     bytesWritten = write(data->fd, data->bufferData + data->offset, data->bufferLength - data->offset);
     if (-1 != bytesWritten) {
       // there wasn't an error, do the math on what we actually wrote and keep writing until finished
@@ -374,7 +391,8 @@ void EIO_Write(uv_work_t* req) {
 }
 
 void EIO_Close(uv_work_t* req) {
-  CloseBaton* data = static_cast<CloseBaton*>(req->data);
+  VoidBaton* data = static_cast<VoidBaton*>(req->data);
+
   if (-1 == close(data->fd)) {
     snprintf(data->errorString, sizeof(data->errorString), "Error: %s, unable to close fd %d", strerror(errno), data->fd);
   }
@@ -670,12 +688,6 @@ void EIO_List(uv_work_t* req) {
 #endif
 }
 
-void EIO_Flush(uv_work_t* req) {
-  FlushBaton* data = static_cast<FlushBaton*>(req->data);
-
-  data->result = tcflush(data->fd, TCIFLUSH);
-}
-
 void EIO_Set(uv_work_t* req) {
   SetBaton* data = static_cast<SetBaton*>(req->data);
 
@@ -718,11 +730,20 @@ void EIO_Set(uv_work_t* req) {
   }
 }
 
-void EIO_Drain(uv_work_t* req) {
-  DrainBaton* data = static_cast<DrainBaton*>(req->data);
+void EIO_Flush(uv_work_t* req) {
+  VoidBaton* data = static_cast<VoidBaton*>(req->data);
 
-  if (-1 == tcdrain(data->fd)) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot drain", strerror(errno));
-    return;
-  }
+  // if (-1 == tcflush(data->fd, TCIOFLUSH)) {
+  //   snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot flush", strerror(errno));
+  //   return;
+  // }
+}
+
+void EIO_Drain(uv_work_t* req) {
+  VoidBaton* data = static_cast<VoidBaton*>(req->data);
+
+  // if (-1 == tcdrain(data->fd)) {
+  //   snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot drain", strerror(errno));
+  //   return;
+  // }
 }

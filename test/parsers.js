@@ -1,10 +1,7 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect;
-var sinonChai = require('sinon-chai');
+var assert = require('chai').assert;
 var sinon = require('sinon');
-chai.use(sinonChai);
 
 var parsers = require('../lib/parsers');
 
@@ -14,7 +11,7 @@ describe('parsers', function() {
       var data = new Buffer('BOGUS');
       var spy = sinon.spy();
       parsers.raw({ emit: spy }, data);
-      expect(spy.getCall(0).args[1]).to.deep.equal(new Buffer('BOGUS'));
+      assert.deepEqual(spy.getCall(0).args[1], new Buffer('BOGUS'));
     });
   });
 
@@ -24,8 +21,8 @@ describe('parsers', function() {
       var spy = sinon.spy();
       var parser = parsers.readline();
       parser({ emit: spy }, data);
-      expect(spy).to.have.been.calledWith('data', 'I love robots');
-      expect(spy).to.have.been.calledWith('data', 'Each and Every One');
+      assert(spy.calledWith('data', 'I love robots'));
+      assert(spy.calledWith('data', 'Each and Every One'));
     });
   });
 
@@ -35,11 +32,10 @@ describe('parsers', function() {
       var spy = sinon.spy();
       var parser = parsers.byteLength(8);
       parser({ emit: spy }, data);
-      expect(spy.callCount).to.equal(3);
-      expect(spy.getCall(0).args[1].length).to.equal(8);
-      expect(spy.getCall(0).args[1]).to.deep.equal(new Buffer('Robots a'));
-      expect(spy.getCall(1).args[1]).to.deep.equal(new Buffer('re so fr'));
-      expect(spy.getCall(2).args[1]).to.deep.equal(new Buffer('eaking c'));
+      assert.equal(spy.callCount, 3);
+      assert.deepEqual(spy.getCall(0).args[1], new Buffer('Robots a'));
+      assert.deepEqual(spy.getCall(1).args[1], new Buffer('re so fr'));
+      assert.deepEqual(spy.getCall(2).args[1], new Buffer('eaking c'));
     });
   });
 
@@ -49,28 +45,39 @@ describe('parsers', function() {
       var parser = parsers.byteDelimiter([0, 0]);
       var spy = sinon.spy();
       parser({ emit: spy }, data);
-      expect(spy.callCount).to.equal(3);
-      expect(spy.getCall(0).args[1]).to.have.length(15);
-      expect(spy.getCall(0).args[1]).to.satisfy(function(d) { return d[d.length - 1] === 0 });
-      expect(spy.getCall(1).args[1]).to.have.length(13);
-      expect(spy.getCall(1).args[1]).to.satisfy(function(d) { return d[d.length - 1] === 0 });
-      expect(spy.getCall(2).args[1]).to.have.length(21);
-      expect(spy.getCall(2).args[1]).to.satisfy(function(d) { return d[d.length - 1] === 0 });
+      assert.equal(spy.callCount, 3);
+      assert.equal(spy.getCall(0).args[1].length, 15);
+      assert.deepEqual(new Buffer(spy.getCall(0).args[1]), (new Buffer('This could be\0\0')));
+      assert.equal(spy.getCall(1).args[1].length, 13);
+      assert.deepEqual(new Buffer(spy.getCall(1).args[1]), (new Buffer('binary data\0\0')));
+      assert.equal(spy.getCall(2).args[1].length, 21);
+      assert.deepEqual(new Buffer(spy.getCall(2).args[1]), (new Buffer('sent from a Moteino\0\0')));
     });
+
     it('accepts single byte delimiter', function() {
       var data = new Buffer('This could be\0binary data\0sent from a Moteino\0');
       var parser = parsers.byteDelimiter(0);
       var spy = sinon.spy();
       parser({ emit: spy }, data);
-      expect(spy.callCount).to.equal(3);
+      assert.equal(spy.callCount, 3);
     });
+
     it('Works when buffer starts with delimiter', function() {
       var data = new Buffer('\0Hello\0World\0');
       var parser = parsers.byteDelimiter(0);
       var spy = sinon.spy();
       parser({ emit: spy }, data);
-      expect(spy.callCount).to.equal(3);
+      assert.equal(spy.callCount, 3);
     });
+
+    it('should only emit if delimiters are strictly in row', function() {
+      var data = new Buffer('\0Hello\u0001World\0\0\u0001');
+      var parser = parsers.byteDelimiter([0, 1]);
+      var spy = sinon.spy();
+      parser({ emit: spy }, data);
+      assert.equal(spy.callCount, 1);
+    });
+
     it('continues looking for delimiters in the next buffers', function() {
       var data1 = new Buffer('This could be\0\0binary ');
       var data2 = new Buffer('data\0\0sent from a Moteino\0\0');
@@ -78,13 +85,13 @@ describe('parsers', function() {
       var spy = sinon.spy();
       parser({ emit: spy }, data1);
       parser({ emit: spy }, data2);
-      expect(spy.callCount).to.equal(3);
-      expect(spy.getCall(0).args[1]).to.have.length(15);
-      expect(spy.getCall(0).args[1]).to.satisfy(function(d) { return d[d.length - 1] === 0 });
-      expect(spy.getCall(1).args[1]).to.have.length(13);
-      expect(spy.getCall(1).args[1]).to.satisfy(function(d) { return d[d.length - 1] === 0 });
-      expect(spy.getCall(2).args[1]).to.have.length(21);
-      expect(spy.getCall(2).args[1]).to.satisfy(function(d) { return d[d.length - 1] === 0 });
+      assert.equal(spy.callCount, 3);
+      assert.equal(spy.getCall(0).args[1].length, 15);
+      assert.deepEqual(new Buffer(spy.getCall(0).args[1]), (new Buffer('This could be\0\0')));
+      assert.equal(spy.getCall(1).args[1].length, 13);
+      assert.deepEqual(new Buffer(spy.getCall(1).args[1]), (new Buffer('binary data\0\0')));
+      assert.equal(spy.getCall(2).args[1].length, 21);
+      assert.deepEqual(new Buffer(spy.getCall(2).args[1]), (new Buffer('sent from a Moteino\0\0')));
     });
   });
 });

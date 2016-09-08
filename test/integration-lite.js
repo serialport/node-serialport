@@ -53,17 +53,18 @@ describe('SerialPort light integration', function() {
       it('can open and close', function(done) {
         var port = new SerialPort(testPort);
         port.on('open', function() {
-          assert.isTrue(port.isOpen());
+          assert.isTrue(port.isOpen);
           port.close();
         });
         port.on('close', function() {
-          assert.isFalse(port.isOpen());
+          assert.isFalse(port.isOpen);
           done();
         });
       });
 
       it('cannot be opened twice in the callback', function(done) {
-        var port = new SerialPort(testPort, function() {
+        var port = new SerialPort(testPort, function(err) {
+          assert.isNull(err);
           port.open(function(err) {
             assert.instanceOf(err, Error);
             port.close(done);
@@ -80,7 +81,6 @@ describe('SerialPort light integration', function() {
           if (err) {
             errors++;
             assert.instanceOf(err, Error);
-            assert.strictEqual(err.message, 'Port is opening');
           }
           if (calls === 2) {
             assert.strictEqual(errors, 1);

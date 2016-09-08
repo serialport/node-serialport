@@ -10,11 +10,11 @@ All rights reserved.
 
 Copyright / Usage Details:
 
-You are allowed to include the source code in any product (commercial, shareware, freeware or otherwise) 
-when your product is released in binary form. You are allowed to modify the source code in any way you want 
-except you cannot modify the copyright details at the top of each module. If you want to distribute source 
-code with your application, then you are only allowed to distribute versions released by the author. This is 
-to maintain a single distribution point for the source code. 
+You are allowed to include the source code in any product (commercial, shareware, freeware or otherwise)
+when your product is released in binary form. You are allowed to modify the source code in any way you want
+except you cannot modify the copyright details at the top of each module. If you want to distribute source
+code with your application, then you are only allowed to distribute versions released by the author. This is
+to maintain a single distribution point for the source code.
 
 */
 
@@ -31,28 +31,28 @@ to maintain a single distribution point for the source code.
 #endif
 
 
-///////////////////////// Includes ////////////////////////////////////////////                      
+///////////////////////// Includes ////////////////////////////////////////////
 
 #if defined CENUMERATESERIAL_USE_STL
 #ifndef _VECTOR_
   #include <vector>
   #pragma message("To avoid this message, please put vector in your pre compiled header (normally stdafx.h)")
-#endif  
+#endif
 #ifndef _STRING_
   #include <string>
   #pragma message("To avoid this message, please put string in your pre compiled header (normally stdafx.h)")
-#endif  
+#endif
 #else
 #if defined _AFX
   #ifndef __AFXTEMPL_H__
-    #include <afxtempl.h> 
+    #include <afxtempl.h>
     #pragma message("To avoid this message, please put afxtempl.h in your pre compiled header (normally stdafx.h)")
   #endif
 #else
   #ifndef __ATLSTR_H__
     #include <atlstr.h>
     #pragma message("To avoid this message, please put atlstr.h in your pre compiled header (normally stdafx.h)")
-  #endif  
+  #endif
 #endif
 #endif
 

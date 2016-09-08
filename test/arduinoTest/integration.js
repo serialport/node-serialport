@@ -17,16 +17,17 @@ switch (process.platform) {
 
 var testPort = process.env.TEST_PORT;
 
-if (!testPort) {
-  throw 'These test require an arduino loaded with the arduinoEcho program on a serialport set to the TEST_PORT env var';
-}
+describe('SerialPort Integration Tests', function() {
+  if (!testPort) {
+    it('Requires an Arduino loaded with the arduinoEcho program on a serialport set to the TEST_PORT env var');
+    return;
+  }
 
-describe('SerialPort Integration tests', function() {
   it('.list', function(done) {
     SerialPort.list(function(err, ports) {
       var foundPort = false;
       ports.forEach(function(port) {
-        if (port.comName === testPort){
+        if (port.comName === testPort) {
           foundPort = true;
         }
       });
@@ -63,14 +64,14 @@ describe('SerialPort Integration tests', function() {
       var port = new SerialPort(testPort);
 
       // this will trigger from the "READY" the arduino sends when it's... ready
-      port.once('data', function(){
+      port.once('data', function() {
         port.write(output);
       });
 
       var input = new Buffer(0);
       port.on('data', function(data) {
         input = Buffer.concat([input, data]);
-        if (input.length === expectedInput.length){
+        if (input.length === expectedInput.length) {
           assert.deepEqual(expectedInput, input);
           port.close(done);
         }
