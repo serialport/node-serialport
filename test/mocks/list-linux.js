@@ -2,44 +2,42 @@
 
 'use strict';
 
-var SandboxedModule = require('sandboxed-module');
+var proxyquire =  require('proxyquire');
 
 var mockPorts = {};
 var characterDevice = true;
 var error = false;
 
-var listLinux = SandboxedModule.require('../../lib/list-linux', {
-  requires: {
-    fs: {
-      readdir: function(path, cb) {
-        if (error) {
-          return process.nextTick(function() {
-            cb(new Error('bad'));
-          });
-        }
-        process.nextTick(function() {
-          cb(null, Object.keys(mockPorts));
-        });
-      },
-      stat: function(path, cb) {
-        process.nextTick(function() {
-          cb(null, { isCharacterDevice: function() { return characterDevice } });
+var listLinux = proxyquire('../../lib/list-linux', {
+  fs: {
+    readdir: function(path, cb) {
+      if (error) {
+        return process.nextTick(function() {
+          cb(new Error('bad'));
         });
       }
+      process.nextTick(function() {
+        cb(null, Object.keys(mockPorts));
+      });
     },
-    path: {
-      // needed for testing on windows
-      join: function() {
-        return Array.prototype.join.call(arguments, '/');
-      }
-    },
-    child_process: {
-      exec: function(cmd, cb) {
-        var port = cmd.split(/\/dev\/(.*)\)/)[1];
-        process.nextTick(function() {
-          cb(null, mockPorts[port]);
-        });
-      }
+    stat: function(path, cb) {
+      process.nextTick(function() {
+        cb(null, { isCharacterDevice: function() { return characterDevice } });
+      });
+    }
+  },
+  path: {
+    // needed for testing on windows
+    join: function() {
+      return Array.prototype.join.call(arguments, '/');
+    }
+  },
+  child_process: {
+    exec: function(cmd, cb) {
+      var port = cmd.split(/\/dev\/(.*)\)/)[1];
+      process.nextTick(function() {
+        cb(null, mockPorts[port]);
+      });
     }
   }
 });
