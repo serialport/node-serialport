@@ -586,6 +586,62 @@ void EIO_AfterSet(uv_work_t* req) {
   delete req;
 }
 
+NAN_METHOD(Get) {
+  // file descriptor
+  if (!info[0]->IsInt32()) {
+    Nan::ThrowTypeError("First argument must be an int");
+    return;
+  }
+  int fd = info[0]->ToInt32()->Int32Value();
+
+  // callback
+  if (!info[1]->IsFunction()) {
+    Nan::ThrowTypeError("Second argument must be a function");
+    return;
+  }
+  v8::Local<v8::Function> callback = info[1].As<v8::Function>();
+
+  GetBaton* baton = new GetBaton();
+  memset(baton, 0, sizeof(GetBaton));
+  baton->fd = fd;
+  baton->cts = false;
+  baton->dsr = false;
+  baton->dcd = false;
+  baton->callback = new Nan::Callback(callback);
+
+  uv_work_t* req = new uv_work_t();
+  req->data = baton;
+  uv_queue_work(uv_default_loop(), req, EIO_Get, (uv_after_work_cb)EIO_AfterGet);
+
+  return;
+}
+
+void EIO_AfterGet(uv_work_t* req) {
+  Nan::HandleScope scope;
+
+  GetBaton* data = static_cast<GetBaton*>(req->data);
+
+  v8::Local<v8::Value> argv[2];
+
+  if (data->errorString[0]) {
+    argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
+  } else {
+
+    v8::Local<v8::Object> results = Nan::New<v8::Object>();
+    results->Set(Nan::New<v8::String>("cts").ToLocalChecked(), Nan::New<v8::Boolean>(data->cts));
+    results->Set(Nan::New<v8::String>("dsr").ToLocalChecked(), Nan::New<v8::Boolean>(data->cts));
+    results->Set(Nan::New<v8::String>("dcd").ToLocalChecked(), Nan::New<v8::Boolean>(data->cts));
+
+    argv[0] = Nan::Null();
+    argv[1] = results;
+  }
+  data->callback->Call(2, argv);
+
+  delete data->callback;
+  delete data;
+  delete req;
+}
+
 NAN_METHOD(Drain) {
   // file descriptor
   if (!info[0]->IsInt32()) {
@@ -665,6 +721,7 @@ extern "C" {
   void init(v8::Handle<v8::Object> target) {
     Nan::HandleScope scope;
     Nan::SetMethod(target, "set", Set);
+    Nan::SetMethod(target, "get", Get);
     Nan::SetMethod(target, "open", Open);
     Nan::SetMethod(target, "update", Update);
     Nan::SetMethod(target, "write", Write);

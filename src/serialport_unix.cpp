@@ -714,6 +714,17 @@ void EIO_Set(uv_work_t* req) {
   }
 }
 
+void EIO_Get(uv_work_t* req) {
+  GetBaton* data = static_cast<GetBaton*>(req->data);
+
+  int bits;
+  ioctl(data->fd, TIOCMGET, &bits);
+
+  data->cts = bits & TIOCM_CTS;
+  data->dsr = bits & TIOCM_DSR;
+  data->dcd = bits & TIOCM_CD;
+}
+
 void EIO_Flush(uv_work_t* req) {
   VoidBaton* data = static_cast<VoidBaton*>(req->data);
 
