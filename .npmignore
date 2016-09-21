@@ -1,3 +1,4 @@
+.docs
 .github
 .jshintrc
 .travis.yml
@@ -21,4 +22,4 @@ npm-debug.log
 gyp-mac-tool
 .node_pre_gyprc
 /.idea
-.nyc_output
+coverage

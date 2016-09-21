@@ -436,7 +436,7 @@ typedef CDhComPtr<IUnknown>     CUnknownPtr;
 
 #else /* DISPHELPER_USE_MS_SMART_PTR */
 
-#include <comdef.h> 
+#include <comdef.h>
 typedef IDispatchPtr    CDispPtr;
 typedef IEnumVARIANTPtr CEnumPtr;
 typedef IUnknownPtr     CUnknownPtr;
@@ -593,7 +593,7 @@ public:
 		dhFormatExceptionW(NULL, szMessage, sizeof(szMessage)/sizeof(szMessage[0]), TRUE);
 		throw std::wstring(szMessage);
 	}
-	
+
 	static void throw_dhexception() throw(PDH_EXCEPTION)
 	{
 		PDH_EXCEPTION pException = NULL;

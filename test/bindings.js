@@ -137,7 +137,7 @@ describe('SerialPortBinding', function() {
 
   describe('#close', function() {
     it('errors when providing a bad file descriptor', function(done) {
-      SerialPortBinding.close(-1, function(err) {
+      SerialPortBinding.close(999991, function(err) {
         assert.instanceOf(err, Error);
         done();
       });
@@ -300,6 +300,41 @@ describe('SerialPortBinding', function() {
 
     it('drains the port', function(done) {
       SerialPortBinding.drain(this.fd, function(err) {
+        assert.isNull(err);
+        done();
+      });
+    });
+  });
+
+  describe('#flush', function() {
+    it('errors when given a bad fd', function(done) {
+      SerialPortBinding.flush(44, function(err) {
+        assert.instanceOf(err, Error);
+        done();
+      });
+    });
+
+    if (!testPort) {
+      it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.');
+      return;
+    }
+
+    beforeEach(function(done) {
+      SerialPortBinding.open(testPort, defaultPortOpenOptions, function(err, fd) {
+        assert.isNull(err);
+        assert.isNumber(fd);
+        this.fd = fd;
+        done();
+      }.bind(this));
+    });
+
+    afterEach(function(done) {
+      SerialPortBinding.close(this.fd, done);
+      this.fd = null;
+    });
+
+    it('flushes the port', function(done) {
+      SerialPortBinding.flush(this.fd, function(err) {
         assert.isNull(err);
         done();
       });

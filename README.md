@@ -3,9 +3,10 @@
 [![npm](https://img.shields.io/npm/dm/serialport.svg?maxAge=2592000)](http://npmjs.com/package/serialport)
 [![Gitter chat](https://badges.gitter.im/EmergingTechnologyAdvisors/node-serialport.svg)](https://gitter.im/EmergingTechnologyAdvisors/node-serialport)
 [![Dependency Status](https://david-dm.org/EmergingTechnologyAdvisors/node-serialport.svg)](https://david-dm.org/EmergingTechnologyAdvisors/node-serialport)
+[![Dependency Status](https://dependencyci.com/github/EmergingTechnologyAdvisors/node-serialport/badge)](https://dependencyci.com/github/EmergingTechnologyAdvisors/node-serialport)
+[![Coverage Status](https://coveralls.io/repos/github/EmergingTechnologyAdvisors/node-serialport/badge.svg?branch=master)](https://coveralls.io/github/EmergingTechnologyAdvisors/node-serialport?branch=master)
 [![Build Status](https://travis-ci.org/EmergingTechnologyAdvisors/node-serialport.svg?branch=master)](https://travis-ci.org/EmergingTechnologyAdvisors/node-serialport)
 [![Build status](https://ci.appveyor.com/api/projects/status/u6xe3iao2crd7akn/branch/master?svg=true)](https://ci.appveyor.com/project/j5js/node-serialport/branch/master)
-[![Coverage Status](https://coveralls.io/repos/github/EmergingTechnologyAdvisors/node-serialport/badge.svg?branch=master)](https://coveralls.io/github/EmergingTechnologyAdvisors/node-serialport?branch=master)
 
 For support you can open a [github issue](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/new), for discussions, designs, and clarifications, we recommend you join our [Gitter Chat room](https://gitter.im/EmergingTechnologyAdvisors/node-serialport). We have two related projects [Browser Serialport](https://github.com/garrows/browser-serialport) "just like Node Serialport but for browser apps", and [Serialport Test Piliot](https://github.com/j5js/serialport-test-pilot) which helps us test serialport.
 
@@ -17,6 +18,7 @@ If you'd like to contribute please take a look at [contribution guide](CONTRIBUT
 
 You're reading the README for the master branch of serialport. You probably want to be looking at the README of our latest release. See our [change log](changelog.md) for what's new and our [upgrade guide](UPGRADE_GUIDE.md) for a walk through on what to look out for between major versions.
 
+ - [`serialport@5.0.0-beta1` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/5.0.0-beta1/README.md) this is the latest `5.x` releases.
  - [`serialport@4.0.1` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/4.0.1/README.md) it is the latest `4.x` releases.
  - [`serialport@3.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/3.1.2/README.md) it is the latest `3.x` releases.
  - [`serialport@2.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/2.1.2/README.md) it was the last `2.x` release
@@ -34,7 +36,6 @@ For getting started with node-serialport, we recommend you begin with the follow
 * [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics) - A survey article of why one would want to program robots in JS and how this all started.
 
 ***
-
 * [Platform Support](#platform-support)
 * [Installation](#installation-instructions)
 * [Installation Special Cases](#installation-special-cases)
@@ -44,23 +45,33 @@ For getting started with node-serialport, we recommend you begin with the follow
   * [Alpine Linux](#alpine-linux)
   * [Raspberry Pi Linux](#raspberry-pi-linux)
   * [Illegal Instruction](#illegal-instruction)
+* [License](#license)
 * [Usage](#usage)
   * [Opening a Port](#opening-a-port)
-  * [Listing Ports](#listing-ports)
-  * [Parsers](#parsers)
-* [Methods](#methods)
-  * [SerialPort](#serialport-path-options-opencallback)
-  * [close()](#close-callback)
-  * [drain()](#drain-callback)
-  * [flush()](#flush-callback)
-  * [isOpen()](#isopen)
-  * [open()](#open-callback)
-  * [pause()](#pause-)
-  * [resume()](#resume-)
-  * [set()](#set-options-callback)
-  * [update()](#update-options-callback)
-  * [write()](#write-buffer-callback)
-* [Events](#events)
+* [SerialPort](#exp_module_serialport--SerialPort) ⏏
+    * [`new SerialPort(path, [options], [openCallback])`](#new_module_serialport--SerialPort_new)
+    * _instance_
+        * [`.open([callback])`](#module_serialport--SerialPort+open)
+        * [`.update([options], [callback])`](#module_serialport--SerialPort+update)
+        * [`.write(data, [callback])`](#module_serialport--SerialPort+write)
+        * [`.pause()`](#module_serialport--SerialPort+pause)
+        * [`.resume()`](#module_serialport--SerialPort+resume)
+        * [`.close(callback)`](#module_serialport--SerialPort+close)
+        * [`.set([options], [callback])`](#module_serialport--SerialPort+set)
+        * [`.flush([callback])`](#module_serialport--SerialPort+flush)
+        * [`.drain([callback])`](#module_serialport--SerialPort+drain)
+        * [`Event: "data"`](#module_serialport--SerialPort+event_data)
+        * [`Event: "error"`](#module_serialport--SerialPort+event_error)
+        * [`Event: "open"`](#module_serialport--SerialPort+event_open)
+        * [`Event: "disconnect"`](#module_serialport--SerialPort+event_disconnect)
+        * [`Event: "close"`](#module_serialport--SerialPort+event_close)
+    * _static_
+        * [`.parsers`](#module_serialport--SerialPort.parsers) : <code>object</code>
+        * [`.list`](#module_serialport--SerialPort.list) : <code>function</code>
+    * _inner_
+        * [`~errorCallback`](#module_serialport--SerialPort..errorCallback) : <code>function</code>
+        * [`~openOptions`](#module_serialport--SerialPort..openOptions) : <code>Object</code>
+        * [`~listCallback`](#module_serialport--SerialPort..listCallback) : <code>function</code>
 * [Command Line Tools](#command-line-tools)
   * [Serial Port List](#serial-port-list)
   * [Serial Port Terminal](#serial-port-terminal)
@@ -70,18 +81,18 @@ For getting started with node-serialport, we recommend you begin with the follow
 ## Platform Support
 `serialport` supports and tests against the following platforms, architectures and node versions.
 
-| Platform / Arch | Node v0.10.x | Node v0.12.x | Node v4.x | Node v5.x | Node v6.x |
-|       ---       | --- | --- | --- | --- | --- |
-| Linux / ia32    |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
-| Linux / x64     |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
-| Linux / ARM v6¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
-| Linux / ARM v7¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
-| Linux / ARM v8¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
-| Linux / MIPSel¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
-| Linux / PPC64¹  |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
-| Windows² / x86  |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
-| Windows² / x64  |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
-| OSX³ / x64      |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
+| Platform / Arch | Node v0.10.x | Node v0.12.x | Node v4.x | Node v6.x |
+|       ---       | --- | --- | --- | --- |
+| Linux / ia32    |  ☑  |  ☑  |  ☑  |  ☑  |
+| Linux / x64     |  ☑  |  ☑  |  ☑  |  ☑  |
+| Linux / ARM v6¹ |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / ARM v7¹ |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / ARM v8¹ |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / MIPSel¹ |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / PPC64¹  |  ☐  |  ☐  |  ☐  |  ☐  |
+| Windows² / x86  |  ☑  |  ☑  |  ☑  |  ☑  |
+| Windows² / x64  |  ☑  |  ☑  |  ☑  |  ☑  |
+| OSX³ / x64      |  ☑  |  ☑  |  ☑  |  ☑  |
 
 ¹ ARM, MIPSel and PPC64¹ platforms are known to work but are not currently part of our test or build matrix. [#846](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/846) ARM v4 and v5 was dropped from NodeJS after Node v0.10.
 
@@ -177,6 +188,9 @@ npm rebuild serialport --build-from-source
 npm rebuild --build-from-source
 ```
 
+## License
+SerialPort is MIT licensed and all it's dependencies are MIT or BSD licensed.
+
 ## Usage
 
 Opening a serial port:
@@ -258,14 +272,310 @@ port.on('open', function() {
 });
 ```
 
-### Listing Ports
+You can get updates of new data from the Serial Port as follows:
 
-`.list(callback)`
+```js
+port.on('data', function (data) {
+  console.log('Data: ' + data);
+});
+```
 
-Retrieves a list of available serial ports with metadata.
+You can write to the serial port by sending a string or buffer to the write method as follows:
 
-* `callback` is a required function that looks should look like: `function (err, ports) { ... }`. `ports` will be an array of objects with port info. Only the `comName` is guaranteed, all the other fields undefined if unavailable. The `comName` is either the path or identifier (eg `COM1`) used to open the serialport.
+```js
+port.write('Hi Mom!');
+port.write(new Buffer('Hi Mom!'));
+```
 
+Enjoy and do cool things with this code.
+
+<a name="exp_module_serialport--SerialPort"></a>
+
+### SerialPort ⏏
+**Kind**: Exported class  
+**Emits**: <code>[open](#module_serialport--SerialPort+event_open)</code>, <code>[data](#module_serialport--SerialPort+event_data)</code>, <code>[close](#module_serialport--SerialPort+event_close)</code>, <code>[error](#module_serialport--SerialPort+event_error)</code>, <code>[disconnect](#module_serialport--SerialPort+event_disconnect)</code>  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| path | <code>string</code> | The system path or name of the serial port. Read Only. |
+| isOpen | <code>boolean</code> | true if the port is open, false otherwise. Read Only. |
+
+
+-
+
+<a name="new_module_serialport--SerialPort_new"></a>
+
+#### `new SerialPort(path, [options], [openCallback])`
+Create a new serial port object for the `path`. In the case of invalid arguments or invalid options when constructing a new SerialPort it will throw an error. The port will open automatically by default which is the equivalent of calling `port.open(openCallback)` in the next tick. This can be disabled by setting the option `autoOpen` to false.
+
+**Throws**:
+
+- <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| path | <code>string</code> | The system path of the serial port to open. For example, `/dev/tty.XXX` on Mac/Linux or `COM1` on Windows. |
+| [options] | <code>[openOptions](#module_serialport--SerialPort..openOptions)</code> | Port configuration options |
+| [openCallback] | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | Called when a connection has been opened. If this is not provided and an error occurs, it will be emitted on the ports `error` event. The callback will NOT be called if autoOpen is set to false in the openOptions as the open will not be performed. |
+
+
+-
+
+<a name="module_serialport--SerialPort+open"></a>
+
+#### `serialPort.open([callback])`
+Opens a connection to the given serial port.
+
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Emits**: <code>[open](#module_serialport--SerialPort+event_open)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [callback] | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | Called when a connection has been opened. If this is not provided and an error occurs, it will be emitted on the ports `error` event. |
+
+
+-
+
+<a name="module_serialport--SerialPort+update"></a>
+
+#### `serialPort.update([options], [callback])`
+Changes the baud rate for an open port. Throws if you provide a bad argument. Emits an error or calls the callback if the baud rate isn't supported.
+
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [options] | <code>object</code> | Only `baudRate` is currently supported |
+| [options.baudRate] | <code>number</code> | The baud rate of the port to be opened. This should match one of commonly available baud rates, such as 110, 300, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200. There is no guarantee, that the device connected to the serial port will support the requested baud rate, even if the port itself supports that baud rate. |
+| [callback] | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | Called once the port's baud rate has been changed. If `.update` is called without an callback and there is an error, an error event will be emitted. |
+
+
+-
+
+<a name="module_serialport--SerialPort+write"></a>
+
+#### `serialPort.write(data, [callback])`
+Some devices like the Arduino reset when you open a connection to them. In these cases if you immediately write to the device they wont be ready to receive the data. This is often worked around by having the Arduino send a "ready" byte that your node program waits for before writing. You can also often get away with waiting around 400ms.
+
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| data | <code>string</code> &#124; <code>array</code> &#124; <code>buffer</code> | Accepts a [`Buffer` ](http://nodejs.org/api/buffer.html) object, or a type that is accepted by the `Buffer` constructor (ex. an array of bytes or a string). |
+| [callback] | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | Called once the write operation returns. |
+
+
+-
+
+<a name="module_serialport--SerialPort+pause"></a>
+
+#### `serialPort.pause()`
+Pauses an open connection (unix only)
+
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+-
+
+<a name="module_serialport--SerialPort+resume"></a>
+
+#### `serialPort.resume()`
+Resumes a paused connection (unix only)
+
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+-
+
+<a name="module_serialport--SerialPort+close"></a>
+
+#### `serialPort.close(callback)`
+Closes an open connection
+
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Emits**: <code>[close](#module_serialport--SerialPort+event_close)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| callback | <code>errorCallback</code> | Called once a connection is closed. |
+
+
+-
+
+<a name="module_serialport--SerialPort+set"></a>
+
+#### `serialPort.set([options], [callback])`
+Sets flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363257(v=vs.85).aspx) for windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for mac and linux.
+
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| [options] | <code>object</code> |  | All options are operating system default when the port is opened. Every flag is set on each call to the provided or default values. If options isn't provided default options will be used. |
+| [options.brk] | <code>Boolean</code> | <code>false</code> |  |
+| [options.cts] | <code>Boolean</code> | <code>false</code> |  |
+| [options.dsr] | <code>Boolean</code> | <code>false</code> |  |
+| [options.dtr] | <code>Boolean</code> | <code>true</code> |  |
+| [options.rts] | <code>Boolean</code> | <code>true</code> |  |
+| [callback] | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> |  | Called once the port's flags have been set. |
+
+
+-
+
+<a name="module_serialport--SerialPort+flush"></a>
+
+#### `serialPort.flush([callback])`
+Flush discards data received but not read and written but not transmitted. For more technical details see [`tcflush(fd, TCIFLUSH)`](http://linux.die.net/man/3/tcflush) for Mac/Linux and [`FlushFileBuffers`](http://msdn.microsoft.com/en-us/library/windows/desktop/aa364439) for Windows.
+
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [callback] | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | Called once the flush operation finishes. |
+
+
+-
+
+<a name="module_serialport--SerialPort+drain"></a>
+
+#### `serialPort.drain([callback])`
+Waits until all output data has been transmitted to the serial port. See [`tcdrain()`](http://linux.die.net/man/3/tcdrain) or [FlushFileBuffers()](https://msdn.microsoft.com/en-us/library/windows/desktop/aa364439(v=vs.85).aspx) for more information.
+
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [callback] | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | Called once the drain operation returns. |
+
+**Example**  
+Writes `data` and waits until it has finish transmitting to the target serial port before calling the callback.
+
+```
+function writeAndDrain (data, callback) {
+  sp.write(data, function () {
+    sp.drain(callback);
+  });
+}
+```
+
+-
+
+<a name="module_serialport--SerialPort+event_data"></a>
+
+#### `Event: "data"`
+The `data` event's callback is called received data as it's received. If you're using a parser you want to use your parser's `data` event or `read()` function. Data will be a `Buffer` object with a varying amount of data in it. The `readLine` parser will provide a string of a received ASCII or UTF8 line. See the [parsers](#module_serialport--SerialPort.parsers) section for more information.
+
+**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+-
+
+<a name="module_serialport--SerialPort+event_error"></a>
+
+#### `Event: "error"`
+The `error` event's callback is called with an error object whenever there is an error.
+
+**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+-
+
+<a name="module_serialport--SerialPort+event_open"></a>
+
+#### `Event: "open"`
+The `open` event's callback is called with no arguments when the port is opened and ready for writing. This happens if you have the constructor open immediately (which opens in the next tick) or if you open the port manually with `open()`. See [Useage/Opening a Port](#opening-a-port) for more information.
+
+**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+-
+
+<a name="module_serialport--SerialPort+event_disconnect"></a>
+
+#### `Event: "disconnect"`
+The `disconnect` event's callback is called with an error object. This will always happen before a `close` event if a disconnection is detected.
+
+**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+-
+
+<a name="module_serialport--SerialPort+event_close"></a>
+
+#### `Event: "close"`
+The `close` event's callback is called with no arguments when the port is closed. In the event of an error, an error event will be triggered
+
+**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+-
+
+<a name="module_serialport--SerialPort.parsers"></a>
+
+#### `SerialPort.parsers` : <code>object</code>
+The default Parsers are [Transform streams](https://nodejs.org/api/stream.html#stream_class_stream_transform) that will parse data in a variety of ways and can be used to process incoming data.
+
+ To use any of the parsers you need to create them and then pipe the serialport to the parser. Be sure not to write to the parser but to the SerialPort object.
+
+**Kind**: static property of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Properties**
+
+| Name | Type | Description |
+| --- | --- | --- |
+| ByteLength | <code>Class</code> | is a transform stream that emits data each time a byte sequence is received. |
+| Delimiter | <code>Class</code> | is a transform stream that emits data as a buffer after a specific number of bytes are received. |
+| ReadLine | <code>Class</code> | is a transform stream that emits data after a newline delimiter is received. |
+
+**Example**  
+```js
+var SerialPort = require('serialport');
+var ReadLine = SerialPort.parsers.ReadLine;
+var port = new SerialPort('/dev/tty-usbserial1');
+var parser = new ReadLine();
+port.pipe(parser);
+parser.on('data', console.log);
+port.write('ROBOT PLEASE RESPOND\n');
+
+// creating the parser and piping can be shortened to
+var parser = port.pipe(new ReadLine());
+```
+
+To use the byte length parser, you must provide the length of the number of bytes:
+```js
+var SerialPort = require('serialport');
+var ByteLength = SerialPort.parsers.ByteLength
+var port = new SerialPort('/dev/tty-usbserial1');
+var parser = port.pipe(new ByteLength({length: 8}));
+parser.on('data', console.log);
+```
+
+To use the Delimiter parser you must specify, you must provide a delimiter as a string, buffer, or an array of bytes:
+```js
+var SerialPort = require('serialport');
+var Delimiter = SerialPort.parsers.Delimiter;
+var port = new SerialPort('/dev/tty-usbserial1');
+var parser = port.pipe(new Delimiter({delimiter: new Buffer('EOL')}));
+parser.on('data', console.log);
+```
+
+To use the ReadLine parser, you may provide a delimiter (defaults to '\n')
+```js
+var SerialPort = require('serialport');
+var ReadLine = SerialPort.parsers.ReadLine;
+var port = new SerialPort('/dev/tty-usbserial1');
+var parser = port.pipe(ReadLine({delimiter: '\r\n'}));
+parser.on('data', console.log);
+```
+
+-
+
+<a name="module_serialport--SerialPort.list"></a>
+
+#### `SerialPort.list` : <code>function</code>
+Retrieves a list of available serial ports with metadata. Only the `comName` is guaranteed, all the other fields will be undefined if they are unavailable. The `comName` is either the path or an identifier (eg `COM1`) used to open the serialport.
+
+**Kind**: static property of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+| Param | Type |
+| --- | --- |
+| callback | <code>listCallback</code> | 
+
+**Example**  
 ```js
 // example port information
 {
@@ -291,230 +601,63 @@ SerialPort.list(function (err, ports) {
 });
 ```
 
-### Parsers
+-
 
-Out of the box, node-serialport provides four parsers: one that simply emits the raw buffer as a data event, one that emits a data event when a specfic byte sequence is received, one that emits a data event every 'length' bytes, and one which provides familiar "readline" style parsing.
+<a name="module_serialport--SerialPort..errorCallback"></a>
 
-To use the readline parser, you must provide a delimiter as such:
+#### `SerialPort~errorCallback` : <code>function</code>
+A callback called with an error or null.
 
-```js
-var SerialPort = require('serialport');
+**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
-var port = new SerialPort('/dev/tty-usbserial1', {
-  parser: SerialPort.parsers.readline('\n')
-});
-```
+| Param | Type |
+| --- | --- |
+| error | <code>error</code> | 
 
-To use the raw parser don't specify any parser, however if you really want to you can:
 
-```js
-var SerialPort = require('serialport');
+-
 
-var port = new SerialPort('/dev/tty-usbserial1', {
-  parser: SerialPort.parsers.raw
-});
-```
+<a name="module_serialport--SerialPort..openOptions"></a>
 
-Note that the raw parser does not guarantee that all data it receives will come in a single event.
+#### `SerialPort~openOptions` : <code>Object</code>
+**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Properties**
 
-To use the byte sequence parser, you must provide a delimiter as an array of bytes:
-```js
-var SerialPort = require('serialport');
+| Name | Type | Default | Description |
+| --- | --- | --- | --- |
+| autoOpen | <code>boolean</code> | <code>true</code> | Automatically opens the port on `nextTick` |
+| lock | <code>boolean</code> | <code>true</code> | Prevent other processes from opening the port. false is not currently supported on windows. |
+| baudRate | <code>number</code> | <code>9600</code> | The baud rate of the port to be opened. This should match one of commonly available baud rates, such as 110, 300, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200. There is no guarantee, that the device connected to the serial port will support the requested baud rate, even if the port itself supports that baud rate. |
+| dataBits | <code>number</code> | <code>8</code> | Must be one of: 8, 7, 6, or 5. |
+| stopBits | <code>number</code> | <code>1</code> | Must be one of: 1 or 2. |
+| parity | <code>string</code> | <code>&quot;none&quot;</code> | Must be one of: 'none', 'even', 'mark', 'odd', 'space' |
+| rtscts | <code>boolean</code> | <code>false</code> | flow control setting |
+| xon | <code>boolean</code> | <code>false</code> | flow control setting |
+| xoff | <code>boolean</code> | <code>false</code> | flow control setting |
+| xany | <code>boolean</code> | <code>false</code> | flow control setting |
+| bufferSize | <code>number</code> | <code>65536</code> | Size of read buffer |
+| platformOptions | <code>object</code> |  | sets platform specific options |
+| platformOptions.vmin | <code>number</code> | <code>1</code> | see [`man termios`](http://linux.die.net/man/3/termios) |
+| platformOptions.vtime | <code>number</code> | <code>0</code> | see [`man termios`](http://linux.die.net/man/3/termios) |
 
-var port = new SerialPort('/dev/tty-usbserial1', {
-  parser: SerialPort.parsers.byteDelimiter([10,13])
-});
-```
 
-To use the byte length parser, you must provide a delimiter as a length in bytes:
-```js
-var SerialPort = require('serialport');
+-
 
-var port = new SerialPort('/dev/tty-usbserial1', {
-  parser: SerialPort.parsers.byteLength(5)
-});
-```
+<a name="module_serialport--SerialPort..listCallback"></a>
 
-You can get updates of new data from the Serial Port as follows:
+#### `SerialPort~listCallback` : <code>function</code>
+This callback type is called `requestCallback` and is displayed as a global symbol.
 
-```js
-port.on('data', function (data) {
-  console.log('Data: ' + data);
-});
-```
+**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
-You can write to the serial port by sending a string or buffer to the write method as follows:
+| Param | Type | Description |
+| --- | --- | --- |
+| error | <code>error</code> |  |
+| ports | <code>array</code> | an array of objects with port info. |
 
-```js
-port.write('Hi Mom!');
-port.write(new Buffer('Hi Mom!'));
-```
 
-Enjoy and do cool things with this code.
+-
 
-## Methods
-
-### SerialPort (path, options, openCallback)
-
-Create a new serial port object for the `path`. In the case of invalid arguments or invalid options when constructing a new SerialPort it will throw an error. The port will open automatically by default which is the equivalent of calling `port.open(openCallback)` in the next tick. This can be disabled by setting the option `autoOpen` to false.
-
-**_path_**
-
-The system path of the serial port to open. For example, `/dev/tty` on Mac/Linux or `COM1` on Windows.
-
-**_options (optional)_**
-
-Port configuration options.
-
-* `autoOpen` Automatically opens the port on `nextTick`, defaults to `true`.
-* `lock` Prevent other processes from opening the port, defaults to `true`. `false` is not currently supported on windows.
-* `baudRate` Baud Rate, defaults to 9600. Should be one of: 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, or 50. Custom rates as allowed by hardware is supported. Windows doesn't support custom baud rates.
-* `dataBits` Data Bits, defaults to 8. Must be one of: 8, 7, 6, or 5.
-* `stopBits` Stop Bits, defaults to 1. Must be one of: 1 or 2.
-* `parity` Parity, defaults to 'none'. Must be one of: 'none', 'even', 'mark', 'odd', 'space'
-* `rtscts` flow control, defaults to false
-* `xon` flow control, defaults to false
-* `xoff` flow control, defaults to false
-* `xany` flow control, defaults to false
-* `bufferSize` Size of read buffer, defaults to 65536. Must be an integer value.
-* `parser` The parser engine to use with read data, defaults to rawPacket strategy which just emits the raw buffer as a "data" event. Can be any function that accepts EventEmitter as first parameter and the raw buffer as the second parameter.
-* `platformOptions` - sets platform specific options, see below.
-
-#### Unix Platform Options
-
-These properties are ignored for windows. An object with the following properties:
-
-* `vmin` (default: 1) - see [`man termios`](http://linux.die.net/man/3/termios)
-* `vtime` (default: 0) - see [`man termios`](http://linux.die.net/man/3/termios)
-
-**_`openCallback` (optional)_**
-
-This function is passed to `.open()` and called when a connection has been opened. The callback should be a function that looks like: `function (error) { ... }`
-
-**Note:** The callback will NOT be called if autoOpen is set to false as the open will not be performed.
-
-### .open (callback)
-
-Opens a connection to the given serial port.
-
-**_callback (optional)_**
-
-Called when a connection has been opened. The callback should be a function that looks like: `function (error) { ... }`
-
-### .isOpen()
-
-Returns `true` if the port is open.
-
-### .write (buffer, callback)
-
-Writes data to the given serial port.
-
-**_buffer_**
-
-The `buffer` parameter accepts a [`Buffer` ](http://nodejs.org/api/buffer.html) object, or a type that is accepted by the `Buffer` constructor (ex. an array of bytes or a string).
-
-**_callback (optional)_**
-
-Called once the write operation returns. The callback should be a function that looks like: `function (error) { ... }`
-
-**Note:** The write operation is non-blocking. When it returns, data may still have not actually been written to the serial port. See `drain()`.
-
-**Note:** Some devices like the Arduino reset when you open a connection to them. In these cases if you immediately write to the device they wont be ready to receive the data. This is often worked around by having the Arduino send a "ready" byte that your node program waits for before writing. You can also often get away with waiting around 400ms.
-
-### .pause ()
-
-Pauses an open connection.
-
-### .resume ()
-
-Resumes a paused connection.
-
-### .flush (callback)
-
-Flushes data received but not read. See [`tcflush()`](http://linux.die.net/man/3/tcflush) for Mac/Linux and [`FlushFileBuffers`](http://msdn.microsoft.com/en-us/library/windows/desktop/aa364439) for Windows.
-
-**_callback (optional)_**
-
-Called once the flush operation returns. The callback should be a function that looks like: `function (error) { ... }`
-
-### .drain (callback)
-
-Waits until all output data has been transmitted to the serial port. See [`tcdrain()`](http://linux.die.net/man/3/tcdrain) or [FlushFileBuffers()](https://msdn.microsoft.com/en-us/library/windows/desktop/aa364439(v=vs.85).aspx) for more information.
-
-**_callback (optional)_**
-
-Called once the drain operation returns. The callback should be a function that looks like: `function (error) { ... }`
-
-**Example**
-
-Writes `data` and waits until it has finish transmitting to the target serial port before calling the callback.
-
-```
-function writeAndDrain (data, callback) {
-  sp.write(data, function () {
-    sp.drain(callback);
-  });
-}
-```
-
-### .close (callback)
-
-Closes an open connection.
-
-**_callback (optional)_**
-
-Called once a connection is closed. The callback should be a function that looks like: `function (error) { ... }` If called without an callback and there is an error, an error event will be emitted.
-
-### .set (options, callback)
-
-Sets flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363257(v=vs.85).aspx) for windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for mac and linux.
-
-**_options (optional)_**
-
-All options are operating system default when the port is opened. Every flag is set on each call to the provided or default values. If options isn't provided default options will be used.
-
- * `brk` optional boolean, defaults to false
- * `cts` optional boolean, defaults to false
- * `dsr` optional boolean, defaults to false
- * `dtr` optional boolean, defaults to true
- * `rts` optional boolean, defaults to true
-
-**_callback (optional)_**
-
-`function(err) {}`
-
-Called once the port's flags have been set. If `.set` is called without an callback and there is an error, an error event will be emitted.
-
-### .update (options, callback)
-
-Changes the baudrate for an open port. Throws if you provide a bad argument. Emits an error or calls the callback if the baud rate isn't supported.
-
-**_options_**
-
- * `baudRate` Baud Rate should be one of: 115200, 57600, 38400, 19200, 9600, 4800, 2400, 1800, 1200, 600, 300, 200, 150, 134, 110, 75, or 50. Custom rates as allowed by hardware is supported.
-
-**_callback (optional)_**
-
-`callback: function(err)`
-
-Called once the port's baud rate has been changed. If `.update` is called without an callback and there is an error, an error event will be emitted.
-
-## Events
-
-### .on('open', callback)
-Callback is called with no arguments when the port is opened and ready for writing. This happens if you have the constructor open immediately (which opens in the next tick) or if you open the port manually with `open()`. See [Useage/Open Event](#open-event) for more information.
-
-### .on('data', callback)
-Callback is called with data depending on your chosen parser. The default `raw` parser will have a `Buffer` object with a varying amount of data in it. The `readLine` parser will provide a string of your line. See the [parsers](#parsers) section for more information
-
-### .on('close', callback)
-Callback is called with no arguments when the port is closed. In the event of an error, an error event will be triggered
-
-### .on('error', callback)
-Callback is called with an error object whenever there is an error.
-
-### .on('disconnect', callback)
-Callback is called with an error object. This will always happen before a `close` event if a disconnection is detected.
 
 ## Command Line Tools
 If you install `serialport` globally. (eg, `npm install -g serialport`) you'll receive two command line tools.

@@ -1,4 +1,4 @@
-// Mocks fs.read for listUnix
+// Mocks fs.read for listLinux
 
 'use strict';
 
@@ -8,7 +8,7 @@ var mockPorts = {};
 var characterDevice = true;
 var error = false;
 
-var listUnix = SandboxedModule.require('../../lib/list-unix', {
+var listLinux = SandboxedModule.require('../../lib/list-linux', {
   requires: {
     fs: {
       readdir: function(path, cb) {
@@ -44,22 +44,22 @@ var listUnix = SandboxedModule.require('../../lib/list-unix', {
   }
 });
 
-listUnix.setCharacterDevice = function(isCharacterDevice) {
+listLinux.setCharacterDevice = function(isCharacterDevice) {
   characterDevice = isCharacterDevice;
 };
 
-listUnix.setPorts = function(ports) {
+listLinux.setPorts = function(ports) {
   mockPorts = ports;
 };
 
-listUnix.error = function(err) {
+listLinux.error = function(err) {
   error = err;
 };
 
-listUnix.reset = function() {
+listLinux.reset = function() {
   error = false;
   mockPorts = {};
   characterDevice = true;
 };
 
-module.exports = listUnix;
+module.exports = listLinux;

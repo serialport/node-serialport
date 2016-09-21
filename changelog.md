@@ -1,3 +1,13 @@
+Version 5.0.0-beta1
+-------------
+ - `isOpen` is now a property #899
+ - Allow reopening after an open error #910
+ - Change parsers to be transform streams #922
+ - port.path is now read only #898
+ - Remove lowercased options #898
+ - Switch to Lie as a promise library (smaller)
+ - [unix] Flush now gives errors and flushes tx and rx #900
+
 Version 4.0.1
 -------------
  - [linux] Do not replace the native Promise when it is available thanks to @zewish for the fix

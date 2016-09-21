@@ -432,7 +432,7 @@ void EIO_Write(uv_work_t* req) {
 }
 
 void EIO_Close(uv_work_t* req) {
-  CloseBaton* data = static_cast<CloseBaton*>(req->data);
+  VoidBaton* data = static_cast<VoidBaton*>(req->data);
 
   g_closingHandles.push_back(data->fd);
 
@@ -537,7 +537,7 @@ void EIO_List(uv_work_t* req) {
 }
 
 void EIO_Flush(uv_work_t* req) {
-  FlushBaton* data = static_cast<FlushBaton*>(req->data);
+  VoidBaton* data = static_cast<VoidBaton*>(req->data);
 
   if (!FlushFileBuffers((HANDLE)data->fd)) {
     ErrorCodeToString("flushing connection (FlushFileBuffers)", GetLastError(), data->errorString);
@@ -546,7 +546,7 @@ void EIO_Flush(uv_work_t* req) {
 }
 
 void EIO_Drain(uv_work_t* req) {
-  DrainBaton* data = static_cast<DrainBaton*>(req->data);
+  VoidBaton* data = static_cast<VoidBaton*>(req->data);
 
   if (!FlushFileBuffers((HANDLE)data->fd)) {
     ErrorCodeToString("draining connection (FlushFileBuffers)", GetLastError(), data->errorString);

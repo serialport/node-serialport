@@ -371,8 +371,8 @@ NAN_METHOD(Close) {
   }
   v8::Local<v8::Function> callback = info[1].As<v8::Function>();
 
-  CloseBaton* baton = new CloseBaton();
-  memset(baton, 0, sizeof(CloseBaton));
+  VoidBaton* baton = new VoidBaton();
+  memset(baton, 0, sizeof(VoidBaton));
   baton->fd = info[0]->ToInt32()->Int32Value();
   baton->callback = new Nan::Callback(callback);
 
@@ -385,7 +385,7 @@ NAN_METHOD(Close) {
 
 void EIO_AfterClose(uv_work_t* req) {
   Nan::HandleScope scope;
-  CloseBaton* data = static_cast<CloseBaton*>(req->data);
+  VoidBaton* data = static_cast<VoidBaton*>(req->data);
 
   v8::Local<v8::Value> argv[1];
   if (data->errorString[0]) {
@@ -499,8 +499,8 @@ NAN_METHOD(Flush) {
   }
   v8::Local<v8::Function> callback = info[1].As<v8::Function>();
 
-  FlushBaton* baton = new FlushBaton();
-  memset(baton, 0, sizeof(FlushBaton));
+  VoidBaton* baton = new VoidBaton();
+  memset(baton, 0, sizeof(VoidBaton));
   baton->fd = fd;
   baton->callback = new Nan::Callback(callback);
 
@@ -514,18 +514,17 @@ NAN_METHOD(Flush) {
 void EIO_AfterFlush(uv_work_t* req) {
   Nan::HandleScope scope;
 
-  FlushBaton* data = static_cast<FlushBaton*>(req->data);
+  VoidBaton* data = static_cast<VoidBaton*>(req->data);
 
-  v8::Local<v8::Value> argv[2];
+  v8::Local<v8::Value> argv[1];
 
   if (data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
-    argv[1] = Nan::Undefined();
   } else {
-    argv[0] = Nan::Undefined();
-    argv[1] = Nan::New<v8::Int32>(data->result);
+    argv[0] = Nan::Null();
   }
-  data->callback->Call(2, argv);
+
+  data->callback->Call(1, argv);
 
   delete data->callback;
   delete data;
@@ -605,8 +604,8 @@ NAN_METHOD(Drain) {
   }
   v8::Local<v8::Function> callback = info[1].As<v8::Function>();
 
-  DrainBaton* baton = new DrainBaton();
-  memset(baton, 0, sizeof(DrainBaton));
+  VoidBaton* baton = new VoidBaton();
+  memset(baton, 0, sizeof(VoidBaton));
   baton->fd = fd;
   baton->callback = new Nan::Callback(callback);
 
@@ -620,7 +619,7 @@ NAN_METHOD(Drain) {
 void EIO_AfterDrain(uv_work_t* req) {
   Nan::HandleScope scope;
 
-  DrainBaton* data = static_cast<DrainBaton*>(req->data);
+  VoidBaton* data = static_cast<VoidBaton*>(req->data);
 
   v8::Local<v8::Value> argv[1];
 

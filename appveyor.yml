@@ -9,7 +9,6 @@ environment:
   - nodejs_version: "0.10"
   - nodejs_version: "0.12"
   - nodejs_version: "4"
-  - nodejs_version: "5"
   - nodejs_version: "6"
 
 platform:
@@ -62,14 +61,25 @@ install:
       }
       true;
 
-  # Set a serialport for us to play with
-  - ps: $env:TEST_PORT = "COM1";
+  # Cleanup the output of npm
+  - ps: >
+      npm config set progress false
+      npm config set spin false
+
+  # We don't currently have a port to test on windows
+  # - ps: $env:TEST_PORT = "COM1";
 
 build_script:
   - npm install --build-from-source --msvs_version=2013
 
 test_script:
-  - npm run lint
+  - ps: >
+      if (node bin/at-least-node-4.0.js) {
+        npm run lint;
+      } else {
+        "Not linting because the linter doesn't run on this version of node" | Write-Host
+      }
+      true;
   - node ./
   - npm test
   - IF %PUBLISH_BINARY% == 1 (node-pre-gyp package 2>&1)
@@ -78,7 +88,9 @@ test_script:
   - IF %PUBLISH_BINARY% == 1 (npm install --fallback-to-build=false)
 
 on_success:
-  - npm run coverage
-
+  - npm run report-coverage
 
 deploy: OFF
+
+matrix:
+  fast_finish: true
