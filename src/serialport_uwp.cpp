@@ -113,6 +113,12 @@ void EIO_Open(uv_work_t* req) {
     }
   }
 
+  if (nullptr == device) {
+    _snprintf(data->errorString, ERROR_STRING_SIZE, 
+              "EIO_Open() unable to open %s", data->path);
+    return;
+  }
+
   try {
     if (data->hupcl == false) {
       device->IsDataTerminalReadyEnabled = false; // disable DTR to avoid reset 
@@ -410,7 +416,7 @@ void EIO_Write(uv_work_t* req) {
 }
 
 void EIO_Close(uv_work_t* req) {
-  CloseBaton* data = static_cast<CloseBaton*>(req->data);
+  VoidBaton* data = static_cast<VoidBaton*>(req->data);
 
   auto it = g_devices.find(data->fd);
   if (g_devices.end() == it) {
@@ -501,11 +507,11 @@ void EIO_List(uv_work_t* req) {
 }
 
 void EIO_Flush(uv_work_t* req) {
-  FlushBaton* data = static_cast<FlushBaton*>(req->data);
+  VoidBaton* data = static_cast<VoidBaton*>(req->data);
   _snprintf(data->errorString, ERROR_STRING_SIZE, "EIO_Flush() not implemented");
 }
 
 void EIO_Drain(uv_work_t* req) {
-  DrainBaton* data = static_cast<DrainBaton*>(req->data);
+  VoidBaton* data = static_cast<VoidBaton*>(req->data);
   _snprintf(data->errorString, ERROR_STRING_SIZE, "EIO_Drain() not implemented");
 }
