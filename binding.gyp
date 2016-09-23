@@ -1,8 +1,4 @@
 {
-  'variables': 
-  {
-    'winplat%': '',
-  },
   'targets': [
     {
       'target_name': 'serialport',
@@ -33,9 +29,6 @@
               ],
               ['node_uwp_dll=="true"',
                 {
-                  'defines': [
-                    'UWP=1',
-                  ],
                   'sources': [
                     'src/serialport_uwp.cpp',
                   ],

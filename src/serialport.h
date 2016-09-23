@@ -150,7 +150,7 @@ struct ListResultItem {
   std::string locationId;
   std::string vendorId;
   std::string productId;
-#ifdef UWP
+#ifdef UWP_DLL
   std::string displayName;
 #endif
 };
