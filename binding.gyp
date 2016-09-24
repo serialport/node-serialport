@@ -1,4 +1,8 @@
 {
+  'variables': 		
+  {		
+    'node_uwp_dll%': 'false',		
+  },
   'targets': [
     {
       'target_name': 'serialport',
