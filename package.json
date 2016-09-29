@@ -68,7 +68,7 @@
     "chai-subset": "^1.2.2",
     "coveralls": "^2.11.9",
     "eslint": "^3.5.0",
-    "eslint-config-standard": "^6.0.0",
+    "eslint-config-standard": "^6.2.0",
     "eslint-plugin-promise": "^2.0.0",
     "eslint-plugin-standard": "^2.0.1",
     "istanbul": "^0.4.4",
