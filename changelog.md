@@ -1,6 +1,11 @@
+Version 4.0.3
+-------------
+- Switch to the lie promise library as it's smaller and mimics nodejs's promise closer
+- Fix a bug that prevented reopening a port after an open error
+
 Version 4.0.2
 -------------
- - [unix] Fix a bug when we'd crash when pausing during a read
+- [unix] Fix a bug when we'd crash when pausing during a read
 
 Version 4.0.1
 -------------
