@@ -1,60 +1,69 @@
+Version 4.0.3
+-------------
+- Switch to the lie promise library as it's smaller and mimics nodejs's promise closer
+- Fix a bug that prevented reopening a port after an open error
+
+Version 4.0.2
+-------------
+- [unix] Fix a bug when we'd crash when pausing during a read
+
 Version 5.0.0-beta1
 -------------
- - `isOpen` is now a property #899
- - Allow reopening after an open error #910
- - Change parsers to be transform streams #922
- - port.path is now read only #898
- - Remove lowercased options #898
- - Switch to Lie as a promise library (smaller)
- - [unix] Flush now gives errors and flushes tx and rx #900
+- `isOpen` is now a property #899
+- Allow reopening after an open error #910
+- Change parsers to be transform streams #922
+- port.path is now read only #898
+- Remove lowercased options #898
+- Switch to Lie as a promise library (smaller)
+- [unix] Flush now gives errors and flushes tx and rx #900
 
 Version 4.0.1
 -------------
- - [linux] Do not replace the native Promise when it is available thanks to @zewish for the fix
+- [linux] Do not replace the native Promise when it is available thanks to @zewish for the fix
 
 Version 4.0.0
 -------------
- - Requiring `serialport` now returns the SerialPort constructor function instead of a factory object. `SerialPort.SerialPort` is now depreciated.
- - `SerialPort` constructor now throws on argument errors immediately.
- - `.write(writeCallback)` now only calls it's callback once after the entire write operation, it used to be called for each write cycle and return the bytes written. This reduces the number of callbacks by hundreds of thousands over a megabyte at low bandwidth.
- - Disconnections now always attempt to close the port, and you'll always get a `close` event after a `disconnect` event
- - All callbacks are called in the context of the port, `this` now equals the port.
- - Removed `openImmediately` from the constructor's api, the functionality is now named `autoOpen` on the options object.
- - Removed extraneous flow control settings from the `flowControl` option, use the specific options to set these flags now.
- - Removed undocumented callbacks from the options object `disconnectedCallback` and `dataCallback`
- - Renamed `serialportlist` to `serialport-list`
- - Renamed `serialportterm` to `serialport-term`
- - Added a contributors guide
- - Added our first Arduino required integration tests
- - [unix] `.drain` and `.set` now properly report errors
- - [unix] Ports are now locked by default with the new `lock` options matches windows default behavior
- - [windows] `.update()` now supports windows for changing baud rates
- - [windows] Fixed a bug where we weren't properly opening ports (provides better support virtual com ports too) thanks to @RogerHardiman
- - [windows] known issue `lock: false` doesn't work (no change in behavior)
+- Requiring `serialport` now returns the SerialPort constructor function instead of a factory object. `SerialPort.SerialPort` is now depreciated.
+- `SerialPort` constructor now throws on argument errors immediately.
+- `.write(writeCallback)` now only calls it's callback once after the entire write operation, it used to be called for each write cycle and return the bytes written. This reduces the number of callbacks by hundreds of thousands over a megabyte at low bandwidth.
+- Disconnections now always attempt to close the port, and you'll always get a `close` event after a `disconnect` event
+- All callbacks are called in the context of the port, `this` now equals the port.
+- Removed `openImmediately` from the constructor's api, the functionality is now named `autoOpen` on the options object.
+- Removed extraneous flow control settings from the `flowControl` option, use the specific options to set these flags now.
+- Removed undocumented callbacks from the options object `disconnectedCallback` and `dataCallback`
+- Renamed `serialportlist` to `serialport-list`
+- Renamed `serialportterm` to `serialport-term`
+- Added a contributors guide
+- Added our first Arduino required integration tests
+- [unix] `.drain` and `.set` now properly report errors
+- [unix] Ports are now locked by default with the new `lock` options matches windows default behavior
+- [windows] `.update()` now supports windows for changing baud rates
+- [windows] Fixed a bug where we weren't properly opening ports (provides better support virtual com ports too) thanks to @RogerHardiman
+- [windows] known issue `lock: false` doesn't work (no change in behavior)
 
 Version 3.1.2
 -------------
- - Documentation around "Illegal Instruction" errors
- - Resolve some ambiguities around publishing that was causing some issues on some versions and platforms of npm and node
- - [linux] bug fix in `.list()` where we weren't filtering out non block devices that are named like serial ports
- - [unix] Better unix error messages
- - [unix] Refactor `setBaudrate` for Unix making it easier for custom baudRate support
- - [unix] Update now has less memory leaks, documentation and better error messages
- - [windows] Better error messages for opening ports
+- Documentation around "Illegal Instruction" errors
+- Resolve some ambiguities around publishing that was causing some issues on some versions and platforms of npm and node
+- [linux] bug fix in `.list()` where we weren't filtering out non block devices that are named like serial ports
+- [unix] Better unix error messages
+- [unix] Refactor `setBaudrate` for Unix making it easier for custom baudRate support
+- [unix] Update now has less memory leaks, documentation and better error messages
+- [windows] Better error messages for opening ports
 
 Version 3.1.1
 -------------
- - fix an issue with bundled deps for node-pre-gyp on npm
+- fix an issue with bundled deps for node-pre-gyp on npm
 
 Version 3.1.0
 -------------
- - Upgrade nan and fix warnings for node 6.0
- - Update the cli tools. serialport-term can now list ports, serialport-list can now output in different formats
+- Upgrade nan and fix warnings for node 6.0
+- Update the cli tools. serialport-term can now list ports, serialport-list can now output in different formats
 
 Version 3.0.1
 -------------
- - Change from BlueBird to es6-promise to save 9.5MB from the package size (19M -> 9.5) and 130k bundle size (186.1kb -> 55.2kb)
- - Experimental node 6 support
+- Change from BlueBird to es6-promise to save 9.5MB from the package size (19M -> 9.5) and 130k bundle size (186.1kb -> 55.2kb)
+- Experimental node 6 support
 
 Version 3.0.0
 -------------
@@ -168,29 +177,29 @@ Version 1.4.8
 
 Version 1.4.7
 -------------
- - Fix for Issue #398 - Dropped sent characters on OSX and Linux
- - Fix for Issue #387 - added isOpen
- - removed a residual comment
- - Added osx control signalling
- - Fix for Issue #401
- - Fix for double write callbacks.
- - detect a serialport disconnect on linux.
+- Fix for Issue #398 - Dropped sent characters on OSX and Linux
+- Fix for Issue #387 - added isOpen
+- removed a residual comment
+- Added osx control signalling
+- Fix for Issue #401
+- Fix for double write callbacks.
+- detect a serialport disconnect on linux.
 
 Version 1.4.6
 -------------
- - Emit error on serialport when explicit handler present. Fixes gh-369
- - Fix for windows and Node 0.11.13 (atom-shell)
- - Fix for broken Travis-CI build.
+- Emit error on serialport when explicit handler present. Fixes gh-369
+- Fix for windows and Node 0.11.13 (atom-shell)
+- Fix for broken Travis-CI build.
 
 Version 1.4.5
 -------------
- - Identified and report issue to node.js core about recent 0.11.x system.
- - Removed support for 0.8.x
- - Updated dependencies
+- Identified and report issue to node.js core about recent 0.11.x system.
+- Removed support for 0.8.x
+- Updated dependencies
 
- Version 1.4.4
- -------------
- - Fix for delete error.
+Version 1.4.4
+-------------
+- Fix for delete error.
 
 Version 1.3.0
 -------------
