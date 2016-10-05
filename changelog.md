@@ -1,3 +1,7 @@
+Version 4.0.2
+-------------
+ - [unix] Fix a bug when we'd crash when pausing during a read
+
 Version 4.0.1
 -------------
  - [linux] Do not replace the native Promise when it is available thanks to @zewish for the fix
