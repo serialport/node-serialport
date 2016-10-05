@@ -62,9 +62,6 @@ install:
       }
       true;
 
-  # Set a serialport for us to play with
-  - ps: $env:TEST_PORT = "COM1";
-
 build_script:
   - npm install --build-from-source --msvs_version=2013
 
