@@ -10,6 +10,10 @@ environment:
   - nodejs_version: "0.12"
   - nodejs_version: "4"
   - nodejs_version: "6"
+  - electron_version: "0.37.8"
+    nodejs_version: "5"
+  - electron_version: "1.3.3"
+    nodejs_version: "5"
 
 platform:
   - x86
@@ -69,6 +73,25 @@ install:
   # We don't currently have a port to test on windows
   # - ps: $env:TEST_PORT = "COM1";
 
+  # Setup Electron variables
+  - ps: >
+      if ($env:electron_version) {
+        $env:npm_config_target = $env:electron_version
+        $env:npm_config_disturl = "https://atom.io/download/atom-shell"
+        $env:npm_config_runtime = "electron"
+
+        if ($env:plaftorm -eq "x86") {
+          $env:npm_config_arch = "ia32"
+        } else {
+          $env:npm_config_arch = "x64"
+        }
+
+        npm install -g electron-prebuilt@$env:electron_version
+        npm install -g istanbul
+        npm install electron-mocha
+      }
+      true;
+
 build_script:
   - npm install --build-from-source --msvs_version=2013
 
@@ -80,8 +103,14 @@ test_script:
         "Not linting because the linter doesn't run on this version of node" | Write-Host
       }
       true;
-  - node ./
-  - npm test
+  - ps: >
+      if ($env:electron_version) {
+        electron test/electron
+        istanbul cover ./node_modules/electron-mocha/bin/electron-mocha test/*.js test/arduinoTest/integration.js test/integration-lite.js
+      } else {
+        node ./
+        npm test
+      }
   - IF %PUBLISH_BINARY% == 1 (node-pre-gyp package 2>&1)
   - IF %PUBLISH_BINARY% == 1 (node-pre-gyp-github publish --release 2>&1)
   - IF %PUBLISH_BINARY% == 1 (node-pre-gyp clean)
