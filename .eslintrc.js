@@ -11,7 +11,7 @@ module.exports = {
   },
   rules: {
     "brace-style": [2, "1tbs", {"allowSingleLine": true} ],
-    "complexity": [2, 12],
+    "complexity": [2, 13],
     "curly": 2,
     "eqeqeq": 2,
     "indent": [2, 2, {

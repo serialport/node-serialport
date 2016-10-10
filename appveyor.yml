@@ -78,8 +78,8 @@ test_script:
         npm run lint;
       } else {
         "Not linting because the linter doesn't run on this version of node" | Write-Host
+        true;
       }
-      true;
   - node ./
   - npm test
   - IF %PUBLISH_BINARY% == 1 (node-pre-gyp package 2>&1)
