@@ -23,7 +23,7 @@ Version 4.0.1
 
 Version 4.0.0
 -------------
-- Requiring `serialport` now returns the SerialPort constructor function instead of a factory object. `SerialPort.SerialPort` is now depreciated.
+- Requiring `serialport` now returns the SerialPort constructor function instead of a factory object. `SerialPort.SerialPort` is now deprecated.
 - `SerialPort` constructor now throws on argument errors immediately.
 - `.write(writeCallback)` now only calls it's callback once after the entire write operation, it used to be called for each write cycle and return the bytes written. This reduces the number of callbacks by hundreds of thousands over a megabyte at low bandwidth.
 - Disconnections now always attempt to close the port, and you'll always get a `close` event after a `disconnect` event

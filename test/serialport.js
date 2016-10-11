@@ -24,7 +24,7 @@ describe('SerialPort', function() {
     sandbox.restore();
   });
 
-  describe('Depreciated options', function() {
+  describe('Deprecated options', function() {
     it('legacy constructor still works', function(done){
       this.port = new SerialPort.SerialPort('/dev/exists', done);
     });
