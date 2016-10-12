@@ -519,20 +519,20 @@ The default Parsers are [Transform streams](https://nodejs.org/api/stream.html#s
 | --- | --- | --- |
 | ByteLength | <code>Class</code> | is a transform stream that emits data each time a byte sequence is received. |
 | Delimiter | <code>Class</code> | is a transform stream that emits data as a buffer after a specific number of bytes are received. |
-| ReadLine | <code>Class</code> | is a transform stream that emits data after a newline delimiter is received. |
+| Readline | <code>Class</code> | is a transform stream that emits data after a newline delimiter is received. |
 
 **Example**  
 ```js
 var SerialPort = require('serialport');
-var ReadLine = SerialPort.parsers.ReadLine;
+var Readline = SerialPort.parsers.Readline;
 var port = new SerialPort('/dev/tty-usbserial1');
-var parser = new ReadLine();
+var parser = new Readline();
 port.pipe(parser);
 parser.on('data', console.log);
 port.write('ROBOT PLEASE RESPOND\n');
 
 // creating the parser and piping can be shortened to
-var parser = port.pipe(new ReadLine());
+var parser = port.pipe(new Readline());
 ```
 
 To use the byte length parser, you must provide the length of the number of bytes:
@@ -553,12 +553,12 @@ var parser = port.pipe(new Delimiter({delimiter: new Buffer('EOL')}));
 parser.on('data', console.log);
 ```
 
-To use the ReadLine parser, you may provide a delimiter (defaults to '\n')
+To use the Readline parser, you may provide a delimiter (defaults to '\n')
 ```js
 var SerialPort = require('serialport');
-var ReadLine = SerialPort.parsers.ReadLine;
+var Readline = SerialPort.parsers.Readline;
 var port = new SerialPort('/dev/tty-usbserial1');
-var parser = port.pipe(ReadLine({delimiter: '\r\n'}));
+var parser = port.pipe(Readline({delimiter: '\r\n'}));
 parser.on('data', console.log);
 ```
 
