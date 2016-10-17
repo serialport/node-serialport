@@ -75,6 +75,8 @@ For getting started with node-serialport, we recommend you begin with the follow
 * [Command Line Tools](#command-line-tools)
   * [Serial Port List](#serial-port-list)
   * [Serial Port Terminal](#serial-port-terminal)
+* [Building For Electron](#building-for-electron)
+
 
 ***
 
@@ -717,3 +719,19 @@ $ serialport-term -l
 /dev/cu.Bluetooth-Incoming-Port
 /dev/cu.usbmodem1421    Arduino (www.arduino.cc)
 ```
+
+## Building for Electron
+
+Electron is a framework for creating cross-platform desktop applications. Electron comes with it's own version of the Node.js runtime. 
+
+If you require `serialport` as a depednancy for an Electron project you need to compile it for the version of Electron you're using in your project.
+
+When you first install `serialport` it will compile against the version of Node.js on your machine, not against the Node.js runtime bundled with Electron.
+
+To recompile `serialport` (or any native Node.js module) for Electron you can use `electron-rebuild`.
+
+1. `npm install --save-dev electron-rebuild`
+2. Delete existing Node.js binding `node_modules/serialport/build/Release/serialport.node`
+3. Run `electron-rebuild`
+  1. For Windows `.\node_modules\.bin\electron-rebuild.cmd`
+  2. For Linux and macOS `./node_modules/.bin/electron-rebuild`
