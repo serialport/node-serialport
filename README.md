@@ -45,6 +45,8 @@ For getting started with node-serialport, we recommend you begin with the follow
   * [Alpine Linux](#alpine-linux)
   * [Raspberry Pi Linux](#raspberry-pi-linux)
   * [Illegal Instruction](#illegal-instruction)
+  * [Electron](#electron)
+
 * [License](#license)
 * [Usage](#usage)
   * [Opening a Port](#opening-a-port)
@@ -75,7 +77,6 @@ For getting started with node-serialport, we recommend you begin with the follow
 * [Command Line Tools](#command-line-tools)
   * [Serial Port List](#serial-port-list)
   * [Serial Port Terminal](#serial-port-terminal)
-* [Building For Electron](#building-for-electron)
 
 ***
 
