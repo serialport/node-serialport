@@ -77,7 +77,6 @@ For getting started with node-serialport, we recommend you begin with the follow
   * [Serial Port Terminal](#serial-port-terminal)
 * [Building For Electron](#building-for-electron)
 
-
 ***
 
 ## Platform Support
