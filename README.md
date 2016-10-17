@@ -735,3 +735,5 @@ To recompile `serialport` (or any native Node.js module) for Electron you can us
 3. Run `electron-rebuild`
   1. For Windows `.\node_modules\.bin\electron-rebuild.cmd`
   2. For Linux and macOS `./node_modules/.bin/electron-rebuild`
+
+For more information on `electron-rebuild` visit the official [README](https://github.com/electron/electron-rebuild/blob/master/README.md).
