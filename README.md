@@ -1,5 +1,16 @@
 # Node Serialport
 
+<!-- STOP! WAIT! BEFORE YOU EDIT!
+
+README.md is a generated file don't edit it!
+
+This file is generated from .docs/README.hbs and the JavaScript files themselves.
+See our contributing guide for more information.
+
+https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/master/CONTRIBUTING.md#writing-docs
+
+-->
+
 [![npm](https://img.shields.io/npm/dm/serialport.svg?maxAge=2592000)](http://npmjs.com/package/serialport)
 [![Gitter chat](https://badges.gitter.im/EmergingTechnologyAdvisors/node-serialport.svg)](https://gitter.im/EmergingTechnologyAdvisors/node-serialport)
 [![Dependency Status](https://david-dm.org/EmergingTechnologyAdvisors/node-serialport.svg)](https://david-dm.org/EmergingTechnologyAdvisors/node-serialport)
@@ -192,7 +203,7 @@ npm rebuild --build-from-source
 
 #### Electron
 
-Electron is a framework for creating cross-platform desktop applications. Electron comes with it's own version of the Node.js runtime. 
+Electron is a framework for creating cross-platform desktop applications. Electron comes with it's own version of the Node.js runtime.
 
 If you require `serialport` as a depednancy for an Electron project you need to compile it for the version of Electron you're using in your project.
 
