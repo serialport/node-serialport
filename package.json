@@ -90,8 +90,8 @@
   },
   "license": "MIT",
   "scripts": {
-    "docs": "jsdoc2md -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs -r table --separators --name-format lib/* > README.md",
-    "docs:diff": "jsdoc2md -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs -r table --separators --name-format lib/* | diff README.md - || (echo 'Docs out of date, run `npm run docs` and commit the new README.md' && false)",
+    "docs": "jsdoc2md --no-cache -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs --partial .docs/edit-warning.hbs -r table --separators --name-format lib/* > README.md",
+    "docs:diff": "jsdoc2md --no-cache -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs --partial .docs/edit-warning.hbs -r table --separators --name-format lib/* | diff README.md - || (echo 'Docs out of date, run `npm run docs` and commit the new README.md' && false)",
     "install": "node-pre-gyp install --fallback-to-build",
     "rebuild-all": "npm rebuild && node-gyp rebuild",
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
