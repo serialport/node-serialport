@@ -539,8 +539,9 @@ void EIO_List(uv_work_t* req) {
 void EIO_Flush(uv_work_t* req) {
   VoidBaton* data = static_cast<VoidBaton*>(req->data);
 
-  if (!FlushFileBuffers((HANDLE)data->fd)) {
-    ErrorCodeToString("flushing connection (FlushFileBuffers)", GetLastError(), data->errorString);
+  DWORD purge_all = PURGE_RXABORT | PURGE_RXCLEAR | PURGE_TXABORT | PURGE_TXCLEAR;
+  if (!PurgeComm((HANDLE)data->fd, purge_all)) {
+    ErrorCodeToString("flushing connection (PurgeComm)", GetLastError(), data->errorString);
     return;
   }
 }
