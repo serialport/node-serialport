@@ -548,8 +548,8 @@ The default Parsers are [Transform streams](https://nodejs.org/api/stream.html#s
 
 | Name | Type | Description |
 | --- | --- | --- |
-| ByteLength | <code>Class</code> | is a transform stream that emits data each time a byte sequence is received. |
-| Delimiter | <code>Class</code> | is a transform stream that emits data as a buffer after a specific number of bytes are received. |
+| ByteLength | <code>Class</code> | is a transform stream that emits data as a buffer after a specific number of bytes are received. |
+| Delimiter | <code>Class</code> | is a transform stream that emits data each time a byte sequence is received. |
 | Readline | <code>Class</code> | is a transform stream that emits data after a newline delimiter is received. |
 
 **Example**  
