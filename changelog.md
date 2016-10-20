@@ -1,3 +1,15 @@
+Version 5.0.0-beta2
+-------------
+- [all] fixed a crash when pausing while reading thanks to @bminer and @baffo32 and others to debug and fix this
+- [all] ReadLineParser has been renamed to ReadlineParser to match worldwide convention
+- [windows] Fix flush behavior using PurgeComm fixing #962 via @samisaham
+- [windows] Remove read and write timeouts solving #781 via @giseburt
+- [docs] Electron build docs #965 via @chalkers
+- [docs] Spelling fixes via @Awk34
+- [docs] Update parser docs to be correct #970 via @jacobq
+- [notes] buffer-indexof is now completely compliant with latest node 6 buffer.indexOf because it's nice to have and we now use it on older nodes
+- [notes] dropped node 5 support, should still work but you shouldn't use it
+
 Version 4.0.3
 -------------
 - Switch to the lie promise library as it's smaller and mimics nodejs's promise closer
