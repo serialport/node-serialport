@@ -87,7 +87,7 @@ void EIO_Open(uv_work_t* req) {
   dcb.DCBlength = sizeof(DCB);
 
   if (!GetCommState(file, &dcb)) {
-    ErrorCodeToString("GetCommState", GetLastError(), data->errorString);
+    ErrorCodeToString("Open (GetCommState)", GetLastError(), data->errorString);
     return;
   }
 
@@ -141,28 +141,20 @@ void EIO_Open(uv_work_t* req) {
   }
 
   if (!SetCommState(file, &dcb)) {
-    ErrorCodeToString("SetCommState", GetLastError(), data->errorString);
+    ErrorCodeToString("Open (SetCommState)", GetLastError(), data->errorString);
     return;
   }
 
-  // Set the com port read/write timeouts
-  DWORD serialBitsPerByte = 8/*std data bits*/ + 1/*start bit*/;
-  serialBitsPerByte += (data->parity == SERIALPORT_PARITY_NONE) ? 0 : 1;
-  serialBitsPerByte += (data->stopBits == SERIALPORT_STOPBITS_ONE) ? 1 : 2;
-  DWORD msPerByte = (data->baudRate > 0) ?
-                    ((1000 * serialBitsPerByte + data->baudRate - 1) / data->baudRate) :
-                    1;
-  if (msPerByte < 1) {
-    msPerByte = 1;
-  }
+  // Clear all timeouts for read and write operations
   COMMTIMEOUTS commTimeouts = {0};
-  commTimeouts.ReadIntervalTimeout = msPerByte;  // Minimize chance of concatenating of separate serial port packets on read
+  commTimeouts.ReadIntervalTimeout = 0;  // Minimize chance of concatenating of separate serial port packets on read
   commTimeouts.ReadTotalTimeoutMultiplier = 0;  // Do not allow big read timeout when big read buffer used
-  commTimeouts.ReadTotalTimeoutConstant = 1000;  // Total read timeout (period of read loop)
+  commTimeouts.ReadTotalTimeoutConstant = 0;  // Total read timeout (period of read loop)
   commTimeouts.WriteTotalTimeoutConstant = 0;  // Const part of write timeout
   commTimeouts.WriteTotalTimeoutMultiplier = 0;  // Variable part of write timeout (per byte)
+
   if (!SetCommTimeouts(file, &commTimeouts)) {
-    ErrorCodeToString("SetCommTimeouts", GetLastError(), data->errorString);
+    ErrorCodeToString("Open (SetCommTimeouts)", GetLastError(), data->errorString);
     return;
   }
 
