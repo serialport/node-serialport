@@ -378,8 +378,9 @@ describe('SerialPortBinding', function() {
 
   describe('#get', function() {
     it('errors when given a bad fd', function(done) {
-      SerialPortBinding.drain(44, function(err) {
+      SerialPortBinding.get(44, function(err, data) {
         assert.instanceOf(err, Error);
+        assert.isUndefined(data);
         done();
       });
     });

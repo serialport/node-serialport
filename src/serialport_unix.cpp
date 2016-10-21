@@ -718,7 +718,10 @@ void EIO_Get(uv_work_t* req) {
   GetBaton* data = static_cast<GetBaton*>(req->data);
 
   int bits;
-  ioctl(data->fd, TIOCMGET, &bits);
+  if (-1 == ioctl(data->fd, TIOCMGET, &bits)) {
+    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get", strerror(errno));
+    return;
+  }
 
   data->cts = bits & TIOCM_CTS;
   data->dsr = bits & TIOCM_DSR;

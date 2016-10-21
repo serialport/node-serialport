@@ -242,7 +242,10 @@ void EIO_Get(uv_work_t* req) {
   GetBaton* data = static_cast<GetBaton*>(req->data);
 
   DWORD bits = 0;
-  GetCommModemStatus((HANDLE)data->fd, &bits);
+  if (!GetCommModemStatus((HANDLE)data->fd, &bits)) {
+    ErrorCodeToString("Getting control settings on COM port (GetCommModemStatus)", GetLastError(), data->errorString);
+    return;
+  }
 
   data->cts = bits & MS_CTS_ON;
   data->dsr = bits & MS_DSR_ON;
