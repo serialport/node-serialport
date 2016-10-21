@@ -39,6 +39,10 @@ NAN_METHOD(Set);
 void EIO_Set(uv_work_t* req);
 void EIO_AfterSet(uv_work_t* req);
 
+NAN_METHOD(Get);
+void EIO_Get(uv_work_t* req);
+void EIO_AfterGet(uv_work_t* req);
+
 NAN_METHOD(Drain);
 void EIO_Drain(uv_work_t* req);
 void EIO_AfterDrain(uv_work_t* req);
@@ -168,6 +172,15 @@ struct SetBaton {
   bool dtr;
   bool dsr;
   bool brk;
+};
+
+struct GetBaton {
+  int fd;
+  Nan::Callback* callback;
+  char errorString[ERROR_STRING_SIZE];
+  bool cts;
+  bool dsr;
+  bool dcd;
 };
 
 struct VoidBaton {

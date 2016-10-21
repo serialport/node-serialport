@@ -238,6 +238,16 @@ void EIO_Set(uv_work_t* req) {
   }
 }
 
+void EIO_Get(uv_work_t* req) {
+  GetBaton* data = static_cast<GetBaton*>(req->data);
+
+  DWORD bits = 0;
+  GetCommModemStatus((HANDLE)data->fd, &bits);
+
+  data->cts = bits & MS_CTS_ON;
+  data->dsr = bits & MS_DSR_ON;
+  data->dcd = bits & MS_RLSD_ON;
+}
 
 void EIO_WatchPort(uv_work_t* req) {
   WatchPortBaton* data = static_cast<WatchPortBaton*>(req->data);

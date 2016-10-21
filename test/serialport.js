@@ -530,6 +530,36 @@ describe('SerialPort', function() {
       });
     });
 
+    describe('#get', function() {
+      it('errors when serialport not open', function(done) {
+        var cb = function() {};
+        var port = new SerialPort('/dev/exists', { autoOpen: false }, cb);
+        port.get(function(err) {
+          assert.instanceOf(err, Error);
+          done();
+        });
+      });
+
+      it('gets the status from the ports bindings', function(done) {
+        var status = {
+          cts: true,
+          dsr: true,
+          dcd: true
+        };
+
+        sandbox.stub(bindings, 'get', function(fd, cb) {
+          cb(status);
+        });
+
+        var port = new SerialPort('/dev/exists', function() {
+          port.get(function(modemStatus) {
+            assert.deepEqual(modemStatus, status);
+            done();
+          });
+        });
+      });
+    });
+
     it('flush errors when serialport not open', function(done) {
       var cb = function() {};
       var port = new SerialPort('/dev/exists', { autoOpen: false }, cb);

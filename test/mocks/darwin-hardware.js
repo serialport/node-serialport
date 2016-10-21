@@ -44,6 +44,7 @@ var Hardware = function() {
     open: this.open.bind(this),
     SerialportPoller: mockSerialportPoller(this),
     set: this.set.bind(this),
+    get: this.get.bind(this),
     update: this.update.bind(this),
     write: this.write.bind(this)
   };
@@ -158,6 +159,18 @@ Hardware.prototype.set = function(fd, options, cb) {
     return cb(new Error(fd + ' does not exist - please call hardware.createPort(path) first'));
   }
   callLater(cb, null, undefined);
+};
+
+Hardware.prototype.get = function(fd, cb) {
+  var port = this.fds[fd];
+  if (!port) {
+    return cb(new Error(fd + ' does not exist - please call hardware.createPort(path) first'));
+  }
+  callLater(cb, null, {
+    cts: false,
+    dsr: false,
+    dcd: false
+  });
 };
 
 Hardware.prototype.drain = function(fd, cb) {

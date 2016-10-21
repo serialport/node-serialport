@@ -71,6 +71,7 @@ For getting started with node-serialport, we recommend you begin with the follow
         * [`.resume()`](#module_serialport--SerialPort+resume)
         * [`.close(callback)`](#module_serialport--SerialPort+close)
         * [`.set([options], [callback])`](#module_serialport--SerialPort+set)
+        * [`.get([callback])`](#module_serialport--SerialPort+get)
         * [`.flush([callback])`](#module_serialport--SerialPort+flush)
         * [`.drain([callback])`](#module_serialport--SerialPort+drain)
         * [`Event: "data"`](#module_serialport--SerialPort+event_data)
@@ -83,6 +84,7 @@ For getting started with node-serialport, we recommend you begin with the follow
         * [`.list`](#module_serialport--SerialPort.list) : <code>function</code>
     * _inner_
         * [`~errorCallback`](#module_serialport--SerialPort..errorCallback) : <code>function</code>
+        * [`~modemBitsCallback`](#module_serialport--SerialPort..modemBitsCallback) : <code>function</code>
         * [`~openOptions`](#module_serialport--SerialPort..openOptions) : <code>Object</code>
         * [`~listCallback`](#module_serialport--SerialPort..listCallback) : <code>function</code>
 * [Command Line Tools](#command-line-tools)
@@ -453,6 +455,21 @@ Sets flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.com/en-u
 
 -
 
+<a name="module_serialport--SerialPort+get"></a>
+
+#### `serialPort.get([callback])`
+Returns the modem status bits (CTS, DSR, DCD) on the open port.
+Uses [`GetCommModemStatus`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363258(v=vs.85).aspx) for windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for mac and linux.
+
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [callback] | <code>[modemBitsCallback](#module_serialport--SerialPort..modemBitsCallback)</code> | Called once the modem bits have been retrieved. |
+
+
+-
+
 <a name="module_serialport--SerialPort+flush"></a>
 
 #### `serialPort.flush([callback])`
@@ -644,6 +661,24 @@ A callback called with an error or null.
 | Param | Type |
 | --- | --- |
 | error | <code>error</code> | 
+
+
+-
+
+<a name="module_serialport--SerialPort..modemBitsCallback"></a>
+
+#### `SerialPort~modemBitsCallback` : <code>function</code>
+A callback called with an error or an object with the modem line values (cts, dsr, dcd).
+
+**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+
+| Param | Type | Default |
+| --- | --- | --- |
+| error | <code>error</code> |  | 
+| status | <code>object</code> |  | 
+| [status.cts] | <code>boolean</code> | <code>false</code> | 
+| [status.dsr] | <code>boolean</code> | <code>false</code> | 
+| [status.dcd] | <code>boolean</code> | <code>false</code> | 
 
 
 -
