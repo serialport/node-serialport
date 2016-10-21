@@ -625,8 +625,8 @@ void EIO_AfterGet(uv_work_t* req) {
 
   if (data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
+    argv[1] = Nan::Undefined();
   } else {
-
     v8::Local<v8::Object> results = Nan::New<v8::Object>();
     results->Set(Nan::New<v8::String>("cts").ToLocalChecked(), Nan::New<v8::Boolean>(data->cts));
     results->Set(Nan::New<v8::String>("dsr").ToLocalChecked(), Nan::New<v8::Boolean>(data->dsr));
