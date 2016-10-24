@@ -87,7 +87,8 @@ void EIO_Open(uv_work_t* req) {
   dcb.DCBlength = sizeof(DCB);
 
   if (!GetCommState(file, &dcb)) {
-    ErrorCodeToString("GetCommState", GetLastError(), data->errorString);
+    ErrorCodeToString("Open (GetCommState)", GetLastError(), data->errorString);
+    CloseHandle(file);
     return;
   }
 
@@ -141,7 +142,8 @@ void EIO_Open(uv_work_t* req) {
   }
 
   if (!SetCommState(file, &dcb)) {
-    ErrorCodeToString("SetCommState", GetLastError(), data->errorString);
+    ErrorCodeToString("Open (SetCommState)", GetLastError(), data->errorString);
+    CloseHandle(file);
     return;
   }
 
@@ -162,7 +164,8 @@ void EIO_Open(uv_work_t* req) {
   commTimeouts.WriteTotalTimeoutConstant = 1000;  // Const part of write timeout
   commTimeouts.WriteTotalTimeoutMultiplier = msPerByte;  // Variable part of write timeout (per byte)
   if (!SetCommTimeouts(file, &commTimeouts)) {
-    ErrorCodeToString("SetCommTimeouts", GetLastError(), data->errorString);
+    ErrorCodeToString("Open (SetCommTimeouts)", GetLastError(), data->errorString);
+    CloseHandle(file);
     return;
   }
 
