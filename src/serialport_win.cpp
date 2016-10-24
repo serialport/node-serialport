@@ -88,6 +88,7 @@ void EIO_Open(uv_work_t* req) {
 
   if (!GetCommState(file, &dcb)) {
     ErrorCodeToString("Open (GetCommState)", GetLastError(), data->errorString);
+    CloseHandle(file);
     return;
   }
 
@@ -142,6 +143,7 @@ void EIO_Open(uv_work_t* req) {
 
   if (!SetCommState(file, &dcb)) {
     ErrorCodeToString("Open (SetCommState)", GetLastError(), data->errorString);
+    CloseHandle(file);
     return;
   }
 
@@ -155,6 +157,7 @@ void EIO_Open(uv_work_t* req) {
 
   if (!SetCommTimeouts(file, &commTimeouts)) {
     ErrorCodeToString("Open (SetCommTimeouts)", GetLastError(), data->errorString);
+    CloseHandle(file);
     return;
   }
 
