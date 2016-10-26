@@ -2,7 +2,6 @@
 
 var assert = require('chai').assert;
 var SerialPortBinding = require('../lib/bindings');
-var assign = require('object.assign').getPolyfill();
 
 var platform;
 switch (process.platform) {
@@ -42,6 +41,30 @@ var defaultSetFlags = {
   dts: false,
   rts: true
 };
+
+function assign(target, defaults, user) {
+  var i;
+  var keys;
+  var key;
+
+  if (typeof user === 'object' && user !== null) {
+    keys = Object.keys(user);
+    for (i = 0; i < keys.length; ++i) {
+      key = keys[i];
+      target[key] = user[key];
+    }
+  }
+  keys = Object.keys(defaults);
+  for (i = 0; i < keys.length; ++i) {
+    key = keys[i];
+    if (target[key] === undefined) {
+      target[key] = defaults[key];
+    }
+  }
+
+  return target;
+}
+
 
 
 var testPort = process.env.TEST_PORT;
