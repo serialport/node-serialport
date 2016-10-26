@@ -56,7 +56,6 @@
     "buffer-indexof": "^1.1.0",
     "commander": "^2.9.0",
     "debug": "^2.1.1",
-    "inherits": "^2.0.1",
     "lie": "^3.1.0",
     "nan": "^2.3.5",
     "node-pre-gyp": "^0.6.31",
