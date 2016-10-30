@@ -14,7 +14,7 @@ This can be checked in the .travis.yml file and appveyor.yml file. Within these 
 2. Fill out changelog.md.
 3. Bump up npm version *AND* binary host version in `package.json`, commit and push.
 4. Update the README.md to reference this current version and to previous major version docs.
-5. Generate new tags based on package.json version number with `git tag 4.0.0 -a` and include the change log in the tag's annotation.
+5. Generate new tags based on package.json version number with `git tag 4.0.4 -a` and include the change log in the tag's annotation.
 6. Push tags to Github with `git push --tags`
 7. Switch to node v0.12 and npm 2
 8. `rm -rf node_modules build && npm install`

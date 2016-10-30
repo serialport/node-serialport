@@ -17,7 +17,7 @@ If you'd like to contribute please take a look at [contribution guide](CONTRIBUT
 
 You're reading the README for the master branch of serialport. You probably want to be looking at the README of our latest release. See our [change log](changelog.md) for what's new and our [upgrade guide](UPGRADE_GUIDE.md) for a walk through on what to look out for between major versions.
 
- - [`serialport@4.0.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/4.0.1/README.md) it is the latest `4.x` releases.
+ - [`serialport@4.0.4` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/4.0.1/README.md) it is the latest `4.x` releases.
  - [`serialport@3.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/3.1.2/README.md) it is the latest `3.x` releases.
  - [`serialport@2.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/2.1.2/README.md) it was the last `2.x` release
  - [`serialport@1.7.4` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/v1.7.4/README.md) it was the last `1.x` release

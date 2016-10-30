@@ -1,3 +1,7 @@
+Version 4.0.4
+-------------
+- Add precompiled binaries for node 7
+
 Version 4.0.3
 -------------
 - Switch to the lie promise library as it's smaller and mimics nodejs's promise closer
