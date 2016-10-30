@@ -28,6 +28,8 @@ env:
   - TRAVIS_NODE_VERSION="5" ARCH="x86"
   - TRAVIS_NODE_VERSION="6"
   - TRAVIS_NODE_VERSION="6" ARCH="x86"
+  - TRAVIS_NODE_VERSION="7"
+  - TRAVIS_NODE_VERSION="7" ARCH="x86"
 matrix:
   exclude:
   - os: osx
@@ -40,6 +42,8 @@ matrix:
     env: TRAVIS_NODE_VERSION="5" ARCH="x86"
   - os: osx
     env: TRAVIS_NODE_VERSION="6" ARCH="x86"
+  - os: osx
+    env: TRAVIS_NODE_VERSION="7" ARCH="x86"
 
 before_install:
 # reinstall latest nvm
