@@ -30,7 +30,7 @@ If you'd like to contribute please take a look at [contribution guide](CONTRIBUT
 You're reading the README for the master branch of serialport. You probably want to be looking at the README of our latest release. See our [change log](changelog.md) for what's new and our [upgrade guide](UPGRADE_GUIDE.md) for a walk through on what to look out for between major versions.
 
 - [`serialport@5.0.0-beta2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/5.0.0-beta2/README.md) this is the latest `5.x` releases.
-- [`serialport@4.0.4` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/4.0.3/README.md) it is the latest `4.x` releases.
+- [`serialport@4.0.4` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/4.0.4/README.md) it is the latest `4.x` releases.
 - [`serialport@3.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/3.1.2/README.md) it is the latest `3.x` releases.
 - [`serialport@2.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/2.1.2/README.md) it was the last `2.x` release
 - [`serialport@1.7.4` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/v1.7.4/README.md) it was the last `1.x` release
@@ -50,14 +50,14 @@ For getting started with node-serialport, we recommend you begin with the follow
 * [Platform Support](#platform-support)
 * [Installation](#installation-instructions)
 * [Installation Special Cases](#installation-special-cases)
-  * [Windows](#windows)
-  * [Mac OS X](#mac-os-x)
-  * [Ubuntu/Debian Linux](#ubuntudebian-linux)
   * [Alpine Linux](#alpine-linux)
-  * [Raspberry Pi Linux](#raspberry-pi-linux)
-  * [Illegal Instruction](#illegal-instruction)
   * [Electron](#electron)
-
+  * [Illegal Instruction](#illegal-instruction)
+  * [Mac OS X](#mac-os-x)
+  * [Raspberry Pi Linux](#raspberry-pi-linux)
+  * [sudo](#sudo)
+  * [Ubuntu/Debian Linux](#ubuntudebian-linux)
+  * [Windows](#windows)
 * [License](#license)
 * [Usage](#usage)
   * [Opening a Port](#opening-a-port)
@@ -96,18 +96,18 @@ For getting started with node-serialport, we recommend you begin with the follow
 ## Platform Support
 `serialport` supports and tests against the following platforms, architectures and node versions.
 
-| Platform / Arch | Node v0.10.x | Node v0.12.x | Node v4.x | Node v6.x |
-|       ---       | --- | --- | --- | --- |
-| Linux / ia32    |  ☑  |  ☑  |  ☑  |  ☑  |
-| Linux / x64     |  ☑  |  ☑  |  ☑  |  ☑  |
-| Linux / ARM v6¹ |  ☐  |  ☐  |  ☐  |  ☐  |
-| Linux / ARM v7¹ |  ☐  |  ☐  |  ☐  |  ☐  |
-| Linux / ARM v8¹ |  ☐  |  ☐  |  ☐  |  ☐  |
-| Linux / MIPSel¹ |  ☐  |  ☐  |  ☐  |  ☐  |
-| Linux / PPC64¹  |  ☐  |  ☐  |  ☐  |  ☐  |
-| Windows² / x86  |  ☑  |  ☑  |  ☑  |  ☑  |
-| Windows² / x64  |  ☑  |  ☑  |  ☑  |  ☑  |
-| OSX³ / x64      |  ☑  |  ☑  |  ☑  |  ☑  |
+| Platform / Arch | Node v0.10.x | Node v0.12.x | Node v4.x | Node v6.x | Node v7.x |
+|       ---       | --- | --- | --- | --- | --- |
+| Linux / ia32    |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
+| Linux / x64     |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
+| Linux / ARM v6¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / ARM v7¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / ARM v8¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / MIPSel¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / PPC64¹  |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
+| Windows² / x86  |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
+| Windows² / x64  |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
+| OSX³ / x64      |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
 
 ¹ ARM, MIPSel and PPC64¹ platforms are known to work but are not currently part of our test or build matrix. [#846](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/846) ARM v4 and v5 was dropped from NodeJS after Node v0.10.
 
@@ -117,7 +117,7 @@ For getting started with node-serialport, we recommend you begin with the follow
 
 ## Installation Instructions
 
-For most "standard" use cases (node v4.x on mac, linux, windows on a x86 or x64 processor), node-serialport will install nice and easy with a simple
+For most "standard" use cases (node v4.x on mac, linux, windows on a x86 or x64 processor), node-serialport will install nice and easy with a standard;
 
 ```
 npm install serialport
@@ -127,38 +127,7 @@ npm install serialport
 
 We are using [node-pre-gyp](https://github.com/mapbox/node-pre-gyp) to compile and post binaries of the library for most common use cases (linux, mac, windows on standard processor platforms). If you are on a special case, node-serialport will work, but it will compile the binary when you install.
 
-This assumes you have everything on your system necessary to compile ANY native module for Node.js. This may not be the case, though, so please ensure the following are true for your system before filing an issue about "Does not install". For all operatings systems, please ensure you have Python 2.x installed AND not 3.0, node-gyp (what we use to compile) requires Python 2.x.
-
-#### Windows
-
- * Windows 7, Windows 8.1, and Windows 10 are supported.
- * Might just download and install with no extra steps. If the downloaded binary fails you'll have to build it with the following steps.
- * Install [Visual Studio Express 2013 for Windows Desktop](http://www.microsoft.com/visualstudio/eng/2013-downloads#d-2013-express).
- * If you are hacking on an Arduino, be sure to install [the drivers](http://arduino.cc/en/Guide/windows#toc4).
- * Install [node.js](http://nodejs.org/) matching the bitness (32 or 64) of your operating system.
- * Install [Python 2.7.6](http://www.python.org/download/releases/2.7.6/) matching the bitness of your operating system.  For any questions, please refer to their [FAQ](http://docs.python.org/2/faq/windows.html). Default settings are perfect.
- * Open the 'Visual Studio Command Prompt' and add Python to the path.
-
-#### Mac OS X
-
-Ensure that you have at a minimum the xCode Command Line Tools installed appropriate for your system configuration. If you recently upgraded the OS, it probably removed your installation of Command Line Tools, please verify before submitting a ticket. To compile `node-serialport` with Node.js 4.x+, you will need to use g++ v4.8 or higher.
-
-#### Ubuntu/Debian Linux
-
-The best way to install any version of NodeJS is to use the [NodeSource Node.js Binary Distributions](https://github.com/nodesource/distributions#installation-instructions). Older versions of Ubuntu install nodejs with the wrong version and binary name. If you node binary is `nodejs` not `node` or if your node version is [`v0.10.29`](https://github.com/fivdi/onoff/wiki/Node.js-v0.10.29-and-native-addons-on-the-Raspberry-Pi) then you should follow these instructions.
-
-The package `build-essential` is necessary to compile `serialport`. If there's a binary for your platform you won't need it. Keep rocking!
-
-
-```
-# Using Ubuntu and node 6
-curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
-sudo apt-get install -y nodejs
-
-# Using Debian and node 6, as root
-curl -sL https://deb.nodesource.com/setup_6.x | bash -
-apt-get install -y nodejs
-```
+This assumes you have everything on your system necessary to compile ANY native module for Node.js. This may not be the case, though, so please ensure the following are true for your system before filing an issue about "Does not install". For all operating systems, please ensure you have Python 2.x installed AND not 3.0, node-gyp (what we use to compile) requires Python 2.x.
 
 #### Alpine Linux
 
@@ -173,34 +142,6 @@ sudo apk add --no-cache make gcc g++ python linux-headers udev
 
 # Then we can install serialport, forcing it to compile
 npm install serialport --build-from-source=serialport
-```
-
-#### Raspberry Pi Linux
-
-Follow the instructions for [setting up a Raspberry pi for use with Johnny-Five and Raspi IO](https://github.com/nebrius/raspi-io/wiki/Getting-a-Raspberry-Pi-ready-for-NodeBots). These projects use Node Serialport under the hood.
-
-| Revision       |      CPU              | Arm Version |
-|   ----         |      ---              |     ---     |
-| A, A+, B, B+   | 32-bit ARM1176JZF-S   |    ARMv6    |
-| Compute Module | 32-bit ARM1176JZF-S   |    ARMv6    |
-| Zero           | 32-bit ARM1176JZF-S   |    ARMv6    |
-| B2             | 32-bit ARM Cortex-A7  |    ARMv7    |
-| B3             | 32-bit ARM Cortex-A53 |    ARMv8    |
-
-
-#### Illegal Instruction
-
-The pre-compiled binaries assume a fully capable chip. The Galileo 2 for example lacks a few instruction sets from the `ia32` architecture. A few other platforms have similar issues. So if you get `Illegal Instruction` when trying to run serialport you'll need to rebuild the serialport binary by asking npm to rebuild it.
-
-```bash
-# Will ask npm to build serialport during install time
-npm install serialport --build-from-source
-
-# If you have a package that depends on serialport you can ask npm to rebuild it specifically.
-npm rebuild serialport --build-from-source
-
-# Or leave out the package name to rebuild everything.
-npm rebuild --build-from-source
 ```
 
 #### Electron
@@ -220,6 +161,68 @@ To recompile `serialport` (or any native Node.js module) for Electron you can us
   2. For Linux and macOS `./node_modules/.bin/electron-rebuild`
 
 For more information on `electron-rebuild` visit the official [README](https://github.com/electron/electron-rebuild/blob/master/README.md).
+
+#### Illegal Instruction
+
+The pre-compiled binaries assume a fully capable chip. The Galileo 2 for example lacks a few instruction sets from the `ia32` architecture. A few other platforms have similar issues. So if you get `Illegal Instruction` when trying to run serialport you'll need to rebuild the serialport binary by asking npm to rebuild it.
+
+```bash
+# Will ask npm to build serialport during install time
+npm install serialport --build-from-source
+
+# If you have a package that depends on serialport you can ask npm to rebuild it specifically.
+npm rebuild serialport --build-from-source
+
+# Or leave out the package name to rebuild everything.
+npm rebuild --build-from-source
+```
+#### Mac OS X
+
+Ensure that you have at a minimum the xCode Command Line Tools installed appropriate for your system configuration. If you recently upgraded the OS, it probably removed your installation of Command Line Tools, please verify before submitting a ticket. To compile `node-serialport` with Node.js 4.x+, you will need to use g++ v4.8 or higher.
+
+#### Raspberry Pi Linux
+
+Follow the instructions for [setting up a Raspberry pi for use with Johnny-Five and Raspi IO](https://github.com/nebrius/raspi-io/wiki/Getting-a-Raspberry-Pi-ready-for-NodeBots). These projects use Node Serialport under the hood.
+
+| Revision       |      CPU              | Arm Version |
+|   ----         |      ---              |     ---     |
+| A, A+, B, B+   | 32-bit ARM1176JZF-S   |    ARMv6    |
+| Compute Module | 32-bit ARM1176JZF-S   |    ARMv6    |
+| Zero           | 32-bit ARM1176JZF-S   |    ARMv6    |
+| B2             | 32-bit ARM Cortex-A7  |    ARMv7    |
+| B3             | 32-bit ARM Cortex-A53 |    ARMv8    |
+
+#### sudo
+If you're going to use `sudo` to install node serialport npm requires you to use the unsafe parameters flag. This is rarely required.
+
+```bash
+sudo npm install serialport --unsafe-perm
+```
+
+#### Ubuntu/Debian Linux
+
+The best way to install any version of NodeJS is to use the [NodeSource Node.js Binary Distributions](https://github.com/nodesource/distributions#installation-instructions). Older versions of Ubuntu install nodejs with the wrong version and binary name. If you node binary is `nodejs` not `node` or if your node version is [`v0.10.29`](https://github.com/fivdi/onoff/wiki/Node.js-v0.10.29-and-native-addons-on-the-Raspberry-Pi) then you should follow these instructions.
+
+The package `build-essential` is necessary to compile `serialport`. If there's a binary for your platform you won't need it. Keep rocking!
+
+```
+# Using Ubuntu and node 6
+curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Using Debian and node 6, as root
+curl -sL https://deb.nodesource.com/setup_7.x | bash -
+apt-get install -y nodejs
+```
+
+#### Windows
+ * Windows 7, Windows 8.1, and Windows 10 are supported.
+ * Might just download and install with no extra steps. If the downloaded binary fails you'll have to build it with the following steps.
+ * Install [Visual Studio Express 2013 for Windows Desktop](http://www.microsoft.com/visualstudio/eng/2013-downloads#d-2013-express).
+ * If you are hacking on an Arduino, be sure to install [the drivers](http://arduino.cc/en/Guide/windows#toc4).
+ * Install [node.js](http://nodejs.org/) matching the bitness (32 or 64) of your operating system.
+ * Install [Python 2.7.6](http://www.python.org/download/releases/2.7.6/) matching the bitness of your operating system.  For any questions, please refer to their [FAQ](http://docs.python.org/2/faq/windows.html). Default settings are perfect.
+ * Open the 'Visual Studio Command Prompt' and add Python to the path.
 
 ## License
 SerialPort is MIT licensed and all it's dependencies are MIT or BSD licensed.
@@ -325,8 +328,8 @@ Enjoy and do cool things with this code.
 <a name="exp_module_serialport--SerialPort"></a>
 
 ### SerialPort ⏏
-**Kind**: Exported class
-**Emits**: <code>[open](#module_serialport--SerialPort+event_open)</code>, <code>[data](#module_serialport--SerialPort+event_data)</code>, <code>[close](#module_serialport--SerialPort+event_close)</code>, <code>[error](#module_serialport--SerialPort+event_error)</code>, <code>[disconnect](#module_serialport--SerialPort+event_disconnect)</code>
+**Kind**: Exported class  
+**Emits**: <code>[open](#module_serialport--SerialPort+event_open)</code>, <code>[data](#module_serialport--SerialPort+event_data)</code>, <code>[close](#module_serialport--SerialPort+event_close)</code>, <code>[error](#module_serialport--SerialPort+event_error)</code>, <code>[disconnect](#module_serialport--SerialPort+event_disconnect)</code>  
 **Properties**
 
 | Name | Type | Description |
@@ -361,8 +364,8 @@ Create a new serial port object for the `path`. In the case of invalid arguments
 #### `serialPort.open([callback])`
 Opens a connection to the given serial port.
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
-**Emits**: <code>[open](#module_serialport--SerialPort+event_open)</code>
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Emits**: <code>[open](#module_serialport--SerialPort+event_open)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -376,7 +379,7 @@ Opens a connection to the given serial port.
 #### `serialPort.update([options], [callback])`
 Changes the baud rate for an open port. Throws if you provide a bad argument. Emits an error or calls the callback if the baud rate isn't supported.
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -392,7 +395,7 @@ Changes the baud rate for an open port. Throws if you provide a bad argument. Em
 #### `serialPort.write(data, [callback])`
 Some devices like the Arduino reset when you open a connection to them. In these cases if you immediately write to the device they wont be ready to receive the data. This is often worked around by having the Arduino send a "ready" byte that your node program waits for before writing. You can also often get away with waiting around 400ms.
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -407,7 +410,7 @@ Some devices like the Arduino reset when you open a connection to them. In these
 #### `serialPort.pause()`
 Pauses an open connection (unix only)
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
 -
 
@@ -416,7 +419,7 @@ Pauses an open connection (unix only)
 #### `serialPort.resume()`
 Resumes a paused connection (unix only)
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
 -
 
@@ -425,8 +428,8 @@ Resumes a paused connection (unix only)
 #### `serialPort.close(callback)`
 Closes an open connection
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
-**Emits**: <code>[close](#module_serialport--SerialPort+event_close)</code>
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Emits**: <code>[close](#module_serialport--SerialPort+event_close)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -440,7 +443,7 @@ Closes an open connection
 #### `serialPort.set([options], [callback])`
 Sets flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363257(v=vs.85).aspx) for windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for mac and linux.
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -461,7 +464,7 @@ Sets flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.com/en-u
 Returns the modem status bits (CTS, DSR, DCD) on the open port.
 Uses [`GetCommModemStatus`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363258(v=vs.85).aspx) for windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for mac and linux.
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -475,7 +478,7 @@ Uses [`GetCommModemStatus`](https://msdn.microsoft.com/en-us/library/windows/des
 #### `serialPort.flush([callback])`
 Flush discards data received but not read and written but not transmitted. For more technical details see [`tcflush(fd, TCIFLUSH)`](http://linux.die.net/man/3/tcflush) for Mac/Linux and [`FlushFileBuffers`](http://msdn.microsoft.com/en-us/library/windows/desktop/aa364439) for Windows.
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -489,13 +492,13 @@ Flush discards data received but not read and written but not transmitted. For m
 #### `serialPort.drain([callback])`
 Waits until all output data has been transmitted to the serial port. See [`tcdrain()`](http://linux.die.net/man/3/tcdrain) or [FlushFileBuffers()](https://msdn.microsoft.com/en-us/library/windows/desktop/aa364439(v=vs.85).aspx) for more information.
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | [callback] | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | Called once the drain operation returns. |
 
-**Example**
+**Example**  
 Writes `data` and waits until it has finish transmitting to the target serial port before calling the callback.
 
 ```
@@ -513,7 +516,7 @@ function writeAndDrain (data, callback) {
 #### `Event: "data"`
 The `data` event's callback is called received data as it's received. If you're using a parser you want to use your parser's `data` event or `read()` function. Data will be a `Buffer` object with a varying amount of data in it. The `readLine` parser will provide a string of a received ASCII or UTF8 line. See the [parsers](#module_serialport--SerialPort.parsers) section for more information.
 
-**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
 -
 
@@ -522,7 +525,7 @@ The `data` event's callback is called received data as it's received. If you're 
 #### `Event: "error"`
 The `error` event's callback is called with an error object whenever there is an error.
 
-**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
 -
 
@@ -531,7 +534,7 @@ The `error` event's callback is called with an error object whenever there is an
 #### `Event: "open"`
 The `open` event's callback is called with no arguments when the port is opened and ready for writing. This happens if you have the constructor open immediately (which opens in the next tick) or if you open the port manually with `open()`. See [Useage/Opening a Port](#opening-a-port) for more information.
 
-**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
 -
 
@@ -540,7 +543,7 @@ The `open` event's callback is called with no arguments when the port is opened 
 #### `Event: "disconnect"`
 The `disconnect` event's callback is called with an error object. This will always happen before a `close` event if a disconnection is detected.
 
-**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
 -
 
@@ -549,7 +552,7 @@ The `disconnect` event's callback is called with an error object. This will alwa
 #### `Event: "close"`
 The `close` event's callback is called with no arguments when the port is closed. In the event of an error, an error event will be triggered
 
-**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
 -
 
@@ -560,7 +563,7 @@ The default Parsers are [Transform streams](https://nodejs.org/api/stream.html#s
 
  To use any of the parsers you need to create them and then pipe the serialport to the parser. Be sure not to write to the parser but to the SerialPort object.
 
-**Kind**: static property of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Kind**: static property of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 **Properties**
 
 | Name | Type | Description |
@@ -569,7 +572,7 @@ The default Parsers are [Transform streams](https://nodejs.org/api/stream.html#s
 | Delimiter | <code>Class</code> | is a transform stream that emits data each time a byte sequence is received. |
 | Readline | <code>Class</code> | is a transform stream that emits data after a newline delimiter is received. |
 
-**Example**
+**Example**  
 ```js
 var SerialPort = require('serialport');
 var Readline = SerialPort.parsers.Readline;
@@ -617,13 +620,13 @@ parser.on('data', console.log);
 #### `SerialPort.list` : <code>function</code>
 Retrieves a list of available serial ports with metadata. Only the `comName` is guaranteed, all the other fields will be undefined if they are unavailable. The `comName` is either the path or an identifier (eg `COM1`) used to open the serialport.
 
-**Kind**: static property of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Kind**: static property of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
 | Param | Type |
 | --- | --- |
-| callback | <code>listCallback</code> |
+| callback | <code>listCallback</code> | 
 
-**Example**
+**Example**  
 ```js
 // example port information
 {
@@ -656,11 +659,11 @@ SerialPort.list(function (err, ports) {
 #### `SerialPort~errorCallback` : <code>function</code>
 A callback called with an error or null.
 
-**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
 | Param | Type |
 | --- | --- |
-| error | <code>error</code> |
+| error | <code>error</code> | 
 
 
 -
@@ -670,15 +673,15 @@ A callback called with an error or null.
 #### `SerialPort~modemBitsCallback` : <code>function</code>
 A callback called with an error or an object with the modem line values (cts, dsr, dcd).
 
-**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
 | Param | Type | Default |
 | --- | --- | --- |
-| error | <code>error</code> |  |
-| status | <code>object</code> |  |
-| [status.cts] | <code>boolean</code> | <code>false</code> |
-| [status.dsr] | <code>boolean</code> | <code>false</code> |
-| [status.dcd] | <code>boolean</code> | <code>false</code> |
+| error | <code>error</code> |  | 
+| status | <code>object</code> |  | 
+| [status.cts] | <code>boolean</code> | <code>false</code> | 
+| [status.dsr] | <code>boolean</code> | <code>false</code> | 
+| [status.dcd] | <code>boolean</code> | <code>false</code> | 
 
 
 -
@@ -686,7 +689,7 @@ A callback called with an error or an object with the modem line values (cts, ds
 <a name="module_serialport--SerialPort..openOptions"></a>
 
 #### `SerialPort~openOptions` : <code>Object</code>
-**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 **Properties**
 
 | Name | Type | Default | Description |
@@ -714,7 +717,7 @@ A callback called with an error or an object with the modem line values (cts, ds
 #### `SerialPort~listCallback` : <code>function</code>
 This callback type is called `requestCallback` and is displayed as a global symbol.
 
-**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
 | Param | Type | Description |
 | --- | --- | --- |
