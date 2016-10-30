@@ -30,7 +30,7 @@ If you'd like to contribute please take a look at [contribution guide](CONTRIBUT
 You're reading the README for the master branch of serialport. You probably want to be looking at the README of our latest release. See our [change log](changelog.md) for what's new and our [upgrade guide](UPGRADE_GUIDE.md) for a walk through on what to look out for between major versions.
 
 - [`serialport@5.0.0-beta2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/5.0.0-beta2/README.md) this is the latest `5.x` releases.
-- [`serialport@4.0.3` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/4.0.3/README.md) it is the latest `4.x` releases.
+- [`serialport@4.0.4` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/4.0.3/README.md) it is the latest `4.x` releases.
 - [`serialport@3.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/3.1.2/README.md) it is the latest `3.x` releases.
 - [`serialport@2.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/2.1.2/README.md) it was the last `2.x` release
 - [`serialport@1.7.4` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/v1.7.4/README.md) it was the last `1.x` release
@@ -325,8 +325,8 @@ Enjoy and do cool things with this code.
 <a name="exp_module_serialport--SerialPort"></a>
 
 ### SerialPort ⏏
-**Kind**: Exported class  
-**Emits**: <code>[open](#module_serialport--SerialPort+event_open)</code>, <code>[data](#module_serialport--SerialPort+event_data)</code>, <code>[close](#module_serialport--SerialPort+event_close)</code>, <code>[error](#module_serialport--SerialPort+event_error)</code>, <code>[disconnect](#module_serialport--SerialPort+event_disconnect)</code>  
+**Kind**: Exported class
+**Emits**: <code>[open](#module_serialport--SerialPort+event_open)</code>, <code>[data](#module_serialport--SerialPort+event_data)</code>, <code>[close](#module_serialport--SerialPort+event_close)</code>, <code>[error](#module_serialport--SerialPort+event_error)</code>, <code>[disconnect](#module_serialport--SerialPort+event_disconnect)</code>
 **Properties**
 
 | Name | Type | Description |
@@ -361,8 +361,8 @@ Create a new serial port object for the `path`. In the case of invalid arguments
 #### `serialPort.open([callback])`
 Opens a connection to the given serial port.
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
-**Emits**: <code>[open](#module_serialport--SerialPort+event_open)</code>  
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Emits**: <code>[open](#module_serialport--SerialPort+event_open)</code>
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -376,7 +376,7 @@ Opens a connection to the given serial port.
 #### `serialPort.update([options], [callback])`
 Changes the baud rate for an open port. Throws if you provide a bad argument. Emits an error or calls the callback if the baud rate isn't supported.
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -392,7 +392,7 @@ Changes the baud rate for an open port. Throws if you provide a bad argument. Em
 #### `serialPort.write(data, [callback])`
 Some devices like the Arduino reset when you open a connection to them. In these cases if you immediately write to the device they wont be ready to receive the data. This is often worked around by having the Arduino send a "ready" byte that your node program waits for before writing. You can also often get away with waiting around 400ms.
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -407,7 +407,7 @@ Some devices like the Arduino reset when you open a connection to them. In these
 #### `serialPort.pause()`
 Pauses an open connection (unix only)
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
 
 -
 
@@ -416,7 +416,7 @@ Pauses an open connection (unix only)
 #### `serialPort.resume()`
 Resumes a paused connection (unix only)
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
 
 -
 
@@ -425,8 +425,8 @@ Resumes a paused connection (unix only)
 #### `serialPort.close(callback)`
 Closes an open connection
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
-**Emits**: <code>[close](#module_serialport--SerialPort+event_close)</code>  
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
+**Emits**: <code>[close](#module_serialport--SerialPort+event_close)</code>
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -440,7 +440,7 @@ Closes an open connection
 #### `serialPort.set([options], [callback])`
 Sets flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363257(v=vs.85).aspx) for windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for mac and linux.
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -461,7 +461,7 @@ Sets flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.com/en-u
 Returns the modem status bits (CTS, DSR, DCD) on the open port.
 Uses [`GetCommModemStatus`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363258(v=vs.85).aspx) for windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for mac and linux.
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -475,7 +475,7 @@ Uses [`GetCommModemStatus`](https://msdn.microsoft.com/en-us/library/windows/des
 #### `serialPort.flush([callback])`
 Flush discards data received but not read and written but not transmitted. For more technical details see [`tcflush(fd, TCIFLUSH)`](http://linux.die.net/man/3/tcflush) for Mac/Linux and [`FlushFileBuffers`](http://msdn.microsoft.com/en-us/library/windows/desktop/aa364439) for Windows.
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -489,13 +489,13 @@ Flush discards data received but not read and written but not transmitted. For m
 #### `serialPort.drain([callback])`
 Waits until all output data has been transmitted to the serial port. See [`tcdrain()`](http://linux.die.net/man/3/tcdrain) or [FlushFileBuffers()](https://msdn.microsoft.com/en-us/library/windows/desktop/aa364439(v=vs.85).aspx) for more information.
 
-**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
 
 | Param | Type | Description |
 | --- | --- | --- |
 | [callback] | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | Called once the drain operation returns. |
 
-**Example**  
+**Example**
 Writes `data` and waits until it has finish transmitting to the target serial port before calling the callback.
 
 ```
@@ -513,7 +513,7 @@ function writeAndDrain (data, callback) {
 #### `Event: "data"`
 The `data` event's callback is called received data as it's received. If you're using a parser you want to use your parser's `data` event or `read()` function. Data will be a `Buffer` object with a varying amount of data in it. The `readLine` parser will provide a string of a received ASCII or UTF8 line. See the [parsers](#module_serialport--SerialPort.parsers) section for more information.
 
-**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
 
 -
 
@@ -522,7 +522,7 @@ The `data` event's callback is called received data as it's received. If you're 
 #### `Event: "error"`
 The `error` event's callback is called with an error object whenever there is an error.
 
-**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
 
 -
 
@@ -531,7 +531,7 @@ The `error` event's callback is called with an error object whenever there is an
 #### `Event: "open"`
 The `open` event's callback is called with no arguments when the port is opened and ready for writing. This happens if you have the constructor open immediately (which opens in the next tick) or if you open the port manually with `open()`. See [Useage/Opening a Port](#opening-a-port) for more information.
 
-**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
 
 -
 
@@ -540,7 +540,7 @@ The `open` event's callback is called with no arguments when the port is opened 
 #### `Event: "disconnect"`
 The `disconnect` event's callback is called with an error object. This will always happen before a `close` event if a disconnection is detected.
 
-**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
 
 -
 
@@ -549,7 +549,7 @@ The `disconnect` event's callback is called with an error object. This will alwa
 #### `Event: "close"`
 The `close` event's callback is called with no arguments when the port is closed. In the event of an error, an error event will be triggered
 
-**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
 
 -
 
@@ -560,7 +560,7 @@ The default Parsers are [Transform streams](https://nodejs.org/api/stream.html#s
 
  To use any of the parsers you need to create them and then pipe the serialport to the parser. Be sure not to write to the parser but to the SerialPort object.
 
-**Kind**: static property of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Kind**: static property of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
 **Properties**
 
 | Name | Type | Description |
@@ -569,7 +569,7 @@ The default Parsers are [Transform streams](https://nodejs.org/api/stream.html#s
 | Delimiter | <code>Class</code> | is a transform stream that emits data each time a byte sequence is received. |
 | Readline | <code>Class</code> | is a transform stream that emits data after a newline delimiter is received. |
 
-**Example**  
+**Example**
 ```js
 var SerialPort = require('serialport');
 var Readline = SerialPort.parsers.Readline;
@@ -617,13 +617,13 @@ parser.on('data', console.log);
 #### `SerialPort.list` : <code>function</code>
 Retrieves a list of available serial ports with metadata. Only the `comName` is guaranteed, all the other fields will be undefined if they are unavailable. The `comName` is either the path or an identifier (eg `COM1`) used to open the serialport.
 
-**Kind**: static property of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Kind**: static property of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
 
 | Param | Type |
 | --- | --- |
-| callback | <code>listCallback</code> | 
+| callback | <code>listCallback</code> |
 
-**Example**  
+**Example**
 ```js
 // example port information
 {
@@ -656,11 +656,11 @@ SerialPort.list(function (err, ports) {
 #### `SerialPort~errorCallback` : <code>function</code>
 A callback called with an error or null.
 
-**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
 
 | Param | Type |
 | --- | --- |
-| error | <code>error</code> | 
+| error | <code>error</code> |
 
 
 -
@@ -670,15 +670,15 @@ A callback called with an error or null.
 #### `SerialPort~modemBitsCallback` : <code>function</code>
 A callback called with an error or an object with the modem line values (cts, dsr, dcd).
 
-**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
 
 | Param | Type | Default |
 | --- | --- | --- |
-| error | <code>error</code> |  | 
-| status | <code>object</code> |  | 
-| [status.cts] | <code>boolean</code> | <code>false</code> | 
-| [status.dsr] | <code>boolean</code> | <code>false</code> | 
-| [status.dcd] | <code>boolean</code> | <code>false</code> | 
+| error | <code>error</code> |  |
+| status | <code>object</code> |  |
+| [status.cts] | <code>boolean</code> | <code>false</code> |
+| [status.dsr] | <code>boolean</code> | <code>false</code> |
+| [status.dcd] | <code>boolean</code> | <code>false</code> |
 
 
 -
@@ -686,7 +686,7 @@ A callback called with an error or an object with the modem line values (cts, ds
 <a name="module_serialport--SerialPort..openOptions"></a>
 
 #### `SerialPort~openOptions` : <code>Object</code>
-**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
 **Properties**
 
 | Name | Type | Default | Description |
@@ -714,7 +714,7 @@ A callback called with an error or an object with the modem line values (cts, ds
 #### `SerialPort~listCallback` : <code>function</code>
 This callback type is called `requestCallback` and is displayed as a global symbol.
 
-**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>
 
 | Param | Type | Description |
 | --- | --- | --- |

@@ -1,3 +1,7 @@
+Version 4.0.4
+-------------
+- Add precompiled binaries for node 7
+
 Version 5.0.0-beta2
 -------------
 - [all] fixed a crash when pausing while reading thanks to @bminer and @baffo32 and others to debug and fix this
