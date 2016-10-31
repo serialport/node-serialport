@@ -46,7 +46,7 @@ For getting started with node-serialport, we recommend you begin with the follow
   * [Illegal Instruction](#illegal-instruction)
   * [Mac OS X](#mac-os-x)
   * [Raspberry Pi Linux](#raspberry-pi-linux)
-  * [sudo](#sudo)
+  * [sudo / root](#sudo--root)
   * [Ubuntu/Debian Linux](#ubuntudebian-linux)
   * [Windows](#windows)
 * [License](#license)
@@ -99,7 +99,7 @@ This assumes you have everything on your system necessary to compile ANY native 
 
 #### Alpine Linux
 
-[Alpine](http://www.alpinelinux.org/) is a (very) small distro, but it uses the musl standard library instead of glibc (that most other Linux distros use), so it requires compilation.
+[Alpine](http://www.alpinelinux.org/) is a (very) small distro, but it uses the musl standard library instead of glibc (that most other Linux distros use), so it requires compilation. It's commonly used with Docker. We have been confirmed to work with [apline-node](https://github.com/mhart/alpine-node).
 
 ```
 # If you don't have node/npm already, add that first
@@ -109,7 +109,9 @@ sudo apk add --no-cache nodejs
 sudo apk add --no-cache make gcc g++ python linux-headers udev
 
 # Then we can install serialport, forcing it to compile
-npm install serialport --build-from-source=serialport
+npm install serialport --build-from-source
+
+# If you're installing as root you'll need to use
 ```
 
 #### Electron
@@ -160,11 +162,30 @@ Follow the instructions for [setting up a Raspberry pi for use with Johnny-Five 
 | B2             | 32-bit ARM Cortex-A7  |    ARMv7    |
 | B3             | 32-bit ARM Cortex-A53 |    ARMv8    |
 
-#### sudo
-If you're going to use `sudo` to install node serialport npm requires you to use the unsafe parameters flag. This is rarely required.
+#### sudo / root
+If you're going to use `sudo` or root to install node SerialPort `npm` requires you to use the unsafe parameters flag. This is rarely required.
 
 ```bash
-sudo npm install serialport --unsafe-perm
+sudo npm install serialport --unsafe-perm --build-from-source
+```
+
+Failure to use the flag results in an error similar to the following;
+```bash
+root@rpi3:~# npm install -g serialport
+/usr/bin/serialport-list -> /usr/lib/node_modules/serialport/bin/serialport-list.js
+/usr/bin/serialport-term -> /usr/lib/node_modules/serialport/bin/serialport-terminal.js
+
+> serialport@4.0.3 install /usr/lib/node_modules/serialport
+> node-pre-gyp install --fallback-to-build
+
+gyp WARN EACCES user "root" does not have permission to access the dev dir "/root/.node-gyp/6.9.1"
+gyp WARN EACCES attempting to reinstall using temporary dev dir "/usr/lib/node_modules/serialport/.node-gyp"
+make: Entering directory '/usr/lib/node_modules/serialport/build'
+make: *** No rule to make target '../.node-gyp/6.9.1/include/node/common.gypi', needed by 'Makefile'.  Stop.
+make: Leaving directory '/usr/lib/node_modules/serialport/build'
+gyp ERR! build error
+gyp ERR! stack Error: `make` failed with exit code: 2
+
 ```
 
 #### Ubuntu/Debian Linux
@@ -200,8 +221,8 @@ SerialPort is MIT licensed and all it's dependencies are MIT or BSD licensed.
 Opening a serial port:
 
 ```js
-var SerialPort = require("serialport");
-var port = new SerialPort("/dev/tty-usbserial1", {
+var SerialPort = require('serialport');
+var port = new SerialPort('/dev/tty-usbserial1', {
   baudRate: 57600
 });
 ```
