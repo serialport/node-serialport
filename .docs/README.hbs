@@ -205,13 +205,13 @@ apt-get install -y nodejs
 ```
 
 #### Windows
- * Windows 7, Windows 8.1, and Windows 10 are supported.
- * Might just download and install with no extra steps. If the downloaded binary fails you'll have to build it with the following steps.
- * Install [Visual Studio Express 2013 for Windows Desktop](http://www.microsoft.com/visualstudio/eng/2013-downloads#d-2013-express).
- * If you are hacking on an Arduino, be sure to install [the drivers](http://arduino.cc/en/Guide/windows#toc4).
- * Install [node.js](http://nodejs.org/) matching the bitness (32 or 64) of your operating system.
- * Install [Python 2.7.6](http://www.python.org/download/releases/2.7.6/) matching the bitness of your operating system.  For any questions, please refer to their [FAQ](http://docs.python.org/2/faq/windows.html). Default settings are perfect.
- * Open the 'Visual Studio Command Prompt' and add Python to the path.
+Windows 7, Windows 8.1, Windows 10, and Windows 10 IoT are supported. Precompiled binaries are available but if you want to build it from source you'll need to follow the [node-gyp installation](https://github.com/nodejs/node-gyp#installation) instructions. Once those are finished and working you'll be able to install serialport from source with;
+
+```powershell
+npm install serialport --build-from-source
+```
+
+It's not part of node-gyp's documenation but sometimes it helps if you creates a c++ project in visual studio so it will install necessary comonents that aren't installed during the two hours of setup you just sat through. This will solve some instances of `Failed to locate: "CL.exe"`.
 
 ## License
 SerialPort is MIT licensed and all it's dependencies are MIT or BSD licensed.
