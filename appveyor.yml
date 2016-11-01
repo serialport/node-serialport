@@ -88,8 +88,8 @@ test_script:
   - IF %PUBLISH_BINARY% == 1 (node-pre-gyp clean)
   - IF %PUBLISH_BINARY% == 1 (npm install --fallback-to-build=false)
 
-on_success:
-  - npm run report-coverage
+after_test:
+  - bash <(curl -s https://codecov.io/bash)
 
 deploy: OFF
 

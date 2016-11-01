@@ -65,7 +65,6 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-subset": "^1.2.2",
-    "coveralls": "^2.11.9",
     "eslint": "^3.9.0",
     "eslint-config-standard": "^6.2.0",
     "eslint-plugin-promise": "^3.0.0",
@@ -96,7 +95,6 @@
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
     "lint": "eslint *.js lib/**/*.js test/**/*.js bin/**/*.js examples/**/*.js",
     "test": "istanbul cover ./node_modules/mocha/bin/_mocha test/*.js test/arduinoTest/integration.js test/integration-lite.js",
-    "report-coverage": "cat ./coverage/lcov.info | coveralls",
     "valgrind": "valgrind --leak-check=full --show-possibly-lost=no node --expose-gc --trace-gc node_modules/.bin/grunt test"
   },
   "gypfile": true
