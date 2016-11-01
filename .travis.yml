@@ -97,4 +97,4 @@ script:
 - if [[ $PUBLISH_BINARY == true ]]; then npm install --fallback-to-build=false; fi;
 
 after_success:
-- npm run report-coverage
+- bash <(curl -s https://codecov.io/bash)
