@@ -1,5 +1,5 @@
-#ifndef _serialport_h_
-#define _serialport_h_
+#ifndef SRC_SERIALPORT_H_
+#define SRC_SERIALPORT_H_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,17 +44,17 @@ void EIO_Drain(uv_work_t* req);
 void EIO_AfterDrain(uv_work_t* req);
 
 enum SerialPortParity {
-  SERIALPORT_PARITY_NONE = 1,
-  SERIALPORT_PARITY_MARK = 2,
-  SERIALPORT_PARITY_EVEN = 3,
-  SERIALPORT_PARITY_ODD = 4,
+  SERIALPORT_PARITY_NONE  = 1,
+  SERIALPORT_PARITY_MARK  = 2,
+  SERIALPORT_PARITY_EVEN  = 3,
+  SERIALPORT_PARITY_ODD   = 4,
   SERIALPORT_PARITY_SPACE = 5
 };
 
 enum SerialPortStopBits {
-  SERIALPORT_STOPBITS_ONE = 1,
+  SERIALPORT_STOPBITS_ONE      = 1,
   SERIALPORT_STOPBITS_ONE_FIVE = 2,
-  SERIALPORT_STOPBITS_TWO = 3
+  SERIALPORT_STOPBITS_TWO      = 3
 };
 
 SerialPortParity ToParityEnum(const v8::Local<v8::String>& str);
@@ -65,7 +65,7 @@ OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& opti
 
 struct OpenBaton {
   char errorString[ERROR_STRING_SIZE];
-  Nan::Callback* callback;
+  Nan::Callback callback;
   char path[1024];
   int fd;
   int result;
@@ -89,7 +89,7 @@ struct OpenBaton {
 
 struct ConnectionOptionsBaton {
   char errorString[ERROR_STRING_SIZE];
-  Nan::Callback* callback;
+  Nan::Callback callback;
   int fd;
   int baudRate;
 };
@@ -100,7 +100,7 @@ struct WriteBaton {
   size_t bufferLength;
   size_t offset;
   Nan::Persistent<v8::Object> buffer;
-  Nan::Callback* callback;
+  Nan::Callback callback;
   int result;
   char errorString[ERROR_STRING_SIZE];
 };
@@ -144,7 +144,7 @@ struct QueuedWrite {
 
 struct CloseBaton {
   int fd;
-  Nan::Callback* callback;
+  Nan::Callback callback;
   char errorString[ERROR_STRING_SIZE];
 };
 
@@ -159,21 +159,21 @@ struct ListResultItem {
 };
 
 struct ListBaton {
-  Nan::Callback* callback;
+  Nan::Callback callback;
   std::list<ListResultItem*> results;
   char errorString[ERROR_STRING_SIZE];
 };
 
 struct FlushBaton {
   int fd;
-  Nan::Callback* callback;
+  Nan::Callback callback;
   int result;
   char errorString[ERROR_STRING_SIZE];
 };
 
 struct SetBaton {
   int fd;
-  Nan::Callback* callback;
+  Nan::Callback callback;
   int result;
   char errorString[ERROR_STRING_SIZE];
   bool rts;
@@ -185,11 +185,11 @@ struct SetBaton {
 
 struct DrainBaton {
   int fd;
-  Nan::Callback* callback;
+  Nan::Callback callback;
   int result;
   char errorString[ERROR_STRING_SIZE];
 };
 
 int setup(int fd, OpenBaton *data);
 int setBaudRate(ConnectionOptionsBaton *data);
-#endif
+#endif  // SRC_SERIALPORT_H_
