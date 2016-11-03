@@ -89,7 +89,7 @@ test_script:
   - IF %PUBLISH_BINARY% == 1 (npm install --fallback-to-build=false)
 
 after_test:
-  - bash <(curl -s https://codecov.io/bash)
+  - pip install codecov && codecov
 
 deploy: OFF
 
