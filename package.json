@@ -63,6 +63,7 @@
     "readable-stream": "^2.1.4"
   },
   "devDependencies": {
+    "bluebird": "^3.4.6",
     "chai": "^3.5.0",
     "chai-subset": "^1.2.2",
     "eslint": "^3.9.0",
@@ -92,6 +93,7 @@
     "docs:diff": "jsdoc2md --no-cache -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs --partial .docs/edit-warning.hbs -r table --separators --name-format lib/* | diff README.md - || (echo 'Docs out of date, run `npm run docs` and commit the new README.md' && false)",
     "install": "node-pre-gyp install --fallback-to-build",
     "rebuild-all": "npm rebuild && node-gyp rebuild",
+    "gyp-rebuild": "node-gyp rebuild -d",
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
     "lint": "eslint *.js lib/**/*.js test/**/*.js bin/**/*.js examples/**/*.js",
     "test": "istanbul cover ./node_modules/mocha/bin/_mocha test/*.js test/arduinoTest/integration.js test/integration-lite.js",

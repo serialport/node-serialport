@@ -11,7 +11,7 @@ static Nan::Persistent<v8::FunctionTemplate> serialportpoller_constructor;
 
 SerialportPoller::SerialportPoller() :  Nan::ObjectWrap() {}
 SerialportPoller::~SerialportPoller() {
-  // printf("~SerialportPoller\n");
+  printf("~SerialportPoller %p\n", this);
   delete callback_;
 }
 
@@ -116,9 +116,12 @@ NAN_METHOD(SerialportPoller::Start) {
 
 NAN_METHOD(SerialportPoller::Close) {
   SerialportPoller* obj = Nan::ObjectWrap::Unwrap<SerialportPoller>(info.This());
+  printf("SerialportPoller::Close %p\n", obj);
   obj->_stop();
 
   // DO SOMETHING!
+  delete obj->callback_;
+  obj->callback_ = NULL;
 
   return;
 }
