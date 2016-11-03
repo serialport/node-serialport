@@ -1,3 +1,8 @@
+Version 4.0.5
+-------------
+- [windows] Fix file handle leak during opens when errors occur thanks to @enami
+- [all] Fix memory leak during opening a port
+
 Version 4.0.4
 -------------
 - Add precompiled binaries for node 7
