@@ -6,6 +6,12 @@ var sinon = require('sinon');
 var DelimiterParser = require('../lib/parser-delimiter');
 
 describe('DelimiterParser', function() {
+  it('works without new', function() {
+    // eslint-disable-next-line new-cap
+    var parser = DelimiterParser({delimiter: new Buffer('4')});
+    assert.instanceOf(parser, DelimiterParser);
+  });
+
   it('transforms data to strings split on a delimiter', function() {
     var spy = sinon.spy();
     var parser = new DelimiterParser({

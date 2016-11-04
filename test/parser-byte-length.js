@@ -6,6 +6,12 @@ var sinon = require('sinon');
 var ByteLengthParser = require('../lib/parser-byte-length');
 
 describe('ByteLengthParser', function() {
+  it('works without new', function() {
+    // eslint-disable-next-line new-cap
+    var parser = ByteLengthParser({length: 4});
+    assert.instanceOf(parser, ByteLengthParser);
+  });
+
   it('emits data events every 8 bytes', function() {
     var data = new Buffer('Robots are so freaking cool!');
     var spy = sinon.spy();
