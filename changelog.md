@@ -1,7 +1,7 @@
 Version 4.0.5
 -------------
 - [windows] Fix file handle leak during opens when errors occur thanks to @enami
-- [all] Fix memory leak during opening a port
+- [all] Fix memory leak during opening a port thanks to @indutny
 
 Version 4.0.4
 -------------
