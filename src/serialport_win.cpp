@@ -27,7 +27,7 @@ void ErrorCodeToString(const char* prefix, int errorCode, char *errorStr) {
     _snprintf_s(errorStr, ERROR_STRING_SIZE, _TRUNCATE, "%s: Access denied", prefix);
     break;
   case ERROR_OPERATION_ABORTED:
-    _snprintf_s(errorStr, ERROR_STRING_SIZE, _TRUNCATE, "%s: operation aborted", prefix);
+    _snprintf_s(errorStr, ERROR_STRING_SIZE, _TRUNCATE, "%s: Operation aborted", prefix);
     break;
   default:
     _snprintf_s(errorStr, ERROR_STRING_SIZE, _TRUNCATE, "%s: Unknown error code %d", prefix, errorCode);
@@ -175,14 +175,14 @@ void EIO_Update(uv_work_t* req) {
   dcb.DCBlength = sizeof(DCB);
 
   if (!GetCommState((HANDLE)data->fd, &dcb)) {
-    ErrorCodeToString("GetCommState", GetLastError(), data->errorString);
+    ErrorCodeToString("Update (GetCommState)", GetLastError(), data->errorString);
     return;
   }
 
   dcb.BaudRate = data->baudRate;
 
   if (!SetCommState((HANDLE)data->fd, &dcb)) {
-    ErrorCodeToString("SetCommState", GetLastError(), data->errorString);
+    ErrorCodeToString("Update (SetCommState)", GetLastError(), data->errorString);
     return;
   }
 }
@@ -326,7 +326,7 @@ void EIO_Close(uv_work_t* req) {
     pCancelIoEx((HANDLE)data->fd, NULL);
   }
   if (!CloseHandle((HANDLE)data->fd)) {
-    ErrorCodeToString("closing connection", GetLastError(), data->errorString);
+    ErrorCodeToString("Closing connection (CloseHandle)", GetLastError(), data->errorString);
     return;
   }
 }
@@ -421,7 +421,7 @@ void EIO_Flush(uv_work_t* req) {
 
   DWORD purge_all = PURGE_RXABORT | PURGE_RXCLEAR | PURGE_TXABORT | PURGE_TXCLEAR;
   if (!PurgeComm((HANDLE)data->fd, purge_all)) {
-    ErrorCodeToString("flushing connection (PurgeComm)", GetLastError(), data->errorString);
+    ErrorCodeToString("Flushing connection (PurgeComm)", GetLastError(), data->errorString);
     return;
   }
 }
@@ -430,7 +430,7 @@ void EIO_Drain(uv_work_t* req) {
   VoidBaton* data = static_cast<VoidBaton*>(req->data);
 
   if (!FlushFileBuffers((HANDLE)data->fd)) {
-    ErrorCodeToString("draining connection (FlushFileBuffers)", GetLastError(), data->errorString);
+    ErrorCodeToString("Draining connection (FlushFileBuffers)", GetLastError(), data->errorString);
     return;
   }
 }

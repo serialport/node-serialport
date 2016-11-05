@@ -13,7 +13,7 @@ var listLinux = proxyquire('../../lib/list-linux', {
     readdir: function(path, cb) {
       if (error) {
         return process.nextTick(function() {
-          cb(new Error('bad'));
+          cb(new Error('Bad'));
         });
       }
       process.nextTick(function() {

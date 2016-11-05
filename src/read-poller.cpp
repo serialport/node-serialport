@@ -66,7 +66,7 @@ void ReadPoller::callCallback(int status) {
 NAN_METHOD(ReadPoller::New) {
   // printf("ReadPoller\n");
   if (!info[0]->IsInt32()) {
-    Nan::ThrowTypeError("First argument must be an fd");
+    Nan::ThrowTypeError("First argument must be an integer file descriptor");
     return;
   }
 

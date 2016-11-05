@@ -42,7 +42,7 @@ var bindingsToTest = [
 ];
 
 function disconnect(err) {
-  throw (err || new Error('disconnected'));
+  throw (err || new Error('Disconnected'));
 }
 
 // All bindings are required to work with an "echo" firmware

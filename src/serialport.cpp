@@ -187,7 +187,7 @@ NAN_METHOD(Update) {
   v8::Local<v8::Object> options = info[1]->ToObject();
 
   if (!Nan::Has(options, Nan::New<v8::String>("baudRate").ToLocalChecked()).FromMaybe(false)) {
-    Nan::ThrowTypeError("baudRate must be set on options object");
+    Nan::ThrowTypeError("\"baudRate\" must be set on options object");
     return;
   }
 
@@ -311,7 +311,7 @@ void EIO_AfterWrite(uv_work_t* req) {
   int fd = data->fd;
   _WriteQueue *q = qForFD(fd);
   if (!q) {
-    Nan::ThrowTypeError("There's no write queue for that file descriptor (after write)!");
+    Nan::ThrowTypeError("There's no write queue for that file descriptor (after write)");
     return;
   }
 
