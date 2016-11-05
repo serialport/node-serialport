@@ -87,19 +87,19 @@ v8::Local<v8::Value> getValueFromObject(v8::Local<v8::Object> options, std::stri
 }
 
 int getIntFromObject(v8::Local<v8::Object> options, std::string key) {
-  return getValueFromObject(options, key)->ToInt32()->Int32Value();
+  return Nan::To<v8::Int32>(getValueFromObject(options, key)).ToLocalChecked()->Value();
 }
 
 bool getBoolFromObject(v8::Local<v8::Object> options, std::string key) {
-  return getValueFromObject(options, key)->ToBoolean()->BooleanValue();
+  return Nan::To<v8::Boolean>(getValueFromObject(options, key)).ToLocalChecked()->Value();
 }
 
 v8::Local<v8::String> getStringFromObj(v8::Local<v8::Object> options, std::string key) {
-  return getValueFromObject(options, key)->ToString();
+  return Nan::To<v8::String>(getValueFromObject(options, key)).ToLocalChecked();
 }
 
 double getDoubleFromObject(v8::Local<v8::Object> options, std::string key) {
-  return getValueFromObject(options, key)->ToNumber()->NumberValue();
+  return Nan::To<double>(getValueFromObject(options, key)).FromMaybe(0);
 }
 
 NAN_METHOD(Open) {
@@ -162,7 +162,7 @@ void EIO_AfterOpen(uv_work_t* req) {
     argv[0] = Nan::Null();
     argv[1] = Nan::New<v8::Int32>(data->result);
 
-    int fd = argv[1]->ToInt32()->Int32Value();
+    int fd = Nan::To<v8::Int32>(argv[1]).ToLocalChecked()->Value();
     newQForFD(fd);
   }
 
@@ -177,7 +177,7 @@ NAN_METHOD(Update) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
-  int fd = info[0]->ToInt32()->Int32Value();
+  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
 
   // options
   if (!info[1]->IsObject()) {
@@ -201,7 +201,7 @@ NAN_METHOD(Update) {
   memset(baton, 0, sizeof(ConnectionOptionsBaton));
 
   baton->fd = fd;
-  baton->baudRate = Nan::Get(options, Nan::New<v8::String>("baudRate").ToLocalChecked()).ToLocalChecked()->ToInt32()->Int32Value();
+  baton->baudRate = getIntFromObject(options, "baudRate");
   baton->callback.Reset(info[2].As<v8::Function>());
 
   uv_work_t* req = new uv_work_t();
@@ -234,7 +234,7 @@ NAN_METHOD(Write) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
-  int fd = info[0]->ToInt32()->Int32Value();
+  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
 
   // buffer
   if (!info[1]->IsObject() || !node::Buffer::HasInstance(info[1])) {
@@ -351,7 +351,7 @@ NAN_METHOD(Close) {
 
   VoidBaton* baton = new VoidBaton();
   memset(baton, 0, sizeof(VoidBaton));
-  baton->fd = info[0]->ToInt32()->Int32Value();
+  baton->fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
   baton->callback.Reset(info[1].As<v8::Function>());
 
   uv_work_t* req = new uv_work_t();
@@ -457,7 +457,7 @@ NAN_METHOD(Flush) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
-  int fd = info[0]->ToInt32()->Int32Value();
+  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
 
   // callback
   if (!info[1]->IsFunction()) {
@@ -501,7 +501,7 @@ NAN_METHOD(Set) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
-  int fd = info[0]->ToInt32()->Int32Value();
+  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
 
   // options
   if (!info[1]->IsObject()) {
@@ -556,7 +556,7 @@ NAN_METHOD(Get) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
-  int fd = info[0]->ToInt32()->Int32Value();
+  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
 
   // callback
   if (!info[1]->IsFunction()) {
@@ -608,7 +608,7 @@ NAN_METHOD(Drain) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
-  int fd = info[0]->ToInt32()->Int32Value();
+  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
 
   // callback
   if (!info[1]->IsFunction()) {
