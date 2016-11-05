@@ -76,7 +76,7 @@ NAN_METHOD(ReadPoller::New) {
   }
 
   ReadPoller* obj = new ReadPoller();
-  obj->fd_ = info[0]->ToInt32()->Int32Value();
+  obj->fd_ = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
   obj->callback_ = new Nan::Callback(info[1].As<v8::Function>());
   obj->Wrap(info.This());
   obj->poll_handle_.data = obj;
