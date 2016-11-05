@@ -332,7 +332,7 @@ describe('SerialPort', function() {
       it('allows opening after an open error', function(done) {
         var port = new SerialPort('/dev/exists', { autoOpen: false });
         var stub = sandbox.stub(port.binding, 'open', function(path, opt, cb) {
-          cb(new Error('haha no'));
+          cb(new Error('Haha no'));
         });
         port.open(function(err) {
           assert.instanceOf(err, Error);
