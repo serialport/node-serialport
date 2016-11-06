@@ -279,12 +279,11 @@ When opening a serial port, you can specify (in this order).
 
 ### Opening a Port
 
-Constructing a `SerialPort` object will open a port on `nextTick`. You can bind events while the port is opening but you must wait until it is open to `write()` to it. (Most port functions require an open port.) You can call code when a port is opened in three ways.
+Constructing a `SerialPort` object will open a port immediately. While you can read and write at any time (it will be queued into the port is open), most port functions require an open port. You can call code when a port is opened in three ways.
 
 - The `open` event is always emitted when the port is opened
 - The constructor's openCallback is passed to `.open()` when the `autoOpen` option hasn't been disabled, if you have disabled it the callback is ignored.
 - The `.open()` function takes a callback that is called after the port is opened. This can be used if you disabled the `autoOpen` option or have previously closed an open port.
-
 
 ```js
 var SerialPort = require('serialport');
@@ -322,7 +321,6 @@ var port = new SerialPort('/dev/tty-usbserial1', function (err) {
 ```
 
 When disabling the `autoOpen` option you'll need to open the port on your own.
-
 ```js
 var SerialPort = require('serialport');
 var port = new SerialPort('/dev/tty-usbserial1', { autoOpen: false });
@@ -358,6 +356,21 @@ port.write(new Buffer('Hi Mom!'));
 ```
 
 Enjoy and do cool things with this code.
+
+### Debugging
+
+We make use of the [debug](https://www.npmjs.com/package/debug) package and log under the `serialport` namespace. We log;
+
+ - `serialport:main` for all high level main logging
+ - `serialport:binding` for all low level logging
+
+You can enable logging through environment variables. Check out the [debug](https://www.npmjs.com/package/debug) docs for more information.
+
+```bash
+DEBUG=serialport:main node myapp.js
+DEBUG=serialport:* node myapp.js
+DEBUG=* node myapp.js
+```
 
 <a name="exp_module_serialport--SerialPort"></a>
 
