@@ -171,7 +171,7 @@ function testBinding(bindingName, Binding, testPort) {
 
         it('throws when not given a path', function(done) {
           try {
-            binding.open();
+            binding.open('');
           } catch(e) {
             assert.instanceOf(e, TypeError);
             done();
