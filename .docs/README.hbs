@@ -51,6 +51,8 @@ For getting started with node-serialport, we recommend you begin with the follow
 * [License](#license)
 * [Usage](#usage)
   * [Opening a Port](#opening-a-port)
+  * [Debugging](#debugging)
+  * [Error Handling](#error-handling)
 {{#class name="SerialPort"}}
 {{>member-index-grouped baseLevel=0 ~}}
 {{/class}}
@@ -325,6 +327,15 @@ DEBUG=serialport:main node myapp.js
 DEBUG=serialport:* node myapp.js
 DEBUG=* node myapp.js
 ```
+
+### Error Handling
+
+All functions in SerialPort two conventions.
+
+- Argument Errors throw a `TypeError` object. You'll see these when functions are called with invalid arguments.
+- Runtime Errors provide `Error` objects to the function's callback or emit an [`error event`](#module_serialport--SerialPort+event_error) if no callback is provided. You'll see these when a runtime error occurs like trying to open a bad port, or set an unsupported baud rate.
+
+It should never be necessary to wrap a SerialPort object in a try/catch statement if you call the functions with the correct arguments.
 
 {{#module name="serialport"}}
 {{>members~}}
