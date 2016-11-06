@@ -96,7 +96,8 @@
     "rebuild-all": "npm rebuild && node-gyp rebuild",
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
     "test": "istanbul cover ./node_modules/mocha/bin/_mocha",
-    "valgrind": "valgrind --leak-check=full --show-possibly-lost=no npm test"
+    "valgrind": "TEST_PORT=$(./bin/find-arduino.js) valgrind --leak-check=full node test/manual-testing/memory-binding.js",
+    "debugger": "TEST_PORT=$(./bin/find-arduino.js) node --inspect --debug-brk test/manual-testing/performance.js"
   },
   "gypfile": true
 }
