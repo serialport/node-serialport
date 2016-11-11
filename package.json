@@ -1,6 +1,6 @@
 {
   "name": "serialport",
-  "version": "4.0.5",
+  "version": "4.0.6",
   "description": "Node.js package to access serial ports. Welcome your robotic javascript overlords. Better yet, program them!",
   "author": {
     "name": "Chris Williams",
@@ -10,7 +10,7 @@
   "binary": {
     "module_name": "serialport",
     "module_path": "build/{configuration}/",
-    "host": "https://github.com/EmergingTechnologyAdvisors/node-serialport/releases/download/4.0.5"
+    "host": "https://github.com/EmergingTechnologyAdvisors/node-serialport/releases/download/4.0.6"
   },
   "main": "./lib/serialport",
   "repository": {
@@ -54,10 +54,10 @@
   "dependencies": {
     "bindings": "1.2.1",
     "commander": "^2.9.0",
-    "debug": "^2.1.1",
+    "debug": "^2.3.2",
     "lie": "^3.1.0",
     "nan": "^2.4.0",
-    "node-pre-gyp": "^0.6.26",
+    "node-pre-gyp": "^0.6.31",
     "object.assign": "^4.0.3"
   },
   "devDependencies": {

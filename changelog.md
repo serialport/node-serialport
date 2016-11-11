@@ -1,3 +1,8 @@
+Version 4.0.6
+-------------
+- [all] Upgrade nan to fix compile issues on some platforms thanks to @thom-nic
+- [all] Upgrade debug and node-pre-gyp
+
 Version 4.0.5
 -------------
 - [windows] Fix file handle leak during opens when errors occur thanks to @enami
