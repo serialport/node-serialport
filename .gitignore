@@ -6,5 +6,4 @@ node_modules
 npm-debug.log
 gyp-mac-tool
 .node_pre_gyprc
-/.idea
 coverage

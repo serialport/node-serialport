@@ -10,6 +10,7 @@ environment:
   - nodejs_version: "0.12"
   - nodejs_version: "4"
   - nodejs_version: "6"
+  - nodejs_version: "7"
 
 platform:
   - x86
@@ -78,8 +79,8 @@ test_script:
         npm run lint;
       } else {
         "Not linting because the linter doesn't run on this version of node" | Write-Host
+        true;
       }
-      true;
   - node ./
   - npm test
   - IF %PUBLISH_BINARY% == 1 (node-pre-gyp package 2>&1)
@@ -87,8 +88,8 @@ test_script:
   - IF %PUBLISH_BINARY% == 1 (node-pre-gyp clean)
   - IF %PUBLISH_BINARY% == 1 (npm install --fallback-to-build=false)
 
-on_success:
-  - npm run report-coverage
+after_test:
+  - pip install codecov && codecov
 
 deploy: OFF
 

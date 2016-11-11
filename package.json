@@ -1,7 +1,7 @@
 {
   "name": "serialport",
-  "version": "5.0.0-beta1",
-  "description": "Node.js package to access serial ports. Welcome your robotic javascript overlords. Better yet, program them!",
+  "version": "5.0.0-beta2",
+  "description": "Node.js package to access serial ports. Welcome your robotic JavaScript overlords. Better yet, program them!",
   "author": {
     "name": "Chris Williams",
     "email": "voodootikigod@gmail.com",
@@ -10,9 +10,9 @@
   "binary": {
     "module_name": "serialport",
     "module_path": "build/{configuration}/",
-    "host": "https://github.com/EmergingTechnologyAdvisors/node-serialport/releases/download/5.0.0-beta1"
+    "host": "https://github.com/EmergingTechnologyAdvisors/node-serialport/releases/download/5.0.0-beta2"
   },
-  "main": "./lib/serialport",
+  "main": "./lib",
   "repository": {
     "type": "git",
     "url": "git://github.com/EmergingTechnologyAdvisors/node-serialport.git"
@@ -55,27 +55,25 @@
     "bindings": "1.2.1",
     "buffer-indexof": "^1.1.0",
     "commander": "^2.9.0",
-    "debug": "^2.1.1",
-    "inherits": "^2.0.1",
+    "debug": "^2.3.1",
     "lie": "^3.1.0",
-    "nan": "^2.3.5",
-    "node-pre-gyp": "^0.6.26",
+    "nan": "^2.4.0",
+    "node-pre-gyp": "^0.6.31",
     "object.assign": "^4.0.3",
     "readable-stream": "^2.1.4"
   },
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-subset": "^1.2.2",
-    "coveralls": "^2.11.9",
-    "eslint": "^3.5.0",
-    "eslint-config-standard": "^6.0.0",
-    "eslint-plugin-promise": "^2.0.0",
-    "eslint-plugin-standard": "^2.0.0",
+    "eslint": "^3.9.0",
+    "eslint-config-standard": "^6.2.0",
+    "eslint-plugin-promise": "^3.0.0",
+    "eslint-plugin-standard": "^2.0.1",
     "istanbul": "^0.4.4",
-    "jsdoc-to-markdown": "^1.3.6",
-    "mocha": "^3.0.0",
+    "jsdoc-to-markdown": "^2.0.1",
+    "mocha": "^3.1.1",
     "node-pre-gyp-github": "^1.1.2",
-    "sandboxed-module": "^2.0.3",
+    "proxyquire": "^1.7.10",
     "sinon": "^1.17.3"
   },
   "bundledDependencies": [
@@ -90,15 +88,16 @@
   },
   "license": "MIT",
   "scripts": {
-    "docs": "jsdoc2md -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs -r table --separators --name-format lib/* > README.md",
-    "docs:diff": "jsdoc2md -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs -r table --separators --name-format lib/* | diff README.md - || (echo 'Docs out of date, run `npm run docs` and commit the new README.md' && false)",
+    "arduino-test":"TEST_PORT=$(./bin/find-arduino.js) npm test",
+    "docs": "jsdoc2md --no-cache -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs --partial .docs/edit-warning.hbs -r table --separators --name-format lib/* > README.md",
+    "docs:diff": "jsdoc2md --no-cache -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs --partial .docs/edit-warning.hbs -r table --separators --name-format lib/* | diff -q README.md - || (echo 'Docs out of date, run `npm run docs` and commit the new README.md' && false)",
     "install": "node-pre-gyp install --fallback-to-build",
+    "lint": "eslint *.js lib/**/*.js test/**/*.js bin/**/*.js examples/**/*.js",
     "rebuild-all": "npm rebuild && node-gyp rebuild",
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
-    "lint": "eslint *.js lib/**/*.js test/**/*.js bin/**/*.js examples/**/*.js",
-    "test": "istanbul cover ./node_modules/mocha/bin/_mocha test/*.js test/arduinoTest/integration.js test/integration-lite.js",
-    "report-coverage": "cat ./coverage/lcov.info | coveralls",
-    "valgrind": "valgrind --leak-check=full --show-possibly-lost=no node --expose-gc --trace-gc node_modules/.bin/grunt test"
+    "test": "istanbul cover ./node_modules/mocha/bin/_mocha",
+    "valgrind": "TEST_PORT=$(./bin/find-arduino.js) valgrind --leak-check=full node test/manual-testing/memory-binding.js",
+    "debugger": "TEST_PORT=$(./bin/find-arduino.js) node --inspect --debug-brk test/manual-testing/performance.js"
   },
   "gypfile": true
 }

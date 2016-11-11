@@ -1,5 +1,5 @@
-#ifndef _serialport_h_
-#define _serialport_h_
+#ifndef SRC_SERIALPORT_H_
+#define SRC_SERIALPORT_H_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,7 +17,6 @@ void EIO_AfterList(uv_work_t* req);
 NAN_METHOD(Open);
 void EIO_Open(uv_work_t* req);
 void EIO_AfterOpen(uv_work_t* req);
-void AfterOpenSuccess(int fd, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, Nan::Callback* errorCallback);
 
 NAN_METHOD(Update);
 void EIO_Update(uv_work_t* req);
@@ -39,39 +38,39 @@ NAN_METHOD(Set);
 void EIO_Set(uv_work_t* req);
 void EIO_AfterSet(uv_work_t* req);
 
+NAN_METHOD(Get);
+void EIO_Get(uv_work_t* req);
+void EIO_AfterGet(uv_work_t* req);
+
 NAN_METHOD(Drain);
 void EIO_Drain(uv_work_t* req);
 void EIO_AfterDrain(uv_work_t* req);
 
 enum SerialPortParity {
-  SERIALPORT_PARITY_NONE = 1,
-  SERIALPORT_PARITY_MARK = 2,
-  SERIALPORT_PARITY_EVEN = 3,
-  SERIALPORT_PARITY_ODD = 4,
+  SERIALPORT_PARITY_NONE  = 1,
+  SERIALPORT_PARITY_MARK  = 2,
+  SERIALPORT_PARITY_EVEN  = 3,
+  SERIALPORT_PARITY_ODD   = 4,
   SERIALPORT_PARITY_SPACE = 5
 };
 
 enum SerialPortStopBits {
-  SERIALPORT_STOPBITS_ONE = 1,
+  SERIALPORT_STOPBITS_ONE      = 1,
   SERIALPORT_STOPBITS_ONE_FIVE = 2,
-  SERIALPORT_STOPBITS_TWO = 3
+  SERIALPORT_STOPBITS_TWO      = 3
 };
 
 SerialPortParity ToParityEnum(const v8::Local<v8::String>& str);
 SerialPortStopBits ToStopBitEnum(double stopBits);
 
-struct OpenBatonPlatformOptions { };
-OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& options);
-
 struct OpenBaton {
   char errorString[ERROR_STRING_SIZE];
-  Nan::Callback* callback;
+  Nan::Callback callback;
   char path[1024];
   int fd;
   int result;
   int baudRate;
   int dataBits;
-  int bufferSize;
   bool rtscts;
   bool xon;
   bool xoff;
@@ -79,17 +78,17 @@ struct OpenBaton {
   bool dsrdtr;
   bool hupcl;
   bool lock;
-  Nan::Callback* dataCallback;
-  Nan::Callback* disconnectedCallback;
-  Nan::Callback* errorCallback;
   SerialPortParity parity;
   SerialPortStopBits stopBits;
-  OpenBatonPlatformOptions* platformOptions;
+#ifndef WIN32
+  uint8_t vmin;
+  uint8_t vtime;
+#endif
 };
 
 struct ConnectionOptionsBaton {
   char errorString[ERROR_STRING_SIZE];
-  Nan::Callback* callback;
+  Nan::Callback callback;
   int fd;
   int baudRate;
 };
@@ -100,7 +99,7 @@ struct WriteBaton {
   size_t bufferLength;
   size_t offset;
   Nan::Persistent<v8::Object> buffer;
-  Nan::Callback* callback;
+  Nan::Callback callback;
   int result;
   char errorString[ERROR_STRING_SIZE];
 };
@@ -156,14 +155,14 @@ struct ListResultItem {
 };
 
 struct ListBaton {
-  Nan::Callback* callback;
+  Nan::Callback callback;
   std::list<ListResultItem*> results;
   char errorString[ERROR_STRING_SIZE];
 };
 
 struct SetBaton {
   int fd;
-  Nan::Callback* callback;
+  Nan::Callback callback;
   int result;
   char errorString[ERROR_STRING_SIZE];
   bool rts;
@@ -173,12 +172,21 @@ struct SetBaton {
   bool brk;
 };
 
+struct GetBaton {
+  int fd;
+  Nan::Callback callback;
+  char errorString[ERROR_STRING_SIZE];
+  bool cts;
+  bool dsr;
+  bool dcd;
+};
+
 struct VoidBaton {
   int fd;
-  Nan::Callback* callback;
+  Nan::Callback callback;
   char errorString[ERROR_STRING_SIZE];
 };
 
 int setup(int fd, OpenBaton *data);
 int setBaudRate(ConnectionOptionsBaton *data);
-#endif
+#endif  // SRC_SERIALPORT_H_

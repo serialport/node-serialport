@@ -4,7 +4,7 @@ Upgrading from 3.x to 4.x
 
 The constructor has changed. We've removed an argument, changed how errors are thrown and it is returned when you `require('serialport');`
 
- - Requiring `serialport` now returns the SerialPort constructor function instead of a factory object. `SerialPort.SerialPort` is now depreciated.
+ - Requiring `serialport` now returns the SerialPort constructor function instead of a factory object. `SerialPort.SerialPort` is now deprecated.
  - `SerialPort` constructor now throws on argument errors immediately.
  - Removed `openImmediately` from the constructor's api, the functionality is now named `autoOpen` on the options object.
  - Removed extraneous flow control settings from the `flowControl` option, use the specific options to set these flags now.

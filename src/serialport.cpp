@@ -1,9 +1,9 @@
 #include "./serialport.h"
 
 #ifdef WIN32
-#define strncasecmp strnicmp
+  #define strncasecmp strnicmp
 #else
-#include "./serialport_poller.h"
+  #include "./read-poller.h"
 #endif
 
 struct _WriteQueue {
@@ -87,19 +87,19 @@ v8::Local<v8::Value> getValueFromObject(v8::Local<v8::Object> options, std::stri
 }
 
 int getIntFromObject(v8::Local<v8::Object> options, std::string key) {
-  return getValueFromObject(options, key)->ToInt32()->Int32Value();
+  return Nan::To<v8::Int32>(getValueFromObject(options, key)).ToLocalChecked()->Value();
 }
 
 bool getBoolFromObject(v8::Local<v8::Object> options, std::string key) {
-  return getValueFromObject(options, key)->ToBoolean()->BooleanValue();
+  return Nan::To<v8::Boolean>(getValueFromObject(options, key)).ToLocalChecked()->Value();
 }
 
 v8::Local<v8::String> getStringFromObj(v8::Local<v8::Object> options, std::string key) {
-  return getValueFromObject(options, key)->ToString();
+  return Nan::To<v8::String>(getValueFromObject(options, key)).ToLocalChecked();
 }
 
 double getDoubleFromObject(v8::Local<v8::Object> options, std::string key) {
-  return getValueFromObject(options, key)->ToNumber()->NumberValue();
+  return Nan::To<double>(getValueFromObject(options, key)).FromMaybe(0);
 }
 
 NAN_METHOD(Open) {
@@ -122,14 +122,12 @@ NAN_METHOD(Open) {
     Nan::ThrowTypeError("Third argument must be a function");
     return;
   }
-  v8::Local<v8::Function> callback = info[2].As<v8::Function>();
 
   OpenBaton* baton = new OpenBaton();
   memset(baton, 0, sizeof(OpenBaton));
   strcpy(baton->path, *path);
   baton->baudRate = getIntFromObject(options, "baudRate");
   baton->dataBits = getIntFromObject(options, "dataBits");
-  baton->bufferSize = getIntFromObject(options, "bufferSize");
   baton->parity = ToParityEnum(getStringFromObj(options, "parity"));
   baton->stopBits = ToStopBitEnum(getDoubleFromObject(options, "stopBits"));
   baton->rtscts = getBoolFromObject(options, "rtscts");
@@ -138,21 +136,17 @@ NAN_METHOD(Open) {
   baton->xany = getBoolFromObject(options, "xany");
   baton->hupcl = getBoolFromObject(options, "hupcl");
   baton->lock = getBoolFromObject(options, "lock");
+  baton->callback.Reset(info[2].As<v8::Function>());
 
-  v8::Local<v8::Object> platformOptions = getValueFromObject(options, "platformOptions")->ToObject();
-  baton->platformOptions = ParsePlatformOptions(platformOptions);
-
-  baton->callback = new Nan::Callback(callback);
-  baton->dataCallback = new Nan::Callback(getValueFromObject(options, "dataCallback").As<v8::Function>());
-  baton->disconnectedCallback = new Nan::Callback(getValueFromObject(options, "disconnectedCallback").As<v8::Function>());
-  baton->errorCallback = new Nan::Callback(getValueFromObject(options, "errorCallback").As<v8::Function>());
+  #ifndef WIN32
+    baton->vmin = getIntFromObject(options, "vmin");
+    baton->vtime = getIntFromObject(options, "vtime");
+  #endif
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
 
   uv_queue_work(uv_default_loop(), req, EIO_Open, (uv_after_work_cb)EIO_AfterOpen);
-
-  return;
 }
 
 void EIO_AfterOpen(uv_work_t* req) {
@@ -164,24 +158,15 @@ void EIO_AfterOpen(uv_work_t* req) {
   if (data->errorString[0]) {
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
     argv[1] = Nan::Undefined();
-    // not needed because we're not calling AfterOpenSuccess
-    delete data->dataCallback;
-    delete data->errorCallback;
-    delete data->disconnectedCallback;
   } else {
     argv[0] = Nan::Null();
     argv[1] = Nan::New<v8::Int32>(data->result);
 
-    int fd = argv[1]->ToInt32()->Int32Value();
+    int fd = Nan::To<v8::Int32>(argv[1]).ToLocalChecked()->Value();
     newQForFD(fd);
-
-    AfterOpenSuccess(data->result, data->dataCallback, data->disconnectedCallback, data->errorCallback);
   }
 
-  data->callback->Call(2, argv);
-
-  delete data->platformOptions;
-  delete data->callback;
+  data->callback.Call(2, argv);
   delete data;
   delete req;
 }
@@ -192,7 +177,7 @@ NAN_METHOD(Update) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
-  int fd = info[0]->ToInt32()->Int32Value();
+  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
 
   // options
   if (!info[1]->IsObject()) {
@@ -202,7 +187,7 @@ NAN_METHOD(Update) {
   v8::Local<v8::Object> options = info[1]->ToObject();
 
   if (!Nan::Has(options, Nan::New<v8::String>("baudRate").ToLocalChecked()).FromMaybe(false)) {
-    Nan::ThrowTypeError("baudRate must be set on options object");
+    Nan::ThrowTypeError("\"baudRate\" must be set on options object");
     return;
   }
 
@@ -211,21 +196,18 @@ NAN_METHOD(Update) {
     Nan::ThrowTypeError("Third argument must be a function");
     return;
   }
-  v8::Local<v8::Function> callback = info[2].As<v8::Function>();
 
   ConnectionOptionsBaton* baton = new ConnectionOptionsBaton();
   memset(baton, 0, sizeof(ConnectionOptionsBaton));
 
   baton->fd = fd;
-  baton->baudRate = Nan::Get(options, Nan::New<v8::String>("baudRate").ToLocalChecked()).ToLocalChecked()->ToInt32()->Int32Value();
-  baton->callback = new Nan::Callback(callback);
+  baton->baudRate = getIntFromObject(options, "baudRate");
+  baton->callback.Reset(info[2].As<v8::Function>());
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
 
   uv_queue_work(uv_default_loop(), req, EIO_Update, (uv_after_work_cb)EIO_AfterUpdate);
-
-  return;
 }
 
 void EIO_AfterUpdate(uv_work_t* req) {
@@ -240,9 +222,8 @@ void EIO_AfterUpdate(uv_work_t* req) {
     argv[0] = Nan::Null();
   }
 
-  data->callback->Call(1, argv);
+  data->callback.Call(1, argv);
 
-  delete data->callback;
   delete data;
   delete req;
 }
@@ -253,7 +234,7 @@ NAN_METHOD(Write) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
-  int fd = info[0]->ToInt32()->Int32Value();
+  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
 
   // buffer
   if (!info[1]->IsObject() || !node::Buffer::HasInstance(info[1])) {
@@ -269,25 +250,27 @@ NAN_METHOD(Write) {
     Nan::ThrowTypeError("Third argument must be a function");
     return;
   }
-  v8::Local<v8::Function> callback = info[2].As<v8::Function>();
 
-  WriteBaton* baton = new WriteBaton();
-  memset(baton, 0, sizeof(WriteBaton));
-  baton->fd = fd;
-  baton->buffer.Reset(buffer);
-  baton->bufferData = bufferData;
-  baton->bufferLength = bufferLength;
-  baton->offset = 0;
-  baton->callback = new Nan::Callback(callback);
+  WriteBaton* data = new WriteBaton();
+  memset(data, 0, sizeof(WriteBaton));
+  data->fd = fd;
+  data->buffer.Reset(buffer);
+  data->bufferData = bufferData;
+  data->bufferLength = bufferLength;
+  data->offset = 0;
+  data->callback.Reset(info[2].As<v8::Function>());
 
   QueuedWrite* queuedWrite = new QueuedWrite();
   memset(queuedWrite, 0, sizeof(QueuedWrite));
-  queuedWrite->baton = baton;
+  queuedWrite->baton = data;
   queuedWrite->req.data = queuedWrite;
 
   _WriteQueue *q = qForFD(fd);
   if (!q) {
-    Nan::ThrowTypeError("There's no write queue for that file descriptor (write)!");
+    v8::Local<v8::Value> argv[1];
+    argv[0] = v8::Exception::Error(Nan::New<v8::String>("There's no write queue for file descriptor").ToLocalChecked());
+    data->callback.Call(1, argv);
+    delete data;
     return;
   }
 
@@ -301,8 +284,6 @@ NAN_METHOD(Write) {
     uv_queue_work(uv_default_loop(), &queuedWrite->req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
   }
   q->unlock();
-
-  return;
 }
 
 void EIO_AfterWrite(uv_work_t* req) {
@@ -322,7 +303,6 @@ void EIO_AfterWrite(uv_work_t* req) {
     // We're not done with this baton, so throw it right back onto the queue.
     // Don't re-push the write in the event loop if there was an error; because same error could occur again!
     // TODO: Add a uv_poll here for unix...
-    // fprintf(stderr, "Write again...\n");
     uv_queue_work(uv_default_loop(), req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
     return;
   }
@@ -331,7 +311,7 @@ void EIO_AfterWrite(uv_work_t* req) {
   int fd = data->fd;
   _WriteQueue *q = qForFD(fd);
   if (!q) {
-    Nan::ThrowTypeError("There's no write queue for that file descriptor (after write)!");
+    Nan::ThrowTypeError("There's no write queue for that file descriptor (after write)");
     return;
   }
 
@@ -341,7 +321,7 @@ void EIO_AfterWrite(uv_work_t* req) {
   // remove this one from the list
   queuedWrite->remove();
 
-  data->callback->Call(1, argv);
+  data->callback.Call(1, argv);
 
   // If there are any left, start a new thread to write the next one.
   if (!write_queue.empty()) {
@@ -352,7 +332,6 @@ void EIO_AfterWrite(uv_work_t* req) {
   q->unlock();
 
   data->buffer.Reset();
-  delete data->callback;
   delete data;
   delete queuedWrite;
 }
@@ -369,18 +348,15 @@ NAN_METHOD(Close) {
     Nan::ThrowTypeError("Second argument must be a function");
     return;
   }
-  v8::Local<v8::Function> callback = info[1].As<v8::Function>();
 
   VoidBaton* baton = new VoidBaton();
   memset(baton, 0, sizeof(VoidBaton));
-  baton->fd = info[0]->ToInt32()->Int32Value();
-  baton->callback = new Nan::Callback(callback);
+  baton->fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
+  baton->callback.Reset(info[1].As<v8::Function>());
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
   uv_queue_work(uv_default_loop(), req, EIO_Close, (uv_after_work_cb)EIO_AfterClose);
-
-  return;
 }
 
 void EIO_AfterClose(uv_work_t* req) {
@@ -407,9 +383,8 @@ void EIO_AfterClose(uv_work_t* req) {
       deleteQForFD(data->fd);
     }
   }
-  data->callback->Call(1, argv);
+  data->callback.Call(1, argv);
 
-  delete data->callback;
   delete data;
   delete req;
 }
@@ -420,17 +395,14 @@ NAN_METHOD(List) {
     Nan::ThrowTypeError("First argument must be a function");
     return;
   }
-  v8::Local<v8::Function> callback = info[0].As<v8::Function>();
 
   ListBaton* baton = new ListBaton();
   strcpy(baton->errorString, "");
-  baton->callback = new Nan::Callback(callback);
+  baton->callback.Reset(info[0].As<v8::Function>());
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
   uv_queue_work(uv_default_loop(), req, EIO_List, (uv_after_work_cb)EIO_AfterList);
-
-  return;
 }
 
 void setIfNotEmpty(v8::Local<v8::Object> item, std::string key, const char *value) {
@@ -440,7 +412,6 @@ void setIfNotEmpty(v8::Local<v8::Object> item, std::string key, const char *valu
   } else {
     Nan::Set(item, v8key, Nan::Undefined());
   }
-
 }
 
 void EIO_AfterList(uv_work_t* req) {
@@ -474,9 +445,8 @@ void EIO_AfterList(uv_work_t* req) {
     argv[0] = Nan::Null();
     argv[1] = results;
   }
-  data->callback->Call(2, argv);
+  data->callback.Call(2, argv);
 
-  delete data->callback;
   for (std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it) {
     delete *it;
   }
@@ -490,7 +460,7 @@ NAN_METHOD(Flush) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
-  int fd = info[0]->ToInt32()->Int32Value();
+  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
 
   // callback
   if (!info[1]->IsFunction()) {
@@ -502,13 +472,11 @@ NAN_METHOD(Flush) {
   VoidBaton* baton = new VoidBaton();
   memset(baton, 0, sizeof(VoidBaton));
   baton->fd = fd;
-  baton->callback = new Nan::Callback(callback);
+  baton->callback.Reset(callback);
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
   uv_queue_work(uv_default_loop(), req, EIO_Flush, (uv_after_work_cb)EIO_AfterFlush);
-
-  return;
 }
 
 void EIO_AfterFlush(uv_work_t* req) {
@@ -524,9 +492,8 @@ void EIO_AfterFlush(uv_work_t* req) {
     argv[0] = Nan::Null();
   }
 
-  data->callback->Call(1, argv);
+  data->callback.Call(1, argv);
 
-  delete data->callback;
   delete data;
   delete req;
 }
@@ -537,7 +504,7 @@ NAN_METHOD(Set) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
-  int fd = info[0]->ToInt32()->Int32Value();
+  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
 
   // options
   if (!info[1]->IsObject()) {
@@ -556,7 +523,7 @@ NAN_METHOD(Set) {
   SetBaton* baton = new SetBaton();
   memset(baton, 0, sizeof(SetBaton));
   baton->fd = fd;
-  baton->callback = new Nan::Callback(callback);
+  baton->callback.Reset(callback);
   baton->brk = getBoolFromObject(options, "brk");
   baton->rts = getBoolFromObject(options, "rts");
   baton->cts = getBoolFromObject(options, "cts");
@@ -566,8 +533,6 @@ NAN_METHOD(Set) {
   uv_work_t* req = new uv_work_t();
   req->data = baton;
   uv_queue_work(uv_default_loop(), req, EIO_Set, (uv_after_work_cb)EIO_AfterSet);
-
-  return;
 }
 
 void EIO_AfterSet(uv_work_t* req) {
@@ -582,9 +547,60 @@ void EIO_AfterSet(uv_work_t* req) {
   } else {
     argv[0] = Nan::Null();
   }
-  data->callback->Call(1, argv);
+  data->callback.Call(1, argv);
 
-  delete data->callback;
+  delete data;
+  delete req;
+}
+
+NAN_METHOD(Get) {
+  // file descriptor
+  if (!info[0]->IsInt32()) {
+    Nan::ThrowTypeError("First argument must be an int");
+    return;
+  }
+  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
+
+  // callback
+  if (!info[1]->IsFunction()) {
+    Nan::ThrowTypeError("Second argument must be a function");
+    return;
+  }
+
+  GetBaton* baton = new GetBaton();
+  memset(baton, 0, sizeof(GetBaton));
+  baton->fd = fd;
+  baton->cts = false;
+  baton->dsr = false;
+  baton->dcd = false;
+  baton->callback.Reset(info[1].As<v8::Function>());
+
+  uv_work_t* req = new uv_work_t();
+  req->data = baton;
+  uv_queue_work(uv_default_loop(), req, EIO_Get, (uv_after_work_cb)EIO_AfterGet);
+}
+
+void EIO_AfterGet(uv_work_t* req) {
+  Nan::HandleScope scope;
+
+  GetBaton* data = static_cast<GetBaton*>(req->data);
+
+  v8::Local<v8::Value> argv[2];
+
+  if (data->errorString[0]) {
+    argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
+    argv[1] = Nan::Undefined();
+  } else {
+    v8::Local<v8::Object> results = Nan::New<v8::Object>();
+    results->Set(Nan::New<v8::String>("cts").ToLocalChecked(), Nan::New<v8::Boolean>(data->cts));
+    results->Set(Nan::New<v8::String>("dsr").ToLocalChecked(), Nan::New<v8::Boolean>(data->dsr));
+    results->Set(Nan::New<v8::String>("dcd").ToLocalChecked(), Nan::New<v8::Boolean>(data->dcd));
+
+    argv[0] = Nan::Null();
+    argv[1] = results;
+  }
+  data->callback.Call(2, argv);
+
   delete data;
   delete req;
 }
@@ -595,25 +611,22 @@ NAN_METHOD(Drain) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
-  int fd = info[0]->ToInt32()->Int32Value();
+  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
 
   // callback
   if (!info[1]->IsFunction()) {
     Nan::ThrowTypeError("Second argument must be a function");
     return;
   }
-  v8::Local<v8::Function> callback = info[1].As<v8::Function>();
 
   VoidBaton* baton = new VoidBaton();
   memset(baton, 0, sizeof(VoidBaton));
   baton->fd = fd;
-  baton->callback = new Nan::Callback(callback);
+  baton->callback.Reset(info[1].As<v8::Function>());
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
   uv_queue_work(uv_default_loop(), req, EIO_Drain, (uv_after_work_cb)EIO_AfterDrain);
-
-  return;
 }
 
 void EIO_AfterDrain(uv_work_t* req) {
@@ -628,27 +641,26 @@ void EIO_AfterDrain(uv_work_t* req) {
   } else {
     argv[0] = Nan::Null();
   }
-  data->callback->Call(1, argv);
+  data->callback.Call(1, argv);
 
-  delete data->callback;
   delete data;
   delete req;
 }
 
 SerialPortParity NAN_INLINE(ToParityEnum(const v8::Local<v8::String>& v8str)) {
   Nan::HandleScope scope;
-  Nan::Utf8String *str = new Nan::Utf8String(v8str);
-  size_t count = strlen(**str);
+  Nan::Utf8String str(v8str);
+  size_t count = strlen(*str);
   SerialPortParity parity = SERIALPORT_PARITY_NONE;
-  if (!strncasecmp(**str, "none", count)) {
+  if (!strncasecmp(*str, "none", count)) {
     parity = SERIALPORT_PARITY_NONE;
-  } else if (!strncasecmp(**str, "even", count)) {
+  } else if (!strncasecmp(*str, "even", count)) {
     parity = SERIALPORT_PARITY_EVEN;
-  } else if (!strncasecmp(**str, "mark", count)) {
+  } else if (!strncasecmp(*str, "mark", count)) {
     parity = SERIALPORT_PARITY_MARK;
-  } else if (!strncasecmp(**str, "odd", count)) {
+  } else if (!strncasecmp(*str, "odd", count)) {
     parity = SERIALPORT_PARITY_ODD;
-  } else if (!strncasecmp(**str, "space", count)) {
+  } else if (!strncasecmp(*str, "space", count)) {
     parity = SERIALPORT_PARITY_SPACE;
   }
   return parity;
@@ -668,6 +680,7 @@ extern "C" {
   void init(v8::Handle<v8::Object> target) {
     Nan::HandleScope scope;
     Nan::SetMethod(target, "set", Set);
+    Nan::SetMethod(target, "get", Get);
     Nan::SetMethod(target, "open", Open);
     Nan::SetMethod(target, "update", Update);
     Nan::SetMethod(target, "write", Write);
@@ -677,7 +690,7 @@ extern "C" {
     Nan::SetMethod(target, "drain", Drain);
 
 #ifndef WIN32
-    SerialportPoller::Init(target);
+    ReadPoller::Init(target);
 #endif
   }
 }
