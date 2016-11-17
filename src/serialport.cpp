@@ -336,6 +336,56 @@ void EIO_AfterWrite(uv_work_t* req) {
   delete queuedWrite;
 }
 
+NAN_METHOD(Read) {
+  // file descriptor
+  if (!info[0]->IsInt32()) {
+    Nan::ThrowTypeError("First argument must be an int");
+    return;
+  }
+  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
+
+  // buffer
+  if (!info[1]->IsObject() || !node::Buffer::HasInstance(info[1])) {
+    Nan::ThrowTypeError("Second argument must be a buffer");
+    return;
+  }
+  v8::Local<v8::Object> buffer = info[1]->ToObject();
+  char* bufferData = node::Buffer::Data(buffer);
+  size_t bufferLength = node::Buffer::Length(buffer);
+
+  // offset
+  if (!info[2]->IsInt32()) {
+    Nan::ThrowTypeError("Third argument must be an int");
+    return;
+  }
+  int offset = Nan::To<v8::Int32>(info[2]).ToLocalChecked()->Value();
+  
+  // bytes to read
+  if (!info[3]->IsInt32()) {
+    Nan::ThrowTypeError("Fourth argument must be an int");
+    return;
+  }
+  int bytesToRead = Nan::To<v8::Int32>(info[3]).ToLocalChecked()->Value();
+
+  // callback
+  if (!info[4]->IsFunction()) {
+    Nan::ThrowTypeError("Fifth argument must be a function");
+    return;
+  }
+
+  ReadBaton* data = new ReadBaton();
+  memset(data, 0, sizeof(ReadBaton));
+  data->fd = fd;
+  data->offset = offset;
+  data->bytesToRead = bytesToRead;
+  data->bufferLength = bufferLength;
+  data->callback.Reset(info[4].As<v8::Function>());
+
+  uv_work_t* req = new uv_work_t();
+  req->data = data;
+  uv_queue_work(uv_default_loop(), req, EIO_Read, (uv_after_work_cb)EIO_AfterRead);
+}
+
 NAN_METHOD(Close) {
   // file descriptor
   if (!info[0]->IsInt32()) {
@@ -681,6 +731,7 @@ extern "C" {
     Nan::SetMethod(target, "open", Open);
     Nan::SetMethod(target, "update", Update);
     Nan::SetMethod(target, "write", Write);
+    Nan::SetMethod(target, "read", Read);
     Nan::SetMethod(target, "close", Close);
     Nan::SetMethod(target, "list", List);
     Nan::SetMethod(target, "flush", Flush);
