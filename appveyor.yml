@@ -10,7 +10,10 @@ environment:
   - nodejs_version: "0.12"
   - nodejs_version: "4"
   - nodejs_version: "6"
+  - nodejs_version: "5"
   - nodejs_version: "7"
+  - electron_version: "1.4.6"
+    nodejs_version: "5"
 
 platform:
   - x86
@@ -29,6 +32,7 @@ install:
         "APPVEYOR_REPO_COMMIT_MESSAGE" = $env:APPVEYOR_REPO_COMMIT_MESSAGE
         "git latest tag" = "$(git describe --tags --always HEAD)"
         "appveyor_repo_tag" = $env:appveyor_repo_tag
+        "electron_version" = $env:electron_version
       } | Out-String | Write-Host;
 
   # work around bug in npm 2.15.1 where checksums were coming back bad (node 0.12)
@@ -56,9 +60,9 @@ install:
 
   - ps: >
       if ($env:publish_binary -eq 1) {
-        "We're publising a binary!" | Write-Host
+        "We're publishing a binary!" | Write-Host
       } else {
-        "We're not publising a binary" | Write-Host
+        "We're not publishing a binary" | Write-Host
       }
       true;
 
@@ -69,6 +73,27 @@ install:
 
   # We don't currently have a port to test on windows
   # - ps: $env:TEST_PORT = "COM1";
+
+  # Setup Electron variables
+  - ps: >
+      if ($env:electron_version) {
+        "We're an electron build, setup variables" | Write-Host
+        $env:npm_config_target = $env:electron_version
+        $env:npm_config_disturl = "https://atom.io/download/atom-shell"
+        $env:npm_config_runtime = "electron"
+
+        if ($env:plaftorm -eq "x86") {
+          $env:npm_config_arch = "ia32"
+        } else {
+          $env:npm_config_arch = "x64"
+        }
+
+        "Install electron and electron-mocha" | Write-Host
+
+        npm install -g electron@$env:electron_version
+        npm install electron-mocha
+      }
+      true;
 
 build_script:
   - npm install --build-from-source --msvs_version=2013
@@ -81,8 +106,14 @@ test_script:
         "Not linting because the linter doesn't run on this version of node" | Write-Host
         true;
       }
-  - node ./
-  - npm test
+
+  # If we run npm test in powershell it'll have the wrong encoding
+  # so we have to do it like this
+
+  - IF DEFINED electron_version (electron test/electron)
+  - IF NOT DEFINED electron_version (node ./)
+  - IF NOT DEFINED electron_version (npm test)
+
   - IF %PUBLISH_BINARY% == 1 (node-pre-gyp package 2>&1)
   - IF %PUBLISH_BINARY% == 1 (node-pre-gyp-github publish --release 2>&1)
   - IF %PUBLISH_BINARY% == 1 (node-pre-gyp clean)
