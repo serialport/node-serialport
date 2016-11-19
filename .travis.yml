@@ -9,6 +9,17 @@ addons:
     - g++-4.8
     - g++-4.8-multilib
     - gcc-multilib
+    - libgtk2.0-0
+    - libxtst6
+    - libnotify4
+    - libgconf2-4
+    - libgtk2.0-0:i386
+    - libxtst6:i386
+    - libnotify4:i386
+    - libgconf2-4:i386
+    - libnss3:i386
+    - libasound2:i386
+    - libxss1:i386
 
 # Build matrix
 os:
@@ -18,6 +29,8 @@ env:
   global:
   - secure: "qEdwCY/ilHkqWkqasN5MgWCnzzop4lEYkbpxEiVMTZBY12p4uV6ysPQ+ZLZcx10Cg90RIQlsPeEANIhCzkWfnQi+ySmeiKY9JR2eSnb69wM7dBQ/uxv04eVChAlZSsDHwmTIIzIzZFsrWrcwwJaENGCJYKqZ9LKOiGFGQ8Is09A="
   matrix:
+  - TRAVIS_NODE_VERSION="5"
+  - TRAVIS_NODE_VERSION="5" ARCH="x86"
   - TRAVIS_NODE_VERSION="0.10"
   - TRAVIS_NODE_VERSION="0.10" ARCH="x86"
   - TRAVIS_NODE_VERSION="0.12"
@@ -28,6 +41,8 @@ env:
   - TRAVIS_NODE_VERSION="6" ARCH="x86"
   - TRAVIS_NODE_VERSION="7"
   - TRAVIS_NODE_VERSION="7" ARCH="x86"
+  - TRAVIS_ELECTRON_VERSION="1.4.6" ARCH="x64" TRAVIS_NODE_VERSION="5"
+  - TRAVIS_ELECTRON_VERSION="1.4.6" ARCH="ia32" TRAVIS_NODE_VERSION="5"
 matrix:
   exclude:
   - os: osx
@@ -40,6 +55,8 @@ matrix:
     env: TRAVIS_NODE_VERSION="6" ARCH="x86"
   - os: osx
     env: TRAVIS_NODE_VERSION="7" ARCH="x86"
+  - os: osx
+    env: TRAVIS_ELECTRON_VERSION="1.4.6" ARCH="ia32" TRAVIS_NODE_VERSION="5"
 
 before_install:
 # reinstall latest nvm
@@ -75,16 +92,40 @@ before_install:
 - npm config set progress false
 - npm config set spin false
 
+- >
+  if [[ ! -z $TRAVIS_ELECTRON_VERSION ]]; then
+    if [[ $TRAVIS_OS_NAME == "linux" ]]; then
+      export DISPLAY=:99.0
+      sh -e /etc/init.d/xvfb start
+    fi
+
+    export npm_config_target=$TRAVIS_ELECTRON_VERSION
+    export npm_config_arch=$ARCH
+    export npm_config_disturl=https://atom.io/download/atom-shell
+    export npm_config_runtime=electron
+
+    npm install --arch=$ARCH electron@$TRAVIS_ELECTRON_VERSION
+    npm install electron-mocha
+
+    echo "installed Electron $TRAVIS_ELECTRON_VERSION"
+  fi
+
 install:
 # ensure source install works
 - npm install --build-from-source
+
 
 script:
   # linting no longer works on node 0.10
 - node bin/lower-than-node-4.0.js || npm run lint
 - npm run docs:diff
-- node ./
-- npm test
+- >
+  if [[ -z $TRAVIS_ELECTRON_VERSION ]]; then
+    node ./
+    npm test
+  else
+    electron test/electron
+  fi
 
 # if publishing, do it
 - if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package; fi;
