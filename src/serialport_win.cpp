@@ -541,6 +541,9 @@ void EIO_List(uv_work_t* req) {
       if (productId) {
         resultItem->productId = productId;
       }
+      if (locationId) {
+        resultItem->locationId = locationId;
+      }
       data->results.push_back(resultItem);
     }
     free(pnpId);
