@@ -270,7 +270,7 @@ void EIO_WatchPort(uv_work_t* req) {
       data->errorCode = GetLastError();
       if (data->errorCode != ERROR_IO_PENDING) {
         // Read operation error
-        if (data->errorCode == ERROR_OPERATION_ABORTED) {
+        if (data->errorCode == ERROR_OPERATION_ABORTED || data->errorCode == ERROR_ACCESS_DENIED) {
           data->disconnected = true;
         } else {
           ErrorCodeToString("Reading from COM port (ReadFile)", data->errorCode, data->errorString);
@@ -289,7 +289,7 @@ void EIO_WatchPort(uv_work_t* req) {
       if (!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesReadAsync, TRUE)) {
         // Read operation error
         data->errorCode = GetLastError();
-        if (data->errorCode == ERROR_OPERATION_ABORTED) {
+        if (data->errorCode == ERROR_OPERATION_ABORTED || data->errorCode == ERROR_ACCESS_DENIED) {
           data->disconnected = true;
         } else {
           ErrorCodeToString("Reading from COM port (GetOverlappedResult)", data->errorCode, data->errorString);
