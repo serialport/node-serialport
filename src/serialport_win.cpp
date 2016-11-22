@@ -240,19 +240,6 @@ bool IsClosingHandle(int fd) {
   return false;
 }
 
-// FinalizerCallback will prevent WatchPortBaton::buffer from getting
-// collected by gc while finalizing v8::ArrayBuffer. The buffer will
-// get cleaned up through this callback.
-static void FinalizerCallback(char* data, void* hint) {
-  uv_work_t* req = reinterpret_cast<uv_work_t*>(hint);
-  ReadBaton* rb = static_cast<ReadBaton*>(req->data);
-  if (rb->bufferData) {
-    delete rb->bufferData;
-  }
-  delete rb;
-  delete req;
-}
-
 void EIO_Write(uv_work_t* req) {
   QueuedWrite* queuedWrite = static_cast<QueuedWrite*>(req->data);
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
@@ -300,10 +287,6 @@ void EIO_Read(uv_work_t* req) {
   ReadBaton* data = static_cast<ReadBaton*>(req->data);
   data->bytesRead = 0;
   int errorCode = ERROR_SUCCESS;
-  if (data->bufferData == NULL) {
-    data->bufferData = new char[data->bufferLength];
-	memset(data->bufferData, 0, data->bufferLength);
-  }
 
   char* offsetPtr = data->bufferData;
   offsetPtr += data->offset;
@@ -365,37 +348,6 @@ void EIO_Read(uv_work_t* req) {
 
   CloseHandle(hEvent);
 }
-
-void EIO_AfterRead(uv_work_t* req) {
-  Nan::HandleScope scope;
-  bool skipCleanup = false;
-  ReadBaton* data = static_cast<ReadBaton*>(req->data);
-
-  v8::Local<v8::Value> argv[3];
-	
-  if (data->errorString[0]) {
-    argv[0] = Nan::Error(data->errorString);
-	argv[1] = argv[2] = Nan::Undefined();
-	Sleep(100); // prevent the errors from occurring too fast
-  } else {
-    argv[0] = Nan::Null();
-	argv[1] = Nan::New<v8::Integer>((int)data->bytesRead);
-	argv[2] = Nan::NewBuffer(data->bufferData, data->bufferLength, FinalizerCallback, req).ToLocalChecked();
-	skipCleanup = true;
-  }
-
-  data->callback.Call(3, argv);
-
-cleanup:
-  if (!skipCleanup) {
-    if (data->bufferData) {
-      delete data->bufferData;
-    }
-    delete data;
-    delete req;
-  }
-}
-
 
 void EIO_Close(uv_work_t* req) {
   VoidBaton* data = static_cast<VoidBaton*>(req->data);

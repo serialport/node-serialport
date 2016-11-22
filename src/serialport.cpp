@@ -336,6 +336,7 @@ void EIO_AfterWrite(uv_work_t* req) {
   delete queuedWrite;
 }
 
+#ifdef WIN32
 NAN_METHOD(Read) {
   // file descriptor
   if (!info[0]->IsInt32()) {
@@ -349,9 +350,6 @@ NAN_METHOD(Read) {
     Nan::ThrowTypeError("Second argument must be a buffer");
     return;
   }
-  v8::Local<v8::Object> buffer = info[1]->ToObject();
-  char* bufferData = node::Buffer::Data(buffer);
-  size_t bufferLength = node::Buffer::Length(buffer);
 
   // offset
   if (!info[2]->IsInt32()) {
@@ -378,13 +376,35 @@ NAN_METHOD(Read) {
   data->fd = fd;
   data->offset = offset;
   data->bytesToRead = bytesToRead;
-  data->bufferLength = bufferLength;
+  v8::Local<v8::Object> buffer = info[1]->ToObject();
+  data->bufferData = node::Buffer::Data(buffer);
   data->callback.Reset(info[4].As<v8::Function>());
 
   uv_work_t* req = new uv_work_t();
   req->data = data;
   uv_queue_work(uv_default_loop(), req, EIO_Read, (uv_after_work_cb)EIO_AfterRead);
 }
+
+void EIO_AfterRead(uv_work_t* req) {
+  Nan::HandleScope scope;
+  ReadBaton* data = static_cast<ReadBaton*>(req->data);
+
+  v8::Local<v8::Value> argv[2];
+    
+  if (data->errorString[0]) {
+    argv[0] = Nan::Error(data->errorString);
+    argv[1] = Nan::Undefined();
+  } else {
+    argv[0] = Nan::Null();
+    argv[1] = Nan::New<v8::Integer>((int)data->bytesRead);
+  }
+
+  data->callback.Call(2, argv);
+
+  delete data;
+  delete req;
+}
+#endif
 
 NAN_METHOD(Close) {
   // file descriptor
@@ -731,7 +751,9 @@ extern "C" {
     Nan::SetMethod(target, "open", Open);
     Nan::SetMethod(target, "update", Update);
     Nan::SetMethod(target, "write", Write);
+#ifdef WIN32
     Nan::SetMethod(target, "read", Read);
+#endif
     Nan::SetMethod(target, "close", Close);
     Nan::SetMethod(target, "list", List);
     Nan::SetMethod(target, "flush", Flush);
