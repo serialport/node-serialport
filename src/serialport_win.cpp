@@ -2,9 +2,11 @@
 #include <list>
 #include <vector>
 #include "./serialport.h"
-#include "win/disphelper.h"
-#include "win/stdafx.h"
-#include "win/enumser.h"
+#include <string.h>
+#include <windows.h>
+#include <Setupapi.h>
+#include <devguid.h>
+#pragma comment (lib, "setupapi.lib")
 
 #ifdef WIN32
 
@@ -454,88 +456,108 @@ void EIO_Close(uv_work_t* req) {
   }
 }
 
-/*
- * listComPorts.c -- list COM ports
- *
- * http://github.com/todbot/usbSearch/
- *
- * 2012, Tod E. Kurt, http://todbot.com/blog/
- *
- *
- * Uses DispHealper : http://disphelper.sourceforge.net/
- *
- * Notable VIDs & PIDs combos:
- * VID 0403 - FTDI
- *
- * VID 0403 / PID 6001 - Arduino Diecimila
- *
- */
+char *copySubstring(char *someString, int n)
+{
+  char *new_ = (char*)malloc(sizeof(char)*n + 1);
+  strncpy_s(new_, n + 1, someString, n);
+  new_[n] = '\0';
+  return new_;
+}
+
 void EIO_List(uv_work_t* req) {
   ListBaton* data = static_cast<ListBaton*>(req->data);
 
-  {
-    DISPATCH_OBJ(wmiSvc);
-    DISPATCH_OBJ(colDevices);
+  GUID *guidDev = (GUID*)& GUID_DEVCLASS_PORTS;
+  HDEVINFO hDevInfo = SetupDiGetClassDevs(guidDev, NULL, NULL, DIGCF_PRESENT | DIGCF_PROFILE);
+  SP_DEVINFO_DATA deviceInfoData;
 
-    dhInitialize(TRUE);
-    dhToggleExceptions(FALSE);
+  int memberIndex = 0;
+  DWORD dwSize, dwPropertyRegDataType;
+  char szBuffer[400];
+  char *pnpId;
+  char *vendorId;
+  char *productId;
+  char *name;
+  char *manufacturer;
+  char *locationId;
+  bool isCom;
+  while (true) {
+    pnpId = NULL;
+    vendorId = NULL;
+    productId = NULL;
+    name = NULL;
+    manufacturer = NULL;
+    locationId = NULL;
 
-    dhGetObject(L"winmgmts:{impersonationLevel=impersonate}!\\\\.\\root\\cimv2", NULL, &wmiSvc);
-    dhGetValue(L"%o", &colDevices, wmiSvc, L".ExecQuery(%S)", L"Select * from Win32_PnPEntity");
+    ZeroMemory(&deviceInfoData, sizeof(SP_DEVINFO_DATA));
+    deviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
 
-    int port_count = 0;
-    FOR_EACH(objDevice, colDevices, NULL) {
-      char* name = NULL;
-      char* pnpid = NULL;
-      char* manu = NULL;
-      char* match;
-
-      dhGetValue(L"%s", &name,  objDevice, L".Name");
-      dhGetValue(L"%s", &pnpid, objDevice, L".PnPDeviceID");
-
-      if (name != NULL && ((match = strstr(name, "(COM")) != NULL)) {  // look for "(COM23)"
-        // 'Manufacturuer' can be null, so only get it if we need it
-        dhGetValue(L"%s", &manu, objDevice,  L".Manufacturer");
-        port_count++;
-        char* comname = strtok(match, "()");
-        ListResultItem* resultItem = new ListResultItem();
-        resultItem->comName = comname;
-        resultItem->manufacturer = manu;
-        resultItem->pnpId = pnpid;
-        data->results.push_back(resultItem);
-        dhFreeString(manu);
-      }
-
-      dhFreeString(name);
-      dhFreeString(pnpid);
-    } NEXT(objDevice);
-
-    SAFE_RELEASE(colDevices);
-    SAFE_RELEASE(wmiSvc);
-
-    dhUninitialize(TRUE);
-  }
-
-  std::vector<UINT> ports;
-  if (CEnumerateSerial::UsingQueryDosDevice(ports)) {
-    for (size_t i = 0; i < ports.size(); i++) {
-      char comname[64] = { 0 };
-      _snprintf_s(comname, sizeof(comname), _TRUNCATE, "COM%u", ports[i]);
-      bool bFound = false;
-      for (std::list<ListResultItem*>::iterator ri = data->results.begin(); ri != data->results.end(); ++ri) {
-        if (stricmp((*ri)->comName.c_str(), comname) == 0) {
-          bFound = true;
-          break;
-        }
-      }
-      if (!bFound) {
-        ListResultItem* resultItem = new ListResultItem();
-        resultItem->comName = comname;
-        resultItem->manufacturer = "";
-        resultItem->pnpId = "";
-        data->results.push_back(resultItem);
+    if (SetupDiEnumDeviceInfo(hDevInfo, memberIndex, &deviceInfoData) == FALSE) {
+      if (GetLastError() == ERROR_NO_MORE_ITEMS) {
+        break;
       }
     }
+
+    dwSize = sizeof(szBuffer);
+    SetupDiGetDeviceInstanceId(hDevInfo, &deviceInfoData, szBuffer, dwSize, &dwSize);
+    szBuffer[dwSize] = '\0';
+    pnpId = strdup(szBuffer);
+
+    vendorId = strstr(szBuffer, "VID_");
+    if (vendorId) {
+      vendorId += 4;
+      vendorId = copySubstring(vendorId, 4);
+    }
+    productId = strstr(szBuffer, "PID_");
+    if (productId) {
+      productId += 4;
+      productId = copySubstring(productId, 4);
+    }
+
+    if (SetupDiGetDeviceRegistryProperty(hDevInfo, &deviceInfoData, SPDRP_LOCATION_INFORMATION, &dwPropertyRegDataType, (BYTE*)szBuffer, sizeof(szBuffer), &dwSize)) {
+      locationId = strdup(szBuffer);
+    }
+    if (SetupDiGetDeviceRegistryProperty(hDevInfo, &deviceInfoData, SPDRP_MFG, &dwPropertyRegDataType, (BYTE*)szBuffer, sizeof(szBuffer), &dwSize)) {
+      manufacturer = strdup(szBuffer);
+    }
+
+    HKEY hkey = SetupDiOpenDevRegKey(hDevInfo, &deviceInfoData, DICS_FLAG_GLOBAL, 0, DIREG_DEV, KEY_READ);
+    if (hkey != INVALID_HANDLE_VALUE) {
+      dwSize = sizeof(szBuffer);
+      if (RegQueryValueEx(hkey, "PortName", NULL, NULL, (LPBYTE)&szBuffer, &dwSize) == ERROR_SUCCESS) {
+        szBuffer[dwSize] = '\0';
+        name = strdup(szBuffer);
+        isCom = strstr(szBuffer, "COM") != NULL;
+      }
+    }
+    if (isCom) {
+      ListResultItem* resultItem = new ListResultItem();
+      resultItem->comName = name;
+      resultItem->manufacturer = manufacturer;
+      resultItem->pnpId = pnpId;
+      if (vendorId) {
+        resultItem->vendorId = vendorId;
+      }
+      if (productId) {
+        resultItem->productId = productId;
+      }
+      if (locationId) {
+        resultItem->locationId = locationId;
+      }
+      data->results.push_back(resultItem);
+    }
+    free(pnpId);
+    free(vendorId);
+    free(productId);
+    free(locationId);
+    free(manufacturer);
+    free(name);
+
+    RegCloseKey(hkey);
+    memberIndex++;
+  }
+  if (hDevInfo) {
+    SetupDiDestroyDeviceInfoList(hDevInfo);
   }
 }
 
