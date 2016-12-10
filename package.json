@@ -88,7 +88,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "arduino-test":"TEST_PORT=$(./bin/find-arduino.js) npm test",
+    "arduino-test": "TEST_PORT=$(./bin/find-arduino.js) npm test",
     "docs": "jsdoc2md --no-cache -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs --partial .docs/edit-warning.hbs -r table --separators --name-format lib/* > README.md",
     "docs:diff": "jsdoc2md --no-cache -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs --partial .docs/edit-warning.hbs -r table --separators --name-format lib/* | diff -q README.md - || (echo 'Docs out of date, run `npm run docs` and commit the new README.md' && false)",
     "install": "node-pre-gyp install --fallback-to-build",
