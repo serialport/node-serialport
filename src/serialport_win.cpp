@@ -157,18 +157,6 @@ void EIO_Open(uv_work_t* req) {
   data->result = (int)file;
 }
 
-struct WatchPortBaton {
-  HANDLE fd;
-  DWORD bytesRead;
-  char buffer[MAX_BUFFER_SIZE];
-  char errorString[ERROR_STRING_SIZE];
-  DWORD errorCode;
-  bool disconnected;
-  Nan::Callback* dataCallback;
-  Nan::Callback* errorCallback;
-  Nan::Callback* disconnectedCallback;
-};
-
 void EIO_Update(uv_work_t* req) {
   ConnectionOptionsBaton* data = static_cast<ConnectionOptionsBaton*>(req->data);
 
@@ -254,22 +242,6 @@ bool IsClosingHandle(int fd) {
   return false;
 }
 
-void DisposeWatchPortCallbacks(WatchPortBaton* data) {
-  delete data->dataCallback;
-  delete data->errorCallback;
-  delete data->disconnectedCallback;
-}
-
-// FinalizerCallback will prevent WatchPortBaton::buffer from getting
-// collected by gc while finalizing v8::ArrayBuffer. The buffer will
-// get cleaned up through this callback.
-static void FinalizerCallback(char* data, void* hint) {
-  uv_work_t* req = reinterpret_cast<uv_work_t*>(hint);
-  WatchPortBaton* wpb = static_cast<WatchPortBaton*>(req->data);
-  delete wpb;
-  delete req;
-}
-
 void EIO_Write(uv_work_t* req) {
   QueuedWrite* queuedWrite = static_cast<QueuedWrite*>(req->data);
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
@@ -311,6 +283,72 @@ void EIO_Write(uv_work_t* req) {
     data->offset += data->result;
     CloseHandle(ov.hEvent);
   } while (data->bufferLength > data->offset);
+}
+
+void EIO_Read(uv_work_t* req) {
+  ReadBaton* data = static_cast<ReadBaton*>(req->data);
+  data->bytesRead = 0;
+  int errorCode = ERROR_SUCCESS;
+
+  char* offsetPtr = data->bufferData;
+  offsetPtr += data->offset;
+
+  // Event used by GetOverlappedResult(..., TRUE) to wait for incoming data or timeout
+  // Event MUST be used if program has several simultaneous asynchronous operations
+  // on the same handle (i.e. ReadFile and WriteFile)
+  HANDLE hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+
+  while (true) {
+    OVERLAPPED ov = {0};
+    ov.hEvent = hEvent;
+
+    // Start read operation - synchrounous or asynchronous
+    DWORD bytesReadSync = 0;
+    if (!ReadFile((HANDLE)data->fd, offsetPtr, data->bytesToRead, &bytesReadSync, &ov)) {
+      errorCode = GetLastError();
+      if (errorCode != ERROR_IO_PENDING) {
+        // Read operation error
+        if (errorCode == ERROR_OPERATION_ABORTED) {
+        } else {
+          ErrorCodeToString("Reading from COM port (ReadFile)", errorCode, data->errorString);
+          CloseHandle(hEvent);
+          return;
+        }
+        break;
+      }
+
+      // Read operation is asynchronous and is pending
+      // We MUST wait for operation completion before deallocation of OVERLAPPED struct
+      // or read data buffer
+
+      // Wait for async read operation completion or timeout
+      DWORD bytesReadAsync = 0;
+      if (!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesReadAsync, TRUE)) {
+        // Read operation error
+        errorCode = GetLastError();
+        if (errorCode == ERROR_OPERATION_ABORTED) {
+        } else {
+          ErrorCodeToString("Reading from COM port (GetOverlappedResult)", errorCode, data->errorString);
+          CloseHandle(hEvent);
+          return;
+        }
+        break;
+      } else {
+        // Read operation completed asynchronously
+        data->bytesRead = bytesReadAsync;
+      }
+    } else {
+      // Read operation completed synchronously
+      data->bytesRead = bytesReadSync;
+    }
+
+    // Return data received if any
+    if (data->bytesRead > 0) {
+      break;
+    }
+  }
+
+  CloseHandle(hEvent);
 }
 
 void EIO_Close(uv_work_t* req) {
