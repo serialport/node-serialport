@@ -5,6 +5,10 @@ var SerialPort = require('../');
 var version = require('../package.json').version;
 var args = require('commander');
 
+function makeNumber(input) {
+  return Number(input);
+}
+
 args
   .version(version)
   .usage('-p <port> [options]')
@@ -12,10 +16,10 @@ args
   .option('-l --list', 'List available ports then exit')
   // TODO make the port not a flag as it's always required
   .option('-p, --port, --portname <port>', 'Path or Name of serial port')
-  .option('-b, --baud <baudrate>', 'Baud rate default: 9600', parseInt, 9600)
-  .option('--databits <databits>', 'Data bits default: 8', parseInt, 8)
+  .option('-b, --baud <baudrate>', 'Baud rate default: 9600', makeNumber, 9600)
+  .option('--databits <databits>', 'Data bits default: 8', makeNumber, 8)
   .option('--parity <parity>', 'Parity default: none', 'none')
-  .option('--stopbits <bits>', 'Stop bits default: 1', parseInt, 1)
+  .option('--stopbits <bits>', 'Stop bits default: 1', makeNumber, 1)
   // TODO make this on by default
   .option('--echo --localecho', 'Print characters as you type them.')
   .parse(process.argv);
