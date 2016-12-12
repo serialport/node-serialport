@@ -39,12 +39,6 @@ install:
       }
       npm -v | Write-Host;
 
-  # work around an issue with node-gyp v3.3.1 and node 4x
-  # package.json has no certificates in it so we're cool
-  # https://github.com/nodejs/node-gyp/issues/921
-  - ps: npm config set -g cafile=package.json | Write-Host;
-  - ps: npm config set -g strict-ssl=false | Write-Host;
-
   # Check if we're building the latest tag, if so
   # then we publish the binaries if tests pass.
   - ps: >
