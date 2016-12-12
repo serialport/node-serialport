@@ -1,3 +1,8 @@
+Version 4.0.7
+-------------
+- Fix baud rate parsing in `serialport-terminal` thanks to @radio-miskovice for reporting it!
+- [windows] Refactor `SerialPort.list` to be a lot smaller and pickup vendorId, productId and locationId thanks to @zensey for #877!
+
 Version 4.0.6
 -------------
 - [all] Upgrade nan to fix compile issues on some platforms thanks to @thom-nic
