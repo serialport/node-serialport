@@ -30,7 +30,7 @@ You're reading the README for the master branch of serialport. You probably want
 
 - [`serialport@5.0.0-beta2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/5.0.0-beta2/README.md) this is the latest `5.x` releases.
 - [`serialport@4.0.7` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/4.0.7/README.md) it is the latest `4.x` releases.
-- [`serialport@3.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/3.1.2/README.md) it is the latest `3.x` releases.
+- [`serialport@3.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/3.1.2/README.md) it was the last `3.x` releases.
 - [`serialport@2.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/2.1.2/README.md) it was the last `2.x` release
 - [`serialport@1.7.4` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/v1.7.4/README.md) it was the last `1.x` release
 
@@ -109,20 +109,20 @@ For getting started with node-serialport, we recommend you begin with the follow
 ***
 
 ## Platform Support
-`serialport` supports and tests against the following platforms, architectures and node versions.
+`serialport` supports NodeJS v4 and upwards. For versions 0.10 and 0.12 use `serialport@4`. The platforms, architectures and node versions `serialport` supports are the following;
 
-| Platform / Arch | Node v0.10.x | Node v0.12.x | Node v4.x | Node v6.x | Node v7.x |
-|       ---       | --- | --- | --- | --- | --- |
-| Linux / ia32    |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
-| Linux / x64     |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
-| Linux / ARM v6¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
-| Linux / ARM v7¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
-| Linux / ARM v8¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
-| Linux / MIPSel¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
-| Linux / PPC64¹  |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
-| Windows² / x86  |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
-| Windows² / x64  |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
-| OSX³ / x64      |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
+| Platform / Arch | Node v4.x | Node v6.x | Node v7.x |
+|       ---       | --- | --- | --- |
+| Linux / ia32    |  ☑  |  ☑  |  ☑  |
+| Linux / x64     |  ☑  |  ☑  |  ☑  |
+| Linux / ARM v6¹ |  ☐  |  ☐  |  ☐  |
+| Linux / ARM v7¹ |  ☐  |  ☐  |  ☐  |
+| Linux / ARM v8¹ |  ☐  |  ☐  |  ☐  |
+| Linux / MIPSel¹ |  ☐  |  ☐  |  ☐  |
+| Linux / PPC64¹  |  ☐  |  ☐  |  ☐  |
+| Windows² / x86  |  ☑  |  ☑  |  ☑  |
+| Windows² / x64  |  ☑  |  ☑  |  ☑  |
+| OSX³ / x64      |  ☑  |  ☑  |  ☑  |
 
 ¹ ARM, MIPSel and PPC64¹ platforms are known to work but are not currently part of our test or build matrix. [#846](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/846) ARM v4 and v5 was dropped from NodeJS after Node v0.10.
 

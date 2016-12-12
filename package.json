@@ -18,12 +18,13 @@
     "url": "git://github.com/EmergingTechnologyAdvisors/node-serialport.git"
   },
   "keywords": [
-    "serialport",
-    "johnny-five",
-    "serial port",
+    "data logging",
     "hardware",
     "iot",
-    "nodebots"
+    "johnny-five",
+    "nodebots",
+    "serial port",
+    "serialport"
   ],
   "maintainers": [
     {
