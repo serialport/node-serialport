@@ -12,6 +12,7 @@ Gruntfile.js
 PUBLISHING.md
 test/
 UPGRADE_GUIDE.md
+changelog.md
 
 # MIRRORED FROM .gitignore PLEASE MAINTAIN
 *.node
