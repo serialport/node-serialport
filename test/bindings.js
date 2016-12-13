@@ -1,7 +1,6 @@
 'use strict';
 
 var assert = require('chai').assert;
-var assign = require('object.assign').getPolyfill();
 
 var platform;
 switch (process.platform) {
@@ -202,7 +201,7 @@ function testBinding(bindingName, Binding, testPort) {
         }
 
         it('cannot open if already open', function(done) {
-          var options = assign({}, defaultOpenOptions, {lock: false});
+          var options = Object.assign({}, defaultOpenOptions, {lock: false});
           binding.open(testPort, options, function(err) {
             assert.isNull(err);
             binding.open(testPort, options, function(err) {
@@ -224,7 +223,7 @@ function testBinding(bindingName, Binding, testPort) {
           it('doesn\'t supports a custom baudRates of 25000');
         } else {
           it('supports a custom baudRate of 25000', function(done) {
-            var customRates = assign({}, defaultOpenOptions, {baudRate: 25000});
+            var customRates = Object.assign({}, defaultOpenOptions, {baudRate: 25000});
             binding.open(testPort, customRates, function(err) {
               assert.isNull(err);
               assert.equal(binding.isOpen, true);
@@ -262,7 +261,7 @@ function testBinding(bindingName, Binding, testPort) {
             it('Ports currently cannot be unlocked on windows');
           } else {
             it('can unlock the port', function(done) {
-              var noLock = assign({}, defaultOpenOptions, {lock: false});
+              var noLock = Object.assign({}, defaultOpenOptions, {lock: false});
               var binding2 = new Binding({
                 disconnect: disconnect
               });
