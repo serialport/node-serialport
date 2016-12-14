@@ -1,5 +1,4 @@
 ---
-sudo: false
 language: cpp
 addons:
   apt:
@@ -20,6 +19,7 @@ addons:
     - libnss3:i386
     - libasound2:i386
     - libxss1:i386
+    - socat
 
 # Build matrix
 os:
@@ -81,6 +81,13 @@ before_install:
 # Cleanup the output of npm
 - npm config set progress false
 - npm config set spin false
+
+# setup virtual serialports
+# - >
+  # socat -d -d -unlink-close pty,raw,nonblock,echo=0,link=ttyV0 pty,raw,nonblock,echo=0,link=ttyV1 &
+  # ./bin/echo.js --port ttyV0 &
+  # export TEST_PORT=ttyV1
+  # export DISABLE_PORT_FEATURE=baudrate.25000,set.set,get.get
 
 - >
   if [[ ! -z $TRAVIS_ELECTRON_VERSION ]]; then

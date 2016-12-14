@@ -92,6 +92,10 @@ install:
     }
     true;
 
+# Disable windows incompatible port tests
+- ps: >
+    $env:DISABLE_PORT_FEATURE = "open.unlock,baudrate.25000"
+
 build_script:
 - npm install --build-from-source --msvs_version=2013
 
