@@ -14,7 +14,7 @@ switch (process.platform) {
     throw new Error(`Unknown platform "${process.platform}"`);
 }
 
-const defaultOpenOptions = {
+const defaultOpenOptions = Object.freeze({
   baudRate: 9600,
   dataBits: 8,
   hupcl: true,
@@ -25,20 +25,27 @@ const defaultOpenOptions = {
   xany: false,
   xoff: false,
   xon: false
-};
+});
 
-const defaultSetFlags = {
+const defaultSetFlags = Object.freeze({
   brk: false,
   cts: false,
   dtr: true,
   dts: false,
   rts: true
-};
+});
 
 const bindingsToTest = [
   'mock',
   platform
 ];
+
+function parseDisabled(envStr) {
+  return (envStr || '').split(',').reduce((disabled, feature) => {
+    disabled[feature] = true;
+    return disabled;
+  }, {});
+}
 
 function disconnect(err) {
   throw (err || new Error('Unknown disconnection'));
@@ -54,16 +61,26 @@ const readyData = new Buffer('READY');
 bindingsToTest.forEach((bindingName) => {
   const binding = require(`../lib/bindings/${bindingName}`);
   let testPort = process.env.TEST_PORT;
+  let disabledFeatures = parseDisabled(process.env.DISABLE_PORT_FEATURE);
+
   if (bindingName === 'mock') {
     testPort = '/dev/exists';
     binding.createPort(testPort, { echo: true, readyData });
+    disabledFeatures = {};
   }
 
   // eslint-disable-next-line no-use-before-define
-  testBinding(bindingName, binding, testPort);
+  testBinding(bindingName, binding, testPort, disabledFeatures);
 });
 
-function testBinding(bindingName, Binding, testPort) {
+function testBinding(bindingName, Binding, testPort, disabledFeatures) {
+  function testFeature(feature, description, callback) {
+    if (disabledFeatures[feature]) {
+      return it(`Feature "${feature}" has been disabled. "${description}"`);
+    }
+    it(description, callback);
+  }
+
   describe(`bindings/${bindingName}`, () => {
     describe('static method', () => {
       describe('.list', () => {
@@ -227,18 +244,14 @@ function testBinding(bindingName, Binding, testPort) {
           });
         });
 
-        if (platform === 'win32') {
-          it('doesn\'t supports a custom baudRates of 25000');
-        } else {
-          it('supports a custom baudRate of 25000', (done) => {
-            const customRates = Object.assign({}, defaultOpenOptions, { baudRate: 25000 });
-            binding.open(testPort, customRates, (err) => {
-              assert.isNull(err);
-              assert.equal(binding.isOpen, true);
-              binding.close(done);
-            });
+        testFeature('baudrate.25000', 'supports a custom baudRate of 25000', (done) => {
+          const customRates = Object.assign({}, defaultOpenOptions, { baudRate: 25000 });
+          binding.open(testPort, customRates, (err) => {
+            assert.isNull(err);
+            assert.equal(binding.isOpen, true);
+            binding.close(done);
           });
-        }
+        });
 
         describe('optional locking', () => {
           // Ensure that if we fail, we still close the port
@@ -265,31 +278,27 @@ function testBinding(bindingName, Binding, testPort) {
             });
           });
 
-          if (platform === 'win32') {
-            it('Ports currently cannot be unlocked on windows');
-          } else {
-            it('can unlock the port', (done) => {
-              const noLock = Object.assign({}, defaultOpenOptions, { lock: false });
-              const binding2 = new Binding({
-                disconnect
-              });
+          testFeature('open.unlock', 'can unlock the port', (done) => {
+            const noLock = Object.assign({}, defaultOpenOptions, { lock: false });
+            const binding2 = new Binding({
+              disconnect
+            });
 
-              binding.open(testPort, noLock, (err) => {
+            binding.open(testPort, noLock, (err) => {
+              assert.isNull(err);
+              assert.equal(binding.isOpen, true);
+
+              binding2.open(testPort, noLock, (err) => {
                 assert.isNull(err);
-                assert.equal(binding.isOpen, true);
+                assert.equal(binding2.isOpen, true);
 
-                binding2.open(testPort, noLock, (err) => {
+                binding.close((err) => {
                   assert.isNull(err);
-                  assert.equal(binding2.isOpen, true);
-
-                  binding.close((err) => {
-                    assert.isNull(err);
-                    binding2.close(done);
-                  });
+                  binding2.close(done);
                 });
               });
             });
-          }
+          });
         });
       });
 
@@ -390,18 +399,12 @@ function testBinding(bindingName, Binding, testPort) {
           binding.update({ baudRate: 57600 }, done);
         });
 
-        // if (platform === 'win32') {
-        //   it("doesn't yet support custom rates");
-        //   return;
-        // }
-        //
-        // breaks testing for unknown reasons
-        // it('updates baudRate to a custom rate', function(done) {
-        //   binding.update({baudRate: 25000}, function(err) {
-        //     assert.isNull(err);
-        //     binding.update({baudRate: defaultOpenOptions.baudRate}, done);
-        //   });
-        // });
+        testFeature('baudrate.25000', 'updates baudRate to a custom rate', (done) => {
+          binding.update({ baudRate: 25000 }, (err) => {
+            assert.isNull(err);
+            binding.update({ baudRate: defaultOpenOptions.baudRate }, done);
+          });
+        });
       });
 
       describe('#write', () => {
@@ -564,7 +567,6 @@ function testBinding(bindingName, Binding, testPort) {
             zalgo = true;
           });
           if (zalgo) { done(new Error('Zalgo is here')) }
-          // console.log(zalgo);
         });
 
         it('throws when not called with options', (done) => {
@@ -596,7 +598,7 @@ function testBinding(bindingName, Binding, testPort) {
           binding.close(done);
         });
 
-        it('sets flags on the port', (done) => {
+        testFeature('set.set', 'sets flags on the port', (done) => {
           binding.set(defaultSetFlags, done);
         });
       });
@@ -688,7 +690,7 @@ function testBinding(bindingName, Binding, testPort) {
           binding.close(done);
         });
 
-        it('gets modem line status from the port', (done) => {
+        testFeature('get.get', 'gets modem line status from the port', (done) => {
           binding.get((err, status) => {
             assert.isNull(err);
             assert.isObject(status);
