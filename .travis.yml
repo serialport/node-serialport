@@ -111,7 +111,7 @@ install:
 
 script:
   # linting no longer works on node 0.10
-- node bin/lower-than-node-4.0.js || npm run lint
+- npm run lint
 - npm run docs:diff
 - >
   if [[ -z $TRAVIS_ELECTRON_VERSION ]]; then

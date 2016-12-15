@@ -13,14 +13,11 @@ PUBLISHING.md
 test/
 UPGRADE_GUIDE.md
 changelog.md
+.DS_Store
 
 # MIRRORED FROM .gitignore PLEASE MAINTAIN
-*.node
-.DS_Store
 build/
 node_modules
 npm-debug.log
-gyp-mac-tool
-.node_pre_gyprc
-/.idea
 coverage
+.mailmap
