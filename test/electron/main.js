@@ -7,6 +7,7 @@ try {
 } catch (e) {
   console.error('Error loading serialport');
   console.error(e);
+  console.error(e.stack);
   app.exit(-1);
 }
 
