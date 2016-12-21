@@ -73,7 +73,7 @@ describe('SerialPort', function() {
       SerialPort.Binding = undefined;
       try {
         this.port = new SerialPort('/dev/exists');
-      } catch(err) {
+      } catch (err) {
         assert.instanceOf(err, Error);
         done();
       }
@@ -82,7 +82,7 @@ describe('SerialPort', function() {
     it('throws an error when no port is provided', function(done) {
       try {
         this.port = new SerialPort('');
-      } catch(err) {
+      } catch (err) {
         assert.instanceOf(err, Error);
         done();
       }
@@ -90,8 +90,8 @@ describe('SerialPort', function() {
 
     it('throws an error when given bad options even with a callback', function(done) {
       try {
-        this.port = new SerialPort('/dev/exists', { baudRate: 'whatever'}, function() {});
-      } catch(err) {
+        this.port = new SerialPort('/dev/exists', { baudRate: 'whatever' }, function() {});
+      } catch (err) {
         assert.instanceOf(err, Error);
         done();
       }
@@ -99,8 +99,8 @@ describe('SerialPort', function() {
 
     it('errors with a non number baudRate', function(done) {
       try {
-        this.port = new SerialPort('/bad/port', { baudRate: 'whatever'});
-      } catch(err) {
+        this.port = new SerialPort('/bad/port', { baudRate: 'whatever' });
+      } catch (err) {
         assert.instanceOf(err, Error);
         done();
       }
@@ -109,7 +109,7 @@ describe('SerialPort', function() {
     it('errors with invalid databits', function(done) {
       try {
         this.port = new SerialPort('/dev/exists', { dataBits: 19 });
-      } catch(err) {
+      } catch (err) {
         assert.instanceOf(err, Error);
         done();
       }
@@ -118,7 +118,7 @@ describe('SerialPort', function() {
     it('errors with invalid stopbits', function(done) {
       try {
         this.port = new SerialPort('/dev/exists', { stopBits: 19 });
-      } catch(err) {
+      } catch (err) {
         assert.instanceOf(err, Error);
         done();
       }
@@ -127,7 +127,7 @@ describe('SerialPort', function() {
     it('errors with invalid parity', function(done) {
       try {
         this.port = new SerialPort('/dev/exists', { parity: 'pumpkins' });
-      } catch(err) {
+      } catch (err) {
         assert.instanceOf(err, Error);
         done();
       }
@@ -136,7 +136,7 @@ describe('SerialPort', function() {
     it('errors with invalid flow control', function(done) {
       try {
         this.port = new SerialPort('/dev/exists', { xon: 'pumpkins' });
-      } catch(err) {
+      } catch (err) {
         assert.instanceOf(err, Error);
         done();
       }
@@ -166,11 +166,11 @@ describe('SerialPort', function() {
   describe('property', function() {
     describe('.baudRate', function() {
       it('is a read only property set during construction', function() {
-        var port = new SerialPort('/dev/exists', {autoOpen: false, baudRate: 14400 });
+        var port = new SerialPort('/dev/exists', { autoOpen: false, baudRate: 14400 });
         assert.equal(port.baudRate, 14400);
         try {
           port.baudRate = 9600;
-        } catch(e) {
+        } catch (e) {
           assert.instanceOf(e, TypeError);
         }
         assert.equal(port.baudRate, 14400);
@@ -179,11 +179,11 @@ describe('SerialPort', function() {
 
     describe('.path', function() {
       it('is a read only property set during construction', function() {
-        var port = new SerialPort('/dev/exists', {autoOpen: false});
+        var port = new SerialPort('/dev/exists', { autoOpen: false });
         assert.equal(port.path, '/dev/exists');
         try {
           port.path = 'foo';
-        } catch(e) {
+        } catch (e) {
           assert.instanceOf(e, TypeError);
         }
         assert.equal(port.path, '/dev/exists');
@@ -192,11 +192,11 @@ describe('SerialPort', function() {
 
     describe('.isOpen', function() {
       it('is a read only property', function() {
-        var port = new SerialPort('/dev/exists', {autoOpen: false});
+        var port = new SerialPort('/dev/exists', { autoOpen: false });
         assert.equal(port.isOpen, false);
         try {
           port.isOpen = 'foo';
-        } catch(e) {
+        } catch (e) {
           assert.instanceOf(e, TypeError);
         }
         assert.equal(port.isOpen, false);
@@ -381,7 +381,7 @@ describe('SerialPort', function() {
       it('converts arrays to buffers', function(done) {
         var port = new SerialPort('/dev/exists');
         port.on('open', function() {
-          var data = [0,32,44,88];
+          var data = [0, 32, 44, 88];
           port.write(data, function() {
             var lastWrite = port.binding.port.lastWrite;
             assert.deepEqual(new Buffer(data), lastWrite);
@@ -463,7 +463,7 @@ describe('SerialPort', function() {
 
     describe('#update', function() {
       it('errors when the port is not open', function(done) {
-        var port = new SerialPort('/dev/exists', {autoOpen: false});
+        var port = new SerialPort('/dev/exists', { autoOpen: false });
         port.update({}, function(err) {
           assert.instanceOf(err, Error);
           done();
@@ -471,6 +471,7 @@ describe('SerialPort', function() {
       });
 
       it('sets the baudRate on the port', function(done) {
+        // eslint-disable-next-line no-new
         new SerialPort('/dev/exists', function() {
           assert.equal(this.baudRate, 9600);
           this.update({ baudRate: 14400 }, function(err) {
@@ -591,6 +592,7 @@ describe('SerialPort', function() {
 
         var port = new SerialPort('/dev/exists', function() {
           port.get(function(err, modemStatus) {
+            assert.isNull(err);
             assert.deepEqual(modemStatus, status);
             done();
           });

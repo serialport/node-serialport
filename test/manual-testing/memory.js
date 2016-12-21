@@ -14,8 +14,8 @@ function makePort(err) {
   if (err) { throw err }
   counter++;
   if (counter % 1000 === 0) {
-    console.log('Attempt ' + counter);
-    debugger;
+    console.log(`Attempt ${counter}`);
+    // debugger;
   }
   if (counter > 10000) {
     process.exit(0);

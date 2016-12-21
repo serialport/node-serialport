@@ -1,4 +1,5 @@
 'use strict';
+/* eslint-disable no-new */
 
 var assert = require('chai').assert;
 var sinon = require('sinon');
@@ -29,7 +30,7 @@ describe('ReadlineParser', function() {
 
   it('allows setting of the delimiter with a string', function() {
     var spy = sinon.spy();
-    var parser = new ReadlineParser({delimiter: 'a'});
+    var parser = new ReadlineParser({ delimiter: 'a' });
     parser.on('data', spy);
     parser.write(new Buffer('how are youa'));
     assert(spy.calledWith('how '));
@@ -38,7 +39,7 @@ describe('ReadlineParser', function() {
 
   it('allows setting of the delimiter with a buffer', function() {
     var spy = sinon.spy();
-    var parser = new ReadlineParser({delimiter: new Buffer('a')});
+    var parser = new ReadlineParser({ delimiter: new Buffer('a') });
     parser.on('data', spy);
     parser.write(new Buffer('how are youa'));
     assert(spy.calledWith('how '));
@@ -47,7 +48,7 @@ describe('ReadlineParser', function() {
 
   it('allows setting of the delimiter with an array of bytes', function() {
     var spy = sinon.spy();
-    var parser = new ReadlineParser({delimiter: [97]});
+    var parser = new ReadlineParser({ delimiter: [97] });
     parser.on('data', spy);
     parser.write(new Buffer('how are youa'));
     assert(spy.calledWith('how '));
@@ -98,20 +99,20 @@ describe('ReadlineParser', function() {
   });
 
   it('allows setting of the delimiter with a string', function() {
-    new ReadlineParser({delimiter: 'string'});
+    new ReadlineParser({ delimiter: 'string' });
   });
 
   it('allows setting of the delimiter with a buffer', function() {
-    new ReadlineParser({delimiter: new Buffer([1])});
+    new ReadlineParser({ delimiter: new Buffer([1]) });
   });
 
   it('allows setting of the delimiter with an array of bytes', function() {
-    new ReadlineParser({delimiter: [1]});
+    new ReadlineParser({ delimiter: [1] });
   });
 
   it('doesn\'t emits empty data events', function() {
     var spy = sinon.spy();
-    var parser = new ReadlineParser({delimiter: 'a'});
+    var parser = new ReadlineParser({ delimiter: 'a' });
     parser.on('data', spy);
     parser.write(new Buffer('aFa'));
     assert(spy.calledOnce);

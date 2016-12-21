@@ -28,14 +28,14 @@ function makePort(err) {
   if (err) { throw err }
   counter++;
   if (counter % 1000 === 0) {
-    console.log('Attempt ' + counter);
-    debugger;
+    console.log(`Attempt ${counter}`);
+    // debugger;
   }
   if (counter > 10000) {
     process.exit(0);
   }
 
-  var binding = new Binding({disconnect: function() { throw 'disconnect' }});
+  var binding = new Binding({ disconnect() { throw new Error('disconnect') } });
   binding.open(port, defaultOpenOptions, function afterBindingOpen(err) {
     if (err) { throw err }
     binding.close(makePort);

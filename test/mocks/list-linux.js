@@ -2,7 +2,7 @@
 
 'use strict';
 
-var proxyquire =  require('proxyquire');
+var proxyquire = require('proxyquire');
 
 var mockPorts = {};
 var characterDevice = true;
@@ -10,7 +10,7 @@ var error = false;
 
 var listLinux = proxyquire('../../lib/list-linux', {
   fs: {
-    readdir: function(path, cb) {
+    readdir(path, cb) {
       if (error) {
         return process.nextTick(function() {
           cb(new Error('Bad'));
@@ -20,20 +20,20 @@ var listLinux = proxyquire('../../lib/list-linux', {
         cb(null, Object.keys(mockPorts));
       });
     },
-    stat: function(path, cb) {
+    stat(path, cb) {
       process.nextTick(function() {
-        cb(null, { isCharacterDevice: function() { return characterDevice } });
+        cb(null, { isCharacterDevice() { return characterDevice } });
       });
     }
   },
   path: {
     // needed for testing on windows
-    join: function() {
+    join() {
       return Array.prototype.join.call(arguments, '/');
     }
   },
   child_process: {
-    exec: function(cmd, cb) {
+    exec(cmd, cb) {
       var port = cmd.split(/\/dev\/(.*)\)/)[1];
       process.nextTick(function() {
         cb(null, mockPorts[port]);

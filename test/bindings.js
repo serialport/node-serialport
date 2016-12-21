@@ -1,4 +1,5 @@
 'use strict';
+/* eslint-disable no-new */
 
 var assert = require('chai').assert;
 
@@ -52,11 +53,11 @@ var readyData = new Buffer('READY');
 
 // Test our mock binding and the binding for the platform we're running on
 bindingsToTest.forEach(function(bindingName) {
-  var binding = require('../lib/bindings-' + bindingName);
+  var binding = require(`../lib/bindings-${bindingName}`);
   var testPort = process.env.TEST_PORT;
   if (bindingName === 'mock') {
     testPort = '/dev/exists';
-    binding.createPort(testPort, { echo: true, readyData: readyData });
+    binding.createPort(testPort, { echo: true, readyData });
   }
 
   // eslint-disable-next-line no-use-before-define
@@ -64,7 +65,7 @@ bindingsToTest.forEach(function(bindingName) {
 });
 
 function testBinding(bindingName, Binding, testPort) {
-  describe('bindings-'+ bindingName, function() {
+  describe(`bindings-${bindingName}`, function() {
     describe('static method', function() {
       describe('.list', function() {
         it('returns an array', function(done) {
@@ -97,15 +98,15 @@ function testBinding(bindingName, Binding, testPort) {
     describe('constructor', function() {
       it('creates a binding object', function() {
         var binding = new Binding({
-          disconnect: disconnect
+          disconnect
         });
         assert.instanceOf(binding, Binding);
       });
 
       it('throws when missing disconnect callback', function(done) {
         try {
-          new Binding({});
-        } catch(e) {
+          new Binding({ });
+        } catch (e) {
           assert.instanceOf(e, TypeError);
           done();
         }
@@ -114,7 +115,7 @@ function testBinding(bindingName, Binding, testPort) {
       it('throws when not given an options object', function(done) {
         try {
           new Binding();
-        } catch(e) {
+        } catch (e) {
           assert.instanceOf(e, TypeError);
           done();
         }
@@ -131,7 +132,7 @@ function testBinding(bindingName, Binding, testPort) {
         var binding;
         beforeEach(function() {
           binding = new Binding({
-            disconnect: disconnect
+            disconnect
           });
         });
 
@@ -155,7 +156,7 @@ function testBinding(bindingName, Binding, testPort) {
         var binding;
         beforeEach(function() {
           binding = new Binding({
-            disconnect: disconnect
+            disconnect
           });
         });
 
@@ -171,7 +172,7 @@ function testBinding(bindingName, Binding, testPort) {
         it('throws when not given a path', function(done) {
           try {
             binding.open('');
-          } catch(e) {
+          } catch (e) {
             assert.instanceOf(e, TypeError);
             done();
           }
@@ -180,7 +181,7 @@ function testBinding(bindingName, Binding, testPort) {
         it('throws when not given options', function(done) {
           try {
             binding.open('COMBAD');
-          } catch(e) {
+          } catch (e) {
             assert.instanceOf(e, TypeError);
             done();
           }
@@ -189,7 +190,7 @@ function testBinding(bindingName, Binding, testPort) {
         it('throws when not given a callback', function(done) {
           try {
             binding.open('COMBAD', {});
-          } catch(e) {
+          } catch (e) {
             assert.instanceOf(e, TypeError);
             done();
           }
@@ -201,7 +202,7 @@ function testBinding(bindingName, Binding, testPort) {
         }
 
         it('cannot open if already open', function(done) {
-          var options = Object.assign({}, defaultOpenOptions, {lock: false});
+          var options = Object.assign({}, defaultOpenOptions, { lock: false });
           binding.open(testPort, options, function(err) {
             assert.isNull(err);
             binding.open(testPort, options, function(err) {
@@ -223,7 +224,7 @@ function testBinding(bindingName, Binding, testPort) {
           it('doesn\'t supports a custom baudRates of 25000');
         } else {
           it('supports a custom baudRate of 25000', function(done) {
-            var customRates = Object.assign({}, defaultOpenOptions, {baudRate: 25000});
+            var customRates = Object.assign({}, defaultOpenOptions, { baudRate: 25000 });
             binding.open(testPort, customRates, function(err) {
               assert.isNull(err);
               assert.equal(binding.isOpen, true);
@@ -242,7 +243,7 @@ function testBinding(bindingName, Binding, testPort) {
 
           it('locks the port by default', function(done) {
             var binding2 = new Binding({
-              disconnect: disconnect
+              disconnect
             });
 
             binding.open(testPort, defaultOpenOptions, function(err) {
@@ -261,9 +262,9 @@ function testBinding(bindingName, Binding, testPort) {
             it('Ports currently cannot be unlocked on windows');
           } else {
             it('can unlock the port', function(done) {
-              var noLock = Object.assign({}, defaultOpenOptions, {lock: false});
+              var noLock = Object.assign({}, defaultOpenOptions, { lock: false });
               var binding2 = new Binding({
-                disconnect: disconnect
+                disconnect
               });
 
               binding.open(testPort, noLock, function(err) {
@@ -289,7 +290,7 @@ function testBinding(bindingName, Binding, testPort) {
         var binding;
         beforeEach(function() {
           binding = new Binding({
-            disconnect: disconnect
+            disconnect
           });
         });
 
@@ -320,10 +321,10 @@ function testBinding(bindingName, Binding, testPort) {
       describe('#update', function() {
         it('errors asynchronously when not open', function(done) {
           var binding = new Binding({
-            disconnect: disconnect
+            disconnect
           });
           var zalgo = false;
-          binding.update({baudRate: 9600}, function(err) {
+          binding.update({ baudRate: 9600 }, function(err) {
             assert.instanceOf(err, Error);
             done();
             zalgo = true;
@@ -339,7 +340,7 @@ function testBinding(bindingName, Binding, testPort) {
         var binding;
         beforeEach(function(done) {
           binding = new Binding({
-            disconnect: disconnect
+            disconnect
           });
           binding.open(testPort, defaultOpenOptions, done);
         });
@@ -360,14 +361,14 @@ function testBinding(bindingName, Binding, testPort) {
         it('errors when not called with options', function(done) {
           try {
             binding.set(function() {});
-          } catch(e) {
+          } catch (e) {
             assert.instanceOf(e, Error);
             done();
           }
         });
 
         it('updates baudRate', function(done) {
-          binding.update({baudRate: 57600}, done);
+          binding.update({ baudRate: 57600 }, done);
         });
 
         // if (platform === 'win32') {
@@ -387,7 +388,7 @@ function testBinding(bindingName, Binding, testPort) {
       describe('#write', function() {
         it('errors asynchronously when not open', function(done) {
           var binding = new Binding({
-            disconnect: disconnect
+            disconnect
           });
           var zalgo = false;
           binding.write(new Buffer([]), function(err) {
@@ -400,11 +401,11 @@ function testBinding(bindingName, Binding, testPort) {
 
         it('throws when not given a buffer', function(done) {
           var binding = new Binding({
-            disconnect: disconnect
+            disconnect
           });
           try {
             binding.write(null, function() {});
-          } catch(e) {
+          } catch (e) {
             assert.instanceOf(e, TypeError);
             done();
           }
@@ -412,25 +413,25 @@ function testBinding(bindingName, Binding, testPort) {
 
         it('throws when not given a callback', function(done) {
           var binding = new Binding({
-            disconnect: disconnect
+            disconnect
           });
           try {
             binding.write(new Buffer(1));
-          } catch(e) {
+          } catch (e) {
             assert.instanceOf(e, TypeError);
             done();
           }
         });
 
         if (!testPort) {
-          it('Cannot be tested as we have no test ports on ' + platform);
+          it(`Cannot be tested as we have no test ports on ${platform}`);
           return;
         }
 
         var binding;
         beforeEach(function(done) {
           binding = new Binding({
-            disconnect: disconnect
+            disconnect
           });
           binding.open(testPort, defaultOpenOptions, done);
         });
@@ -460,7 +461,7 @@ function testBinding(bindingName, Binding, testPort) {
       describe('#drain', function() {
         it('errors asynchronously when not open', function(done) {
           var binding = new Binding({
-            disconnect: disconnect
+            disconnect
           });
           var zalgo = false;
           binding.drain(function(err) {
@@ -479,7 +480,7 @@ function testBinding(bindingName, Binding, testPort) {
         var binding;
         beforeEach(function(done) {
           binding = new Binding({
-            disconnect: disconnect
+            disconnect
           });
           binding.open(testPort, defaultOpenOptions, done);
         });
@@ -499,7 +500,7 @@ function testBinding(bindingName, Binding, testPort) {
       describe('#flush', function() {
         it('errors asynchronously when not open', function(done) {
           var binding = new Binding({
-            disconnect: disconnect
+            disconnect
           });
           var zalgo = false;
           binding.flush(function(err) {
@@ -518,7 +519,7 @@ function testBinding(bindingName, Binding, testPort) {
         var binding;
         beforeEach(function(done) {
           binding = new Binding({
-            disconnect: disconnect
+            disconnect
           });
           binding.open(testPort, defaultOpenOptions, done);
         });
@@ -535,7 +536,7 @@ function testBinding(bindingName, Binding, testPort) {
       describe('#set', function() {
         it('errors asynchronously when not open', function(done) {
           var binding = new Binding({
-            disconnect: disconnect
+            disconnect
           });
           var zalgo = false;
           binding.set(defaultSetFlags, function(err) {
@@ -549,11 +550,11 @@ function testBinding(bindingName, Binding, testPort) {
 
         it('throws when not called with options', function(done) {
           var binding = new Binding({
-            disconnect: disconnect
+            disconnect
           });
           try {
             binding.set(function() {});
-          } catch(e) {
+          } catch (e) {
             assert.instanceOf(e, TypeError);
             done();
           }
@@ -567,7 +568,7 @@ function testBinding(bindingName, Binding, testPort) {
         var binding;
         beforeEach(function(done) {
           binding = new Binding({
-            disconnect: disconnect
+            disconnect
           });
           binding.open(testPort, defaultOpenOptions, done);
         });
@@ -586,7 +587,7 @@ function testBinding(bindingName, Binding, testPort) {
       describe('#read', function() {
         it('errors asynchronously when not open', function(done) {
           var binding = new Binding({
-            disconnect: disconnect
+            disconnect
           });
           var buffer = new Buffer(5);
           var zalgo = false;
@@ -609,7 +610,7 @@ function testBinding(bindingName, Binding, testPort) {
         var buffer;
         beforeEach(function(done) {
           buffer = new Buffer(readyData.length);
-          binding = new Binding({disconnect: disconnect});
+          binding = new Binding({ disconnect });
           binding.open(testPort, defaultOpenOptions, done);
         });
 
@@ -643,7 +644,7 @@ function testBinding(bindingName, Binding, testPort) {
       describe('#get', function() {
         it('errors asynchronously when not open', function(done) {
           var binding = new Binding({
-            disconnect: disconnect
+            disconnect
           });
           var zalgo = false;
           binding.get(function(err, data) {
@@ -662,7 +663,7 @@ function testBinding(bindingName, Binding, testPort) {
 
         var binding;
         beforeEach(function(done) {
-          binding = new Binding({disconnect: disconnect});
+          binding = new Binding({ disconnect });
           binding.open(testPort, defaultOpenOptions, done);
         });
 
@@ -685,7 +686,7 @@ function testBinding(bindingName, Binding, testPort) {
       describe('#disconnect', function() {
         it('calls the disconnect callback', function(done) {
           var binding = new Binding({
-            disconnect: function(err) {
+            disconnect(err) {
               assert.instanceOf(err, Error);
               done();
             }

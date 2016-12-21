@@ -28,9 +28,9 @@ var byteCount = 0;                              // number of bytes read
 
 function onOpen() {
   console.log('Port Open');
-  console.log('Baud Rate: ' + port.options.baudRate);
+  console.log(`Baud Rate: ${port.options.baudRate}`);
   var outString = String.fromCharCode(output);
-  console.log('Sent:\t\t' + outString);
+  console.log(`Sent:\t\t${outString}`);
   port.write(outString);
 }
 
@@ -40,12 +40,12 @@ function onData(data) {
   } else {
     output = 32;              // lowest printable character: space
   }
-  console.log('Received:\t' + data);
-  console.log('Read Events:\t' + byteCount);
+  console.log(`Received:\t${data}`);
+  console.log(`Read Events:\t${byteCount}`);
   byteCount++;
   var outString = String.fromCharCode(output);
   port.write(outString);
-  console.log('Sent:\t\t' + outString);
+  console.log(`Sent:\t\t${outString}`);
 }
 
 function onClose() {
@@ -54,7 +54,7 @@ function onClose() {
 }
 
 function onError(error) {
-  console.log('there was an error with the serial port: ' + error);
+  console.log(`there was an error with the serial port: ${error}`);
   process.exit(1);
 }
 

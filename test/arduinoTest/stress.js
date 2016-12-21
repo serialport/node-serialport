@@ -40,7 +40,7 @@ describe('the stress', function() {
       var leaks = 0;
       memwatch.on('leak', function(info) {
         // fs.appendFile('leak.log', util.inspect(info));
-        console.log(util.inspect(info, {depth: 5}).red);
+        console.log(util.inspect(info, { depth: 5 }).red);
         leaks++;
       });
 
@@ -75,7 +75,7 @@ describe('the stress', function() {
           if (leaks > 0) {
             var diff = hd.end();
             // fs.appendFile('heapdiff.log', util.inspect(diff, {depth: 5}));
-            console.log(util.inspect(diff, {depth: 5}).red);
+            console.log(util.inspect(diff, { depth: 5 }).red);
             assert.fail('leak detected');
           }
           port.close();

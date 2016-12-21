@@ -22,7 +22,7 @@ var defaultBinding = SerialPort.Binding;
 var mockBinding = require('../lib/bindings-mock');
 
 var mockTestPort = '/dev/exists';
-mockBinding.createPort(mockTestPort, { echo: true, readyData: readyData });
+mockBinding.createPort(mockTestPort, { echo: true, readyData });
 
 // eslint-disable-next-line no-use-before-define
 integrationTest('mock', mockTestPort, mockBinding);
@@ -33,9 +33,9 @@ integrationTest(platform, process.env.TEST_PORT, defaultBinding);
 // Be careful to close the ports when you're done with them
 // Ports are by default exclusively locked so a failure fails all tests
 function integrationTest(platform, testPort, binding) {
-  describe(platform + ' SerialPort Integration Tests', function() {
+  describe(`${platform} SerialPort Integration Tests`, function() {
     if (!testPort) {
-      it(platform + ' tests requires an Arduino loaded with the arduinoEcho program on a serialport set to the TEST_PORT env var');
+      it(`${platform} tests requires an Arduino loaded with the arduinoEcho program on a serialport set to the TEST_PORT env var`);
       return;
     }
 
@@ -52,6 +52,7 @@ function integrationTest(platform, testPort, binding) {
           }
 
           SerialPort.list(function(err, ports) {
+            assert.isNull(err);
             var foundPort = false;
             ports.forEach(function(port) {
               if (lastPath(port.comName) === lastPath(testPort)) {
@@ -141,7 +142,7 @@ function integrationTest(platform, testPort, binding) {
 
       it('allows changing the baud rate of an open port', function(done) {
         var port = new SerialPort(testPort, function() {
-          port.update({baudRate: 57600}, function(err) {
+          port.update({ baudRate: 57600 }, function(err) {
             assert.isNull(err);
             port.close(done);
           });

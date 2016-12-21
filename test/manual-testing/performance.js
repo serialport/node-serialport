@@ -11,7 +11,7 @@ if (!port) {
 // var Binding = require('../../lib/bindings-mock');
 // Binding.createPort(port);
 // SerialPort.Binding = Binding;
-debugger;
+// debugger;
 
 var writeData = new Buffer(50000).fill(1);
 
