@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 'use strict';
 
-var SerialPort = require('../');
-var version = require('../package.json').version;
-var args = require('commander');
+const SerialPort = require('../');
+const version = require('../package.json').version;
+const args = require('commander');
 
 function makeNumber(input) {
   return Number(input);
@@ -43,14 +43,14 @@ function createPort() {
     process.exit(-1);
   }
 
-  var openOptions = {
+  const openOptions = {
     baudRate: args.baud,
     dataBits: args.databits,
     parity: args.parity,
     stopBits: args.stopbits
   };
 
-  var port = new SerialPort(args.port, openOptions);
+  const port = new SerialPort(args.port, openOptions);
 
   process.stdin.resume();
   process.stdin.setRawMode(true);

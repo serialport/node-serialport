@@ -17,7 +17,7 @@ const formatters = {
       console.error(err);
       process.exit(1);
     }
-    ports.forEach(function(port) {
+    ports.forEach(port => {
       console.log(`${port.comName}\t${port.pnpId || ''}\t${port.manufacturer || ''}`);
     });
   },
@@ -33,7 +33,7 @@ const formatters = {
       console.error(JSON.stringify(err));
       process.exit(1);
     }
-    ports.forEach(function(port) {
+    ports.forEach(port => {
       console.log(JSON.stringify(port));
     });
   }

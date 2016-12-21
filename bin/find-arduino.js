@@ -3,7 +3,7 @@
 
 // outputs the path to an arduino or nothing
 
-var serialport = require('../');
+const serialport = require('../');
 serialport.list(function(err, ports) {
   if (err) {
     console.error(err);

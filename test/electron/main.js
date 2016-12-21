@@ -1,9 +1,9 @@
 'use strict';
 
-var app = require('electron').app;
+const app = require('electron').app;
 
 try {
-  var serialport = require('../..'); // eslint-disable-line no-unused-vars
+  const serialport = require('../..'); // eslint-disable-line no-unused-vars
 } catch (e) {
   console.error('Error loading serialport');
   console.error(e);

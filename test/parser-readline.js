@@ -1,21 +1,21 @@
 'use strict';
 /* eslint-disable no-new */
 
-var assert = require('chai').assert;
-var sinon = require('sinon');
+const assert = require('chai').assert;
+const sinon = require('sinon');
 
-var ReadlineParser = require('../lib/parser-readline');
+const ReadlineParser = require('../lib/parser-readline');
 
 describe('ReadlineParser', function() {
   it('works without new', function() {
     // eslint-disable-next-line new-cap
-    var parser = ReadlineParser();
+    const parser = ReadlineParser();
     assert.instanceOf(parser, ReadlineParser);
   });
 
   it('transforms data to strings split on a delimiter', function() {
-    var spy = sinon.spy();
-    var parser = new ReadlineParser();
+    const spy = sinon.spy();
+    const parser = new ReadlineParser();
     parser.on('data', spy);
     parser.write(new Buffer('I love robots\nEach '));
     parser.write(new Buffer('and Every One\n'));
@@ -29,8 +29,8 @@ describe('ReadlineParser', function() {
   });
 
   it('allows setting of the delimiter with a string', function() {
-    var spy = sinon.spy();
-    var parser = new ReadlineParser({ delimiter: 'a' });
+    const spy = sinon.spy();
+    const parser = new ReadlineParser({ delimiter: 'a' });
     parser.on('data', spy);
     parser.write(new Buffer('how are youa'));
     assert(spy.calledWith('how '));
@@ -38,8 +38,8 @@ describe('ReadlineParser', function() {
   });
 
   it('allows setting of the delimiter with a buffer', function() {
-    var spy = sinon.spy();
-    var parser = new ReadlineParser({ delimiter: new Buffer('a') });
+    const spy = sinon.spy();
+    const parser = new ReadlineParser({ delimiter: new Buffer('a') });
     parser.on('data', spy);
     parser.write(new Buffer('how are youa'));
     assert(spy.calledWith('how '));
@@ -47,8 +47,8 @@ describe('ReadlineParser', function() {
   });
 
   it('allows setting of the delimiter with an array of bytes', function() {
-    var spy = sinon.spy();
-    var parser = new ReadlineParser({ delimiter: [97] });
+    const spy = sinon.spy();
+    const parser = new ReadlineParser({ delimiter: [97] });
     parser.on('data', spy);
     parser.write(new Buffer('how are youa'));
     assert(spy.calledWith('how '));
@@ -56,8 +56,8 @@ describe('ReadlineParser', function() {
   });
 
   it('allows setting of encoding', function() {
-    var spy = sinon.spy();
-    var parser = new ReadlineParser({
+    const spy = sinon.spy();
+    const parser = new ReadlineParser({
       encoding: 'hex'
     });
     parser.on('data', spy);
@@ -67,8 +67,8 @@ describe('ReadlineParser', function() {
   });
 
   it('encoding should be reflected in a string delimiter', function() {
-    var spy = sinon.spy();
-    var parser = new ReadlineParser({
+    const spy = sinon.spy();
+    const parser = new ReadlineParser({
       delimiter: 'FF',
       encoding: 'hex'
     });
@@ -111,8 +111,8 @@ describe('ReadlineParser', function() {
   });
 
   it('doesn\'t emits empty data events', function() {
-    var spy = sinon.spy();
-    var parser = new ReadlineParser({ delimiter: 'a' });
+    const spy = sinon.spy();
+    const parser = new ReadlineParser({ delimiter: 'a' });
     parser.on('data', spy);
     parser.write(new Buffer('aFa'));
     assert(spy.calledOnce);

@@ -7,8 +7,8 @@ Tests the functionality of the serial port library.
 To be used in conjunction with the Arduino sketch ArduinoEcho.ino
 */
 'use strict';
-var SerialPort = require('../../');
-var args = require('commander');
+const SerialPort = require('../../');
+const args = require('commander');
 
 args
   .usage('-p <port>')
@@ -22,14 +22,14 @@ if (!args.port) {
   process.exit(-1);
 }
 
-var port = new SerialPort(args.port);          // open the serial port:
-var output = 32;                                // ASCII space; lowest printable character
-var byteCount = 0;                              // number of bytes read
+const port = new SerialPort(args.port);          // open the serial port:
+let output = 32;                                // ASCII space; lowest printable character
+let byteCount = 0;                              // number of bytes read
 
 function onOpen() {
   console.log('Port Open');
   console.log(`Baud Rate: ${port.options.baudRate}`);
-  var outString = String.fromCharCode(output);
+  const outString = String.fromCharCode(output);
   console.log(`Sent:\t\t${outString}`);
   port.write(outString);
 }
@@ -43,7 +43,7 @@ function onData(data) {
   console.log(`Received:\t${data}`);
   console.log(`Read Events:\t${byteCount}`);
   byteCount++;
-  var outString = String.fromCharCode(output);
+  const outString = String.fromCharCode(output);
   port.write(outString);
   console.log(`Sent:\t\t${outString}`);
 }

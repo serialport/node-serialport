@@ -2,13 +2,13 @@
 
 'use strict';
 
-var proxyquire = require('proxyquire');
+const proxyquire = require('proxyquire');
 
-var mockPorts = {};
-var characterDevice = true;
-var error = false;
+let mockPorts = {};
+let characterDevice = true;
+let error = false;
 
-var listLinux = proxyquire('../../lib/list-linux', {
+const listLinux = proxyquire('../../lib/list-linux', {
   fs: {
     readdir(path, cb) {
       if (error) {
@@ -34,7 +34,7 @@ var listLinux = proxyquire('../../lib/list-linux', {
   },
   child_process: {
     exec(cmd, cb) {
-      var port = cmd.split(/\/dev\/(.*)\)/)[1];
+      const port = cmd.split(/\/dev\/(.*)\)/)[1];
       process.nextTick(function() {
         cb(null, mockPorts[port]);
       });

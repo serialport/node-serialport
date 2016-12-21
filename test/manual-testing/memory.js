@@ -1,14 +1,14 @@
 'use strict';
 
-var SerialPort = require('../../');
-var port = process.env.TEST_PORT;
+const SerialPort = require('../../');
+const port = process.env.TEST_PORT;
 
 if (!port) {
   console.error('Please pass TEST_PORT environment variable');
   process.exit(1);
 }
 
-var counter = 0;
+let counter = 0;
 
 function makePort(err) {
   if (err) { throw err }
@@ -20,7 +20,7 @@ function makePort(err) {
   if (counter > 10000) {
     process.exit(0);
   }
-  var serialPort = new SerialPort(port, function(err) {
+  const serialPort = new SerialPort(port, function(err) {
     if (err) { throw err }
     serialPort.close(makePort);
   });
