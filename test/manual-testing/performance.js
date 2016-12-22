@@ -1,7 +1,7 @@
 'use strict';
 
-var SerialPort = require('../../');
-var port = process.env.TEST_PORT;
+const SerialPort = require('../../');
+const port = process.env.TEST_PORT;
 
 if (!port) {
   console.error('Please pass TEST_PORT environment variable');
@@ -11,11 +11,11 @@ if (!port) {
 // var Binding = require('../../lib/bindings-mock');
 // Binding.createPort(port);
 // SerialPort.Binding = Binding;
-debugger;
+// debugger;
 
-var writeData = new Buffer(50000).fill(1);
+const writeData = new Buffer(50000).fill(1);
 
-var serialPort = new SerialPort(port, {
+const serialPort = new SerialPort(port, {
   // baudRate: 115200
 });
 
@@ -24,7 +24,7 @@ serialPort.once('data', function onceData() {
   serialPort.write(writeData);
 });
 
-var recieved = 0;
+let recieved = 0;
 serialPort.on('data', function onData(data) {
   recieved += data.length;
   if (recieved >= writeData.length) {

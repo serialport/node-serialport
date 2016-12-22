@@ -1,20 +1,21 @@
 'use strict';
+/* eslint-disable no-new */
 
-var assert = require('chai').assert;
-var sinon = require('sinon');
+const assert = require('chai').assert;
+const sinon = require('sinon');
 
-var DelimiterParser = require('../lib/parser-delimiter');
+const DelimiterParser = require('../lib/parser-delimiter');
 
 describe('DelimiterParser', function() {
   it('works without new', function() {
     // eslint-disable-next-line new-cap
-    var parser = DelimiterParser({delimiter: new Buffer('4')});
+    const parser = DelimiterParser({ delimiter: new Buffer('4') });
     assert.instanceOf(parser, DelimiterParser);
   });
 
   it('transforms data to strings split on a delimiter', function() {
-    var spy = sinon.spy();
-    var parser = new DelimiterParser({
+    const spy = sinon.spy();
+    const parser = new DelimiterParser({
       delimiter: new Buffer('\n')
     });
     parser.on('data', spy);
@@ -57,21 +58,21 @@ describe('DelimiterParser', function() {
   });
 
   it('allows setting of the delimiter with a string', function() {
-    new DelimiterParser({delimiter: 'string'});
+    new DelimiterParser({ delimiter: 'string' });
   });
 
   it('allows setting of the delimiter with a buffer', function() {
-    new DelimiterParser({delimiter: new Buffer([1])});
+    new DelimiterParser({ delimiter: new Buffer([1]) });
   });
 
   it('allows setting of the delimiter with an array of bytes', function() {
-    new DelimiterParser({delimiter: [1]});
+    new DelimiterParser({ delimiter: [1] });
   });
 
   it('emits data events every time it meets 00x 00x', function() {
-    var data = new Buffer('This could be\0\0binary data\0\0sent from a Moteino\0\0');
-    var parser = new DelimiterParser({delimiter: [0, 0]});
-    var spy = sinon.spy();
+    const data = new Buffer('This could be\0\0binary data\0\0sent from a Moteino\0\0');
+    const parser = new DelimiterParser({ delimiter: [0, 0] });
+    const spy = sinon.spy();
     parser.on('data', spy);
     parser.write(data);
     assert.equal(spy.callCount, 3);
@@ -81,35 +82,35 @@ describe('DelimiterParser', function() {
   });
 
   it('accepts single byte delimiter', function() {
-    var data = new Buffer('This could be\0binary data\0sent from a Moteino\0');
-    var parser = new DelimiterParser({delimiter: [0]});
-    var spy = sinon.spy();
+    const data = new Buffer('This could be\0binary data\0sent from a Moteino\0');
+    const parser = new DelimiterParser({ delimiter: [0] });
+    const spy = sinon.spy();
     parser.on('data', spy);
     parser.write(data);
     assert.equal(spy.callCount, 3);
   });
 
   it('Works when buffer starts with delimiter', function() {
-    var data = new Buffer('\0Hello\0World\0');
-    var parser = new DelimiterParser({delimiter: new Buffer([0])});
-    var spy = sinon.spy();
+    const data = new Buffer('\0Hello\0World\0');
+    const parser = new DelimiterParser({ delimiter: new Buffer([0]) });
+    const spy = sinon.spy();
     parser.on('data', spy);
     parser.write(data);
     assert.equal(spy.callCount, 2);
   });
 
   it('should only emit if delimiters are strictly in row', function() {
-    var data = new Buffer('\0Hello\u0001World\0\0\u0001');
-    var parser = new DelimiterParser({delimiter: [0, 1]});
-    var spy = sinon.spy();
+    const data = new Buffer('\0Hello\u0001World\0\0\u0001');
+    const parser = new DelimiterParser({ delimiter: [0, 1] });
+    const spy = sinon.spy();
     parser.on('data', spy);
     parser.write(data);
     assert.equal(spy.callCount, 1);
   });
 
   it('continues looking for delimiters in the next buffers', function() {
-    var parser = new DelimiterParser({delimiter: [0, 0]});
-    var spy = sinon.spy();
+    const parser = new DelimiterParser({ delimiter: [0, 0] });
+    const spy = sinon.spy();
     parser.on('data', spy);
     parser.write(new Buffer('This could be\0\0binary '));
     parser.write(new Buffer('data\0\0sent from a Moteino\0\0'));

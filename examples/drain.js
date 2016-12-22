@@ -1,10 +1,10 @@
 'use strict';
 
-var SerialPort = require('serialport');
-var port = new SerialPort('/dev/cu.Cubelet-RGB');
+const SerialPort = require('serialport');
+const port = new SerialPort('/dev/cu.Cubelet-RGB');
 
 port.on('open', function() {
-  var largeMessage = new Buffer(1024 * 10).fill('!');
+  const largeMessage = new Buffer(1024 * 10).fill('!');
   console.log('Calling write');
   port.write(largeMessage, function() {
     console.log('Write callback returned');

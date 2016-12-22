@@ -1,9 +1,9 @@
 'use strict';
 
-var assert = require('chai').assert;
-var listLinux = require('./mocks/list-linux');
+const assert = require('chai').assert;
+const listLinux = require('./mocks/list-linux');
 
-var ports = {
+const ports = {
   'ttyS0':
     'DEVNAME=/dev/ttyS0\n' +
      'DEVPATH=/devices/platform/serial8250/tty/ttyS0\n' +
@@ -35,7 +35,7 @@ var ports = {
   'ttyNOTASERIALPORT': ''
 };
 
-var portOutput = [
+const portOutput = [
   {
     comName: '/dev/ttyS0',
     manufacturer: undefined,

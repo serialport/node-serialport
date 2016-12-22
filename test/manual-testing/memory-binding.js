@@ -1,5 +1,5 @@
 'use strict';
-var port = process.env.TEST_PORT;
+const port = process.env.TEST_PORT;
 
 if (!port) {
   console.error('Please pass TEST_PORT environment variable');
@@ -8,9 +8,9 @@ if (!port) {
 
 // var Binding = require('../../lib/bindings-mock');
 // Binding.createPort(port);
-var Binding = require('../../').Binding;
+const Binding = require('../../').Binding;
 
-var defaultOpenOptions = {
+const defaultOpenOptions = {
   baudRate: 9600,
   dataBits: 8,
   hupcl: true,
@@ -23,19 +23,19 @@ var defaultOpenOptions = {
   xon: false
 };
 
-var counter = 0;
+let counter = 0;
 function makePort(err) {
   if (err) { throw err }
   counter++;
   if (counter % 1000 === 0) {
-    console.log('Attempt ' + counter);
-    debugger;
+    console.log(`Attempt ${counter}`);
+    // debugger;
   }
   if (counter > 10000) {
     process.exit(0);
   }
 
-  var binding = new Binding({disconnect: function() { throw 'disconnect' }});
+  const binding = new Binding({ disconnect() { throw new Error('disconnect') } });
   binding.open(port, defaultOpenOptions, function afterBindingOpen(err) {
     if (err) { throw err }
     binding.close(makePort);

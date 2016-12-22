@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 'use strict';
 
-var SerialPort = require('../');
-var version = require('../package.json').version;
-var args = require('commander');
+const SerialPort = require('../');
+const version = require('../package.json').version;
+const args = require('commander');
 
 function makeNumber(input) {
   return Number(input);
@@ -15,7 +15,7 @@ args
   .description('A basic terminal interface for communicating over a serial port. Pressing ctrl+c exits.')
   .option('-l --list', 'List available ports then exit')
   // TODO make the port not a flag as it's always required
-  .option('-p, --port, --portname <port>', 'Path or Name of serial port')
+  .option('-p, --port <port>', 'Path or Name of serial port')
   .option('-b, --baud <baudrate>', 'Baud rate default: 9600', makeNumber, 9600)
   .option('--databits <databits>', 'Data bits default: 8', makeNumber, 8)
   .option('--parity <parity>', 'Parity default: none', 'none')
@@ -30,53 +30,57 @@ function listPorts() {
       console.error('Error listing ports', err);
     } else {
       ports.forEach(function(port) {
-        console.log(port.comName + '\t' + (port.pnpId || '') + '\t' + (port.manufacturer || ''));
+        console.log(`${port.comName}\t${port.pnpId || ''}\t${port.manufacturer || ''}`);
       });
     }
   });
 };
 
-if (args.list) {
-  return listPorts();
-}
-
-if (!args.port) {
-  args.outputHelp();
-  args.missingArgument('port');
-  process.exit(-1);
-}
-
-var openOptions = {
-  baudRate: args.baud,
-  dataBits: args.databits,
-  parity: args.parity,
-  stopBits: args.stopbits
-};
-
-var port = new SerialPort(args.port, openOptions);
-
-process.stdin.resume();
-process.stdin.setRawMode(true);
-process.stdin.on('data', function(s) {
-  if (s[0] === 0x03) {
-    port.close();
-    process.exit(0);
+function createPort() {
+  if (!args.port) {
+    args.outputHelp();
+    args.missingArgument('port');
+    process.exit(-1);
   }
-  if (args.localecho) {
-    if (s[0] === 0x0d) {
-      process.stdout.write('\n');
-    } else {
-      process.stdout.write(s);
+
+  const openOptions = {
+    baudRate: args.baud,
+    dataBits: args.databits,
+    parity: args.parity,
+    stopBits: args.stopbits
+  };
+
+  const port = new SerialPort(args.port, openOptions);
+
+  process.stdin.resume();
+  process.stdin.setRawMode(true);
+  process.stdin.on('data', function(s) {
+    if (s[0] === 0x03) {
+      port.close();
+      process.exit(0);
     }
-  }
-  port.write(s);
-});
+    if (args.localecho) {
+      if (s[0] === 0x0d) {
+        process.stdout.write('\n');
+      } else {
+        process.stdout.write(s);
+      }
+    }
+    port.write(s);
+  });
 
-port.on('data', function(data) {
-  process.stdout.write(data.toString());
-});
+  port.on('data', function(data) {
+    process.stdout.write(data.toString());
+  });
 
-port.on('error', function(err) {
-  console.log('Error', err);
-  process.exit(1);
-});
+  port.on('error', function(err) {
+    console.log('Error', err);
+    process.exit(1);
+  });
+}
+
+if (args.list) {
+  listPorts();
+} else {
+  createPort();
+}

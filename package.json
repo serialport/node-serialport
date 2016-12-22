@@ -62,9 +62,9 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-subset": "^1.2.2",
-    "eslint": "^3.12.1",
-    "eslint-config-standard": "^6.2.0",
-    "eslint-plugin-promise": "^3.0.0",
+    "eslint": "^3.12.2",
+    "eslint-config-standard": "^6.2.1",
+    "eslint-plugin-promise": "^3.4.0",
     "eslint-plugin-standard": "^2.0.1",
     "istanbul": "^0.4.4",
     "jsdoc-to-markdown": "^2.0.1",
@@ -77,7 +77,7 @@
     "node-pre-gyp"
   ],
   "engines": {
-    "node": ">= 0.10.0"
+    "node": ">= 4.0.0"
   },
   "bin": {
     "serialport-list": "./bin/serialport-list.js",
@@ -89,7 +89,7 @@
     "docs": "jsdoc2md --no-cache -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs --partial .docs/edit-warning.hbs -r table --separators --name-format lib/* > README.md",
     "docs:diff": "jsdoc2md --no-cache -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs --partial .docs/edit-warning.hbs -r table --separators --name-format lib/* | diff -q README.md - || (echo 'Docs out of date, run `npm run docs` and commit the new README.md' && false)",
     "install": "node-pre-gyp install --fallback-to-build",
-    "lint": "eslint *.js lib/**/*.js test/**/*.js bin/**/*.js examples/**/*.js",
+    "lint": "eslint lib test bin examples",
     "rebuild-all": "npm rebuild && node-gyp rebuild",
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
     "test": "istanbul cover ./node_modules/mocha/bin/_mocha",

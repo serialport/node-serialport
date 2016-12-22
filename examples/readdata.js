@@ -1,9 +1,9 @@
 'use strict';
-var serialport = require('serialport');
-var SerialPort = serialport.SerialPort;
-var parsers = serialport.parsers;
+const serialport = require('serialport');
+const SerialPort = serialport.SerialPort;
+const parsers = serialport.parsers;
 
-var port = new SerialPort('/dev/cu.usbmodemfd121', {
+const port = new SerialPort('/dev/cu.usbmodemfd121', {
   baudrate: 9600,
   parser: parsers.readline('\r\n')
 });
