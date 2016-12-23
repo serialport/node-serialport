@@ -6,13 +6,12 @@ const assert = require('chai').assert;
 let platform;
 switch (process.platform) {
   case 'win32':
-    platform = 'win32';
-    break;
   case 'darwin':
-    platform = 'darwin';
+  case 'linux':
+    platform = process.platform;
     break;
   default:
-    platform = 'linux';
+    throw new Error(`Unknown platform "${process.platform}"`);
 }
 
 const defaultOpenOptions = {
@@ -42,7 +41,7 @@ const bindingsToTest = [
 ];
 
 function disconnect(err) {
-  throw (err || new Error('Disconnected'));
+  throw (err || new Error('Unknown disconnection'));
 }
 
 // All bindings are required to work with an "echo" firmware
@@ -586,9 +585,7 @@ function testBinding(bindingName, Binding, testPort) {
       // is left over on the pipe and isn't cleared when flushed on unix
       describe('#read', function() {
         it('errors asynchronously when not open', function(done) {
-          const binding = new Binding({
-            disconnect
-          });
+          const binding = new Binding({ disconnect });
           const buffer = new Buffer(5);
           let zalgo = false;
           binding.read(buffer, 0, buffer.length, function(err, bytesRead, data) {
