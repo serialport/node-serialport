@@ -318,6 +318,18 @@ function testBinding(bindingName, Binding, testPort) {
       });
 
       describe('#update', function() {
+        it('throws when not given an object', done => {
+          const binding = new Binding({
+            disconnect
+          });
+          try {
+            binding.update();
+          } catch (e) {
+            assert.instanceOf(e, TypeError);
+            done();
+          }
+        });
+
         it('errors asynchronously when not open', function(done) {
           const binding = new Binding({
             disconnect

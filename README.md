@@ -93,6 +93,7 @@ For getting started with node-serialport, we recommend you begin with the follow
             * [`.close(callback)`](#module_serialport--SerialPort..Binding+close)
             * [`.read(data, length, readCallback)`](#module_serialport--SerialPort..Binding+read)
             * [`.write(data, writeCallback)`](#module_serialport--SerialPort..Binding+write)
+            * [`.update([options], [callback])`](#module_serialport--SerialPort..Binding+update)
             * [`.set([options], callback)`](#module_serialport--SerialPort..Binding+set)
             * [`.get([callback])`](#module_serialport--SerialPort..Binding+get)
             * [`.flush(callback)`](#module_serialport--SerialPort..Binding+flush)
@@ -774,6 +775,7 @@ SerialPort.list(function (err, ports) {
     * [`.close(callback)`](#module_serialport--SerialPort..Binding+close)
     * [`.read(data, length, readCallback)`](#module_serialport--SerialPort..Binding+read)
     * [`.write(data, writeCallback)`](#module_serialport--SerialPort..Binding+write)
+    * [`.update([options], [callback])`](#module_serialport--SerialPort..Binding+update)
     * [`.set([options], callback)`](#module_serialport--SerialPort..Binding+set)
     * [`.get([callback])`](#module_serialport--SerialPort..Binding+get)
     * [`.flush(callback)`](#module_serialport--SerialPort..Binding+flush)
@@ -888,6 +890,26 @@ Write a number of bytes to the SerialPort
 | --- | --- | --- |
 | data | <code>buffer</code> | Accepts a [`Buffer`](http://nodejs.org/api/buffer.html) object. |
 | writeCallback | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | is called after the data has been passed to the operating system for writing. This will only be called when there isn't a pending write operation. |
+
+
+-
+
+<a name="module_serialport--SerialPort..Binding+update"></a>
+
+##### `binding.update([options], [callback])`
+Changes connection settings on an open port. Currently only the baudRate is required.
+
+**Kind**: instance method of <code>[Binding](#module_serialport--SerialPort..Binding)</code>  
+**Throws**:
+
+- <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [options] | <code>object</code> | Only `baudRate` is currently supported |
+| [options.baudRate] | <code>number</code> | If provided a baudRate that isn't supported by the bindings it should pass an error to the callback |
+| [callback] | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | Called once the port's baud rate has been changed. |
 
 
 -
