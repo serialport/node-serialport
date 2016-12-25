@@ -86,33 +86,33 @@ const portOutput = [
   }
 ];
 
-describe('listLinux', function() {
-  beforeEach(function() {
+describe('listLinux', () => {
+  beforeEach(() => {
     listLinux.reset();
   });
 
-  it('lists available serialports', function(done) {
+  it('lists available serialports', (done) => {
     listLinux.setPorts(ports);
-    listLinux(function(err, ports) {
+    listLinux((err, ports) => {
       assert.isNull(err);
       assert.deepEqual(ports, portOutput);
       done();
     });
   });
 
-  it('does not list non character devices', function(done) {
+  it('does not list non character devices', (done) => {
     listLinux.setCharacterDevice(false);
     listLinux.setPorts(ports);
-    listLinux(function(err, ports) {
+    listLinux((err, ports) => {
       assert.isNull(err);
       assert.deepEqual(ports, []);
       done();
     });
   });
 
-  it('returns an error to callback', function(done) {
+  it('returns an error to callback', (done) => {
     listLinux.error(true);
-    listLinux(function(err) {
+    listLinux((err) => {
       assert.instanceOf(err, Error);
       done();
     });

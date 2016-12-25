@@ -12,18 +12,12 @@ const listLinux = proxyquire('../../lib/list-linux', {
   fs: {
     readdir(path, cb) {
       if (error) {
-        return process.nextTick(function() {
-          cb(new Error('Bad'));
-        });
+        return process.nextTick(() => cb(new Error('Bad')));
       }
-      process.nextTick(function() {
-        cb(null, Object.keys(mockPorts));
-      });
+      process.nextTick(() => cb(null, Object.keys(mockPorts)));
     },
     stat(path, cb) {
-      process.nextTick(function() {
-        cb(null, { isCharacterDevice() { return characterDevice } });
-      });
+      process.nextTick(() => cb(null, { isCharacterDevice() { return characterDevice } }));
     }
   },
   path: {
@@ -35,26 +29,24 @@ const listLinux = proxyquire('../../lib/list-linux', {
   child_process: {
     exec(cmd, cb) {
       const port = cmd.split(/\/dev\/(.*)\)/)[1];
-      process.nextTick(function() {
-        cb(null, mockPorts[port]);
-      });
+      process.nextTick(() => cb(null, mockPorts[port]));
     }
   }
 });
 
-listLinux.setCharacterDevice = function(isCharacterDevice) {
+listLinux.setCharacterDevice = (isCharacterDevice) => {
   characterDevice = isCharacterDevice;
 };
 
-listLinux.setPorts = function(ports) {
+listLinux.setPorts = (ports) => {
   mockPorts = ports;
 };
 
-listLinux.error = function(err) {
+listLinux.error = (err) => {
   error = err;
 };
 
-listLinux.reset = function() {
+listLinux.reset = () => {
   error = false;
   mockPorts = {};
   characterDevice = true;

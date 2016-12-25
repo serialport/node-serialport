@@ -6,13 +6,12 @@ const SerialPort = require('../');
 let platform;
 switch (process.platform) {
   case 'win32':
-    platform = 'win32';
-    break;
   case 'darwin':
-    platform = 'darwin';
+  case 'linux':
+    platform = process.platform;
     break;
   default:
-    platform = 'unix';
+    throw new Error(`Unknown platform "${process.platform}"`);
 }
 
 const readyData = new Buffer('READY');
