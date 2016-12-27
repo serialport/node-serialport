@@ -173,12 +173,12 @@ When you first install `serialport` it will compile against the version of Node.
 To recompile `serialport` (or any native Node.js module) for Electron you can use `electron-rebuild`.
 
 1. `npm install --save-dev electron-rebuild`
-2. Delete existing Node.js binding `node_modules/serialport/build/Release/serialport.node`
-3. Run `electron-rebuild`
-  1. For Windows `.\node_modules\.bin\electron-rebuild.cmd`
-  2. For Linux and macOS `./node_modules/.bin/electron-rebuild`
+2. Add `electron-rebuild` to your project's package.json's install hook.
+3. Run `npm install`
 
 For more information on `electron-rebuild` visit the official [README](https://github.com/electron/electron-rebuild/blob/master/README.md).
+
+For an example project check out [`electron-serialport`](https://github.com/johnny-five-io/electron-serialport).
 
 #### Illegal Instruction
 
