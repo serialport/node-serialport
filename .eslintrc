@@ -1,0 +1,21 @@
+{
+  "extends": "standard",
+  "env": {
+    "node": true,
+    "mocha": true,
+  },
+  "parserOptions": {
+  },
+  "globals": {
+  },
+  "rules": {
+    "no-var": 2,
+    "object-curly-spacing": [2, "always"],
+    "object-shorthand": 2,
+    "prefer-const": 2,
+    "prefer-template": 2,
+    "semi": [2, "always", {"omitLastInOneLineBlock": true}],
+    "space-before-function-paren": [2, "never"],
+    "standard/object-curly-even-spacing": 0
+  }
+}

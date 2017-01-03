@@ -1,9 +1,9 @@
 'use strict';
 
-var assert = require('chai').assert;
-var listLinux = require('./mocks/list-linux');
+const assert = require('chai').assert;
+const listLinux = require('./mocks/list-linux');
 
-var ports = {
+const ports = {
   'ttyS0':
     'DEVNAME=/dev/ttyS0\n' +
      'DEVPATH=/devices/platform/serial8250/tty/ttyS0\n' +
@@ -35,7 +35,7 @@ var ports = {
   'ttyNOTASERIALPORT': ''
 };
 
-var portOutput = [
+const portOutput = [
   {
     comName: '/dev/ttyS0',
     manufacturer: undefined,
@@ -86,33 +86,33 @@ var portOutput = [
   }
 ];
 
-describe('listLinux', function() {
-  beforeEach(function() {
+describe('listLinux', () => {
+  beforeEach(() => {
     listLinux.reset();
   });
 
-  it('lists available serialports', function(done) {
+  it('lists available serialports', (done) => {
     listLinux.setPorts(ports);
-    listLinux(function(err, ports) {
+    listLinux((err, ports) => {
       assert.isNull(err);
       assert.deepEqual(ports, portOutput);
       done();
     });
   });
 
-  it('does not list non character devices', function(done) {
+  it('does not list non character devices', (done) => {
     listLinux.setCharacterDevice(false);
     listLinux.setPorts(ports);
-    listLinux(function(err, ports) {
+    listLinux((err, ports) => {
       assert.isNull(err);
       assert.deepEqual(ports, []);
       done();
     });
   });
 
-  it('returns an error to callback', function(done) {
+  it('returns an error to callback', (done) => {
     listLinux.error(true);
-    listLinux(function(err) {
+    listLinux((err) => {
       assert.instanceOf(err, Error);
       done();
     });

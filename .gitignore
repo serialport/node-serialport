@@ -1,9 +1,6 @@
 # MAKE SURE ALL ADDITIONS HERE ARE MIRRORED INTO THE .npmignore AS WELL
-*.node
-.DS_Store
 build/
 node_modules
 npm-debug.log
-gyp-mac-tool
-.node_pre_gyprc
 coverage
+.mailmap

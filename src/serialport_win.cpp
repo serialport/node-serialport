@@ -2,9 +2,11 @@
 #include <list>
 #include <vector>
 #include "./serialport.h"
-#include "win/disphelper.h"
-#include "win/stdafx.h"
-#include "win/enumser.h"
+#include <string.h>
+#include <windows.h>
+#include <Setupapi.h>
+#include <devguid.h>
+#pragma comment (lib, "setupapi.lib")
 
 #ifdef WIN32
 
@@ -155,18 +157,6 @@ void EIO_Open(uv_work_t* req) {
   data->result = (int)file;
 }
 
-struct WatchPortBaton {
-  HANDLE fd;
-  DWORD bytesRead;
-  char buffer[MAX_BUFFER_SIZE];
-  char errorString[ERROR_STRING_SIZE];
-  DWORD errorCode;
-  bool disconnected;
-  Nan::Callback* dataCallback;
-  Nan::Callback* errorCallback;
-  Nan::Callback* disconnectedCallback;
-};
-
 void EIO_Update(uv_work_t* req) {
   ConnectionOptionsBaton* data = static_cast<ConnectionOptionsBaton*>(req->data);
 
@@ -252,22 +242,6 @@ bool IsClosingHandle(int fd) {
   return false;
 }
 
-void DisposeWatchPortCallbacks(WatchPortBaton* data) {
-  delete data->dataCallback;
-  delete data->errorCallback;
-  delete data->disconnectedCallback;
-}
-
-// FinalizerCallback will prevent WatchPortBaton::buffer from getting
-// collected by gc while finalizing v8::ArrayBuffer. The buffer will
-// get cleaned up through this callback.
-static void FinalizerCallback(char* data, void* hint) {
-  uv_work_t* req = reinterpret_cast<uv_work_t*>(hint);
-  WatchPortBaton* wpb = static_cast<WatchPortBaton*>(req->data);
-  delete wpb;
-  delete req;
-}
-
 void EIO_Write(uv_work_t* req) {
   QueuedWrite* queuedWrite = static_cast<QueuedWrite*>(req->data);
   WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
@@ -311,6 +285,72 @@ void EIO_Write(uv_work_t* req) {
   } while (data->bufferLength > data->offset);
 }
 
+void EIO_Read(uv_work_t* req) {
+  ReadBaton* data = static_cast<ReadBaton*>(req->data);
+  data->bytesRead = 0;
+  int errorCode = ERROR_SUCCESS;
+
+  char* offsetPtr = data->bufferData;
+  offsetPtr += data->offset;
+
+  // Event used by GetOverlappedResult(..., TRUE) to wait for incoming data or timeout
+  // Event MUST be used if program has several simultaneous asynchronous operations
+  // on the same handle (i.e. ReadFile and WriteFile)
+  HANDLE hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+
+  while (true) {
+    OVERLAPPED ov = {0};
+    ov.hEvent = hEvent;
+
+    // Start read operation - synchrounous or asynchronous
+    DWORD bytesReadSync = 0;
+    if (!ReadFile((HANDLE)data->fd, offsetPtr, data->bytesToRead, &bytesReadSync, &ov)) {
+      errorCode = GetLastError();
+      if (errorCode != ERROR_IO_PENDING) {
+        // Read operation error
+        if (errorCode == ERROR_OPERATION_ABORTED) {
+        } else {
+          ErrorCodeToString("Reading from COM port (ReadFile)", errorCode, data->errorString);
+          CloseHandle(hEvent);
+          return;
+        }
+        break;
+      }
+
+      // Read operation is asynchronous and is pending
+      // We MUST wait for operation completion before deallocation of OVERLAPPED struct
+      // or read data buffer
+
+      // Wait for async read operation completion or timeout
+      DWORD bytesReadAsync = 0;
+      if (!GetOverlappedResult((HANDLE)data->fd, &ov, &bytesReadAsync, TRUE)) {
+        // Read operation error
+        errorCode = GetLastError();
+        if (errorCode == ERROR_OPERATION_ABORTED) {
+        } else {
+          ErrorCodeToString("Reading from COM port (GetOverlappedResult)", errorCode, data->errorString);
+          CloseHandle(hEvent);
+          return;
+        }
+        break;
+      } else {
+        // Read operation completed asynchronously
+        data->bytesRead = bytesReadAsync;
+      }
+    } else {
+      // Read operation completed synchronously
+      data->bytesRead = bytesReadSync;
+    }
+
+    // Return data received if any
+    if (data->bytesRead > 0) {
+      break;
+    }
+  }
+
+  CloseHandle(hEvent);
+}
+
 void EIO_Close(uv_work_t* req) {
   VoidBaton* data = static_cast<VoidBaton*>(req->data);
 
@@ -331,88 +371,108 @@ void EIO_Close(uv_work_t* req) {
   }
 }
 
-/*
- * listComPorts.c -- list COM ports
- *
- * http://github.com/todbot/usbSearch/
- *
- * 2012, Tod E. Kurt, http://todbot.com/blog/
- *
- *
- * Uses DispHealper : http://disphelper.sourceforge.net/
- *
- * Notable VIDs & PIDs combos:
- * VID 0403 - FTDI
- *
- * VID 0403 / PID 6001 - Arduino Diecimila
- *
- */
+char *copySubstring(char *someString, int n)
+{
+  char *new_ = (char*)malloc(sizeof(char)*n + 1);
+  strncpy_s(new_, n + 1, someString, n);
+  new_[n] = '\0';
+  return new_;
+}
+
 void EIO_List(uv_work_t* req) {
   ListBaton* data = static_cast<ListBaton*>(req->data);
 
-  {
-    DISPATCH_OBJ(wmiSvc);
-    DISPATCH_OBJ(colDevices);
+  GUID *guidDev = (GUID*)& GUID_DEVCLASS_PORTS;
+  HDEVINFO hDevInfo = SetupDiGetClassDevs(guidDev, NULL, NULL, DIGCF_PRESENT | DIGCF_PROFILE);
+  SP_DEVINFO_DATA deviceInfoData;
 
-    dhInitialize(TRUE);
-    dhToggleExceptions(FALSE);
+  int memberIndex = 0;
+  DWORD dwSize, dwPropertyRegDataType;
+  char szBuffer[400];
+  char *pnpId;
+  char *vendorId;
+  char *productId;
+  char *name;
+  char *manufacturer;
+  char *locationId;
+  bool isCom;
+  while (true) {
+    pnpId = NULL;
+    vendorId = NULL;
+    productId = NULL;
+    name = NULL;
+    manufacturer = NULL;
+    locationId = NULL;
 
-    dhGetObject(L"winmgmts:{impersonationLevel=impersonate}!\\\\.\\root\\cimv2", NULL, &wmiSvc);
-    dhGetValue(L"%o", &colDevices, wmiSvc, L".ExecQuery(%S)", L"Select * from Win32_PnPEntity");
+    ZeroMemory(&deviceInfoData, sizeof(SP_DEVINFO_DATA));
+    deviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
 
-    int port_count = 0;
-    FOR_EACH(objDevice, colDevices, NULL) {
-      char* name = NULL;
-      char* pnpid = NULL;
-      char* manu = NULL;
-      char* match;
-
-      dhGetValue(L"%s", &name,  objDevice, L".Name");
-      dhGetValue(L"%s", &pnpid, objDevice, L".PnPDeviceID");
-
-      if (name != NULL && ((match = strstr(name, "(COM")) != NULL)) {  // look for "(COM23)"
-        // 'Manufacturuer' can be null, so only get it if we need it
-        dhGetValue(L"%s", &manu, objDevice,  L".Manufacturer");
-        port_count++;
-        char* comname = strtok(match, "()");
-        ListResultItem* resultItem = new ListResultItem();
-        resultItem->comName = comname;
-        resultItem->manufacturer = manu;
-        resultItem->pnpId = pnpid;
-        data->results.push_back(resultItem);
-        dhFreeString(manu);
-      }
-
-      dhFreeString(name);
-      dhFreeString(pnpid);
-    } NEXT(objDevice);
-
-    SAFE_RELEASE(colDevices);
-    SAFE_RELEASE(wmiSvc);
-
-    dhUninitialize(TRUE);
-  }
-
-  std::vector<UINT> ports;
-  if (CEnumerateSerial::UsingQueryDosDevice(ports)) {
-    for (size_t i = 0; i < ports.size(); i++) {
-      char comname[64] = { 0 };
-      _snprintf_s(comname, sizeof(comname), _TRUNCATE, "COM%u", ports[i]);
-      bool bFound = false;
-      for (std::list<ListResultItem*>::iterator ri = data->results.begin(); ri != data->results.end(); ++ri) {
-        if (stricmp((*ri)->comName.c_str(), comname) == 0) {
-          bFound = true;
-          break;
-        }
-      }
-      if (!bFound) {
-        ListResultItem* resultItem = new ListResultItem();
-        resultItem->comName = comname;
-        resultItem->manufacturer = "";
-        resultItem->pnpId = "";
-        data->results.push_back(resultItem);
+    if (SetupDiEnumDeviceInfo(hDevInfo, memberIndex, &deviceInfoData) == FALSE) {
+      if (GetLastError() == ERROR_NO_MORE_ITEMS) {
+        break;
       }
     }
+
+    dwSize = sizeof(szBuffer);
+    SetupDiGetDeviceInstanceId(hDevInfo, &deviceInfoData, szBuffer, dwSize, &dwSize);
+    szBuffer[dwSize] = '\0';
+    pnpId = strdup(szBuffer);
+
+    vendorId = strstr(szBuffer, "VID_");
+    if (vendorId) {
+      vendorId += 4;
+      vendorId = copySubstring(vendorId, 4);
+    }
+    productId = strstr(szBuffer, "PID_");
+    if (productId) {
+      productId += 4;
+      productId = copySubstring(productId, 4);
+    }
+
+    if (SetupDiGetDeviceRegistryProperty(hDevInfo, &deviceInfoData, SPDRP_LOCATION_INFORMATION, &dwPropertyRegDataType, (BYTE*)szBuffer, sizeof(szBuffer), &dwSize)) {
+      locationId = strdup(szBuffer);
+    }
+    if (SetupDiGetDeviceRegistryProperty(hDevInfo, &deviceInfoData, SPDRP_MFG, &dwPropertyRegDataType, (BYTE*)szBuffer, sizeof(szBuffer), &dwSize)) {
+      manufacturer = strdup(szBuffer);
+    }
+
+    HKEY hkey = SetupDiOpenDevRegKey(hDevInfo, &deviceInfoData, DICS_FLAG_GLOBAL, 0, DIREG_DEV, KEY_READ);
+    if (hkey != INVALID_HANDLE_VALUE) {
+      dwSize = sizeof(szBuffer);
+      if (RegQueryValueEx(hkey, "PortName", NULL, NULL, (LPBYTE)&szBuffer, &dwSize) == ERROR_SUCCESS) {
+        szBuffer[dwSize] = '\0';
+        name = strdup(szBuffer);
+        isCom = strstr(szBuffer, "COM") != NULL;
+      }
+    }
+    if (isCom) {
+      ListResultItem* resultItem = new ListResultItem();
+      resultItem->comName = name;
+      resultItem->manufacturer = manufacturer;
+      resultItem->pnpId = pnpId;
+      if (vendorId) {
+        resultItem->vendorId = vendorId;
+      }
+      if (productId) {
+        resultItem->productId = productId;
+      }
+      if (locationId) {
+        resultItem->locationId = locationId;
+      }
+      data->results.push_back(resultItem);
+    }
+    free(pnpId);
+    free(vendorId);
+    free(productId);
+    free(locationId);
+    free(manufacturer);
+    free(name);
+
+    RegCloseKey(hkey);
+    memberIndex++;
+  }
+  if (hDevInfo) {
+    SetupDiDestroyDeviceInfoList(hDevInfo);
   }
 }
 

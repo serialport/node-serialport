@@ -685,12 +685,12 @@ void EIO_Set(uv_work_t* req) {
   }
 
   if (-1 == result) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot drain", strerror(errno));
+    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot set", strerror(errno));
     return;
   }
 
   if (-1 == ioctl(data->fd, TIOCMSET, &bits)) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot drain", strerror(errno));
+    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot set", strerror(errno));
     return;
   }
 }

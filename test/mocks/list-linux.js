@@ -2,59 +2,51 @@
 
 'use strict';
 
-var proxyquire =  require('proxyquire');
+const proxyquire = require('proxyquire');
 
-var mockPorts = {};
-var characterDevice = true;
-var error = false;
+let mockPorts = {};
+let characterDevice = true;
+let error = false;
 
-var listLinux = proxyquire('../../lib/list-linux', {
+const listLinux = proxyquire('../../lib/list-linux', {
   fs: {
-    readdir: function(path, cb) {
+    readdir(path, cb) {
       if (error) {
-        return process.nextTick(function() {
-          cb(new Error('Bad'));
-        });
+        return process.nextTick(() => cb(new Error('Bad')));
       }
-      process.nextTick(function() {
-        cb(null, Object.keys(mockPorts));
-      });
+      process.nextTick(() => cb(null, Object.keys(mockPorts)));
     },
-    stat: function(path, cb) {
-      process.nextTick(function() {
-        cb(null, { isCharacterDevice: function() { return characterDevice } });
-      });
+    stat(path, cb) {
+      process.nextTick(() => cb(null, { isCharacterDevice() { return characterDevice } }));
     }
   },
   path: {
     // needed for testing on windows
-    join: function() {
+    join() {
       return Array.prototype.join.call(arguments, '/');
     }
   },
   child_process: {
-    exec: function(cmd, cb) {
-      var port = cmd.split(/\/dev\/(.*)\)/)[1];
-      process.nextTick(function() {
-        cb(null, mockPorts[port]);
-      });
+    exec(cmd, cb) {
+      const port = cmd.split(/\/dev\/(.*)\)/)[1];
+      process.nextTick(() => cb(null, mockPorts[port]));
     }
   }
 });
 
-listLinux.setCharacterDevice = function(isCharacterDevice) {
+listLinux.setCharacterDevice = (isCharacterDevice) => {
   characterDevice = isCharacterDevice;
 };
 
-listLinux.setPorts = function(ports) {
+listLinux.setPorts = (ports) => {
   mockPorts = ports;
 };
 
-listLinux.error = function(err) {
+listLinux.error = (err) => {
   error = err;
 };
 
-listLinux.reset = function() {
+listLinux.reset = () => {
   error = false;
   mockPorts = {};
   characterDevice = true;

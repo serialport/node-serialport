@@ -29,8 +29,8 @@ If you'd like to contribute please take a look at [contribution guide](CONTRIBUT
 You're reading the README for the master branch of serialport. You probably want to be looking at the README of our latest release. See our [change log](changelog.md) for what's new and our [upgrade guide](UPGRADE_GUIDE.md) for a walk through on what to look out for between major versions.
 
 - [`serialport@5.0.0-beta2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/5.0.0-beta2/README.md) this is the latest `5.x` releases.
-- [`serialport@4.0.5` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/4.0.5/README.md) it is the latest `4.x` releases.
-- [`serialport@3.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/3.1.2/README.md) it is the latest `3.x` releases.
+- [`serialport@4.0.7` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/4.0.7/README.md) it is the latest `4.x` releases.
+- [`serialport@3.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/3.1.2/README.md) it was the last `3.x` releases.
 - [`serialport@2.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/2.1.2/README.md) it was the last `2.x` release
 - [`serialport@1.7.4` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/v1.7.4/README.md) it was the last `1.x` release
 
@@ -93,6 +93,7 @@ For getting started with node-serialport, we recommend you begin with the follow
             * [`.close(callback)`](#module_serialport--SerialPort..Binding+close)
             * [`.read(data, length, readCallback)`](#module_serialport--SerialPort..Binding+read)
             * [`.write(data, writeCallback)`](#module_serialport--SerialPort..Binding+write)
+            * [`.update([options], [callback])`](#module_serialport--SerialPort..Binding+update)
             * [`.set([options], callback)`](#module_serialport--SerialPort..Binding+set)
             * [`.get([callback])`](#module_serialport--SerialPort..Binding+get)
             * [`.flush(callback)`](#module_serialport--SerialPort..Binding+flush)
@@ -109,20 +110,20 @@ For getting started with node-serialport, we recommend you begin with the follow
 ***
 
 ## Platform Support
-`serialport` supports and tests against the following platforms, architectures and node versions.
+`serialport` supports NodeJS v4 and upwards. For versions 0.10 and 0.12 use `serialport@4`. The platforms, architectures and node versions `serialport` supports are the following;
 
-| Platform / Arch | Node v0.10.x | Node v0.12.x | Node v4.x | Node v6.x | Node v7.x |
-|       ---       | --- | --- | --- | --- | --- |
-| Linux / ia32    |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
-| Linux / x64     |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
-| Linux / ARM v6¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
-| Linux / ARM v7¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
-| Linux / ARM v8¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
-| Linux / MIPSel¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
-| Linux / PPC64¹  |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
-| Windows² / x86  |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
-| Windows² / x64  |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
-| OSX³ / x64      |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
+| Platform / Arch | Node v4.x | Node v6.x | Node v7.x |
+|       ---       | --- | --- | --- |
+| Linux / ia32    |  ☑  |  ☑  |  ☑  |
+| Linux / x64     |  ☑  |  ☑  |  ☑  |
+| Linux / ARM v6¹ |  ☐  |  ☐  |  ☐  |
+| Linux / ARM v7¹ |  ☐  |  ☐  |  ☐  |
+| Linux / ARM v8¹ |  ☐  |  ☐  |  ☐  |
+| Linux / MIPSel¹ |  ☐  |  ☐  |  ☐  |
+| Linux / PPC64¹  |  ☐  |  ☐  |  ☐  |
+| Windows² / x86  |  ☑  |  ☑  |  ☑  |
+| Windows² / x64  |  ☑  |  ☑  |  ☑  |
+| OSX³ / x64      |  ☑  |  ☑  |  ☑  |
 
 ¹ ARM, MIPSel and PPC64¹ platforms are known to work but are not currently part of our test or build matrix. [#846](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/846) ARM v4 and v5 was dropped from NodeJS after Node v0.10.
 
@@ -172,12 +173,12 @@ When you first install `serialport` it will compile against the version of Node.
 To recompile `serialport` (or any native Node.js module) for Electron you can use `electron-rebuild`.
 
 1. `npm install --save-dev electron-rebuild`
-2. Delete existing Node.js binding `node_modules/serialport/build/Release/serialport.node`
-3. Run `electron-rebuild`
-  1. For Windows `.\node_modules\.bin\electron-rebuild.cmd`
-  2. For Linux and macOS `./node_modules/.bin/electron-rebuild`
+2. Add `electron-rebuild` to your project's package.json's install hook.
+3. Run `npm install`
 
 For more information on `electron-rebuild` visit the official [README](https://github.com/electron/electron-rebuild/blob/master/README.md).
+
+For an example project check out [`electron-serialport`](https://github.com/johnny-five-io/electron-serialport).
 
 #### Illegal Instruction
 
@@ -394,7 +395,7 @@ It should never be necessary to wrap a SerialPort object in a try/catch statemen
 | --- | --- | --- |
 | baudRate | <code>number</code> | The port's baudRate, use `.update` to change it. Read Only. |
 | binding | <code>object</code> | The binding object backing the port Read Only. |
-| isOpen | <code>boolean</code> | `true` if the port is open, `false` otherwise. Read Only. |
+| isOpen | <code>boolean</code> | `true` if the port is open, `false` otherwise. Read Only. (`since 5.0.0`) |
 | path | <code>string</code> | The system path or name of the serial port. Read Only. |
 
 
@@ -463,6 +464,7 @@ Even though serialport is a stream, when writing it can accept arrays of bytes i
 
 **Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 **Returns**: <code>boolean</code> - `false` if the stream wishes for the calling code to wait for the `'drain'` event to be emitted before continuing to write additional data; otherwise `true`.  
+**Since**: 5.0.0  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -480,6 +482,7 @@ Request a number of bytes from the SerialPort. The `read()` method pulls some da
 
 **Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 **Returns**: <code>string</code> &#124; <code>Buffer</code> &#124; <code>null</code> - The data from internal buffers  
+**Since**: 5.0.0  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -509,6 +512,7 @@ Closes an open connection
 Set control flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363257(v=vs.85).aspx) for windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for mac and linux.
 
 **Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Since**: 5.0.0  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -584,6 +588,7 @@ The `pause()` method will cause a stream in flowing mode to stop emitting 'data'
 **Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 **Returns**: `this`  
 **See**: module:serialport#resume  
+**Since**: 5.0.0  
 
 -
 
@@ -595,6 +600,7 @@ The `resume()` method causes an explicitly paused Readable stream to resume emit
 **Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 **Returns**: `this`  
 **See**: module:serialport#pause  
+**Since**: 5.0.0  
 
 -
 
@@ -647,7 +653,6 @@ The `close` event's callback is called with no arguments when the port is closed
 
 #### `SerialPort.Binding` : <code>[Binding](#module_serialport--SerialPort..Binding)</code>
 The Binding is how node SerialPort talks to the underlying system. By default we auto detect windows, Linux and OSX and load the appropriate module for your system. You can assign `SerialPort.Binding` to any backend you like. You can find more by searching on [npm](https://npmjs.org/).
-
   You can also avoid auto loading the default backends by requiring SerialPort with
   ```js
   var SerialPort = require('serialport/lib/serialport');
@@ -655,6 +660,7 @@ The Binding is how node SerialPort talks to the underlying system. By default we
   ```
 
 **Kind**: static property of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Since**: 5.0.0  
 
 -
 
@@ -666,6 +672,7 @@ The default Parsers are [Transform streams](https://nodejs.org/api/stream.html#s
  To use any of the parsers you need to create them and then pipe the serialport to the parser. Be sure not to write to the parser but to the SerialPort object.
 
 **Kind**: static property of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Since**: 5.0.0  
 **Properties**
 
 | Name | Type | Description |
@@ -760,6 +767,7 @@ SerialPort.list(function (err, ports) {
 
 #### SerialPort~Binding : <code>Class</code>
 **Kind**: inner class of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Since**: 5.0.0  
 **Properties**
 
 | Name | Type | Description |
@@ -774,6 +782,7 @@ SerialPort.list(function (err, ports) {
     * [`.close(callback)`](#module_serialport--SerialPort..Binding+close)
     * [`.read(data, length, readCallback)`](#module_serialport--SerialPort..Binding+read)
     * [`.write(data, writeCallback)`](#module_serialport--SerialPort..Binding+write)
+    * [`.update([options], [callback])`](#module_serialport--SerialPort..Binding+update)
     * [`.set([options], callback)`](#module_serialport--SerialPort..Binding+set)
     * [`.get([callback])`](#module_serialport--SerialPort..Binding+get)
     * [`.flush(callback)`](#module_serialport--SerialPort..Binding+flush)
@@ -888,6 +897,26 @@ Write a number of bytes to the SerialPort
 | --- | --- | --- |
 | data | <code>buffer</code> | Accepts a [`Buffer`](http://nodejs.org/api/buffer.html) object. |
 | writeCallback | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | is called after the data has been passed to the operating system for writing. This will only be called when there isn't a pending write operation. |
+
+
+-
+
+<a name="module_serialport--SerialPort..Binding+update"></a>
+
+##### `binding.update([options], [callback])`
+Changes connection settings on an open port. Currently only the baudRate is required.
+
+**Kind**: instance method of <code>[Binding](#module_serialport--SerialPort..Binding)</code>  
+**Throws**:
+
+- <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| [options] | <code>object</code> | Only `baudRate` is currently supported |
+| [options.baudRate] | <code>number</code> | If provided a baudRate that isn't supported by the bindings it should pass an error to the callback |
+| [callback] | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | Called once the port's baud rate has been changed. |
 
 
 -
