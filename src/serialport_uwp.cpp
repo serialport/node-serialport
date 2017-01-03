@@ -4,7 +4,6 @@
 #include <array>
 #include <unordered_map>
 
-#define MAX_BUFFER_SIZE 1000
 const int MAX_DEVICES = 256; 
 
 using namespace concurrency;
@@ -14,16 +13,6 @@ using namespace Windows::Devices::SerialCommunication;
 using namespace Windows::Foundation;
 using namespace Windows::Storage::Streams;
 
-struct WindowsPlatformOptions : OpenBatonPlatformOptions
-{
-};
-
-OpenBatonPlatformOptions* ParsePlatformOptions(const v8::Local<v8::Object>& options) {
-  // currently none
-  return new WindowsPlatformOptions();
-}
-
-int bufferSize;
 std::unordered_map<int, SerialDevice^> g_devices;
 int g_device_index = 0;
 std::mutex g_mutex;
@@ -68,11 +57,6 @@ void EIO_Open(uv_work_t* req) {
   std::wstring serialStr;
   SerialDevice^ device;
   DeviceInformationCollection^ dis;
-
-  bufferSize = data->bufferSize;
-  if (bufferSize > MAX_BUFFER_SIZE || bufferSize == 0) {
-    bufferSize = MAX_BUFFER_SIZE;
-  }
   
   // data->path (name of the device passed in to the 'open' function of serialport)
   // can either be a regular port name like "COM1" or "UART2" or it can be the device
@@ -196,18 +180,6 @@ void EIO_Open(uv_work_t* req) {
   data->result = g_device_index++;
 }
 
-struct WatchPortBaton {
-  int fd;
-  DWORD bytesRead;
-  char buffer[MAX_BUFFER_SIZE];
-  char errorString[ERROR_STRING_SIZE];
-  DWORD errorCode;
-  bool disconnected;
-  Nan::Callback* dataCallback;
-  Nan::Callback* errorCallback;
-  Nan::Callback* disconnectedCallback;
-};
-
 void EIO_Update(uv_work_t* req) {
   ConnectionOptionsBaton* data = static_cast<ConnectionOptionsBaton*>(req->data);
   try {
@@ -281,11 +253,59 @@ void EIO_Set(uv_work_t* req) {
   }
 }
 
-void EIO_WatchPort(uv_work_t* req) {
-  WatchPortBaton* data = static_cast<WatchPortBaton*>(req->data);
+void EIO_Get(uv_work_t* req) {
+  GetBaton* data = static_cast<GetBaton*>(req->data);
+
+  std::lock_guard<std::mutex> lk(g_mutex);
+  auto it = g_devices.find(data->fd);
+  if(g_devices.end() == it) {
+    _snprintf(data->errorString, ERROR_STRING_SIZE, 
+              "EIO_Get() out of range error. fd: %d", data->fd);
+    return;
+  }
+
+  try {
+    data->cts = it->second->CarrierDetectState;
+  } 
+  catch (Exception^ e) {
+    if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
+      _snprintf(data->errorString, ERROR_STRING_SIZE, 
+                "EIO_Get() failed to get cts. error: %d", e->HResult);
+      return;
+    }
+  }
+  
+  try {
+    data->dsr = it->second->DataSetReadyState;
+  } 
+  catch (Exception^ e) {
+    if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
+      _snprintf(data->errorString, ERROR_STRING_SIZE,
+                "EIO_Get() failed to get dsr. error: %d", e->HResult);
+      return;
+    }
+  }
+  
+  try {
+    data->dcd = it->second->CarrierDetectState;
+  } 
+  catch (Exception^ e) {
+    if (HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED) != e->HResult) {
+      _snprintf(data->errorString, ERROR_STRING_SIZE, 
+                "EIO_Get() failed to get dcd. error: %d", e->HResult);
+      return;
+    }
+  }
+}
+
+void EIO_Read(uv_work_t* req) {
+  ReadBaton* data = static_cast<ReadBaton*>(req->data);
   data->bytesRead = 0;
-  data->disconnected = false;
   DataReader^ dataReader;
+
+  char* offsetPtr = data->bufferData;
+  offsetPtr += data->offset;
+
   {
     std::lock_guard<std::mutex> lk(g_mutex);
     auto it = g_devices.find(data->fd);
@@ -301,13 +321,12 @@ void EIO_WatchPort(uv_work_t* req) {
 
   try {
     size_t bytesToRead = concurrency::create_task(dataReader->LoadAsync(
-                                                  (unsigned int)bufferSize)).get();
+                                                  (unsigned int)data->bytesToRead)).get();
 
-    memset(data->buffer, 0, MAX_BUFFER_SIZE);
     // Keep reading until we consume the complete stream.
     while (dataReader->UnconsumedBufferLength > 0) {
       unsigned char byteReceived = dataReader->ReadByte();
-      data->buffer[data->bytesRead] = byteReceived;
+      offsetPtr[data->bytesRead] = byteReceived;
       data->bytesRead++;
     }
   }
@@ -316,71 +335,8 @@ void EIO_WatchPort(uv_work_t* req) {
       _snprintf(data->errorString, ERROR_STRING_SIZE, 
                 "EIO_WatchPort() failed to read. error: %d", e->HResult);
     }
-    data->disconnected = true;
   }
   dataReader->DetachStream();
-}
-
-void DisposeWatchPortCallbacks(WatchPortBaton* data) {
-  delete data->dataCallback;
-  delete data->errorCallback;
-  delete data->disconnectedCallback;
-}
-
-// FinalizerCallback will prevent WatchPortBaton::buffer from getting
-// collected by gc while finalizing v8::ArrayBuffer. The buffer will
-// get cleaned up through this callback.
-static void FinalizerCallback(char* data, void* hint) {
-  uv_work_t* req = reinterpret_cast<uv_work_t*>(hint);
-  WatchPortBaton* wpb = static_cast<WatchPortBaton*>(req->data);
-  delete wpb;
-  delete req;
-}
-
-void EIO_AfterWatchPort(uv_work_t* req) {
-  Nan::HandleScope scope;
-  bool skipCleanup = false;
-
-  WatchPortBaton* data = static_cast<WatchPortBaton*>(req->data);
-  if(data->disconnected) {
-    data->disconnectedCallback->Call(0, NULL);
-    DisposeWatchPortCallbacks(data);
-    goto cleanup;
-  }
-
-  if(data->bytesRead > 0) {
-    v8::Local<v8::Value> argv[1];
-    argv[0] = Nan::NewBuffer(data->buffer, data->bytesRead, FinalizerCallback, req).ToLocalChecked();
-    skipCleanup = true;
-    data->dataCallback->Call(1, argv);
-  } else if(data->errorCode > 0) {
-    v8::Local<v8::Value> argv[1];
-    argv[0] = Nan::Error(data->errorString);
-    data->errorCallback->Call(1, argv);
-    Sleep(100); // prevent the errors from occurring too fast
-  }
-  AfterOpenSuccess(data->fd, data->dataCallback, data->disconnectedCallback, data->errorCallback);
-
-cleanup:
-  if (!skipCleanup) {
-    delete data;
-    delete req;
-  }
-}
-
-void AfterOpenSuccess(int fd, Nan::Callback* dataCallback, Nan::Callback* disconnectedCallback, 
-                      Nan::Callback* errorCallback) {
-  WatchPortBaton* baton = new WatchPortBaton();
-  memset(baton, 0, sizeof(WatchPortBaton));
-  baton->fd = fd;
-  baton->dataCallback = dataCallback;
-  baton->errorCallback = errorCallback;
-  baton->disconnectedCallback = disconnectedCallback;
-
-  uv_work_t* req = new uv_work_t();
-  req->data = baton;
-
-  uv_queue_work(uv_default_loop(), req, EIO_WatchPort, (uv_after_work_cb)EIO_AfterWatchPort);
 }
 
 void EIO_Write(uv_work_t* req) {
