@@ -1,3 +1,9 @@
+Upgrading from 4.x to 5.x
+-------------
+5.x is a major rewrite to make node serialport a NodeJS stream. While the api surface is  similar there have been a number of changes to ensure more consistent error handling and operation of a serial port.
+
+The exact changes will go here see #1046
+
 Upgrading from 3.x to 4.x
 -------------
 4.x brings a lot of changes please see the [changelog](./changelog.md) for the full list of changes. We'll review the api and behavior changes here.
