@@ -395,7 +395,7 @@ It should never be necessary to wrap a SerialPort object in a try/catch statemen
 | --- | --- | --- |
 | baudRate | <code>number</code> | The port's baudRate, use `.update` to change it. Read Only. |
 | binding | <code>object</code> | The binding object backing the port Read Only. |
-| isOpen | <code>boolean</code> | `true` if the port is open, `false` otherwise. Read Only. |
+| isOpen | <code>boolean</code> | `true` if the port is open, `false` otherwise. Read Only. (`since 5.0.0`) |
 | path | <code>string</code> | The system path or name of the serial port. Read Only. |
 
 
@@ -464,6 +464,7 @@ Even though serialport is a stream, when writing it can accept arrays of bytes i
 
 **Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 **Returns**: <code>boolean</code> - `false` if the stream wishes for the calling code to wait for the `'drain'` event to be emitted before continuing to write additional data; otherwise `true`.  
+**Since**: 5.0.0  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -481,6 +482,7 @@ Request a number of bytes from the SerialPort. The `read()` method pulls some da
 
 **Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 **Returns**: <code>string</code> &#124; <code>Buffer</code> &#124; <code>null</code> - The data from internal buffers  
+**Since**: 5.0.0  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -510,6 +512,7 @@ Closes an open connection
 Set control flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363257(v=vs.85).aspx) for windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for mac and linux.
 
 **Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Since**: 5.0.0  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
@@ -585,6 +588,7 @@ The `pause()` method will cause a stream in flowing mode to stop emitting 'data'
 **Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 **Returns**: `this`  
 **See**: module:serialport#resume  
+**Since**: 5.0.0  
 
 -
 
@@ -596,6 +600,7 @@ The `resume()` method causes an explicitly paused Readable stream to resume emit
 **Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 **Returns**: `this`  
 **See**: module:serialport#pause  
+**Since**: 5.0.0  
 
 -
 
@@ -648,7 +653,6 @@ The `close` event's callback is called with no arguments when the port is closed
 
 #### `SerialPort.Binding` : <code>[Binding](#module_serialport--SerialPort..Binding)</code>
 The Binding is how node SerialPort talks to the underlying system. By default we auto detect windows, Linux and OSX and load the appropriate module for your system. You can assign `SerialPort.Binding` to any backend you like. You can find more by searching on [npm](https://npmjs.org/).
-
   You can also avoid auto loading the default backends by requiring SerialPort with
   ```js
   var SerialPort = require('serialport/lib/serialport');
@@ -656,6 +660,7 @@ The Binding is how node SerialPort talks to the underlying system. By default we
   ```
 
 **Kind**: static property of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Since**: 5.0.0  
 
 -
 
@@ -667,6 +672,7 @@ The default Parsers are [Transform streams](https://nodejs.org/api/stream.html#s
  To use any of the parsers you need to create them and then pipe the serialport to the parser. Be sure not to write to the parser but to the SerialPort object.
 
 **Kind**: static property of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Since**: 5.0.0  
 **Properties**
 
 | Name | Type | Description |
@@ -761,6 +767,7 @@ SerialPort.list(function (err, ports) {
 
 #### SerialPort~Binding : <code>Class</code>
 **Kind**: inner class of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Since**: 5.0.0  
 **Properties**
 
 | Name | Type | Description |
