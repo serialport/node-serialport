@@ -6,7 +6,7 @@ chai.use(require('chai-subset'));
 const assert = chai.assert;
 
 const SerialPort = require('../lib/serialport');
-const mockBinding = require('../lib/bindings-mock');
+const mockBinding = require('../lib/bindings/mock');
 
 describe('SerialPort', function() {
   let sandbox;

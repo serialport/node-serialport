@@ -1,5 +1,6 @@
 'use strict';
 
+// eslint-disable-next-line require-path-exists/exists
 const app = require('electron').app;
 
 try {

@@ -18,7 +18,7 @@ const readyData = new Buffer('READY');
 
 // test everything on our mock biding and natively
 const defaultBinding = SerialPort.Binding;
-const mockBinding = require('../lib/bindings-mock');
+const mockBinding = require('../lib/bindings/mock');
 
 const mockTestPort = '/dev/exists';
 mockBinding.createPort(mockTestPort, { echo: true, readyData });

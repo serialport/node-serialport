@@ -1,3 +1,4 @@
+/* eslint-disable require-path-exists/exists */
 'use strict';
 
 // `npm run stress` to run these tests

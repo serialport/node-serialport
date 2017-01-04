@@ -4,7 +4,7 @@
 const assert = require('chai').assert;
 const sinon = require('sinon');
 
-const ByteLengthParser = require('../lib/parser-byte-length');
+const ByteLengthParser = require('../lib/parsers/byte-length');
 
 describe('ByteLengthParser', () => {
   it('works without new', () => {

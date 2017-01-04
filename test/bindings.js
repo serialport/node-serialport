@@ -52,7 +52,7 @@ const readyData = new Buffer('READY');
 
 // Test our mock binding and the binding for the platform we're running on
 bindingsToTest.forEach(function(bindingName) {
-  const binding = require(`../lib/bindings-${bindingName}`);
+  const binding = require(`../lib/bindings/${bindingName}`);
   let testPort = process.env.TEST_PORT;
   if (bindingName === 'mock') {
     testPort = '/dev/exists';
@@ -64,7 +64,7 @@ bindingsToTest.forEach(function(bindingName) {
 });
 
 function testBinding(bindingName, Binding, testPort) {
-  describe(`bindings-${bindingName}`, function() {
+  describe(`bindings/${bindingName}`, function() {
     describe('static method', function() {
       describe('.list', function() {
         it('returns an array', function(done) {

@@ -8,7 +8,7 @@ let mockPorts = {};
 let characterDevice = true;
 let error = false;
 
-const listLinux = proxyquire('../../lib/list-linux', {
+const listLinux = proxyquire('../../lib/bindings/linux-list', {
   fs: {
     readdir(path, cb) {
       if (error) {

@@ -1,12 +1,13 @@
 {
-  "extends": "standard",
+  "extends": [
+    "standard"
+  ],
+  plugins: [
+    "require-path-exists"
+  ],
   "env": {
     "node": true,
     "mocha": true,
-  },
-  "parserOptions": {
-  },
-  "globals": {
   },
   "rules": {
     "no-var": 2,
@@ -16,6 +17,9 @@
     "prefer-template": 2,
     "semi": [2, "always", {"omitLastInOneLineBlock": true}],
     "space-before-function-paren": [2, "never"],
-    "standard/object-curly-even-spacing": 0
+    "standard/object-curly-even-spacing": 0,
+    "require-path-exists/notEmpty": 2,
+    "require-path-exists/tooManyArguments": 2,
+    "require-path-exists/exists": 2
   }
 }
