@@ -4,7 +4,7 @@
 const assert = require('chai').assert;
 const sinon = require('sinon');
 
-const ReadlineParser = require('../lib/parser-readline');
+const ReadlineParser = require('../lib/parsers/readline');
 
 describe('ReadlineParser', () => {
   it('works without new', () => {

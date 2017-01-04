@@ -1,3 +1,4 @@
+/* eslint-disable require-path-exists/exists */
 'use strict';
 
 // When disabling open immediately.

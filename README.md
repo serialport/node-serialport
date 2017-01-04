@@ -98,11 +98,11 @@ For getting started with node-serialport, we recommend you begin with the follow
             * [`.get([callback])`](#module_serialport--SerialPort..Binding+get)
             * [`.flush(callback)`](#module_serialport--SerialPort..Binding+flush)
             * [`.drain(callback)`](#module_serialport--SerialPort..Binding+drain)
-        * [`~readCallback`](#module_serialport--SerialPort..readCallback) : <code>function</code>
         * [`~errorCallback`](#module_serialport--SerialPort..errorCallback) : <code>function</code>
         * [`~modemBitsCallback`](#module_serialport--SerialPort..modemBitsCallback) : <code>function</code>
         * [`~openOptions`](#module_serialport--SerialPort..openOptions) : <code>Object</code>
         * [`~listCallback`](#module_serialport--SerialPort..listCallback) : <code>function</code>
+        * [`~readCallback`](#module_serialport--SerialPort..readCallback) : <code>function</code>
 * [Command Line Tools](#command-line-tools)
   * [Serial Port List](#serial-port-list)
   * [Serial Port Terminal](#serial-port-terminal)
@@ -999,26 +999,6 @@ Drain waits until all output data has been transmitted to the serial port.
 
 -
 
-<a name="module_serialport--SerialPort..readCallback"></a>
-
-#### `SerialPort~readCallback` : <code>function</code>
-A callback called with an error or null.
-
-**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
-**Throws**:
-
-- <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| error | <code>error</code> |  |
-| bytesRead | <code>integer</code> | the number of bytes that have been written into the buffer |
-| buffer | <code>buffer</code> | the buffer that data was written into, same object that was passed into `read`. |
-
-
--
-
 <a name="module_serialport--SerialPort..errorCallback"></a>
 
 #### `SerialPort~errorCallback` : <code>function</code>
@@ -1089,6 +1069,26 @@ This callback type is called `requestCallback` and is displayed as a global symb
 | --- | --- | --- |
 | error | <code>error</code> |  |
 | ports | <code>array</code> | an array of objects with port info. |
+
+
+-
+
+<a name="module_serialport--SerialPort..readCallback"></a>
+
+#### `SerialPort~readCallback` : <code>function</code>
+A callback called with an error or null.
+
+**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
+**Throws**:
+
+- <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| error | <code>error</code> |  |
+| bytesRead | <code>integer</code> | the number of bytes that have been written into the buffer |
+| buffer | <code>buffer</code> | the buffer that data was written into, same object that was passed into `read`. |
 
 
 -

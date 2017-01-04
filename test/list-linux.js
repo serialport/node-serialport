@@ -1,7 +1,7 @@
 'use strict';
 
 const assert = require('chai').assert;
-const listLinux = require('./mocks/list-linux');
+const listLinux = require('./mocks/linux-list');
 
 const ports = {
   'ttyS0':

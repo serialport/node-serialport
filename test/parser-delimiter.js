@@ -4,7 +4,7 @@
 const assert = require('chai').assert;
 const sinon = require('sinon');
 
-const DelimiterParser = require('../lib/parser-delimiter');
+const DelimiterParser = require('../lib/parsers/delimiter');
 
 describe('DelimiterParser', () => {
   it('works without new', () => {

@@ -3,7 +3,7 @@
 
 const assert = require('chai').assert;
 const pushBindingWrap = require('../lib/push-methods');
-const MockBinding = require('../lib/bindings-mock');
+const MockBinding = require('../lib/bindings/mock');
 
 describe('pushBindingWrap()', function() {
   it('throws when not passed a binding', function(done) {

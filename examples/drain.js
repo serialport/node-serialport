@@ -1,3 +1,4 @@
+/* eslint-disable require-path-exists/exists */
 'use strict';
 
 const SerialPort = require('serialport');
