@@ -506,6 +506,9 @@ void EIO_AfterList(uv_work_t* req) {
       setIfNotEmpty(item, "locationId", (*it)->locationId.c_str());
       setIfNotEmpty(item, "vendorId", (*it)->vendorId.c_str());
       setIfNotEmpty(item, "productId", (*it)->productId.c_str());
+#ifdef UWP_DLL
+      setIfNotEmpty(item, "displayName", (*it)->displayName.c_str());
+#endif
 
       Nan::Set(results, i, item);
     }

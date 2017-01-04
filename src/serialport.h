@@ -168,6 +168,9 @@ struct ListResultItem {
   std::string locationId;
   std::string vendorId;
   std::string productId;
+#ifdef UWP_DLL
+  std::string displayName;
+#endif
 };
 
 struct ListBaton {
