@@ -136,13 +136,15 @@ void EIO_Open(uv_work_t* req) {
     return;
   }
 
-  // Clear all timeouts for read and write operations
+  // Set the timeouts for read and write operations read operation is to return
+  // immediately with the bytes that have already been received, even if no bytes
+  // have been received.
   COMMTIMEOUTS commTimeouts = {0};
-  commTimeouts.ReadIntervalTimeout = 0;  // Minimize chance of concatenating of separate serial port packets on read
+  commTimeouts.ReadIntervalTimeout = MAXDWORD;  // Never timeout
   commTimeouts.ReadTotalTimeoutMultiplier = 0;  // Do not allow big read timeout when big read buffer used
-  commTimeouts.ReadTotalTimeoutConstant = 0;  // Total read timeout (period of read loop)
-  commTimeouts.WriteTotalTimeoutConstant = 0;  // Const part of write timeout
-  commTimeouts.WriteTotalTimeoutMultiplier = 0;  // Variable part of write timeout (per byte)
+  commTimeouts.ReadTotalTimeoutConstant = 0;    // Total read timeout (period of read loop)
+  commTimeouts.WriteTotalTimeoutConstant = 0;   // Const part of write timeout
+  commTimeouts.WriteTotalTimeoutMultiplier = 0; // Variable part of write timeout (per byte)
 
   if (!SetCommTimeouts(file, &commTimeouts)) {
     ErrorCodeToString("Open (SetCommTimeouts)", GetLastError(), data->errorString);
