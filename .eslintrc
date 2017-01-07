@@ -11,6 +11,7 @@
   },
   "rules": {
     "arrow-parens": [2, "as-needed", {"requireForBlockBody": true }],
+    "no-unused-vars": [2, { "vars": "all", "args": "after-used" }],
     "no-var": 2,
     "object-curly-spacing": [2, "always"],
     "object-shorthand": 2,

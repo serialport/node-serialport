@@ -82,27 +82,28 @@ For getting started with node-serialport, we recommend you begin with the follow
         * [`Event: "disconnect"`](#module_serialport--SerialPort+event_disconnect)
         * [`Event: "close"`](#module_serialport--SerialPort+event_close)
     * _static_
-        * [`.Binding`](#module_serialport--SerialPort.Binding) : <code>[Binding](#module_serialport--SerialPort..Binding)</code>
+        * [`.Binding`](#module_serialport--SerialPort.Binding) : <code>[BaseBinding](#module_serialport--SerialPort..BaseBinding)</code>
         * [`.parsers`](#module_serialport--SerialPort.parsers) : <code>object</code>
         * [`.list(callback)`](#module_serialport--SerialPort.list) : <code>function</code>
     * _inner_
-        * [~Binding](#module_serialport--SerialPort..Binding) : <code>Class</code>
-            * [`new Binding(options)`](#new_module_serialport--SerialPort..Binding_new)
-            * [`.list(callback)`](#module_serialport--SerialPort..Binding+list)
-            * [`.open(path, openOptions, openCallback)`](#module_serialport--SerialPort..Binding+open)
-            * [`.close(callback)`](#module_serialport--SerialPort..Binding+close)
-            * [`.read(data, length, readCallback)`](#module_serialport--SerialPort..Binding+read)
-            * [`.write(data, writeCallback)`](#module_serialport--SerialPort..Binding+write)
-            * [`.update([options], [callback])`](#module_serialport--SerialPort..Binding+update)
-            * [`.set([options], callback)`](#module_serialport--SerialPort..Binding+set)
-            * [`.get([callback])`](#module_serialport--SerialPort..Binding+get)
-            * [`.flush(callback)`](#module_serialport--SerialPort..Binding+flush)
-            * [`.drain(callback)`](#module_serialport--SerialPort..Binding+drain)
+        * [~BaseBinding](#module_serialport--SerialPort..BaseBinding)
+            * [`new BaseBinding(options)`](#new_module_serialport--SerialPort..BaseBinding_new)
+            * _instance_
+                * [`.open(path, openOptions)`](#module_serialport--SerialPort..BaseBinding+open) ⇒ <code>Promise</code>
+                * [`.close()`](#module_serialport--SerialPort..BaseBinding+close) ⇒ <code>Promise</code>
+                * [`.read(data, length)`](#module_serialport--SerialPort..BaseBinding+read) ⇒ <code>Promise</code>
+                * [`.write(data)`](#module_serialport--SerialPort..BaseBinding+write) ⇒ <code>Promise</code>
+                * [`.update([options])`](#module_serialport--SerialPort..BaseBinding+update) ⇒ <code>Promise</code>
+                * [`.set([options])`](#module_serialport--SerialPort..BaseBinding+set) ⇒ <code>Promise</code>
+                * [`.get()`](#module_serialport--SerialPort..BaseBinding+get) ⇒ <code>Promise</code>
+                * [`.flush()`](#module_serialport--SerialPort..BaseBinding+flush) ⇒ <code>Promise</code>
+                * [`.drain()`](#module_serialport--SerialPort..BaseBinding+drain) ⇒ <code>Promise</code>
+            * _static_
+                * [`.list()`](#module_serialport--SerialPort..BaseBinding.list) ⇒ <code>Promise</code>
         * [`~errorCallback`](#module_serialport--SerialPort..errorCallback) : <code>function</code>
         * [`~modemBitsCallback`](#module_serialport--SerialPort..modemBitsCallback) : <code>function</code>
         * [`~openOptions`](#module_serialport--SerialPort..openOptions) : <code>Object</code>
         * [`~listCallback`](#module_serialport--SerialPort..listCallback) : <code>function</code>
-        * [`~readCallback`](#module_serialport--SerialPort..readCallback) : <code>function</code>
 * [Command Line Tools](#command-line-tools)
   * [Serial Port List](#serial-port-list)
   * [Serial Port Terminal](#serial-port-terminal)
@@ -651,7 +652,7 @@ The `close` event's callback is called with no arguments when the port is closed
 
 <a name="module_serialport--SerialPort.Binding"></a>
 
-#### `SerialPort.Binding` : <code>[Binding](#module_serialport--SerialPort..Binding)</code>
+#### `SerialPort.Binding` : <code>[BaseBinding](#module_serialport--SerialPort..BaseBinding)</code>
 The Binding is how node SerialPort talks to the underlying system. By default we auto detect windows, Linux and OSX and load the appropriate module for your system. You can assign `SerialPort.Binding` to any backend you like. You can find more by searching on [npm](https://npmjs.org/).
   You can also avoid auto loading the default backends by requiring SerialPort with
   ```js
@@ -763,9 +764,11 @@ SerialPort.list(function (err, ports) {
 
 -
 
-<a name="module_serialport--SerialPort..Binding"></a>
+<a name="module_serialport--SerialPort..BaseBinding"></a>
 
-#### SerialPort~Binding : <code>Class</code>
+#### SerialPort~BaseBinding
+You wont ever have to use Binding objects directly they'll be used by SerialPort to access the underlying hardware. This documentation is geared towards people making bindings for different platforms. This class can be inherited from to get type checking for each method.
+
 **Kind**: inner class of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 **Since**: 5.0.0  
 **Properties**
@@ -775,27 +778,27 @@ SerialPort.list(function (err, ports) {
 | isOpen | <code>boolean</code> | Required property. `true` if the port is open, `false` otherwise. Should be read only. |
 
 
-* [~Binding](#module_serialport--SerialPort..Binding) : <code>Class</code>
-    * [`new Binding(options)`](#new_module_serialport--SerialPort..Binding_new)
-    * [`.list(callback)`](#module_serialport--SerialPort..Binding+list)
-    * [`.open(path, openOptions, openCallback)`](#module_serialport--SerialPort..Binding+open)
-    * [`.close(callback)`](#module_serialport--SerialPort..Binding+close)
-    * [`.read(data, length, readCallback)`](#module_serialport--SerialPort..Binding+read)
-    * [`.write(data, writeCallback)`](#module_serialport--SerialPort..Binding+write)
-    * [`.update([options], [callback])`](#module_serialport--SerialPort..Binding+update)
-    * [`.set([options], callback)`](#module_serialport--SerialPort..Binding+set)
-    * [`.get([callback])`](#module_serialport--SerialPort..Binding+get)
-    * [`.flush(callback)`](#module_serialport--SerialPort..Binding+flush)
-    * [`.drain(callback)`](#module_serialport--SerialPort..Binding+drain)
+* [~BaseBinding](#module_serialport--SerialPort..BaseBinding)
+    * [`new BaseBinding(options)`](#new_module_serialport--SerialPort..BaseBinding_new)
+    * _instance_
+        * [`.open(path, openOptions)`](#module_serialport--SerialPort..BaseBinding+open) ⇒ <code>Promise</code>
+        * [`.close()`](#module_serialport--SerialPort..BaseBinding+close) ⇒ <code>Promise</code>
+        * [`.read(data, length)`](#module_serialport--SerialPort..BaseBinding+read) ⇒ <code>Promise</code>
+        * [`.write(data)`](#module_serialport--SerialPort..BaseBinding+write) ⇒ <code>Promise</code>
+        * [`.update([options])`](#module_serialport--SerialPort..BaseBinding+update) ⇒ <code>Promise</code>
+        * [`.set([options])`](#module_serialport--SerialPort..BaseBinding+set) ⇒ <code>Promise</code>
+        * [`.get()`](#module_serialport--SerialPort..BaseBinding+get) ⇒ <code>Promise</code>
+        * [`.flush()`](#module_serialport--SerialPort..BaseBinding+flush) ⇒ <code>Promise</code>
+        * [`.drain()`](#module_serialport--SerialPort..BaseBinding+drain) ⇒ <code>Promise</code>
+    * _static_
+        * [`.list()`](#module_serialport--SerialPort..BaseBinding.list) ⇒ <code>Promise</code>
 
 
 -
 
-<a name="new_module_serialport--SerialPort..Binding_new"></a>
+<a name="new_module_serialport--SerialPort..BaseBinding_new"></a>
 
-##### `new Binding(options)`
-You wont ever have to use Binding objects directly they'll be used by SerialPort to access the underlying hardware. This documentation is geared towards people making bindings for different platforms.
-
+##### `new BaseBinding(options)`
 **Throws**:
 
 - <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
@@ -809,64 +812,47 @@ You wont ever have to use Binding objects directly they'll be used by SerialPort
 
 -
 
-<a name="module_serialport--SerialPort..Binding+list"></a>
+<a name="module_serialport--SerialPort..BaseBinding+open"></a>
 
-##### `binding.list(callback)`
-Retrieves a list of available serial ports with metadata. The `comName` must be guaranteed and all the other fields should be undefined if they are unavailable. The `comName` is either the path or an identifier (eg `COM1`) used to open the serialport.
+##### `baseBinding.open(path, openOptions)` ⇒ <code>Promise</code>
+Opens a connection to the serial port referenced by the path.
 
-**Kind**: instance method of <code>[Binding](#module_serialport--SerialPort..Binding)</code>  
+**Kind**: instance method of <code>[BaseBinding](#module_serialport--SerialPort..BaseBinding)</code>  
+**Returns**: <code>Promise</code> - Resolves after the port has been opened and configured.  
+**Throws**:
+
+- <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
+
 
 | Param | Type |
 | --- | --- |
-| callback | <code>[listCallback](#module_serialport--SerialPort..listCallback)</code> | 
+| path | <code>string</code> | 
+| openOptions | <code>[openOptions](#module_serialport--SerialPort..openOptions)</code> | 
 
 
 -
 
-<a name="module_serialport--SerialPort..Binding+open"></a>
+<a name="module_serialport--SerialPort..BaseBinding+close"></a>
 
-##### `binding.open(path, openOptions, openCallback)`
-Opens a connection to the serial port referenced by the path.
-
-**Kind**: instance method of <code>[Binding](#module_serialport--SerialPort..Binding)</code>  
-**Throws**:
-
-- <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| path | <code>string</code> |  |
-| openOptions | <code>[openOptions](#module_serialport--SerialPort..openOptions)</code> |  |
-| openCallback | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | is called after the data has been passed to the operating system for writing. This will only be called when there isn't a pending write operation. |
-
-
--
-
-<a name="module_serialport--SerialPort..Binding+close"></a>
-
-##### `binding.close(callback)`
+##### `baseBinding.close()` ⇒ <code>Promise</code>
 Closes an open connection
 
-**Kind**: instance method of <code>[Binding](#module_serialport--SerialPort..Binding)</code>  
+**Kind**: instance method of <code>[BaseBinding](#module_serialport--SerialPort..BaseBinding)</code>  
+**Returns**: <code>Promise</code> - Resolves once the connection is closed.  
 **Throws**:
 
 - <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
 
 
-| Param | Type | Description |
-| --- | --- | --- |
-| callback | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | Called once a connection is closed. |
-
-
 -
 
-<a name="module_serialport--SerialPort..Binding+read"></a>
+<a name="module_serialport--SerialPort..BaseBinding+read"></a>
 
-##### `binding.read(data, length, readCallback)`
+##### `baseBinding.read(data, length)` ⇒ <code>Promise</code>
 Request a number of bytes from the SerialPort. This function is similar to node's [`fs.read`](http://nodejs.org/api/fs.html#fs_fs_read_fd_buffer_offset_length_position_callback).
 
-**Kind**: instance method of <code>[Binding](#module_serialport--SerialPort..Binding)</code>  
+**Kind**: instance method of <code>[BaseBinding](#module_serialport--SerialPort..BaseBinding)</code>  
+**Returns**: <code>Promise</code> - Resolves with the number of bytes read after a read operation.  
 **Throws**:
 
 - <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
@@ -877,17 +863,17 @@ Request a number of bytes from the SerialPort. This function is similar to node'
 | --- | --- | --- |
 | data | <code>buffer</code> | Accepts a [`Buffer`](http://nodejs.org/api/buffer.html) object. |
 | length | <code>integer</code> | specifying the maximum number of bytes to read. |
-| readCallback | <code>[readCallback](#module_serialport--SerialPort..readCallback)</code> | is called after a read operation |
 
 
 -
 
-<a name="module_serialport--SerialPort..Binding+write"></a>
+<a name="module_serialport--SerialPort..BaseBinding+write"></a>
 
-##### `binding.write(data, writeCallback)`
-Write a number of bytes to the SerialPort
+##### `baseBinding.write(data)` ⇒ <code>Promise</code>
+Write a number of bytes to the SerialPort This will only be called when there isn't a pending write operation.
 
-**Kind**: instance method of <code>[Binding](#module_serialport--SerialPort..Binding)</code>  
+**Kind**: instance method of <code>[BaseBinding](#module_serialport--SerialPort..BaseBinding)</code>  
+**Returns**: <code>Promise</code> - Resolves after the data has been passed to the operating system for writing.  
 **Throws**:
 
 - <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
@@ -896,17 +882,17 @@ Write a number of bytes to the SerialPort
 | Param | Type | Description |
 | --- | --- | --- |
 | data | <code>buffer</code> | Accepts a [`Buffer`](http://nodejs.org/api/buffer.html) object. |
-| writeCallback | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | is called after the data has been passed to the operating system for writing. This will only be called when there isn't a pending write operation. |
 
 
 -
 
-<a name="module_serialport--SerialPort..Binding+update"></a>
+<a name="module_serialport--SerialPort..BaseBinding+update"></a>
 
-##### `binding.update([options], [callback])`
+##### `baseBinding.update([options])` ⇒ <code>Promise</code>
 Changes connection settings on an open port. Currently only the baudRate is required.
 
-**Kind**: instance method of <code>[Binding](#module_serialport--SerialPort..Binding)</code>  
+**Kind**: instance method of <code>[BaseBinding](#module_serialport--SerialPort..BaseBinding)</code>  
+**Returns**: <code>Promise</code> - Resolves once the port's baud rate has been changed.  
 **Throws**:
 
 - <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
@@ -916,17 +902,17 @@ Changes connection settings on an open port. Currently only the baudRate is requ
 | --- | --- | --- |
 | [options] | <code>object</code> | Only `baudRate` is currently supported |
 | [options.baudRate] | <code>number</code> | If provided a baudRate that isn't supported by the bindings it should pass an error to the callback |
-| [callback] | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | Called once the port's baud rate has been changed. |
 
 
 -
 
-<a name="module_serialport--SerialPort..Binding+set"></a>
+<a name="module_serialport--SerialPort..BaseBinding+set"></a>
 
-##### `binding.set([options], callback)`
+##### `baseBinding.set([options])` ⇒ <code>Promise</code>
 Set control flags on an open port.
 
-**Kind**: instance method of <code>[Binding](#module_serialport--SerialPort..Binding)</code>  
+**Kind**: instance method of <code>[BaseBinding](#module_serialport--SerialPort..BaseBinding)</code>  
+**Returns**: <code>Promise</code> - Resolves once the port's flags have been set.  
 **Throws**:
 
 - <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
@@ -940,62 +926,59 @@ Set control flags on an open port.
 | [options.dsr] | <code>Boolean</code> | <code>false</code> |  |
 | [options.dtr] | <code>Boolean</code> | <code>true</code> |  |
 | [options.rts] | <code>Boolean</code> | <code>true</code> |  |
-| callback | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> |  | Called once the port's flags have been set. |
 
 
 -
 
-<a name="module_serialport--SerialPort..Binding+get"></a>
+<a name="module_serialport--SerialPort..BaseBinding+get"></a>
 
-##### `binding.get([callback])`
+##### `baseBinding.get()` ⇒ <code>Promise</code>
 Get the control flags (CTS, DSR, DCD) on the open port.
 
-**Kind**: instance method of <code>[Binding](#module_serialport--SerialPort..Binding)</code>  
+**Kind**: instance method of <code>[BaseBinding](#module_serialport--SerialPort..BaseBinding)</code>  
+**Returns**: <code>Promise</code> - Resolves with the flags that have been retrieved.  
 **Throws**:
 
 - <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
 
 
-| Param | Type | Description |
-| --- | --- | --- |
-| [callback] | <code>[modemBitsCallback](#module_serialport--SerialPort..modemBitsCallback)</code> | Called once the flags have been retrieved. |
-
-
 -
 
-<a name="module_serialport--SerialPort..Binding+flush"></a>
+<a name="module_serialport--SerialPort..BaseBinding+flush"></a>
 
-##### `binding.flush(callback)`
+##### `baseBinding.flush()` ⇒ <code>Promise</code>
 Flush (discard) data received but not read and written but not transmitted.
 
-**Kind**: instance method of <code>[Binding](#module_serialport--SerialPort..Binding)</code>  
+**Kind**: instance method of <code>[BaseBinding](#module_serialport--SerialPort..BaseBinding)</code>  
+**Returns**: <code>Promise</code> - Resolves once the flush operation finishes.  
 **Throws**:
 
 - <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| callback | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | Called once the flush operation finishes. |
 
 
 -
 
-<a name="module_serialport--SerialPort..Binding+drain"></a>
+<a name="module_serialport--SerialPort..BaseBinding+drain"></a>
 
-##### `binding.drain(callback)`
+##### `baseBinding.drain()` ⇒ <code>Promise</code>
 Drain waits until all output data has been transmitted to the serial port.
 
-**Kind**: instance method of <code>[Binding](#module_serialport--SerialPort..Binding)</code>  
+**Kind**: instance method of <code>[BaseBinding](#module_serialport--SerialPort..BaseBinding)</code>  
+**Returns**: <code>Promise</code> - Resolves once the drain operation finishes.  
 **Throws**:
 
 - <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
 
 
-| Param | Type | Description |
-| --- | --- | --- |
-| callback | <code>[errorCallback](#module_serialport--SerialPort..errorCallback)</code> | Called once the drain operation finishes. |
+-
 
+<a name="module_serialport--SerialPort..BaseBinding.list"></a>
+
+##### `BaseBinding.list()` ⇒ <code>Promise</code>
+Retrieves a list of available serial ports with metadata. The `comName` must be guaranteed and all the other fields should be undefined if they are unavailable. The `comName` is either the path or an identifier (eg `COM1`) used to open the serialport.
+
+**Kind**: static method of <code>[BaseBinding](#module_serialport--SerialPort..BaseBinding)</code>  
+**Returns**: <code>Promise</code> - resolves to an array of port [info objects](#module_serialport--SerialPort.list).  
 
 -
 
@@ -1039,7 +1022,7 @@ A callback called with an error or an object with the modem line values (cts, ds
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
-| Binding | <code>[Binding](#new_module_serialport--SerialPort..Binding_new)</code> |  | The hardware access binding, The Binding is how node SerialPort talks to the underlying system. By default we auto detect Windows (`WindowsBinding`), Linux (`LinuxBinding`) and OSX (`DarwinBinding`) and load the appropriate module for your system. |
+| Binding | <code>module:serialport~Binding</code> |  | The hardware access binding, The Binding is how node SerialPort talks to the underlying system. By default we auto detect Windows (`WindowsBinding`), Linux (`LinuxBinding`) and OSX (`DarwinBinding`) and load the appropriate module for your system. |
 | autoOpen | <code>boolean</code> | <code>true</code> | Automatically opens the port on `nextTick` |
 | lock | <code>boolean</code> | <code>true</code> | Prevent other processes from opening the port. false is not currently supported on windows. |
 | baudRate | <code>number</code> | <code>9600</code> | The baud rate of the port to be opened. This should match one of commonly available baud rates, such as 110, 300, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200. There is no guarantee, that the device connected to the serial port will support the requested baud rate, even if the port itself supports that baud rate. |
@@ -1069,26 +1052,6 @@ This callback type is called `requestCallback` and is displayed as a global symb
 | --- | --- | --- |
 | error | <code>error</code> |  |
 | ports | <code>array</code> | an array of objects with port info. |
-
-
--
-
-<a name="module_serialport--SerialPort..readCallback"></a>
-
-#### `SerialPort~readCallback` : <code>function</code>
-A callback called with an error or null.
-
-**Kind**: inner typedef of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
-**Throws**:
-
-- <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
-
-
-| Param | Type | Description |
-| --- | --- | --- |
-| error | <code>error</code> |  |
-| bytesRead | <code>integer</code> | the number of bytes that have been written into the buffer |
-| buffer | <code>buffer</code> | the buffer that data was written into, same object that was passed into `read`. |
 
 
 -

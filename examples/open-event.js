@@ -16,4 +16,5 @@ port.write('main screen turn on', (err) => {
 
 port.on('data', (data) => {
   /* get a buffer of data from the serial port */
+  console.log(data.toString());
 });

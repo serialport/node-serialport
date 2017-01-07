@@ -112,7 +112,6 @@ function integrationTest(platform, testPort, binding) {
         });
         port.open((err) => {
           assert.instanceOf(err, Error);
-          assert.strictEqual(err.message, 'Port is opening');
         });
         port.on('open', () => {
           port.close(done);
