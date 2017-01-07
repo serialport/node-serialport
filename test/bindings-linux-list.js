@@ -91,30 +91,27 @@ describe('listLinux', () => {
     listLinux.reset();
   });
 
-  it('lists available serialports', (done) => {
+  it('lists available serialports', () => {
     listLinux.setPorts(ports);
-    listLinux((err, ports) => {
-      assert.isNull(err);
+    return listLinux().then((ports) => {
       assert.deepEqual(ports, portOutput);
-      done();
     });
   });
 
-  it('does not list non character devices', (done) => {
+  it('does not list non character devices', () => {
     listLinux.setCharacterDevice(false);
     listLinux.setPorts(ports);
-    listLinux((err, ports) => {
-      assert.isNull(err);
+    return listLinux().then((ports) => {
       assert.deepEqual(ports, []);
-      done();
     });
   });
 
-  it('returns an error to callback', (done) => {
+  it('returns an error to callback', () => {
     listLinux.error(true);
-    listLinux((err) => {
+    return listLinux().then(() => {
+      assert.isFalse(true, `shouldn't succeed`);
+    }, (err) => {
       assert.instanceOf(err, Error);
-      done();
     });
   });
 });
