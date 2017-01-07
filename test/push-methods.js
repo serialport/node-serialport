@@ -5,8 +5,8 @@ const assert = require('chai').assert;
 const pushBindingWrap = require('../lib/push-methods');
 const MockBinding = require('../lib/bindings/mock');
 
-describe('pushBindingWrap()', function() {
-  it('throws when not passed a binding', function(done) {
+describe('pushBindingWrap()', () => {
+  it('throws when not passed a binding', (done) => {
     try {
       pushBindingWrap({ push() {} });
     } catch (e) {
@@ -15,7 +15,7 @@ describe('pushBindingWrap()', function() {
     }
   });
 
-  it('throws when not passed a push function', function(done) {
+  it('throws when not passed a push function', (done) => {
     try {
       pushBindingWrap({ binding: {} });
     } catch (e) {
@@ -24,7 +24,7 @@ describe('pushBindingWrap()', function() {
     }
   });
 
-  it('assigns `_read()` only if not already a method', function(done) {
+  it('assigns `_read()` only if not already a method', (done) => {
     const mockBinding = new MockBinding({ disconnect() {} });
     assert.isUndefined(mockBinding._read);
     pushBindingWrap({ binding: mockBinding, push() {} });
@@ -37,7 +37,7 @@ describe('pushBindingWrap()', function() {
     done();
   });
 
-  it('assigns `push()` only if not already a method', function(done) {
+  it('assigns `push()` only if not already a method', (done) => {
     const mockBinding = new MockBinding({ disconnect() {} });
     assert.isUndefined(mockBinding.push);
     pushBindingWrap({ binding: mockBinding, push() {} });
@@ -51,8 +51,8 @@ describe('pushBindingWrap()', function() {
   });
 });
 
-describe('_read()', function() {
-  it('calls `read()` with the right arguments', function(done) {
+describe('_read()', () => {
+  it('calls `read()` with the right arguments', (done) => {
     const bytesToRead = 5;
     const fakeBinding = {
       read(buffer, offset, bytes) {
@@ -67,7 +67,7 @@ describe('_read()', function() {
     fakeBinding._read(bytesToRead);
   });
 
-  it('calls push with available data', function(done) {
+  it('calls push with available data', (done) => {
     const readData = new Buffer('12345!');
     const fakeBinding = {
       read(buffer, offset, bytes, cb) {

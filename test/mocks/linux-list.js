@@ -8,6 +8,7 @@ let mockPorts = {};
 let characterDevice = true;
 let error = false;
 
+proxyquire.noPreserveCache();
 const listLinux = proxyquire('../../lib/bindings/linux-list', {
   fs: {
     readdir(path, cb) {
@@ -33,6 +34,8 @@ const listLinux = proxyquire('../../lib/bindings/linux-list', {
     }
   }
 });
+
+proxyquire.preserveCache();
 
 listLinux.setCharacterDevice = (isCharacterDevice) => {
   characterDevice = isCharacterDevice;

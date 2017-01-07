@@ -32,28 +32,28 @@ integrationTest(platform, process.env.TEST_PORT, defaultBinding);
 // Be careful to close the ports when you're done with them
 // Ports are by default exclusively locked so a failure fails all tests
 function integrationTest(platform, testPort, binding) {
-  describe(`${platform} SerialPort Integration Tests`, function() {
+  describe(`${platform} SerialPort Integration Tests`, () => {
     if (!testPort) {
       it(`${platform} tests requires an Arduino loaded with the arduinoEcho program on a serialport set to the TEST_PORT env var`);
       return;
     }
 
-    beforeEach(function() {
+    beforeEach(() => {
       SerialPort.Binding = binding;
     });
 
-    describe('static Method', function() {
-      describe('.list', function() {
-        it('contains the test port', function(done) {
+    describe('static Method', () => {
+      describe('.list', () => {
+        it('contains the test port', (done) => {
           function lastPath(name) {
             const parts = name.split('.');
             return parts[parts.length - 1];
           }
 
-          SerialPort.list(function(err, ports) {
+          SerialPort.list((err, ports) => {
             assert.isNull(err);
             let foundPort = false;
-            ports.forEach(function(port) {
+            ports.forEach((port) => {
               if (lastPath(port.comName) === lastPath(testPort)) {
                 foundPort = true;
               }
@@ -65,67 +65,67 @@ function integrationTest(platform, testPort, binding) {
       });
     });
 
-    describe('constructor', function() {
+    describe('constructor', () => {
       it('provides an error in callback when trying to open an invalid port', function(done) {
-        this.port = new SerialPort('COMBAD', function(err) {
+        this.port = new SerialPort('COMBAD', (err) => {
           assert.instanceOf(err, Error);
           done();
         });
       });
 
-      it('emits an error event when trying to open an invalid port', function(done) {
+      it('emits an error event when trying to open an invalid port', (done) => {
         const port = new SerialPort('COM99');
-        port.on('error', function(err) {
+        port.on('error', (err) => {
           assert.instanceOf(err, Error);
           done();
         });
       });
     });
 
-    describe('opening and closing', function() {
-      it('can open and close', function(done) {
+    describe('opening and closing', () => {
+      it('can open and close', (done) => {
         const port = new SerialPort(testPort);
-        port.on('open', function() {
+        port.on('open', () => {
           assert.isTrue(port.isOpen);
           port.close();
         });
-        port.on('close', function() {
+        port.on('close', () => {
           assert.isFalse(port.isOpen);
           done();
         });
       });
 
-      it('cannot be opened again after open', function(done) {
-        const port = new SerialPort(testPort, function(err) {
+      it('cannot be opened again after open', (done) => {
+        const port = new SerialPort(testPort, (err) => {
           assert.isNull(err);
-          port.open(function(err) {
+          port.open((err) => {
             assert.instanceOf(err, Error);
             port.close(done);
           });
         });
       });
 
-      it('cannot be opened while opening', function(done) {
+      it('cannot be opened while opening', (done) => {
         const port = new SerialPort(testPort, { autoOpen: false });
-        port.open(function(err) {
+        port.open((err) => {
           assert.isNull(err);
         });
-        port.open(function(err) {
+        port.open((err) => {
           assert.instanceOf(err, Error);
           assert.strictEqual(err.message, 'Port is opening');
         });
-        port.on('open', function() {
+        port.on('open', () => {
           port.close(done);
         });
       });
 
-      it('can open and close ports repetitively', function(done) {
+      it('can open and close ports repetitively', (done) => {
         const port = new SerialPort(testPort, { autoOpen: false });
-        port.open(function(err) {
+        port.open((err) => {
           assert.isNull(err);
-          port.close(function(err) {
+          port.close((err) => {
             assert.isNull(err);
-            port.open(function(err) {
+            port.open((err) => {
               assert.isNull(err);
               port.close(done);
             });
@@ -134,14 +134,14 @@ function integrationTest(platform, testPort, binding) {
       });
     });
 
-    describe('#update', function() {
+    describe('#update', () => {
       if (platform === 'win32') {
         return it("Isn't supported on windows yet");
       }
 
-      it('allows changing the baud rate of an open port', function(done) {
-        const port = new SerialPort(testPort, function() {
-          port.update({ baudRate: 57600 }, function(err) {
+      it('allows changing the baud rate of an open port', (done) => {
+        const port = new SerialPort(testPort, () => {
+          port.update({ baudRate: 57600 }, (err) => {
             assert.isNull(err);
             port.close(done);
           });
@@ -149,7 +149,7 @@ function integrationTest(platform, testPort, binding) {
       });
     });
 
-    describe('#read and #write', function() {
+    describe('#read and #write', () => {
       it('5k test', function(done) {
         this.timeout(20000);
         // 5k of random ascii
@@ -158,12 +158,12 @@ function integrationTest(platform, testPort, binding) {
         const port = new SerialPort(testPort);
 
         // this will trigger from the "READY" the arduino sends when it's... ready
-        port.once('data', function() {
+        port.once('data', () => {
           port.write(output);
         });
 
         let input = new Buffer(0);
-        port.on('data', function(data) {
+        port.on('data', (data) => {
           input = Buffer.concat([input, data]);
           if (input.length >= expectedInput.length) {
             assert.equal(input.length, expectedInput.length);

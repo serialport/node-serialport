@@ -36,7 +36,7 @@ function makePort(err) {
   }
 
   const binding = new Binding({ disconnect() { throw new Error('disconnect') } });
-  binding.open(port, defaultOpenOptions, function afterBindingOpen(err) {
+  binding.open(port, defaultOpenOptions, (err) => {
     if (err) { throw err }
     binding.close(makePort);
   });
