@@ -19,7 +19,7 @@ try {
   process.exit(-1);
 }
 
-describe('the stress', function() {
+describe('the stress', () => {
   const testPort = process.env.TEST_PORT;
 
   if (!testPort) {
@@ -27,20 +27,20 @@ describe('the stress', function() {
     return;
   }
 
-  describe('of 2 minutes of running 1k writes', function() {
+  describe('of 2 minutes of running 1k writes', () => {
     if (process.version.match('v0.10.')) {
       it('either leaks like a siv or memwatch is broken on v10');
       return;
     }
 
-    it("doesn't leak memory", function(done) {
+    it("doesn't leak memory", (done) => {
       const data = new Buffer(1024);
       const hd = new memwatch.HeapDiff();
       const port = new SerialPort(testPort, {}, false);
       port.on('close', done);
 
       let leaks = 0;
-      memwatch.on('leak', function(info) {
+      memwatch.on('leak', (info) => {
         // fs.appendFile('leak.log', util.inspect(info));
         console.log(util.inspect(info, { depth: 5 }).red);
         leaks++;
@@ -50,12 +50,12 @@ describe('the stress', function() {
       //   fs.appendFile('stats.log', util.inspect(stats));
       // });
 
-      port.on('error', function(err) {
+      port.on('error', (err) => {
         assert.fail(util.inspect(err));
         done();
       });
 
-      port.on('data', function() {});
+      port.on('data', () => {});
 
       let writing = true;
       const write = function() {
@@ -63,11 +63,11 @@ describe('the stress', function() {
         port.write(data, write);
       };
 
-      port.open(function(err) {
+      port.open((err) => {
         assert.isUndefined(err);
         write();
 
-        setTimeout(function() {
+        setTimeout(() => {
           console.log('cleaning up');
           // var diff = hd.end();
           // fs.appendFile('heapdiff.log', util.inspect(diff));

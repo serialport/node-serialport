@@ -2,7 +2,7 @@
   "extends": [
     "standard"
   ],
-  plugins: [
+  "plugins": [
     "require-path-exists"
   ],
   "env": {
@@ -10,16 +10,18 @@
     "mocha": true,
   },
   "rules": {
+    "arrow-parens": [2, "as-needed", {"requireForBlockBody": true }],
     "no-var": 2,
     "object-curly-spacing": [2, "always"],
     "object-shorthand": 2,
+    "prefer-arrow-callback": 2,
     "prefer-const": 2,
     "prefer-template": 2,
-    "semi": [2, "always", {"omitLastInOneLineBlock": true}],
-    "space-before-function-paren": [2, "never"],
-    "standard/object-curly-even-spacing": 0,
+    "require-path-exists/exists": 2,
     "require-path-exists/notEmpty": 2,
     "require-path-exists/tooManyArguments": 2,
-    "require-path-exists/exists": 2
+    "semi": [2, "always", {"omitLastInOneLineBlock": true}],
+    "space-before-function-paren": [2, "never"],
+    "standard/object-curly-even-spacing": 0
   }
 }

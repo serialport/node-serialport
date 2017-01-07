@@ -25,11 +25,11 @@ args
   .parse(process.argv);
 
 function listPorts() {
-  SerialPort.list(function(err, ports) {
+  SerialPort.list((err, ports) => {
     if (err) {
       console.error('Error listing ports', err);
     } else {
-      ports.forEach(function(port) {
+      ports.forEach((port) => {
         console.log(`${port.comName}\t${port.pnpId || ''}\t${port.manufacturer || ''}`);
       });
     }
@@ -54,7 +54,7 @@ function createPort() {
 
   process.stdin.resume();
   process.stdin.setRawMode(true);
-  process.stdin.on('data', function(s) {
+  process.stdin.on('data', (s) => {
     if (s[0] === 0x03) {
       port.close();
       process.exit(0);
@@ -69,11 +69,11 @@ function createPort() {
     port.write(s);
   });
 
-  port.on('data', function(data) {
+  port.on('data', (data) => {
     process.stdout.write(data.toString());
   });
 
-  port.on('error', function(err) {
+  port.on('error', (err) => {
     console.log('Error', err);
     process.exit(1);
   });

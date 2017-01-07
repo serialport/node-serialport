@@ -20,7 +20,7 @@ function makePort(err) {
   if (counter > 10000) {
     process.exit(0);
   }
-  const serialPort = new SerialPort(port, function(err) {
+  const serialPort = new SerialPort(port, (err) => {
     if (err) { throw err }
     serialPort.close(makePort);
   });

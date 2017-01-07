@@ -19,16 +19,16 @@ const serialPort = new SerialPort(port, {
   // baudRate: 115200
 });
 
-serialPort.once('data', function onceData() {
+serialPort.once('data', () => {
   console.log('writing', writeData.length, 'bytes of data');
   serialPort.write(writeData);
 });
 
 let recieved = 0;
-serialPort.on('data', function onData(data) {
+serialPort.on('data', (data) => {
   recieved += data.length;
   if (recieved >= writeData.length) {
-    serialPort.close(function onClose() {
+    serialPort.close(() => {
       console.log('finished reading', recieved, 'bytes');
     });
   }
