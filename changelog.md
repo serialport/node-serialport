@@ -1,6 +1,28 @@
+Version 5.0.0-beta3
+-------------
+- [all] Streams rewrite, node serialport is now a node stream! 🎉
+- [all] Introduce a binding layer to provide a common low level interface to work with different platforms.
+- [all] add `#get` to retrieve modem status flags thanks to @jgillick!
+- [all] Add electron precompiled binaries thanks to @Mike-Dax
+- [all] Allow node-pre-gyp path and host to be overridden thanks to @thom-nic
+- [all] Conform to NodeJS error message formats
+- [all] Drop NodeJS 0.10 and 0.12 support
+- [all] Fix baud rate parsing in `serialport-terminal` thanks to @radio-miskovice for reporting it!
+- [all] Fix memory leak during opening a port thanks to @indutny
+- [all] Refactor internals to make use of es6 and promises
+- [all] Remove unnecessary dependencies and polyfills thanks to @mscdex
+- [all] Remove v8 deprecation warnings thanks to @indutny again
+- [all] Upgrade debug and node-pre-gyp
+- [all] Upgrade nan to fix compile issues on some platforms thanks to @thom-nic
+- [docs] Add more installation notes on sudo, windows 10, electron and node 7
+- [docs] Mark new features in 5.0.0 with the fact they started in 5.0.0
+- [windows] Fix file handle leak during opens when errors occur thanks to @enami
+- [windows] Refactoring of `.list` for Windows so it's significantly smaller thanks to @Zensey
+- [windows] Rewrite reading so it's pausable thanks to @munyirik
+
 Version 4.0.7
 -------------
-- Fix baud rate parsing in `serialport-terminal` thanks to @radio-miskovice for reporting it!
+- [all] Fix baud rate parsing in `serialport-terminal` thanks to @radio-miskovice for reporting it!
 - [windows] Refactor `SerialPort.list` to be a lot smaller and pickup vendorId, productId and locationId thanks to @zensey for #877!
 
 Version 4.0.6

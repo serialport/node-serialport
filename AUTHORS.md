@@ -16,34 +16,35 @@
 - Pedro Pereira <pmh.pereira@gmail.com>
 - deadprogram <ron@hybridgroup.com>
 - Donald Ness <donald.ness@gmail.com>
-- Julian Gautier <julian.gautier@alumni.neumont.edu>
-- jgillick <j_gillick@yahoo.com>
-- Seb <github@seb.exse.net>
 - Andrew Stewart <andrew@stwrt.ca>
+- Seb <github@seb.exse.net>
+- jgillick <j_gillick@yahoo.com>
+- Julian Gautier <julian.gautier@alumni.neumont.edu>
+- fivdi <bdscooke@gmail.com>
+- arve0 <arve.seljebu@gmail.com>
+- Kevin McDermott <kevin@bigkevmcd.com>
+- DD <timnew.wti@gmail.com>
 - Johannes Rudolph <jojo.rudolph@gmail.com>
 - Elijah Insua <tmpvar@gmail.com>
+- Munyiri Kamau <munyirik@microsoft.com>
+- Peter A. Bigot <pab@pabigot.com>
 - Vadim Kosarev <vad@vad.pp.ru>
 - Valery De Smedt <valery@indri.be>
-- arve0 <arve.seljebu@gmail.com>
-- DD <timnew.wti@gmail.com>
-- Kevin McDermott <kevin@bigkevmcd.com>
-- Peter A. Bigot <pab@pabigot.com>
-- fivdi <bdscooke@gmail.com>
-- Munyiri Kamau <munyirik@microsoft.com>
-- Oliver Schneider <oliverschneider89+sweetpi@gmail.com>
-- Mike OShea <oshea00@gmail.com>
-- Duane Johnson <djohnson@getcollc.com>
-- Frederic Hemberger <mail@frederic-hemberger.de>
-- Iskren Slavov <iskren.s@gmail.com>
-- iangregory <github@ians-net.co.uk>
 - U-Mark-Desktop\Mark <mark@somewhere>
-- Brian White <mscdex@mscdex.net>
+- Oliver Schneider <oliverschneider89+sweetpi@gmail.com>
 - Domenic Denicola <domenic@domenicdenicola.com>
+- Duane Johnson <djohnson@getcollc.com>
+- Brian White <mscdex@mscdex.net>
 - Esa-Matti Suuronen <esa-matti@suuronen.org>
+- Iskren Slavov <iskren.s@gmail.com>
 - Bryan Hughes <bryan@theoreticalideations.com>
 - Federico Fissore <federico@fissore.org>
+- Frederic Hemberger <mail@frederic-hemberger.de>
+- iangregory <github@ians-net.co.uk>
+- Mike OShea <oshea00@gmail.com>
 - Roy Hasson <rhasson@gmail.com>
 - Sayanee <sayanee@gmail.com>
+- Thom Nichols <thom.nichols@voltserver.com>
 - Thomas Sarlandie <thomas@sarlandie.net>
 - Tim Oxley <secoif@gmail.com>
 - Tom Gallacher <tomgallacher23@gmail.com>
