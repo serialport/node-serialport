@@ -4,7 +4,6 @@ Version 5.0.0-beta3
 - [all] Introduce a binding layer to provide a common low level interface to work with different platforms.
 - [all] add `#get` to retrieve modem status flags thanks to @jgillick!
 - [all] Add electron precompiled binaries thanks to @Mike-Dax
-- [all] Allow node-pre-gyp path and host to be overridden thanks to @thom-nic
 - [all] Conform to NodeJS error message formats
 - [all] Drop NodeJS 0.10 and 0.12 support
 - [all] Fix baud rate parsing in `serialport-terminal` thanks to @radio-miskovice for reporting it!
