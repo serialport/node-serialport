@@ -1,0 +1,17 @@
+{
+  "name": "socketio-example",
+  "version": "1.0.0",
+  "description": "LED switch example written for node-serialport.",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.14.1",
+    "serialport": "^4.0.7",
+    "socket.io": "^1.7.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "GitHub",
+  "license": "CC0-1.0"
+}
