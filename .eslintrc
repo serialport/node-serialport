@@ -9,10 +9,6 @@
     "node": true,
     "mocha": true
   },
-  "parserOptions": {
-  },
-  "globals": {
-  },
   "rules": {
     "arrow-parens": [2, "as-needed", {"requireForBlockBody": true }],
     "no-unused-vars": [2, { "vars": "all", "args": "after-used" }],
