@@ -83,15 +83,6 @@ describe('RegexParser', () => {
     assert(spy.calledWith('re you'));
   });
 
-  it('allows setting of the delimiter with an array of bytes', () => {
-    const spy = sinon.spy();
-    const parser = new RegexParser({ delimiter: [97, 124, 98] });
-    parser.on('data', spy);
-    parser.write(new Buffer('bhow are youa'));
-    assert(spy.calledWith('how '));
-    assert(spy.calledWith('re you'));
-  });
-
   it('allows setting of encoding', () => {
     const spy = sinon.spy();
     const parser = new RegexParser({
