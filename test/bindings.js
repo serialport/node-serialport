@@ -594,8 +594,25 @@ function testBinding(bindingName, Binding, testPort, disabledFeatures) {
     });
 
     describe('disconnections', () => {
-      it('calls disconnect callback only when detected on a read');
-      it('calls disconnect callback only when detected on a write');
+      let binding;
+      beforeEach(() => {
+        binding = new Binding({ disconnect });
+        return binding.open(testPort, defaultOpenOptions);
+      });
+
+      afterEach(() => binding.close());
+
+      it('calls disconnect callback only when detected on a read', () => {
+        return binding.read(new Buffer(1), 0, 1).then(() => {
+          assert.throws(disconnect);
+        });
+      });
+
+      it('calls disconnect callback only when detected on a write', (done) => {
+        binding.write(new Buffer('test'));
+        assert.throws(disconnect);
+        done();
+      });
     });
   });
 };
