@@ -15,7 +15,8 @@ Thanks!
 - __SerialPort Version__:
 - __NodeJS Version__:
 - __Operating System__ and __Hardware Platform__:
-- Are you using __Electron__ and have you checked the __docs?__:
+- Have you checked the __docs?__:
+- Are you using __Electron__ and have you checked the _Electron Docs_?:
 
 ### Summary of Problem
 
