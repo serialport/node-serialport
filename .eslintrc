@@ -7,7 +7,7 @@
   ],
   "env": {
     "node": true,
-    "mocha": true,
+    "mocha": true
   },
   "rules": {
     "arrow-parens": [2, "as-needed", {"requireForBlockBody": true }],

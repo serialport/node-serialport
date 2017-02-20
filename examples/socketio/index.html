@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Hello World!</title>
+  </head>
+  <body>
+    <h1>Hello World!</h1>
+
+    <ul id="messages"></ul>
+
+    <div id="actions">
+      <button id="turnOnLed" type="button">Turn On LED</button>
+      <button id="turnOffLed" type="button">Turn Off LED</button>
+    </div>
+
+  </body>
+
+  <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script type="text/javascript">
+    $(function() {
+      // Initialize Variables
+      const socket = io();
+
+      const $messages = $('#messages');
+      const $turnOffLed = $('#turnOffLed');
+      const $turnOnLed = $('#turnOnLed');
+
+      // Socket.io listeners
+      socket.on('new message', (msg) => {
+        displayMessage(msg);
+      });
+
+      socket.on('close', () => {
+        displayMessage('Lost connection to device.');
+      });
+
+      // Browser Event Listeners
+      $turnOffLed.click(() => {
+        sendData('off');
+      });
+
+      $turnOnLed.click(() => {
+        sendData('on');
+      });
+
+      // Functions
+      function sendData(data) {
+        socket.send(data);
+      }
+
+      function displayMessage(msg) {
+        $messages.append($('<li>').text(msg));
+      }
+    });
+  </script>
+</html>
