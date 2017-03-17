@@ -68,4 +68,3 @@ describe('ByteLengthParser', () => {
     assert.deepEqual(spy.getCall(0).args[0], new Buffer('12'));
   });
 });
-

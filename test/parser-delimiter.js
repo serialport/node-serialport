@@ -128,4 +128,3 @@ describe('DelimiterParser', () => {
     assert.deepEqual(spy.getCall(2).args[0], new Buffer('sent from a Moteino'));
   });
 });
-

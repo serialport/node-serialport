@@ -653,8 +653,8 @@ The `close` event's callback is called with no arguments when the port is closed
 <a name="module_serialport--SerialPort.Binding"></a>
 
 #### `SerialPort.Binding` : <code>[BaseBinding](#module_serialport--SerialPort..BaseBinding)</code>
-The Binding is how node SerialPort talks to the underlying system. By default we auto detect windows, Linux and OSX and load the appropriate module for your system. You can assign `SerialPort.Binding` to any backend you like. You can find more by searching on [npm](https://npmjs.org/).
-  You can also avoid auto loading the default backends by requiring SerialPort with
+The Binding is how node SerialPort talks to the underlying system. By default we auto detect windows, Linux and OSX and load the appropriate module for your system. You can assign `SerialPort.Binding` to any binding you like. You can find more by searching on [npm](https://npmjs.org/).
+  You can also avoid auto loading the default bindings by requiring SerialPort with
   ```js
   var SerialPort = require('serialport/lib/serialport');
   SerialPort.Binding = MyBindingClass;
