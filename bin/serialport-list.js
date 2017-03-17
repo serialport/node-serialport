@@ -40,4 +40,3 @@ const formatters = {
 };
 
 serialport.list(formatters[args.format]);
-
