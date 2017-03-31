@@ -62,7 +62,7 @@
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-subset": "^1.2.2",
-    "eslint": "^3.17.1",
+    "eslint": "^3.19.0",
     "eslint-config-standard": "^7.0.1",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-require-path-exists": "^1.1.5",
