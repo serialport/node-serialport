@@ -1,6 +1,7 @@
 'use strict';
 /* eslint-disable no-new */
 
+const Buffer = require('safe-buffer').Buffer;
 const assert = require('chai').assert;
 const sinon = require('sinon');
 
@@ -17,9 +18,9 @@ describe('ReadlineParser', () => {
     const spy = sinon.spy();
     const parser = new ReadlineParser();
     parser.on('data', spy);
-    parser.write(new Buffer('I love robots\nEach '));
-    parser.write(new Buffer('and Every One\n'));
-    parser.write(new Buffer('even you!'));
+    parser.write(Buffer.from('I love robots\nEach '));
+    parser.write(Buffer.from('and Every One\n'));
+    parser.write(Buffer.from('even you!'));
     assert(spy.calledWith('I love robots'));
     assert(spy.calledWith('Each and Every One'));
     assert(spy.calledTwice);
@@ -32,16 +33,16 @@ describe('ReadlineParser', () => {
     const spy = sinon.spy();
     const parser = new ReadlineParser({ delimiter: 'a' });
     parser.on('data', spy);
-    parser.write(new Buffer('how are youa'));
+    parser.write(Buffer.from('how are youa'));
     assert(spy.calledWith('how '));
     assert(spy.calledWith('re you'));
   });
 
   it('allows setting of the delimiter with a buffer', () => {
     const spy = sinon.spy();
-    const parser = new ReadlineParser({ delimiter: new Buffer('a') });
+    const parser = new ReadlineParser({ delimiter: Buffer.from('a') });
     parser.on('data', spy);
-    parser.write(new Buffer('how are youa'));
+    parser.write(Buffer.from('how are youa'));
     assert(spy.calledWith('how '));
     assert(spy.calledWith('re you'));
   });
@@ -50,7 +51,7 @@ describe('ReadlineParser', () => {
     const spy = sinon.spy();
     const parser = new ReadlineParser({ delimiter: [97] });
     parser.on('data', spy);
-    parser.write(new Buffer('how are youa'));
+    parser.write(Buffer.from('how are youa'));
     assert(spy.calledWith('how '));
     assert(spy.calledWith('re you'));
   });
@@ -61,7 +62,7 @@ describe('ReadlineParser', () => {
       encoding: 'hex'
     });
     parser.on('data', spy);
-    parser.write(new Buffer('a\nb\n'));
+    parser.write(Buffer.from('a\nb\n'));
     assert.equal(spy.getCall(0).args[0], '61');
     assert.equal(spy.getCall(1).args[0], '62');
   });
@@ -73,7 +74,7 @@ describe('ReadlineParser', () => {
       encoding: 'hex'
     });
     parser.on('data', spy);
-    parser.write(new Buffer([0, 255, 1, 255]));
+    parser.write(Buffer.from([0, 255, 1, 255]));
     assert.equal(spy.getCall(0).args[0], '00');
     assert.equal(spy.getCall(1).args[0], '01');
   });
@@ -81,7 +82,7 @@ describe('ReadlineParser', () => {
   it('throws when called with a 0 length delimiter', () => {
     assert.throws(() => {
       new ReadlineParser({
-        delimiter: new Buffer(0)
+        delimiter: Buffer.from(0)
       });
     });
 
@@ -103,7 +104,7 @@ describe('ReadlineParser', () => {
   });
 
   it('allows setting of the delimiter with a buffer', () => {
-    new ReadlineParser({ delimiter: new Buffer([1]) });
+    new ReadlineParser({ delimiter: Buffer.from([1]) });
   });
 
   it('allows setting of the delimiter with an array of bytes', () => {
@@ -114,7 +115,7 @@ describe('ReadlineParser', () => {
     const spy = sinon.spy();
     const parser = new ReadlineParser({ delimiter: 'a' });
     parser.on('data', spy);
-    parser.write(new Buffer('aFa'));
+    parser.write(Buffer.from('aFa'));
     assert(spy.calledOnce);
     assert(spy.calledWith('F'));
   });

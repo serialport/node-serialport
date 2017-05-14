@@ -1,4 +1,5 @@
 'use strict';
+const Buffer = require('safe-buffer').Buffer;
 const crypto = require('crypto');
 const assert = require('chai').assert;
 const SerialPort = require('../');
@@ -14,7 +15,7 @@ switch (process.platform) {
     throw new Error(`Unknown platform "${process.platform}"`);
 }
 
-const readyData = new Buffer('READY');
+const readyData = Buffer.from('READY');
 
 // test everything on our mock biding and natively
 const defaultBinding = SerialPort.Binding;
@@ -152,7 +153,7 @@ function integrationTest(platform, testPort, binding) {
       it('5k test', function(done) {
         this.timeout(20000);
         // 5k of random ascii
-        const output = new Buffer(crypto.randomBytes(5120).toString('ascii'));
+        const output = Buffer.from(crypto.randomBytes(5120).toString('ascii'));
         const expectedInput = Buffer.concat([readyData, output]);
         const port = new SerialPort(testPort);
 
@@ -161,7 +162,7 @@ function integrationTest(platform, testPort, binding) {
           port.write(output);
         });
 
-        let input = new Buffer(0);
+        let input = Buffer.alloc(0);
         port.on('data', (data) => {
           input = Buffer.concat([input, data]);
           if (input.length >= expectedInput.length) {
