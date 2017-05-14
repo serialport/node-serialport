@@ -3,6 +3,7 @@
 
 // `npm run stress` to run these tests
 
+const Buffer = require('safe-buffer').Buffer;
 const assert = require('chai').assert;
 const util = require('util');
 const SerialPort = require('../../');
@@ -34,7 +35,7 @@ describe('the stress', () => {
     }
 
     it("doesn't leak memory", (done) => {
-      const data = new Buffer(1024);
+      const data = Buffer.alloc(1024);
       const hd = new memwatch.HeapDiff();
       const port = new SerialPort(testPort, {}, false);
       port.on('close', done);

@@ -2,8 +2,8 @@
 /* eslint-disable no-new */
 
 const assert = require('chai').assert;
+const Buffer = require('safe-buffer').Buffer;
 const sinon = require('sinon');
-
 const ByteLengthParser = require('../lib/parsers/byte-length');
 
 describe('ByteLengthParser', () => {
@@ -14,15 +14,15 @@ describe('ByteLengthParser', () => {
   });
 
   it('emits data events every 8 bytes', () => {
-    const data = new Buffer('Robots are so freaking cool!');
+    const data = Buffer.from('Robots are so freaking cool!');
     const spy = sinon.spy();
     const parser = new ByteLengthParser({ length: 8 });
     parser.on('data', spy);
     parser.write(data);
     assert.equal(spy.callCount, 3);
-    assert.deepEqual(spy.getCall(0).args[0], new Buffer('Robots a'));
-    assert.deepEqual(spy.getCall(1).args[0], new Buffer('re so fr'));
-    assert.deepEqual(spy.getCall(2).args[0], new Buffer('eaking c'));
+    assert.deepEqual(spy.getCall(0).args[0], Buffer.from('Robots a'));
+    assert.deepEqual(spy.getCall(1).args[0], Buffer.from('re so fr'));
+    assert.deepEqual(spy.getCall(2).args[0], Buffer.from('eaking c'));
   });
 
   it('throws when not provided with a length', () => {
@@ -51,20 +51,20 @@ describe('ByteLengthParser', () => {
     const parser = new ByteLengthParser({ length: 4 });
     const spy = sinon.spy();
     parser.on('data', spy);
-    parser.write(new Buffer('ab'));
-    parser.write(new Buffer('cd'));
+    parser.write(Buffer.from('ab'));
+    parser.write(Buffer.from('cd'));
     assert.equal(spy.callCount, 1);
-    assert.deepEqual(spy.getCall(0).args[0], new Buffer('abcd'));
+    assert.deepEqual(spy.getCall(0).args[0], Buffer.from('abcd'));
   });
 
   it('flushes remaining data when the stream ends', () => {
     const parser = new ByteLengthParser({ length: 4 });
     const spy = sinon.spy();
     parser.on('data', spy);
-    parser.write(new Buffer('12'));
+    parser.write(Buffer.from('12'));
     assert.equal(spy.callCount, 0);
     parser.end();
     assert.equal(spy.callCount, 1);
-    assert.deepEqual(spy.getCall(0).args[0], new Buffer('12'));
+    assert.deepEqual(spy.getCall(0).args[0], Buffer.from('12'));
   });
 });

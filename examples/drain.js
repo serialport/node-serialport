@@ -1,6 +1,6 @@
 /* eslint-disable require-path-exists/exists */
 'use strict';
-
+const Buffer = require('safe-buffer').Buffer;
 const SerialPort = require('serialport');
 const port = new SerialPort('/dev/cu.Cubelet-RGB');
 
@@ -8,7 +8,7 @@ port.on('open', () => {
   console.log('port opened');
 });
 
-const largeMessage = new Buffer(1024 * 10).fill('!');
+const largeMessage = Buffer.from(1024 * 10).fill('!');
 port.write(largeMessage, () => {
   console.log('Write callback returned');
 

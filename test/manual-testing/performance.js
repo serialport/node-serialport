@@ -1,5 +1,6 @@
 'use strict';
 
+const Buffer = require('safe-buffer').Buffer;
 const SerialPort = require('../../');
 const port = process.env.TEST_PORT;
 
@@ -13,7 +14,7 @@ if (!port) {
 // SerialPort.Binding = Binding;
 // debugger;
 
-const writeData = new Buffer(50000).fill(1);
+const writeData = Buffer.alloc(50000, 1);
 
 const serialPort = new SerialPort(port, {
   // baudRate: 115200

@@ -100,7 +100,11 @@ build_script:
 - npm install --build-from-source --msvs_version=2013
 
 test_script:
-- ps: npm run lint
+- ps: >
+    if ($env:nodejs_version -ne "4") {
+      npm run lint
+    }
+    true;
 
 # If we run npm test in powershell it'll have the wrong encoding
 # so we have to do it like this

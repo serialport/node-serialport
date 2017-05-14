@@ -2,6 +2,7 @@
 /* eslint-disable no-new */
 
 const assert = require('chai').assert;
+const Buffer = require('safe-buffer').Buffer;
 
 let platform;
 switch (process.platform) {
@@ -55,7 +56,7 @@ function disconnect(err) {
 // The echo firmware should respond with this data when it's
 // ready to echo. This allows for remote device bootup.
 // the default firmware is called arduinoEcho.ino
-const readyData = new Buffer('READY');
+const readyData = Buffer.from('READY');
 
 // Test our mock binding and the binding for the platform we're running on
 bindingsToTest.forEach((bindingName) => {
@@ -354,7 +355,7 @@ function testBinding(bindingName, Binding, testPort, disabledFeatures) {
             disconnect
           });
           let noZalgo = false;
-          binding.write(new Buffer([])).catch((err) => {
+          binding.write(Buffer.from([])).catch((err) => {
             assert.instanceOf(err, Error);
             assert(noZalgo);
             done();
@@ -390,13 +391,13 @@ function testBinding(bindingName, Binding, testPort, disabledFeatures) {
         afterEach(() => binding.close());
 
         it('resolves after a small write', () => {
-          const data = new Buffer('simple write of 24 bytes');
+          const data = Buffer.from('simple write of 24 bytes');
           return binding.write(data);
         });
 
         it('resolves after a large write', function() {
           this.timeout(20000);
-          const data = new Buffer(1024 * 5);
+          const data = Buffer.alloc(1024 * 5);
           return binding.write(data);
         });
       });
@@ -520,7 +521,7 @@ function testBinding(bindingName, Binding, testPort, disabledFeatures) {
       describe('#read', () => {
         it('errors asynchronously when not open', (done) => {
           const binding = new Binding({ disconnect });
-          const buffer = new Buffer(5);
+          const buffer = Buffer.alloc(5);
           let noZalgo = false;
           binding.read(buffer, 0, buffer.length).catch((err) => {
             assert.instanceOf(err, Error);
@@ -537,7 +538,7 @@ function testBinding(bindingName, Binding, testPort, disabledFeatures) {
 
         let binding, buffer;
         beforeEach(() => {
-          buffer = new Buffer(readyData.length);
+          buffer = Buffer.alloc(readyData.length);
           binding = new Binding({ disconnect });
           return binding.open(testPort, defaultOpenOptions);
         });

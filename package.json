@@ -57,13 +57,16 @@
     "commander": "^2.9.0",
     "debug": "^2.6.6",
     "nan": "^2.6.2",
-    "node-pre-gyp": "^0.6.32"
+    "node-pre-gyp": "^0.6.32",
+    "safe-buffer": "^5.0.1"
   },
   "devDependencies": {
     "chai": "^3.5.0",
     "chai-subset": "^1.2.2",
     "eslint": "^3.19.0",
     "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.2.0",
+    "eslint-plugin-node": "^4.2.2",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-require-path-exists": "^1.1.7",
     "eslint-plugin-standard": "^3.0.1",
