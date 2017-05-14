@@ -56,7 +56,7 @@
     "bindings": "1.2.1",
     "commander": "^2.9.0",
     "debug": "^2.6.6",
-    "nan": "^2.4.0",
+    "nan": "^2.6.1",
     "node-pre-gyp": "^0.6.32"
   },
   "devDependencies": {
