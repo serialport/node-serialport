@@ -356,7 +356,7 @@ You can write to the serial port by sending a string or buffer to the write meth
 
 ```js
 port.write('Hi Mom!');
-port.write(new Buffer('Hi Mom!'));
+port.write(Buffer.from('Hi Mom!'));
 ```
 
 Enjoy and do cool things with this code.
@@ -710,7 +710,7 @@ To use the Delimiter parser you must specify, you must provide a delimiter as a 
 var SerialPort = require('serialport');
 var Delimiter = SerialPort.parsers.Delimiter;
 var port = new SerialPort('/dev/tty-usbserial1');
-var parser = port.pipe(new Delimiter({delimiter: new Buffer('EOL')}));
+var parser = port.pipe(new Delimiter({delimiter: Buffer.from('EOL')}));
 parser.on('data', console.log);
 ```
 

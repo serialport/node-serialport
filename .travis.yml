@@ -113,8 +113,12 @@ install:
 
 
 script:
-  # linting no longer works on node 0.10
-- npm run lint
+  # linting no longer works on node 4
+- >
+  if [[ $TRAVIS_NODE_VERSION != "4" ]]; then
+    npm run lint
+  fi
+
 - npm run docs:diff
 - >
   if [[ -z $TRAVIS_ELECTRON_VERSION ]]; then
