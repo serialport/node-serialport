@@ -27,11 +27,11 @@ For a full breakdown of why we made Node-Serialport, please read [NodeBots - The
 ## Key Questions
 - For support, open a [GitHub issue](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/new). 
 - For discussions, design ideas, and clarifications, we recommend you join our [Gitter chat room](https://gitter.im/EmergingTechnologyAdvisors/node-serialport). Two related projects—[Browser Serialport](https://github.com/garrows/browser-serialport) ("just like Node Serialport, but for browser apps") and [Serialport Test Piliot](https://github.com/j5js/serialport-test-pilot)—help us test Serialport.
-- To contribute, please take a look at our [contribution guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md). You might want to review our [roadmap](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/746). We also have issues tagged ["good first PR"](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+pr%22) if you'd like to start somewhere specific. We'll do our best to support you until your PR is merged.
+- To contribute, please take a look at our [contribution guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md). You might want to review our [roadmap](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/746). We also have issues tagged ["good first PR"](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+pr%22), if you'd like to start somewhere specific. We'll do our best to support you until your PR is merged.
 
 ***
 
-# For which version of Node-Serialport would you like documentation?
+## For which version of Node-Serialport would you like documentation?
 
 You're reading the README for Node-Serialport's master branch. You probably want to see the README for our most recent release. See our [changelog](changelog.md) for what's new, and our [upgrade guide](UPGRADE_GUIDE.md) for a walk-through on differences between major versions.
 
@@ -61,7 +61,6 @@ We recommend reading the following articles:
   * [sudo / root](#sudo--root)
   * [Ubuntu/Debian Linux](#ubuntudebian-linux)
   * [Windows](#windows)
-* [License](#license)
 * [Usage](#usage)
   * [Opening a Port](#opening-a-port)
   * [Debugging](#debugging)
@@ -111,7 +110,7 @@ We recommend reading the following articles:
 * [Command Line Tools](#command-line-tools)
   * [Serial Port List](#serial-port-list)
   * [Serial Port Terminal](#serial-port-terminal)
-
+* [License](#license)
 ***
 
 ## Platform Support
@@ -265,9 +264,6 @@ npm install serialport --build-from-source
 ```
 
 It's not part of node-gyp's documenation but sometimes it helps if you creates a c++ project in visual studio so it will install necessary comonents that aren't installed during the two hours of setup you just sat through. This will solve some instances of `Failed to locate: "CL.exe"`.
-
-## License
-SerialPort is MIT licensed and all it's dependencies are MIT or BSD licensed.
 
 ## Usage
 
@@ -1119,3 +1115,29 @@ $ serialport-term -l
 /dev/cu.Bluetooth-Incoming-Port
 /dev/cu.usbmodem1421    Arduino (www.arduino.cc)
 ```
+
+### License
+
+SerialPort is MIT-licensed. All of its dependencies are MIT- or BSD-licensed.
+
+The MIT License (MIT)
+
+Copyright 2010, 2011, 2012 Christopher Williams. All rights reserved.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to
+deal in the Software without restriction, including without limitation the
+rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+IN THE SOFTWARE.
