@@ -2,7 +2,7 @@
 
 <!-- STOP! WAIT! BEFORE YOU EDIT!
 
-README.md is a generated file don't edit it!
+README.md is a generated file; don't edit it!
 
 This file is generated from .docs/README.hbs and the JavaScript files themselves.
 See our contributing guide for more information.
@@ -18,32 +18,36 @@ https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/master/CONTRI
 [![Build Status](https://travis-ci.org/EmergingTechnologyAdvisors/node-serialport.svg?branch=master)](https://travis-ci.org/EmergingTechnologyAdvisors/node-serialport)
 [![Build status](https://ci.appveyor.com/api/projects/status/u6xe3iao2crd7akn/branch/master?svg=true)](https://ci.appveyor.com/project/j5js/node-serialport/branch/master)
 
-For support you can open a [github issue](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/new), for discussions, designs, and clarifications, we recommend you join our [Gitter Chat room](https://gitter.im/EmergingTechnologyAdvisors/node-serialport). We have two related projects [Browser Serialport](https://github.com/garrows/browser-serialport) "just like Node Serialport but for browser apps", and [Serialport Test Piliot](https://github.com/j5js/serialport-test-pilot) which helps us test serialport.
+## Intro to Node-Serialport
 
-If you'd like to contribute please take a look at [contribution guide](CONTRIBUTING.md) and [code of conduct](CODE_OF_CONDUCT.md). You also might want to see the [road map](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/746). We also have issues tagged ["good first PR"](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+pr%22) if you'd like to start somewhere specific. We'll do our best to support you until your PR is merged.
+Imagine a world in which you can write JavaScript to control blenders, lights, security systems, or even robots (that's right—robots!). That world is here, thanks to Node-Serialport. It provides a very simple interface for the low-level serial port code necessary to program [Arduino](http://www.arduino.cc/) chipsets, [X10](http://www.smarthome.com/manuals/protocol.txt) wireless communications, and even the rising [Z-Wave](http://www.z-wave.com/modules/ZwaveStart/) and [Zigbee](http://www.zigbee.org/) standards. The physical world is your oyster with this goodie. 
 
-***
+For a full breakdown of why we made Node-Serialport, please read [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics).
 
-# Which version of Serialport would you like documentation for?
-
-You're reading the README for the master branch of serialport. You probably want to be looking at the README of our latest release. See our [change log](changelog.md) for what's new and our [upgrade guide](UPGRADE_GUIDE.md) for a walk through on what to look out for between major versions.
-
-- [`serialport@5.0.0-beta3` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/5.0.0-beta3/README.md) this is the latest `5.x` releases.
-- [`serialport@4.0.7` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/4.0.7/README.md) it is the latest `4.x` releases.
-- [`serialport@3.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/3.1.2/README.md) it was the last `3.x` releases.
-- [`serialport@2.1.2` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/2.1.2/README.md) it was the last `2.x` release
-- [`serialport@1.7.4` docs are here](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/v1.7.4/README.md) it was the last `1.x` release
+## Key Questions
+- For support, open a [GitHub issue](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/new). 
+- For discussions, design ideas, and clarifications, we recommend you join our [Gitter chat room](https://gitter.im/EmergingTechnologyAdvisors/node-serialport). Two related projects—[Browser Serialport](https://github.com/garrows/browser-serialport) ("just like Node Serialport, but for browser apps") and [Serialport Test Piliot](https://github.com/j5js/serialport-test-pilot)—help us test Serialport.
+- To contribute, please take a look at our [contribution guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md). You might want to review our [roadmap](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/746). We also have issues tagged ["good first PR"](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+pr%22) if you'd like to start somewhere specific. We'll do our best to support you until your PR is merged.
 
 ***
 
-Imagine a world where you can write JavaScript to control blenders, lights, security systems, or even robots. Yes, I said robots. That world is here and now with node serialport. It provides a very simple interface to the low level serial port code necessary to program [Arduino](http://www.arduino.cc/) chipsets, [X10](http://www.smarthome.com/manuals/protocol.txt) wireless communications, or even the rising [Z-Wave](http://www.z-wave.com/modules/ZwaveStart/) and [Zigbee](http://www.zigbee.org/) standards. The physical world is your oyster with this goodie. For a full break down of why we made this, please read [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics).
+# For which version of Node-Serialport would you like documentation?
+
+You're reading the README for Node-Serialport's master branch. You probably want to see the README for our most recent release. See our [changelog](changelog.md) for what's new, and our [upgrade guide](UPGRADE_GUIDE.md) for a walk-through on differences between major versions.
+
+- [`serialport@5.0.0-beta3` docs](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/5.0.0-beta3/README.md): the latest `5.x` releases.
+- [`serialport@4.0.7` docs](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/4.0.7/README.md): the latest `4.x` releases.
+- [`serialport@3.1.2` docs](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/3.1.2/README.md): the last `3.x` release.
+- [`serialport@2.1.2` docs](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/2.1.2/README.md): the last `2.x` release.
+- [`serialport@1.7.4` docs](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/v1.7.4/README.md): the last `1.x` release.
 
 ***
+### Helpful Resources for Getting Started with Node-Serialport
 
-For getting started with node-serialport, we recommend you begin with the following articles:
-* [Johnny-Five](http://johnny-five.io/#hello-world) - The Johnny-Five Robotics and IoT platform's 6 line "Hello World" (awesome).
-* [Arduino Node Security Sensor Hacking](http://nexxylove.tumblr.com/post/20159263403/arduino-node-security-sensor-hacking) - A great all around "how do I use this" article.
-* [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics) - A survey article of why one would want to program robots in JS and how this all started.
+We recommend reading the following articles:
+* [Johnny-Five](http://johnny-five.io/#hello-world): The Johnny-Five Robotics and IoT platform's six-line "Hello World" (awesome).
+* [Arduino Node Security Sensor Hacking](http://nexxylove.tumblr.com/post/20159263403/arduino-node-security-sensor-hacking): A great all-around "how do I use this" article.
+* [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics): Explains why one would want to program robots in JS, and how this all started.
 
 ***
 * [Platform Support](#platform-support)
