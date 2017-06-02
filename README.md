@@ -20,14 +20,16 @@ https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/master/CONTRI
 
 ## Intro to Node-Serialport
 
-Imagine a world in which you can write JavaScript to control blenders, lights, security systems, or even robots (that's right—robots!). That world is here, thanks to Node-Serialport. It provides a very simple interface for the low-level serial port code necessary to program [Arduino](http://www.arduino.cc/) chipsets, [X10](http://www.smarthome.com/manuals/protocol.txt) wireless communications, and even the rising [Z-Wave](http://www.z-wave.com/modules/ZwaveStart/) and [Zigbee](http://www.zigbee.org/) standards. The physical world is your oyster with this goodie. 
+Imagine a world in which you can write JavaScript to control blenders, lights, security systems, or even robots. That's right—robots! Thanks to Node-Serialport, that world is here. 
 
-For a full breakdown of why we made Node-Serialport, please read [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics). It explains why one would want to program robots in JS.
+Node-Serialport provides a very simple interface for the low-level serial port code necessary to program [Arduino](http://www.arduino.cc/) chipsets, [X10](http://www.smarthome.com/manuals/protocol.txt) wireless communications, and even the rising [Z-Wave](http://www.z-wave.com/modules/ZwaveStart/) and [Zigbee](http://www.zigbee.org/) standards. The physical world is your oyster with this goodie. 
+
+For a full breakdown of why we made Node-Serialport, please read [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics). It explains why one would want to program robots in JS in the first place.
 
 ## Important Questions
 - For support, open a [GitHub issue](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/new). 
-- For discussions, design ideas, and clarifications, we recommend you join our [Gitter chat room](https://gitter.im/EmergingTechnologyAdvisors/node-serialport). Two related projects—[Browser Serialport](https://github.com/garrows/browser-serialport) ("just like Node Serialport, but for browser apps") and [Serialport Test Piliot](https://github.com/j5js/serialport-test-pilot)—help us test Serialport.
-- To contribute, please take a look at our [contribution guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md). You might want to review our [roadmap](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/746). We also have issues tagged ["good first PR"](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+pr%22), if you'd like to start somewhere specific. We'll do our best to support you until your PR is merged.
+- For discussions, design ideas, and clarifications, please join our [Gitter chat room](https://gitter.im/EmergingTechnologyAdvisors/node-serialport). Two related projects—[Browser Serialport](https://github.com/garrows/browser-serialport) ("just like Node Serialport, but for browser apps") and [Serialport Test Piliot](https://github.com/j5js/serialport-test-pilot)—help us test Node-Serialport.
+- To contribute, please review our [contribution guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md). You might want to check out our [roadmap](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/746). We also have issues tagged ["good first PR"](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+pr%22), if you'd like to start somewhere specific. We'll do our best to support you until we merge your PR.
 
 ***
 
@@ -42,13 +44,14 @@ You're reading the README for Node-Serialport's master branch. You probably want
 - [`serialport@1.7.4` docs](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/v1.7.4/README.md): the last `1.x` release.
 
 ***
-### Helpful Resources for Getting Started with Node-Serialport
+## Helpful Resources for Getting Started with Node-Serialport
 
-In addition to reading the [article we mentioned above](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics), these others might help you:
+In addition to reading the [article mentioned above](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics), these others might help you:
 * [Johnny-Five](http://johnny-five.io/#hello-world): The Johnny-Five Robotics and IoT platform's six-line "Hello World" (awesome).
 * [Arduino Node Security Sensor Hacking](http://nexxylove.tumblr.com/post/20159263403/arduino-node-security-sensor-hacking): A great all-around "how do I use this" article.
 
 ***
+## Table of Contents
 * [Platform Support](#platform-support)
 * [Installation](#installation-instructions)
 * [Installation Special Cases](#installation-special-cases)
@@ -146,11 +149,11 @@ npm install serialport
 
 We use [node-pre-gyp](https://github.com/mapbox/node-pre-gyp) to compile and post binaries of the library for most common use cases (Linux, Mac, Windows on standard processor platforms). If you have a special case, Node-Serialport will work, but it will compile the binary when you install. node-gyp requires Python 2.x, so please ensure you have it (and NOT 3.0) installed for all operating systems.
 
-This assumes you have everything on your system necessary to compile ANY native module for Node.js. If this is not the case, please ensure the following are true for your system before filing a "Does not install" issue.
+This assumes you have everything on your system necessary to compile ANY native module for Node.js. If you don't, then please ensure the following are true for your system before filing a "Does not install" issue.
 
 #### Alpine Linux
 
-[Alpine](http://www.alpinelinux.org/) is a (very) small distro, but it uses the [musl](https://www.musl-libc.org/) standard library instead of [glibc](https://www.gnu.org/software/libc/) (used by most other Linux distros) so it requires compilation. It's commonly used with Docker. A user confirms that Node-Serialport works with [alpine-node](https://github.com/mhart/alpine-node).
+[Alpine](http://www.alpinelinux.org/) is a (very) small distro, but it uses the [musl](https://www.musl-libc.org/) standard library instead of [glibc](https://www.gnu.org/software/libc/) (used by most other Linux distros) so it requires compilation. It's commonly used with Docker. A user has confirmed that Node-Serialport works with [alpine-node](https://github.com/mhart/alpine-node).
 
 ```
 # If you don't have node/npm already, add that first:
@@ -167,16 +170,16 @@ npm install serialport --build-from-source
 
 #### Electron
 
-[Electron](https://electron.atom.io/), is a framework for creating cross-platform desktop applications. It comes with its own version of the Node.js runtime.
+[Electron](https://electron.atom.io/) is a framework for creating cross-platform desktop applications. It comes with its own version of the Node.js runtime.
 
-If you require `serialport` as a dependency for an Electron project, you need to compile it for the version of Electron your project's using.
+If you require `serialport` as a dependency for an Electron project, you must compile it for the version of Electron your project's using.
 
 When you first install `serialport` it will compile against the version of Node.js on your machine, not against the Node.js runtime bundled with Electron.
 
-To recompile `serialport` (or any native Node.js module) for Electron, you can use `electron-rebuild` (more info at Electron's [README](https://github.com/electron/electron-rebuild/blob/master/README.md):
+To recompile `serialport` (or any native Node.js module) for Electron, you can use `electron-rebuild`; more info at Electron's [README](https://github.com/electron/electron-rebuild/blob/master/README.md):
 
 1. `npm install --save-dev electron-rebuild`
-2. Add `electron-rebuild` to your project's package.json's install hook.
+2. Add `electron-rebuild` to your project's package.json's install hook
 3. Run `npm install`
 
 For an example project, check out [`electron-serialport`](https://github.com/johnny-five-io/electron-serialport).
@@ -214,13 +217,14 @@ Follow the instructions for [setting up a Raspberry Pi for use with Johnny-Five 
 | B3             | 32-bit ARM Cortex-A53 |    ARMv8    |
 
 #### sudo / root
-If you're going to use `sudo` or root to install node SerialPort `npm` requires you to use the unsafe parameters flag. This is rarely required.
+If you're going to use `sudo` or root to install Node-Serialport, `npm` occasionally requires you to use the unsafe parameters flag:
 
 ```bash
 sudo npm install serialport --unsafe-perm --build-from-source
 ```
 
-Failure to use the flag results in an error similar to the following;
+Failure to use the flag results in an error like this:
+
 ```bash
 root@rpi3:~# npm install -g serialport
 /usr/bin/serialport-list -> /usr/lib/node_modules/serialport/bin/serialport-list.js
@@ -241,32 +245,32 @@ gyp ERR! stack Error: `make` failed with exit code: 2
 
 #### Ubuntu/Debian Linux
 
-The best way to install any version of NodeJS is to use the [NodeSource Node.js Binary Distributions](https://github.com/nodesource/distributions#installation-instructions). Older versions of Ubuntu install nodejs with the wrong version and binary name. If you node binary is `nodejs` not `node` or if your node version is [`v0.10.29`](https://github.com/fivdi/onoff/wiki/Node.js-v0.10.29-and-native-addons-on-the-Raspberry-Pi) then you should follow these instructions.
+The best way to install any version of Node.js is to use the [NodeSource Node.js binary distributions](https://github.com/nodesource/distributions#installation-instructions). Older versions of Ubuntu install Node.js with the wrong version and binary name. If your Node binary is `nodejs` instead of `node`, or if your Node version is [`v0.10.29`](https://github.com/fivdi/onoff/wiki/Node.js-v0.10.29-and-native-addons-on-the-Raspberry-Pi), then you should follow these instructions.
 
-The package `build-essential` is necessary to compile `serialport`. If there's a binary for your platform you won't need it. Keep rocking!
+You'll need the package `build-essential` to compile `serialport`. If there's a binary for your platform, you won't need it. Keep rocking!
 
 ```
-# Using Ubuntu and node 6
+# Using Ubuntu and Node 6:
 curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
-# Using Debian and node 6, as root
+# Using Debian and Node 6 as root:
 curl -sL https://deb.nodesource.com/setup_7.x | bash -
 apt-get install -y nodejs
 ```
 
 #### Windows
-Windows 7, Windows 8.1, Windows 10, and Windows 10 IoT are supported. Precompiled binaries are available but if you want to build it from source you'll need to follow the [node-gyp installation](https://github.com/nodejs/node-gyp#installation) instructions. Once those are finished and working you'll be able to install serialport from source with;
+Node-Serialport supports Windows 7, 8.1, 10, and 10 IoT. Precompiled binaries are available, but if you want to build it from source you'll need to follow the [node-gyp installation](https://github.com/nodejs/node-gyp#installation) instructions. Once you've got things working, you'll be able to install Node-Serialport from source with:
 
 ```powershell
 npm install serialport --build-from-source
 ```
 
-It's not part of node-gyp's documenation but sometimes it helps if you creates a c++ project in visual studio so it will install necessary comonents that aren't installed during the two hours of setup you just sat through. This will solve some instances of `Failed to locate: "CL.exe"`.
+Node-gyp's documentation doesn't mention it, but it sometimes helps to create a C++ project in [Visual Studio](https://www.visualstudio.com/) so that it will install any necessary components not already installed during the past two hours of setup. This will solve some instances of `Failed to locate: "CL.exe"`.
 
 ## Usage
 
-Opening a serial port:
+Open a serial port:
 
 ```js
 var SerialPort = require('serialport');
@@ -275,18 +279,18 @@ var port = new SerialPort('/dev/tty-usbserial1', {
 });
 ```
 
-When opening a serial port, you can specify (in this order).
+When opening a serial port, specify (in this order):
 
 1. Path to Serial Port - required.
-1. Options - optional and described below.
+1. Options - optional, and described below.
 
 ### Opening a Port
 
-Constructing a `SerialPort` object will open a port immediately. While you can read and write at any time (it will be queued into the port is open), most port functions require an open port. You can call code when a port is opened in three ways.
+Constructing a `SerialPort` object immediately opens a port. While you can read and write at any time (it will be queued into the open port), most port functions require an open port. There are three ways to call code when a port is opened:
 
 - The `open` event is always emitted when the port is opened
-- The constructor's openCallback is passed to `.open()` when the `autoOpen` option hasn't been disabled, if you have disabled it the callback is ignored.
-- The `.open()` function takes a callback that is called after the port is opened. This can be used if you disabled the `autoOpen` option or have previously closed an open port.
+- The constructor's openCallback is passed to `.open()`, if you haven't disabled the `autoOpen` option. If you have disabled it, the callback is ignored.
+- The `.open()` function takes a callback that is called after the port is opened. You can use this if you've disabled the `autoOpen` option or have previously closed an open port.
 
 ```js
 var SerialPort = require('serialport');
@@ -301,13 +305,14 @@ port.on('open', function() {
   });
 });
 
-// open errors will be emitted as an error event
+// Open errors will be emitted as an error event:
 port.on('error', function(err) {
   console.log('Error: ', err.message);
 })
 ```
 
-This could be moved to the constructor's callback.
+You could move this to the constructor's callback:
+
 ```js
 var SerialPort = require('serialport');
 var port = new SerialPort('/dev/tty-usbserial1', function (err) {
@@ -323,7 +328,8 @@ var port = new SerialPort('/dev/tty-usbserial1', function (err) {
 });
 ```
 
-When disabling the `autoOpen` option you'll need to open the port on your own.
+When disabling the `autoOpen` option, you'll need to open the port on your own:
+
 ```js
 var SerialPort = require('serialport');
 var port = new SerialPort('/dev/tty-usbserial1', { autoOpen: false });
@@ -333,17 +339,17 @@ port.open(function (err) {
     return console.log('Error opening port: ', err.message);
   }
 
-  // write errors will be emitted on the port since there is no callback to write
+  // Because there's no callback to write, write errors will be emitted on the port:
   port.write('main screen turn on');
 });
 
-// the open event will always be emitted
+// The open event is always emitted:
 port.on('open', function() {
   // open logic
 });
 ```
 
-You can get updates of new data from the Serial Port as follows:
+Get updates of new data from the serial port as follows:
 
 ```js
 port.on('data', function (data) {
@@ -351,7 +357,7 @@ port.on('data', function (data) {
 });
 ```
 
-You can write to the serial port by sending a string or buffer to the write method as follows:
+You can write to the serial port by sending a string or buffer to the write method:
 
 ```js
 port.write('Hi Mom!');
@@ -362,12 +368,12 @@ Enjoy and do cool things with this code.
 
 ### Debugging
 
-We make use of the [debug](https://www.npmjs.com/package/debug) package and log under the `serialport` namespace. We log;
+We use the [debug](https://www.npmjs.com/package/debug) package and log under the `serialport` namespace:
 
- - `serialport:main` for all high level main logging
- - `serialport:binding` for all low level logging
+ - `serialport:main` for all high-level/main logging
+ - `serialport:binding` for all low-level logging
 
-You can enable logging through environment variables. Check out the [debug](https://www.npmjs.com/package/debug) docs for more information.
+You can enable logging through environment variables. Check the [debug](https://www.npmjs.com/package/debug) docs for info.
 
 ```bash
 DEBUG=serialport:main node myapp.js
@@ -377,12 +383,12 @@ DEBUG=* node myapp.js
 
 ### Error Handling
 
-All functions in SerialPort two conventions.
+All functions in Node-Serialport follow two conventions:
 
-- Argument Errors throw a `TypeError` object. You'll see these when functions are called with invalid arguments.
-- Runtime Errors provide `Error` objects to the function's callback or emit an [`error event`](#module_serialport--SerialPort+event_error) if no callback is provided. You'll see these when a runtime error occurs like trying to open a bad port, or set an unsupported baud rate.
+- Argument errors throw a `TypeError` object. You'll see these when functions are called with invalid arguments.
+- Runtime errors provide `Error` objects to the function's callback or emit an [`error event`](#module_serialport--SerialPort+event_error) if no callback is provided. You'll see these when a runtime error occurs, like trying to open a bad port or setting an unsupported baud rate.
 
-It should never be necessary to wrap a SerialPort object in a try/catch statement if you call the functions with the correct arguments.
+You should never have to wrap a Node-Serialport object in a try/catch statement if you call the functions with the correct arguments:
 
 <a name="exp_module_serialport--SerialPort"></a>
 
