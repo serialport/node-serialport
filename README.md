@@ -217,7 +217,7 @@ Follow the instructions for [setting up a Raspberry Pi for use with Johnny-Five 
 | B3             | 32-bit ARM Cortex-A53 |    ARMv8    |
 
 #### sudo / root
-If you're going to use `sudo` or root to install Node-Serialport, `npm` occasionally requires you to use the unsafe parameters flag:
+If you're going to use `sudo` or root to install Node-Serialport, `npm` will occasionally require you to use the unsafe parameters flag:
 
 ```bash
 sudo npm install serialport --unsafe-perm --build-from-source
@@ -260,7 +260,7 @@ apt-get install -y nodejs
 ```
 
 #### Windows
-Node-Serialport supports Windows 7, 8.1, 10, and 10 IoT. Precompiled binaries are available, but if you want to build it from source you'll need to follow the [node-gyp installation](https://github.com/nodejs/node-gyp#installation) instructions. Once you've got things working, you'll be able to install Node-Serialport from source with:
+Node-Serialport supports Windows 7, 8.1, 10, and 10 IoT. Precompiled binaries are available, but if you want to build it from source you'll need to follow the [node-gyp installation](https://github.com/nodejs/node-gyp#installation) instructions. Once you've got things working, you can install Node-Serialport from source with:
 
 ```powershell
 npm install serialport --build-from-source
@@ -288,7 +288,7 @@ When opening a serial port, specify (in this order):
 
 Constructing a `SerialPort` object immediately opens a port. While you can read and write at any time (it will be queued into the open port), most port functions require an open port. There are three ways to call code when a port is opened:
 
-- The `open` event is always emitted when the port is opened
+- The `open` event is always emitted when the port is opened.
 - The constructor's openCallback is passed to `.open()`, if you haven't disabled the `autoOpen` option. If you have disabled it, the callback is ignored.
 - The `.open()` function takes a callback that is called after the port is opened. You can use this if you've disabled the `autoOpen` option or have previously closed an open port.
 
@@ -395,14 +395,14 @@ You should never have to wrap a Node-Serialport object in a try/catch statement 
 ### SerialPort ⏏
 **Kind**: Exported class  
 **Emits**: [<code>open</code>](#module_serialport--SerialPort+event_open), [<code>data</code>](#module_serialport--SerialPort+event_data), [<code>close</code>](#module_serialport--SerialPort+event_close), [<code>error</code>](#module_serialport--SerialPort+event_error), [<code>disconnect</code>](#module_serialport--SerialPort+event_disconnect)  
-**Properties**
+**Properties**:
 
 | Name | Type | Description |
 | --- | --- | --- |
-| baudRate | <code>number</code> | The port's baudRate, use `.update` to change it. Read Only. |
-| binding | <code>object</code> | The binding object backing the port Read Only. |
-| isOpen | <code>boolean</code> | `true` if the port is open, `false` otherwise. Read Only. (`since 5.0.0`) |
-| path | <code>string</code> | The system path or name of the serial port. Read Only. |
+| baudRate | <code>number</code> | The port's baudRate. Use `.update` to change it. Read-only. |
+| binding | <code>object</code> | The binding object backing the port. Read-only. |
+| isOpen | <code>boolean</code> | `true` if the port is open, `false` otherwise. Read-only. (`since 5.0.0`) |
+| path | <code>string</code> | The system path or name of the serial port. Read-only. |
 
 
 * * *
@@ -410,18 +410,18 @@ You should never have to wrap a Node-Serialport object in a try/catch statement 
 <a name="new_module_serialport--SerialPort_new"></a>
 
 #### `new SerialPort(path, [options], [openCallback])`
-Create a new serial port object for the `path`. In the case of invalid arguments or invalid options when constructing a new SerialPort it will throw an error. The port will open automatically by default which is the equivalent of calling `port.open(openCallback)` in the next tick. This can be disabled by setting the option `autoOpen` to false.
+Create a new serial port object for the `path`. In the case of invalid arguments or invalid options, when constructing a new SerialPort it will throw an error. The port will open automatically by default, which is the equivalent of calling `port.open(openCallback)` in the next tick. You can disable this by setting the option `autoOpen` to `false`.
 
 **Throws**:
 
-- <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
+- <code>TypeError</code> When given invalid arguments, a TypeError will be thrown.
 
 
 | Param | Type | Description |
 | --- | --- | --- |
-| path | <code>string</code> | The system path of the serial port to open. For example, `/dev/tty.XXX` on Mac/Linux or `COM1` on Windows. |
+| path | <code>string</code> | The system path of the serial port you want to open. For example, `/dev/tty.XXX` on Mac/Linux, or `COM1` on Windows. |
 | [options] | [<code>openOptions</code>](#module_serialport--SerialPort..openOptions) | Port configuration options |
-| [openCallback] | [<code>errorCallback</code>](#module_serialport--SerialPort..errorCallback) | Called when a connection has been opened. If this is not provided and an error occurs, it will be emitted on the ports `error` event. The callback will NOT be called if autoOpen is set to false in the openOptions as the open will not be performed. |
+| [openCallback] | [<code>errorCallback</code>](#module_serialport--SerialPort..errorCallback) | Called when a connection has been opened. If this is not provided and an error occurs, it will be emitted on the port's `error` event. The callback will NOT be called if autoOpen is set to `false` in the openOptions, as the open will not be performed. |
 
 
 * * *
@@ -436,7 +436,7 @@ Opens a connection to the given serial port.
 
 | Param | Type | Description |
 | --- | --- | --- |
-| [callback] | [<code>errorCallback</code>](#module_serialport--SerialPort..errorCallback) | Called when a connection has been opened. If this is not provided and an error occurs, it will be emitted on the ports `error` event. |
+| [callback] | [<code>errorCallback</code>](#module_serialport--SerialPort..errorCallback) | Called when a connection has been opened. If this is not provided and an error occurs, it will be emitted on the port's `error` event. |
 
 
 * * *
@@ -450,9 +450,9 @@ Changes the baud rate for an open port. Throws if you provide a bad argument. Em
 
 | Param | Type | Description |
 | --- | --- | --- |
-| [options] | <code>object</code> | Only `baudRate` is currently supported |
-| [options.baudRate] | <code>number</code> | The baud rate of the port to be opened. This should match one of commonly available baud rates, such as 110, 300, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200. There is no guarantee, that the device connected to the serial port will support the requested baud rate, even if the port itself supports that baud rate. |
-| [callback] | [<code>errorCallback</code>](#module_serialport--SerialPort..errorCallback) | Called once the port's baud rate has been changed. If `.update` is called without an callback and there is an error, an error event will be emitted. |
+| [options] | <code>object</code> | Only supports `baudRate`. |
+| [options.baudRate] | <code>number</code> | The baud rate of the port to be opened. This should match one of the commonly available baud rates, such as 110, 300, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, 115200. There is no guarantee that the device connected to the serial port will support the requested baud rate, even if the port itself supports that baud rate. |
+| [callback] | [<code>errorCallback</code>](#module_serialport--SerialPort..errorCallback) | Called once the port's baud rate changes. If `.update` is called without a callback, and there is an error, an error event will be emitted. |
 
 
 * * *
@@ -464,7 +464,7 @@ Writes data to the given serial port. Buffers written data if the port is not op
 
 The write operation is non-blocking. When it returns, data may still have not actually been written to the serial port. See `drain()`.
 
-Some devices like the Arduino reset when you open a connection to them. In these cases if you immediately write to the device they wont be ready to receive the data. This is often worked around by having the Arduino send a "ready" byte that your node program waits for before writing. You can also often get away with waiting around 400ms.
+Some devices like the Arduino reset when you open a connection to them. In such cases, immediately writing to the device won't prepare them to receive the data. You can work around this by having the Arduino send a "ready" byte that your node program waits for before writing. You can also often get away with waiting around 400ms.
 
 Even though serialport is a stream, when writing it can accept arrays of bytes in addition to strings and buffers. This extra functionality is pretty sweet.
 
@@ -474,9 +474,9 @@ Even though serialport is a stream, when writing it can accept arrays of bytes i
 
 | Param | Type | Description |
 | --- | --- | --- |
-| data | <code>string</code> \| <code>array</code> \| <code>buffer</code> | Accepts a [`Buffer` ](http://nodejs.org/api/buffer.html) object, or a type that is accepted by the `Buffer` constructor (ex. an array of bytes or a string). |
-| [encoding] | <code>string</code> | The encoding, if chunk is a String. Defaults to `'utf8'`. Also accepts `'ascii'`, `'base64'`, `'binary'`, `'hex'` See [Buffers and Character Encodings](https://nodejs.org/api/buffer.html#buffer_buffers_and_character_encodings) for all available options. |
-| [callback] | <code>function</code> | Called once the write operation finishes. Data may not yet be flushed to the underlying port, no arguments. |
+| data | <code>string</code> \| <code>array</code> \| <code>buffer</code> | Accepts a [`Buffer` ](http://nodejs.org/api/buffer.html) object, or a type that is accepted by the `Buffer` constructor (for example, an array of bytes or a string). |
+| [encoding] | <code>string</code> | The encoding, if chunk is a string. Defaults to `'utf8'`. Also accepts `'ascii'`, `'base64'`, `'binary'`, or `'hex'`. See [Buffers and Character Encodings](https://nodejs.org/api/buffer.html#buffer_buffers_and_character_encodings) for all available options. |
+| [callback] | <code>function</code> | Called once the write operation finishes. Data may not yet be flushed to the underlying port. No arguments. |
 
 
 * * *
@@ -484,7 +484,7 @@ Even though serialport is a stream, when writing it can accept arrays of bytes i
 <a name="module_serialport--SerialPort+read"></a>
 
 #### `serialPort.read([size])` ⇒ <code>string</code> &#124; <code>Buffer</code> &#124; <code>null</code>
-Request a number of bytes from the SerialPort. The `read()` method pulls some data out of the internal buffer and returns it. If no data available to be read, null is returned. By default, the data will be returned as a Buffer object unless an encoding has been specified using the `.setEncoding()` method.
+Request a number of bytes from the SerialPort. The `read()` method pulls some data out of the internal buffer and returns it. If no data's available to be read, null is returned. By default, the data will be returned as a `Buffer` object unless you have specified an encoding using the `.setEncoding()` method.
 
 **Kind**: instance method of [<code>SerialPort</code>](#exp_module_serialport--SerialPort)  
 **Returns**: <code>string</code> \| <code>Buffer</code> \| <code>null</code> - The data from internal buffers  
@@ -515,20 +515,20 @@ Closes an open connection
 <a name="module_serialport--SerialPort+set"></a>
 
 #### `serialPort.set([options], [callback])`
-Set control flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363257(v=vs.85).aspx) for windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for mac and linux.
+Set control flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363257(v=vs.85).aspx) for Windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for Mac and Linux.
 
 **Kind**: instance method of [<code>SerialPort</code>](#exp_module_serialport--SerialPort)  
 **Since**: 5.0.0  
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| [options] | <code>object</code> |  | All options are operating system default when the port is opened. Every flag is set on each call to the provided or default values. If options isn't provided default options will be used. |
+| [options] | <code>object</code> |  | All options are operating system default when the port is opened. Every flag is set on each call to the provided or default values. If options aren't provided, default options are used. |
 | [options.brk] | <code>Boolean</code> | <code>false</code> |  |
 | [options.cts] | <code>Boolean</code> | <code>false</code> |  |
 | [options.dsr] | <code>Boolean</code> | <code>false</code> |  |
 | [options.dtr] | <code>Boolean</code> | <code>true</code> |  |
 | [options.rts] | <code>Boolean</code> | <code>true</code> |  |
-| [callback] | [<code>errorCallback</code>](#module_serialport--SerialPort..errorCallback) |  | Called once the port's flags have been set. |
+| [callback] | [<code>errorCallback</code>](#module_serialport--SerialPort..errorCallback) |  | Called once the port's flags are set. |
 
 
 * * *
@@ -537,13 +537,13 @@ Set control flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.c
 
 #### `serialPort.get([callback])`
 Returns the control flags (CTS, DSR, DCD) on the open port.
-Uses [`GetCommModemStatus`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363258(v=vs.85).aspx) for windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for mac and linux.
+Uses [`GetCommModemStatus`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363258(v=vs.85).aspx) for Windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for Mac and Linux.
 
 **Kind**: instance method of [<code>SerialPort</code>](#exp_module_serialport--SerialPort)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| [callback] | [<code>modemBitsCallback</code>](#module_serialport--SerialPort..modemBitsCallback) | Called once the modem bits have been retrieved. |
+| [callback] | [<code>modemBitsCallback</code>](#module_serialport--SerialPort..modemBitsCallback) | Called once the modem bits are retrieved. |
 
 
 * * *
@@ -551,7 +551,7 @@ Uses [`GetCommModemStatus`](https://msdn.microsoft.com/en-us/library/windows/des
 <a name="module_serialport--SerialPort+flush"></a>
 
 #### `serialPort.flush([callback])`
-Flush discards data received but not read and written but not transmitted. For more technical details see [`tcflush(fd, TCIFLUSH)`](http://linux.die.net/man/3/tcflush) for Mac/Linux and [`FlushFileBuffers`](http://msdn.microsoft.com/en-us/library/windows/desktop/aa364439) for Windows.
+Flush discards data received but not read, and written but not transmitted. For more technical details, see [`tcflush(fd, TCIFLUSH)`](http://linux.die.net/man/3/tcflush) for Mac/Linux and [`FlushFileBuffers`](http://msdn.microsoft.com/en-us/library/windows/desktop/aa364439) for Windows.
 
 **Kind**: instance method of [<code>SerialPort</code>](#exp_module_serialport--SerialPort)  
 
@@ -574,7 +574,7 @@ Waits until all output data has been transmitted to the serial port. See [`tcdra
 | [callback] | [<code>errorCallback</code>](#module_serialport--SerialPort..errorCallback) | Called once the drain operation returns. |
 
 **Example**  
-Writes `data` and waits until it has finish transmitting to the target serial port before calling the callback.
+Writes `data` and waits until it has finish transmitting to the target serial port before calling the callback:
 
 ```js
 function writeAndDrain (data, callback) {
@@ -601,7 +601,7 @@ The `pause()` method will cause a stream in flowing mode to stop emitting 'data'
 <a name="module_serialport--SerialPort+resume"></a>
 
 #### `serialPort.resume()` ⇒
-The `resume()` method causes an explicitly paused Readable stream to resume emitting 'data' events, switching the stream into flowing mode.
+The `resume()` method causes an explicitly paused readable stream to resume emitting 'data' events, switching the stream into flowing mode.
 
 **Kind**: instance method of [<code>SerialPort</code>](#exp_module_serialport--SerialPort)  
 **Returns**: `this`  
@@ -631,7 +631,7 @@ The `open` event's callback is called with no arguments when the port is opened 
 <a name="module_serialport--SerialPort+event_data"></a>
 
 #### `Event: "data"`
-The `data` event puts the port in flowing mode. data will be emitted as soon as it's received. Data will be a `Buffer` object with a varying amount of data in it. The `readLine` parser converts the data into string lines. See the [parsers](#module_serialport--SerialPort.parsers) section for more information on parsers and the [NodeJS stream documentation](https://nodejs.org/api/stream.html#stream_event_data) for more information on the data event.
+The `data` event puts the port in flowing mode. Data is emitted as soon as it's received. Data is a `Buffer` object with a varying amount of data in it. The `readLine` parser converts the data into string lines. See the [parsers](#module_serialport--SerialPort.parsers) section for more information on parsers, and the [Node.js stream documentation](https://nodejs.org/api/stream.html#stream_event_data) for more information on the data event.
 
 **Kind**: event emitted by [<code>SerialPort</code>](#exp_module_serialport--SerialPort)  
 
@@ -649,7 +649,7 @@ The `disconnect` event's callback is called with an error object. This will alwa
 <a name="module_serialport--SerialPort+event_close"></a>
 
 #### `Event: "close"`
-The `close` event's callback is called with no arguments when the port is closed. In the event of an error, an error event will be triggered
+The `close` event's callback is called with no arguments when the port is closed. In the event of an error, an error event will be triggered.
 
 **Kind**: event emitted by [<code>SerialPort</code>](#exp_module_serialport--SerialPort)  
 
@@ -658,8 +658,9 @@ The `close` event's callback is called with no arguments when the port is closed
 <a name="module_serialport--SerialPort.Binding"></a>
 
 #### `SerialPort.Binding` : [<code>BaseBinding</code>](#module_serialport--SerialPort..BaseBinding)
-The Binding is how node SerialPort talks to the underlying system. By default we auto detect windows, Linux and OSX and load the appropriate module for your system. You can assign `SerialPort.Binding` to any binding you like. You can find more by searching on [npm](https://npmjs.org/).
-  You can also avoid auto loading the default bindings by requiring SerialPort with
+The Binding is how Node SerialPort talks to the underlying system. By default, we auto-detect Windows, Linux and OSX and load the appropriate module for your system. You can assign `SerialPort.Binding` to any binding you like. You can find more by searching on [npm](https://npmjs.org/).
+
+You can also avoid auto-loading the default bindings by requiring SerialPort with:
   ```js
   var SerialPort = require('serialport/lib/serialport');
   SerialPort.Binding = MyBindingClass;
@@ -673,13 +674,13 @@ The Binding is how node SerialPort talks to the underlying system. By default we
 <a name="module_serialport--SerialPort.parsers"></a>
 
 #### `SerialPort.parsers` : <code>object</code>
-The default Parsers are [Transform streams](https://nodejs.org/api/stream.html#stream_class_stream_transform) that will parse data in a variety of ways and can be used to process incoming data.
+The default parsers are [Transform streams](https://nodejs.org/api/stream.html#stream_class_stream_transform) that parse data in different ways and can process incoming data.
 
- To use any of the parsers you need to create them and then pipe the serialport to the parser. Be sure not to write to the parser but to the SerialPort object.
+To use the parsers, you must create them and then pipe the SerialPort to the parser. Don't write to the parser but to the SerialPort object.
 
 **Kind**: static property of [<code>SerialPort</code>](#exp_module_serialport--SerialPort)  
 **Since**: 5.0.0  
-**Properties**
+**Properties**:
 
 | Name | Type | Description |
 | --- | --- | --- |
@@ -687,7 +688,7 @@ The default Parsers are [Transform streams](https://nodejs.org/api/stream.html#s
 | Delimiter | <code>Class</code> | is a transform stream that emits data each time a byte sequence is received. |
 | Readline | <code>Class</code> | is a transform stream that emits data after a newline delimiter is received. |
 
-**Example**  
+**Example**:
 ```js
 var SerialPort = require('serialport');
 var Readline = SerialPort.parsers.Readline;
@@ -697,11 +698,11 @@ port.pipe(parser);
 parser.on('data', console.log);
 port.write('ROBOT PLEASE RESPOND\n');
 
-// creating the parser and piping can be shortened to
+// Creating the parser and piping can be shortened to:
 var parser = port.pipe(new Readline());
 ```
 
-To use the byte length parser, you must provide the length of the number of bytes:
+To use the ByteLength parser, provide the length of the number of bytes:
 ```js
 var SerialPort = require('serialport');
 var ByteLength = SerialPort.parsers.ByteLength
@@ -710,7 +711,7 @@ var parser = port.pipe(new ByteLength({length: 8}));
 parser.on('data', console.log);
 ```
 
-To use the Delimiter parser you must specify, you must provide a delimiter as a string, buffer, or an array of bytes:
+To use the Delimiter parser, provide a delimiter as a string, buffer, or array of bytes:
 ```js
 var SerialPort = require('serialport');
 var Delimiter = SerialPort.parsers.Delimiter;
@@ -719,7 +720,7 @@ var parser = port.pipe(new Delimiter({delimiter: Buffer.from('EOL')}));
 parser.on('data', console.log);
 ```
 
-To use the Readline parser, you may provide a delimiter (defaults to '\n')
+To use the Readline parser, you provide a delimiter (defaults to '\n'):
 ```js
 var SerialPort = require('serialport');
 var Readline = SerialPort.parsers.Readline;
@@ -733,7 +734,7 @@ parser.on('data', console.log);
 <a name="module_serialport--SerialPort.list"></a>
 
 #### `SerialPort.list(callback)` : <code>function</code>
-Retrieves a list of available serial ports with metadata. Only the `comName` is guaranteed, all the other fields will be undefined if they are unavailable. The `comName` is either the path or an identifier (eg `COM1`) used to open the serialport.
+Retrieves a list of available serial ports with metadata. Only the `comName` is guaranteed; all the other fields are undefined if they are unavailable. The `comName` is either the path or an identifier (eg `COM1`) used to open the SerialPort.
 
 **Kind**: static method of [<code>SerialPort</code>](#exp_module_serialport--SerialPort)  
 
@@ -741,7 +742,7 @@ Retrieves a list of available serial ports with metadata. Only the `comName` is 
 | --- | --- |
 | callback | <code>listCallback</code> | 
 
-**Example**  
+**Example**: 
 ```js
 // example port information
 {
@@ -772,15 +773,15 @@ SerialPort.list(function (err, ports) {
 <a name="module_serialport--SerialPort..BaseBinding"></a>
 
 #### SerialPort~BaseBinding
-You wont ever have to use Binding objects directly they'll be used by SerialPort to access the underlying hardware. This documentation is geared towards people making bindings for different platforms. This class can be inherited from to get type checking for each method.
+You don't ever have to use Binding objects directly. SerialPort uses them to access the underlying hardware. This documentation is geared towards people making bindings for different platforms. This class can be inherited from to get type-checking for each method.
 
 **Kind**: inner class of [<code>SerialPort</code>](#exp_module_serialport--SerialPort)  
 **Since**: 5.0.0  
-**Properties**
+**Properties**:
 
 | Name | Type | Description |
 | --- | --- | --- |
-| isOpen | <code>boolean</code> | Required property. `true` if the port is open, `false` otherwise. Should be read only. |
+| isOpen | <code>boolean</code> | Required property. `true` if the port is open, `false` otherwise. Should be read-only. |
 
 
 * [~BaseBinding](#module_serialport--SerialPort..BaseBinding)
@@ -806,13 +807,13 @@ You wont ever have to use Binding objects directly they'll be used by SerialPort
 ##### `new BaseBinding(options)`
 **Throws**:
 
-- <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
+- <code>TypeError</code> When given invalid arguments, a TypeError is thrown.
 
 
 | Param | Type | Description |
 | --- | --- | --- |
 | options | <code>object</code> |  |
-| options.disconnect | <code>function</code> | function to be called when the bindings have detected a disconnected port. This function should be called during any operation instead of that operations usual callback. The `SerialPort` class will attempt to call `close` after a disconnection and ignore any errors. |
+| options.disconnect | <code>function</code> | function to call when the bindings have detected a disconnected port. Call this function during an operation instead of that operation's usual callback. The `SerialPort` class will attempt to call `close` after a disconnection and ignore any errors. |
 
 
 * * *
@@ -826,7 +827,7 @@ Opens a connection to the serial port referenced by the path.
 **Returns**: <code>Promise</code> - Resolves after the port has been opened and configured.  
 **Throws**:
 
-- <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
+- <code>TypeError</code> When given invalid arguments, a TypeError is thrown.
 
 
 | Param | Type |
@@ -846,7 +847,7 @@ Closes an open connection
 **Returns**: <code>Promise</code> - Resolves once the connection is closed.  
 **Throws**:
 
-- <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
+- <code>TypeError</code> When given invalid arguments, a TypeError is thrown.
 
 
 * * *
@@ -854,15 +855,15 @@ Closes an open connection
 <a name="module_serialport--SerialPort..BaseBinding+read"></a>
 
 ##### `baseBinding.read(data, length)` ⇒ <code>Promise</code>
-Request a number of bytes from the SerialPort. This function is similar to node's [`fs.read`](http://nodejs.org/api/fs.html#fs_fs_read_fd_buffer_offset_length_position_callback).
+Request a number of bytes from the SerialPort. This function is similar to Node's [`fs.read`](http://nodejs.org/api/fs.html#fs_fs_read_fd_buffer_offset_length_position_callback).
 
 **Kind**: instance method of [<code>BaseBinding</code>](#module_serialport--SerialPort..BaseBinding)  
 **Returns**: <code>Promise</code> - Resolves with the number of bytes read after a read operation.  
 **Throws**:
 
-- <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
+- <code>TypeError</code> When given invalid arguments, a TypeError is thrown.
 
-**Params**: <code>integer</code> offset - is the offset in the buffer to start writing at.  
+**Params**: <code>integer</code> offset is the offset in the buffer where you can start writing.
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -875,13 +876,13 @@ Request a number of bytes from the SerialPort. This function is similar to node'
 <a name="module_serialport--SerialPort..BaseBinding+write"></a>
 
 ##### `baseBinding.write(data)` ⇒ <code>Promise</code>
-Write a number of bytes to the SerialPort This will only be called when there isn't a pending write operation.
+Write a number of bytes to the SerialPort. This is only called when there's no pending write operation.
 
 **Kind**: instance method of [<code>BaseBinding</code>](#module_serialport--SerialPort..BaseBinding)  
 **Returns**: <code>Promise</code> - Resolves after the data has been passed to the operating system for writing.  
 **Throws**:
 
-- <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
+- <code>TypeError</code> When given invalid arguments, a TypeError is thrown.
 
 
 | Param | Type | Description |
@@ -894,19 +895,19 @@ Write a number of bytes to the SerialPort This will only be called when there is
 <a name="module_serialport--SerialPort..BaseBinding+update"></a>
 
 ##### `baseBinding.update([options])` ⇒ <code>Promise</code>
-Changes connection settings on an open port. Currently only the baudRate is required.
+Changes connection settings on an open port. Currently requires only the baudRate.
 
 **Kind**: instance method of [<code>BaseBinding</code>](#module_serialport--SerialPort..BaseBinding)  
-**Returns**: <code>Promise</code> - Resolves once the port's baud rate has been changed.  
+**Returns**: <code>Promise</code> - Resolves once the port's baud rate changes.
 **Throws**:
 
-- <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
+- <code>TypeError</code> When given invalid arguments, a TypeError is thrown.
 
 
 | Param | Type | Description |
 | --- | --- | --- |
-| [options] | <code>object</code> | Only `baudRate` is currently supported |
-| [options.baudRate] | <code>number</code> | If provided a baudRate that isn't supported by the bindings it should pass an error to the callback |
+| [options] | <code>object</code> | Only supports `baudRate`. |
+| [options.baudRate] | <code>number</code> | If provided a baudRate that isn't supported by the bindings, it should pass an error to the callback. |
 
 
 * * *
@@ -920,12 +921,12 @@ Set control flags on an open port.
 **Returns**: <code>Promise</code> - Resolves once the port's flags have been set.  
 **Throws**:
 
-- <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
+- <code>TypeError</code> When given invalid arguments, a TypeError is thrown.
 
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| [options] | <code>object</code> |  | All options are operating system default when the port is opened. Every flag is set on each call to the provided or default values. All options will always be provided. |
+| [options] | <code>object</code> |  | All options are operating system-default when the port is opened. Every flag is set on each call to the provided or default values. All options will always be provided. |
 | [options.brk] | <code>Boolean</code> | <code>false</code> |  |
 | [options.cts] | <code>Boolean</code> | <code>false</code> |  |
 | [options.dsr] | <code>Boolean</code> | <code>false</code> |  |
@@ -941,7 +942,7 @@ Set control flags on an open port.
 Get the control flags (CTS, DSR, DCD) on the open port.
 
 **Kind**: instance method of [<code>BaseBinding</code>](#module_serialport--SerialPort..BaseBinding)  
-**Returns**: <code>Promise</code> - Resolves with the flags that have been retrieved.  
+**Returns**: <code>Promise</code> - Resolves with the retrieved flags.
 **Throws**:
 
 - <code>TypeError</code> When given invalid arguments a TypeError will be thrown.
@@ -1123,7 +1124,7 @@ $ serialport-term -l
 
 ### License
 
-SerialPort is MIT-licensed. All of its dependencies are MIT- or BSD-licensed.
+Node-SerialPort is MIT-licensed. All of its dependencies are MIT- or BSD-licensed.
 
 The MIT License (MIT)
 
