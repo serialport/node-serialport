@@ -22,9 +22,9 @@ https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/master/CONTRI
 
 Imagine a world in which you can write JavaScript to control blenders, lights, security systems, or even robots (that's right—robots!). That world is here, thanks to Node-Serialport. It provides a very simple interface for the low-level serial port code necessary to program [Arduino](http://www.arduino.cc/) chipsets, [X10](http://www.smarthome.com/manuals/protocol.txt) wireless communications, and even the rising [Z-Wave](http://www.z-wave.com/modules/ZwaveStart/) and [Zigbee](http://www.zigbee.org/) standards. The physical world is your oyster with this goodie. 
 
-For a full breakdown of why we made Node-Serialport, please read [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics).
+For a full breakdown of why we made Node-Serialport, please read [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics). It explains why one would want to program robots in JS.
 
-## Key Questions
+## Important Questions
 - For support, open a [GitHub issue](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/new). 
 - For discussions, design ideas, and clarifications, we recommend you join our [Gitter chat room](https://gitter.im/EmergingTechnologyAdvisors/node-serialport). Two related projects—[Browser Serialport](https://github.com/garrows/browser-serialport) ("just like Node Serialport, but for browser apps") and [Serialport Test Piliot](https://github.com/j5js/serialport-test-pilot)—help us test Serialport.
 - To contribute, please take a look at our [contribution guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md). You might want to review our [roadmap](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/746). We also have issues tagged ["good first PR"](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+pr%22), if you'd like to start somewhere specific. We'll do our best to support you until your PR is merged.
@@ -44,10 +44,9 @@ You're reading the README for Node-Serialport's master branch. You probably want
 ***
 ### Helpful Resources for Getting Started with Node-Serialport
 
-We recommend reading the following articles:
+In addition to reading the [article we mentioned above](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics), these others might help you:
 * [Johnny-Five](http://johnny-five.io/#hello-world): The Johnny-Five Robotics and IoT platform's six-line "Hello World" (awesome).
 * [Arduino Node Security Sensor Hacking](http://nexxylove.tumblr.com/post/20159263403/arduino-node-security-sensor-hacking): A great all-around "how do I use this" article.
-* [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics): Explains why one would want to program robots in JS, and how this all started.
 
 ***
 * [Platform Support](#platform-support)
@@ -113,8 +112,8 @@ We recommend reading the following articles:
 * [License](#license)
 ***
 
-## Platform Support
-`serialport` supports NodeJS v4 and upwards. For versions 0.10 and 0.12 use `serialport@4`. The platforms, architectures and node versions `serialport` supports are the following;
+### Platform Support
+`serialport` supports NodeJS v4 and upwards. For versions 0.10 and 0.12, use `serialport@4`. The platforms, architectures and Node versions that `serialport` supports are the following;
 
 | Platform / Arch | Node v4.x | Node v6.x | Node v7.x |
 |       ---       | --- | --- | --- |
@@ -129,15 +128,15 @@ We recommend reading the following articles:
 | Windows² / x64  |  ☑  |  ☑  |  ☑  |
 | OSX³ / x64      |  ☑  |  ☑  |  ☑  |
 
-¹ ARM, MIPSel and PPC64¹ platforms are known to work but are not currently part of our test or build matrix. [#846](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/846) ARM v4 and v5 was dropped from NodeJS after Node v0.10.
+¹ ARM, MIPSel and PPC64¹ platforms are not currently part of our testing or build matrix, but are known to work. [#846](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/846) ARM v4 and v5 was dropped from NodeJS after Node v0.10.
 
-² Windows 7, 8, 10, and 10 IoT are supported but only Windows Server 2012 R2 is tested by our CI.
+² Windows 7, 8, 10, and 10 IoT are supported, but our CI tests only Windows Server 2012 R2.
 
-³ OSX 10.4 Tiger and above are supported but only 10.9.5 Mavericks with Xcode 6.1 is tested in our CI.
+³ OSX 10.4 Tiger and above are supported, but our CI tests only 10.9.5 Mavericks with Xcode 6.1.
 
 ## Installation Instructions
 
-For most "standard" use cases (node v4.x on mac, linux, windows on a x86 or x64 processor), node-serialport will install nice and easy with a standard;
+For most "standard" use cases (Node v4.x on Mac, Linux, or Windows on a x86 or x64 processor), Node-Serialport will install nice and easy with a standard:
 
 ```
 npm install serialport
@@ -145,66 +144,66 @@ npm install serialport
 
 ### Installation Special Cases
 
-We are using [node-pre-gyp](https://github.com/mapbox/node-pre-gyp) to compile and post binaries of the library for most common use cases (linux, mac, windows on standard processor platforms). If you are on a special case, node-serialport will work, but it will compile the binary when you install.
+We use [node-pre-gyp](https://github.com/mapbox/node-pre-gyp) to compile and post binaries of the library for most common use cases (Linux, Mac, Windows on standard processor platforms). If you have a special case, Node-Serialport will work, but it will compile the binary when you install. node-gyp requires Python 2.x, so please ensure you have it (and NOT 3.0) installed for all operating systems.
 
-This assumes you have everything on your system necessary to compile ANY native module for Node.js. This may not be the case, though, so please ensure the following are true for your system before filing an issue about "Does not install". For all operating systems, please ensure you have Python 2.x installed AND not 3.0, node-gyp (what we use to compile) requires Python 2.x.
+This assumes you have everything on your system necessary to compile ANY native module for Node.js. If this is not the case, please ensure the following are true for your system before filing a "Does not install" issue.
 
 #### Alpine Linux
 
-[Alpine](http://www.alpinelinux.org/) is a (very) small distro, but it uses the musl standard library instead of glibc (that most other Linux distros use), so it requires compilation. It's commonly used with Docker. We have been confirmed to work with [apline-node](https://github.com/mhart/alpine-node).
+[Alpine](http://www.alpinelinux.org/) is a (very) small distro, but it uses the [musl](https://www.musl-libc.org/) standard library instead of [glibc](https://www.gnu.org/software/libc/) (used by most other Linux distros) so it requires compilation. It's commonly used with Docker. A user confirms that Node-Serialport works with [alpine-node](https://github.com/mhart/alpine-node).
 
 ```
-# If you don't have node/npm already, add that first
+# If you don't have node/npm already, add that first:
 sudo apk add --no-cache nodejs
 
-# Add the necessary build and runtime dependencies
+# Add the necessary build and runtime dependencies:
 sudo apk add --no-cache make gcc g++ python linux-headers udev
 
-# Then we can install serialport, forcing it to compile
+# Then we can install serialport, forcing it to compile:
 npm install serialport --build-from-source
 
-# If you're installing as root you'll need to use
+# If you're installing as root, you'll need to use
 ```
 
 #### Electron
 
-Electron is a framework for creating cross-platform desktop applications. Electron comes with it's own version of the Node.js runtime.
+[Electron](https://electron.atom.io/), is a framework for creating cross-platform desktop applications. It comes with its own version of the Node.js runtime.
 
-If you require `serialport` as a dependency for an Electron project you need to compile it for the version of Electron you're using in your project.
+If you require `serialport` as a dependency for an Electron project, you need to compile it for the version of Electron your project's using.
 
 When you first install `serialport` it will compile against the version of Node.js on your machine, not against the Node.js runtime bundled with Electron.
 
-To recompile `serialport` (or any native Node.js module) for Electron you can use `electron-rebuild`.
+To recompile `serialport` (or any native Node.js module) for Electron, you can use `electron-rebuild` (more info at Electron's [README](https://github.com/electron/electron-rebuild/blob/master/README.md):
 
 1. `npm install --save-dev electron-rebuild`
 2. Add `electron-rebuild` to your project's package.json's install hook.
 3. Run `npm install`
 
-For more information on `electron-rebuild` visit the official [README](https://github.com/electron/electron-rebuild/blob/master/README.md).
-
-For an example project check out [`electron-serialport`](https://github.com/johnny-five-io/electron-serialport).
+For an example project, check out [`electron-serialport`](https://github.com/johnny-five-io/electron-serialport).
 
 #### Illegal Instruction
 
-The pre-compiled binaries assume a fully capable chip. The Galileo 2 for example lacks a few instruction sets from the `ia32` architecture. A few other platforms have similar issues. So if you get `Illegal Instruction` when trying to run serialport you'll need to rebuild the serialport binary by asking npm to rebuild it.
+The pre-compiled binaries assume a fully capable chip. Intel's [Galileo 2](https://software.intel.com/en-us/iot/hardware/galileo), for example, lacks a few instruction sets from the `ia32` architecture. A few other platforms have similar issues. If you get `Illegal Instruction` when trying to run Node-Serialport, you'll need to ask npm to rebuild the Serialport binary:
 
 ```bash
-# Will ask npm to build serialport during install time
+# Will ask npm to build serialport during install time:
 npm install serialport --build-from-source
 
-# If you have a package that depends on serialport you can ask npm to rebuild it specifically.
+# If you have a package that depends on serialport, you can ask npm to rebuild it specifically...:
 npm rebuild serialport --build-from-source
 
-# Or leave out the package name to rebuild everything.
+# ... or leave out the package name to rebuild everything:
 npm rebuild --build-from-source
 ```
 #### Mac OS X
 
-Ensure that you have at a minimum the xCode Command Line Tools installed appropriate for your system configuration. If you recently upgraded the OS, it probably removed your installation of Command Line Tools, please verify before submitting a ticket. To compile `node-serialport` with Node.js 4.x+, you will need to use g++ v4.8 or higher.
+Ensure that you have installed, at minimum, the xCode Command Line Tools appropriate for your system configuration. If you recently upgraded your OS, it probably removed your installation of Command Line Tools. Please verify before submitting a ticket to us. 
+
+To compile `node-serialport` with Node.js 4.x+, you will need to use g++ v4.8 or higher.
 
 #### Raspberry Pi Linux
 
-Follow the instructions for [setting up a Raspberry pi for use with Johnny-Five and Raspi IO](https://github.com/nebrius/raspi-io/wiki/Getting-a-Raspberry-Pi-ready-for-NodeBots). These projects use Node Serialport under the hood.
+Follow the instructions for [setting up a Raspberry Pi for use with Johnny-Five and Raspi IO](https://github.com/nebrius/raspi-io/wiki/Getting-a-Raspberry-Pi-ready-for-NodeBots). These projects use Node-Serialport under the hood.
 
 | Revision       |      CPU              | Arm Version |
 |   ----         |      ---              |     ---     |
