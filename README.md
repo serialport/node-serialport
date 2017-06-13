@@ -26,10 +26,11 @@ Node-Serialport provides a very simple interface for the low-level serial port c
 
 For a full breakdown of why we made Node-Serialport, please read [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics). It explains why one would want to program robots in JS in the first place.
 
-## Important Questions
-- For support, open a [GitHub issue](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/new). 
-- For discussions, design ideas, and clarifications, please join our [Gitter chat room](https://gitter.im/EmergingTechnologyAdvisors/node-serialport). Two related projects—[Browser Serialport](https://github.com/garrows/browser-serialport) ("just like Node Serialport, but for browser apps") and [Serialport Test Piliot](https://github.com/j5js/serialport-test-pilot)—help us test Node-Serialport.
-- To contribute, please review our [contribution guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md). You might want to check out our [roadmap](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/746). We also have issues tagged ["good first PR"](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+pr%22), if you'd like to start somewhere specific. We'll do our best to support you until we merge your PR.
+## Quick Answers to Important Questions
+- **For support**, open a [GitHub issue](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/new). 
+- **For discussions, design ideas, and clarifications**, please join our [Gitter chat room](https://gitter.im/EmergingTechnologyAdvisors/node-serialport). 
+- **To test Node-Serialport**, we recommend two related projects—[Browser Serialport](https://github.com/garrows/browser-serialport) ("just like Node Serialport, but for browser apps") and [Serialport Test Piliot](https://github.com/j5js/serialport-test-pilot).
+- **To contribute**, please review our [contribution guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md). You might want to check out our [roadmap](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/746). We also have issues tagged ["good first PR"](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+pr%22), if you'd like to start somewhere specific. We'll do our best to support you until we merge your PR.
 
 ***
 
@@ -131,7 +132,7 @@ In addition to reading the [article mentioned above](http://www.voodootikigod.co
 | Windows² / x64  |  ☑  |  ☑  |  ☑  |
 | OSX³ / x64      |  ☑  |  ☑  |  ☑  |
 
-¹ ARM, MIPSel and PPC64¹ platforms are not currently part of our testing or build matrix, but are known to work. [#846](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/846) ARM v4 and v5 was dropped from NodeJS after Node v0.10.
+¹ ARM, MIPSel and PPC64¹ platforms are not currently part of our testing or build matrix, but are known to work. In [#846](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/846), we dropped ARM v4 and v5 from NodeJS after Node v0.10.
 
 ² Windows 7, 8, 10, and 10 IoT are supported, but our CI tests only Windows Server 2012 R2.
 
@@ -165,7 +166,7 @@ sudo apk add --no-cache make gcc g++ python linux-headers udev
 # Then we can install serialport, forcing it to compile:
 npm install serialport --build-from-source
 
-# If you're installing as root, you'll need to use
+# If you're installing as root, you'll need to use the --unsafe-perm flag
 ```
 
 #### Electron
