@@ -61,7 +61,7 @@
     "safe-buffer": "^5.0.1"
   },
   "devDependencies": {
-    "chai": "^3.5.0",
+    "chai": "^4.0.1",
     "chai-subset": "^1.2.2",
     "eslint": "^3.19.0",
     "eslint-config-standard": "^10.2.1",
