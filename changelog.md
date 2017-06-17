@@ -1,3 +1,10 @@
+Version 5.0.0-beta4
+-------------
+- [all] add regex stream parser and tests
+- [all] upgrade to non deprecated buffer methods
+- [docs] Add socketio example
+- [windows] Fix unhandled promise rejection when calling read on Windows
+
 Version 5.0.0-beta3
 -------------
 - [all] Streams rewrite, node serialport is now a node stream! 🎉
