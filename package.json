@@ -57,7 +57,7 @@
     "commander": "^2.9.0",
     "debug": "^2.6.6",
     "nan": "^2.6.2",
-    "node-pre-gyp": "^0.6.32",
+    "node-pre-gyp": "^0.6.35",
     "safe-buffer": "^5.0.1"
   },
   "devDependencies": {
