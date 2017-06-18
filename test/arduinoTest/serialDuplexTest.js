@@ -22,9 +22,9 @@ if (!args.port) {
   process.exit(-1);
 }
 
-const port = new SerialPort(args.port);          // open the serial port:
-let output = 32;                                // ASCII space; lowest printable character
-let byteCount = 0;                              // number of bytes read
+const port = new SerialPort(args.port); // open the serial port:
+let output = 32; // ASCII space; lowest printable character
+let byteCount = 0; // number of bytes read
 
 function onOpen() {
   console.log('Port Open');
@@ -35,10 +35,10 @@ function onOpen() {
 }
 
 function onData(data) {
-  if (output <= 126) {        // highest printable character: ASCII ~
+  if (output <= 126) { // highest printable character: ASCII ~
     output++;
   } else {
-    output = 32;              // lowest printable character: space
+    output = 32; // lowest printable character: space
   }
   console.log(`Received:\t${data}`);
   console.log(`Read Events:\t${byteCount}`);
