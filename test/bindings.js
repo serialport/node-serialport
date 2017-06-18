@@ -77,7 +77,7 @@ bindingsToTest.forEach((bindingName) => {
 function testBinding(bindingName, Binding, testPort, disabledFeatures) {
   function testFeature(feature, description, callback) {
     if (disabledFeatures[feature]) {
-      return it(`Feature "${feature}" has been disabled. "${description}"`);
+      return it(`Feature "${feature}" is disabled. "${description}"`);
     }
     it(description, callback);
   }
