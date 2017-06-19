@@ -119,7 +119,7 @@ test_script:
 - IF %PUBLISH_BINARY% == 1 (npm install --fallback-to-build=false)
 
 after_test:
-- pip install codecov && codecov
+- pip install codecov && codecov --file coverage\coverage.json
 
 deploy: OFF
 
