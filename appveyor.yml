@@ -19,6 +19,13 @@ platform:
 install:
 - ps: Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:platform;
 - ps: $env:Path += ";$(pwd)\node_modules\.bin";
+# work around bug in npm 2 where id doesn't like our dev dep peers
+- ps: >
+    if ($env:nodejs_version -eq "4") {
+      npm install -g npm | Write-Host;
+    }
+    true;
+
 - ps: >
     @{
       "nodejs_version" = $env:nodejs_version
@@ -31,13 +38,6 @@ install:
       "appveyor_repo_tag" = $env:appveyor_repo_tag
       "electron_version" = $env:electron_version
     } | Out-String | Write-Host;
-
-# work around bug in npm 2.15.1 where checksums were coming back bad (node 0.12)
-- ps: >
-    if ($(npm -v) -eq "2.15.1") {
-      npm install -g npm@3 | Write-Host;
-    }
-    npm -v | Write-Host;
 
 # work around an issue with node-gyp v3.3.1 and node 4x
 # package.json has no certificates in it so we're cool

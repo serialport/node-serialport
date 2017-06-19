@@ -59,6 +59,9 @@ before_install:
 # download node if testing x86 architecture
 - if [[ "$ARCH" == "x86" ]]; then wget $BASE_URL/$X86_FILE.tar.gz; tar -xf $X86_FILE.tar.gz; export PATH=$X86_FILE/bin:$PATH; fi
 
+# upgrade npm if on node 4 as it doesn't like our dev peer deps
+- if [[ $TRAVIS_NODE_VERSION == "4" ]]; then npm install -g npm; fi
+
 # print versions
 - uname -a
 - file `which node`
