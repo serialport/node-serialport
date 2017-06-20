@@ -16,6 +16,13 @@ platform:
 - x86
 - x64
 
+# Dropping support for node 4 on 32 windows because it has isuses with ssl certs and npm
+matrix:
+  exclude:
+    - platform: x86
+      nodejs_version: "4"
+
+
 install:
 - ps: Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:platform;
 - ps: $env:Path += ";$(pwd)\node_modules\.bin";
@@ -38,12 +45,6 @@ install:
       "appveyor_repo_tag" = $env:appveyor_repo_tag
       "electron_version" = $env:electron_version
     } | Out-String | Write-Host;
-
-# work around an issue with node-gyp v3.3.1 and node 4x
-# package.json has no certificates in it so we're cool
-# https://github.com/nodejs/node-gyp/issues/921
-- ps: npm config set -g cafile=package.json | Write-Host;
-- ps: npm config set -g strict-ssl=false | Write-Host;
 
 # Check if we're building the latest tag, if so
 # then we publish the binaries if tests pass.
@@ -122,6 +123,3 @@ after_test:
 - pip install codecov && codecov --file coverage\coverage.json
 
 deploy: OFF
-
-matrix:
-  fast_finish: true
