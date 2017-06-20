@@ -323,8 +323,7 @@ int setup(int fd, OpenBaton *data) {
 }
 
 void EIO_Write(uv_work_t* req) {
-  QueuedWrite* queuedWrite = static_cast<QueuedWrite*>(req->data);
-  WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
+  WriteBaton* data = static_cast<WriteBaton*>(req->data);
   int bytesWritten = 0;
 
   do {
@@ -336,19 +335,12 @@ void EIO_Write(uv_work_t* req) {
       continue;
     }
 
-    // The write call was interrupted before anything was written, try again immediately.
-    if (errno == EINTR) {
-      // why try again right away instead of in another event loop?
-      continue;
-    }
-
     // Try again in another event loop
-    if (errno == EAGAIN || errno == EWOULDBLOCK) {
+    if (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK) {
       return;
     }
 
     // EBAD would mean we're "disconnected"
-
     // a real error so lets bail
     snprintf(data->errorString, sizeof(data->errorString), "Error: %s, calling write", strerror(errno));
     return;

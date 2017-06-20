@@ -245,8 +245,7 @@ bool IsClosingHandle(int fd) {
 }
 
 void EIO_Write(uv_work_t* req) {
-  QueuedWrite* queuedWrite = static_cast<QueuedWrite*>(req->data);
-  WriteBaton* data = static_cast<WriteBaton*>(queuedWrite->baton);
+  WriteBaton* data = static_cast<WriteBaton*>(req->data);
   data->result = 0;
 
   do {
