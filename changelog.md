@@ -1,3 +1,9 @@
+Version 5.0.0-beta5
+-------------
+- [docs] An overhaul of the format and language in our docs thanks to @LappleApple
+- [all] Remove the c++ write queue
+- [all] Add node 8 support and drop node 7 support
+
 Version 5.0.0-beta4
 -------------
 - [all] add regex stream parser and tests

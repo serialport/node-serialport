@@ -39,7 +39,7 @@ For a full breakdown of why we made Node-Serialport, please read [NodeBots - The
 
 You're reading the README for Node-Serialport's master branch. You probably want to see the README for our most recent release. See our [changelog](changelog.md) for what's new, and our [upgrade guide](UPGRADE_GUIDE.md) for a walk-through on differences between major versions.
 
-- [`serialport@5.0.0-beta4` docs](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/5.0.0-beta4/README.md) the latest `5.x` release.
+- [`serialport@5.0.0-beta5` docs](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/5.0.0-beta5/README.md) the latest `5.x` release.
 - [`serialport@4.0.7` docs](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/4.0.7/README.md) the latest `4.x` release.
 - [`serialport@3.1.2` docs](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/3.1.2/README.md) the last `3.x` release.
 
