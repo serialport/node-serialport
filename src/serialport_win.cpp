@@ -1,14 +1,13 @@
+#include "./serialport.h"
+#include "./serialport_win.h"
 #include <nan.h>
 #include <list>
 #include <vector>
-#include "./serialport.h"
 #include <string.h>
 #include <windows.h>
 #include <Setupapi.h>
 #include <devguid.h>
 #pragma comment (lib, "setupapi.lib")
-
-#ifdef WIN32
 
 #define MAX_BUFFER_SIZE 1000
 
@@ -244,6 +243,44 @@ bool IsClosingHandle(int fd) {
   return false;
 }
 
+NAN_METHOD(Write) {
+  // file descriptor
+  if (!info[0]->IsInt32()) {
+    Nan::ThrowTypeError("First argument must be an int");
+    return;
+  }
+  int fd = Nan::To<int>(info[0]).FromJust();
+
+  // buffer
+  if (!info[1]->IsObject() || !node::Buffer::HasInstance(info[1])) {
+    Nan::ThrowTypeError("Second argument must be a buffer");
+    return;
+  }
+  v8::Local<v8::Object> buffer = info[1]->ToObject();
+  char* bufferData = node::Buffer::Data(buffer);
+  size_t bufferLength = node::Buffer::Length(buffer);
+
+  // callback
+  if (!info[2]->IsFunction()) {
+    Nan::ThrowTypeError("Third argument must be a function");
+    return;
+  }
+
+  WriteBaton* baton = new WriteBaton();
+  memset(baton, 0, sizeof(WriteBaton));
+  baton->fd = fd;
+  baton->buffer.Reset(buffer);
+  baton->bufferData = bufferData;
+  baton->bufferLength = bufferLength;
+  baton->offset = 0;
+  baton->callback.Reset(info[2].As<v8::Function>());
+
+  uv_work_t* req = new uv_work_t();
+  req->data = baton;
+
+  uv_queue_work(uv_default_loop(), req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
+}
+
 void EIO_Write(uv_work_t* req) {
   WriteBaton* data = static_cast<WriteBaton*>(req->data);
   data->result = 0;
@@ -284,6 +321,76 @@ void EIO_Write(uv_work_t* req) {
     data->offset += data->result;
     CloseHandle(ov.hEvent);
   } while (data->bufferLength > data->offset);
+}
+
+void EIO_AfterWrite(uv_work_t* req) {
+  Nan::HandleScope scope;
+  WriteBaton* baton = static_cast<WriteBaton*>(req->data);
+  delete req;
+
+  v8::Local<v8::Value> argv[1];
+  if (baton->errorString[0]) {
+    argv[0] = v8::Exception::Error(Nan::New<v8::String>(baton->errorString).ToLocalChecked());
+  } else {
+    argv[0] = Nan::Null();
+  }
+  baton->callback.Call(1, argv);
+  delete baton;
+}
+
+NAN_METHOD(Read) {
+  // file descriptor
+  if (!info[0]->IsInt32()) {
+    Nan::ThrowTypeError("First argument must be a fd");
+    return;
+  }
+  int fd = Nan::To<int>(info[0]).FromJust();
+
+  // buffer
+  if (!info[1]->IsObject() || !node::Buffer::HasInstance(info[1])) {
+    Nan::ThrowTypeError("Second argument must be a buffer");
+    return;
+  }
+  v8::Local<v8::Object> buffer = info[1]->ToObject();
+  size_t bufferLength = node::Buffer::Length(buffer);
+
+  // offset
+  if (!info[2]->IsInt32()) {
+    Nan::ThrowTypeError("Third argument must be an int");
+    return;
+  }
+  int offset = Nan::To<v8::Int32>(info[2]).ToLocalChecked()->Value();
+
+  // bytes to read
+  if (!info[3]->IsInt32()) {
+    Nan::ThrowTypeError("Fourth argument must be an int");
+    return;
+  }
+  size_t bytesToRead = Nan::To<v8::Int32>(info[3]).ToLocalChecked()->Value();
+
+  if ((bytesToRead + offset) > bufferLength) {
+    Nan::ThrowTypeError("'bytesToRead' + 'offset' cannot be larger than the buffer's length");
+    return;
+  }
+
+  // callback
+  if (!info[4]->IsFunction()) {
+    Nan::ThrowTypeError("Fifth argument must be a function");
+    return;
+  }
+
+  ReadBaton* baton = new ReadBaton();
+  memset(baton, 0, sizeof(ReadBaton));
+  baton->fd = fd;
+  baton->offset = offset;
+  baton->bytesToRead = bytesToRead;
+  baton->bufferLength = bufferLength;
+  baton->bufferData = node::Buffer::Data(buffer);
+  baton->callback.Reset(info[4].As<v8::Function>());
+
+  uv_work_t* req = new uv_work_t();
+  req->data = baton;
+  uv_queue_work(uv_default_loop(), req, EIO_Read, (uv_after_work_cb)EIO_AfterRead);
 }
 
 void EIO_Read(uv_work_t* req) {
@@ -350,6 +457,24 @@ void EIO_Read(uv_work_t* req) {
   }
 
   CloseHandle(hEvent);
+}
+
+void EIO_AfterRead(uv_work_t* req) {
+  Nan::HandleScope scope;
+  ReadBaton* baton = static_cast<ReadBaton*>(req->data);
+  delete req;
+
+  v8::Local<v8::Value> argv[2];
+  if (baton->errorString[0]) {
+    argv[0] = Nan::Error(baton->errorString);
+    argv[1] = Nan::Undefined();
+  } else {
+    argv[0] = Nan::Null();
+    argv[1] = Nan::New<v8::Integer>((int)baton->bytesRead);
+  }
+
+  baton->callback.Call(2, argv);
+  delete baton;
 }
 
 void EIO_Close(uv_work_t* req) {
@@ -495,5 +620,3 @@ void EIO_Drain(uv_work_t* req) {
     return;
   }
 }
-
-#endif

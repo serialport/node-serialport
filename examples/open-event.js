@@ -1,4 +1,4 @@
-/* eslint-disable require-path-exists/exists */
+/* eslint-disable node/no-missing-require */
 'use strict';
 
 // Open event example

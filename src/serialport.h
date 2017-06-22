@@ -1,6 +1,5 @@
 #ifndef SRC_SERIALPORT_H_
 #define SRC_SERIALPORT_H_
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,16 +20,6 @@ void EIO_AfterOpen(uv_work_t* req);
 NAN_METHOD(Update);
 void EIO_Update(uv_work_t* req);
 void EIO_AfterUpdate(uv_work_t* req);
-
-NAN_METHOD(Write);
-void EIO_Write(uv_work_t* req);
-void EIO_AfterWrite(uv_work_t* req);
-
-#ifdef WIN32
-NAN_METHOD(Read);
-void EIO_Read(uv_work_t* req);
-void EIO_AfterRead(uv_work_t* req);
-#endif
 
 NAN_METHOD(Close);
 void EIO_Close(uv_work_t* req);
@@ -98,30 +87,6 @@ struct ConnectionOptionsBaton {
   int fd;
   int baudRate;
 };
-
-struct WriteBaton {
-  int fd;
-  char* bufferData;
-  size_t bufferLength;
-  size_t offset;
-  Nan::Persistent<v8::Object> buffer;
-  Nan::Callback callback;
-  int result;
-  char errorString[ERROR_STRING_SIZE];
-};
-
-#ifdef WIN32
-struct ReadBaton {
-  int fd;
-  char* bufferData;
-  size_t bufferLength;
-  size_t bytesRead;
-  size_t bytesToRead;
-  size_t offset;
-  char errorString[ERROR_STRING_SIZE];
-  Nan::Callback callback;
-};
-#endif
 
 struct ListResultItem {
   std::string comName;

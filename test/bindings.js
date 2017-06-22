@@ -3,6 +3,7 @@
 
 const assert = require('chai').assert;
 const Buffer = require('safe-buffer').Buffer;
+const testConfig = require('../test-config.json');
 
 let platform;
 switch (process.platform) {
@@ -41,13 +42,6 @@ const bindingsToTest = [
   platform
 ];
 
-function parseDisabled(envStr) {
-  return (envStr || '').split(',').reduce((disabled, feature) => {
-    disabled[feature] = true;
-    return disabled;
-  }, {});
-}
-
 function disconnect(err) {
   throw (err || new Error('Unknown disconnection'));
 }
@@ -62,21 +56,20 @@ const readyData = Buffer.from('READY');
 bindingsToTest.forEach((bindingName) => {
   const binding = require(`../lib/bindings/${bindingName}`);
   let testPort = process.env.TEST_PORT;
-  let disabledFeatures = parseDisabled(process.env.DISABLE_PORT_FEATURE);
+  const localTestConfig = testConfig[bindingName] || {};
 
   if (bindingName === 'mock') {
     testPort = '/dev/exists';
     binding.createPort(testPort, { echo: true, readyData });
-    disabledFeatures = {};
   }
 
   // eslint-disable-next-line no-use-before-define
-  testBinding(bindingName, binding, testPort, disabledFeatures);
+  testBinding(bindingName, binding, testPort, localTestConfig);
 });
 
-function testBinding(bindingName, Binding, testPort, disabledFeatures) {
+function testBinding(bindingName, Binding, testPort, localTestConfig) {
   function testFeature(feature, description, callback) {
-    if (disabledFeatures[feature]) {
+    if (localTestConfig[feature] === false) {
       return it(`Feature "${feature}" is disabled. "${description}"`);
     }
     it(description, callback);

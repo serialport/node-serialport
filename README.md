@@ -384,6 +384,16 @@ DEBUG=serialport:* node myapp.js
 DEBUG=* node myapp.js
 ```
 
+You can enable core dumps on osx with;
+```
+ulimit -c unlimited for core dumps
+```
+
+You can "console.log" from c++ with;
+```
+fprintf(stdout, "Hellow World num=%d str=%s\n", 4, "hi");
+```
+
 ### Error Handling
 
 All functions in Node-Serialport follow two conventions:
@@ -678,7 +688,7 @@ The `Binding` is how Node-SerialPort talks to the underlying system. By default,
 #### `SerialPort.parsers` : <code>object</code>
 The default `Parsers` are [Transform streams](https://nodejs.org/api/stream.html#stream_class_stream_transform) that parse data in different ways to transform incoming data.
 
- To use the parsers, you must create them and then pipe the Serialport to the parser. Be carefult to only write to the SerialPort object and not the parser.
+ To use the parsers, you must create them and then pipe the Serialport to the parser. Be careful to only write to the SerialPort object and not the parser.
 
 **Kind**: static property of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 **Since**: 5.0.0  

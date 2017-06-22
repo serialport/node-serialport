@@ -2,8 +2,9 @@
 
 #ifdef WIN32
   #define strncasecmp strnicmp
+  #include "./serialport_win.h"
 #else
-  #include "./read-poller.h"
+  #include "./poller.h"
 #endif
 
 v8::Local<v8::Value> getValueFromObject(v8::Local<v8::Object> options, std::string key) {
@@ -99,7 +100,7 @@ NAN_METHOD(Update) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
-  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
+  int fd = Nan::To<int>(info[0]).FromJust();
 
   // options
   if (!info[1]->IsObject()) {
@@ -149,137 +150,6 @@ void EIO_AfterUpdate(uv_work_t* req) {
   delete data;
   delete req;
 }
-
-NAN_METHOD(Write) {
-  // file descriptor
-  if (!info[0]->IsInt32()) {
-    Nan::ThrowTypeError("First argument must be an int");
-    return;
-  }
-  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
-
-  // buffer
-  if (!info[1]->IsObject() || !node::Buffer::HasInstance(info[1])) {
-    Nan::ThrowTypeError("Second argument must be a buffer");
-    return;
-  }
-  v8::Local<v8::Object> buffer = info[1]->ToObject();
-  char* bufferData = node::Buffer::Data(buffer);
-  size_t bufferLength = node::Buffer::Length(buffer);
-
-  // callback
-  if (!info[2]->IsFunction()) {
-    Nan::ThrowTypeError("Third argument must be a function");
-    return;
-  }
-
-  WriteBaton* baton = new WriteBaton();
-  memset(baton, 0, sizeof(WriteBaton));
-  baton->fd = fd;
-  baton->buffer.Reset(buffer);
-  baton->bufferData = bufferData;
-  baton->bufferLength = bufferLength;
-  baton->offset = 0;
-  baton->callback.Reset(info[2].As<v8::Function>());
-
-  uv_work_t* req = new uv_work_t();
-  req->data = baton;
-
-  uv_queue_work(uv_default_loop(), req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
-}
-
-void EIO_AfterWrite(uv_work_t* req) {
-  Nan::HandleScope scope;
-  WriteBaton* data = static_cast<WriteBaton*>(req->data);
-
-  v8::Local<v8::Value> argv[1];
-  if (data->errorString[0]) {
-    argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
-  } else {
-    argv[0] = Nan::Null();
-  }
-
-  // If there's no error and there's still data to write, lets keep trying
-  // TODO: Add a uv_poll here for unix
-  if (!data->errorString[0] && data->offset < data->bufferLength) {
-    uv_queue_work(uv_default_loop(), req, EIO_Write, (uv_after_work_cb)EIO_AfterWrite);
-    return;
-  }
-
-  data->callback.Call(1, argv);
-  delete data;
-  delete req;
-}
-
-#ifdef WIN32
-NAN_METHOD(Read) {
-  // file descriptor
-  if (!info[0]->IsInt32()) {
-    Nan::ThrowTypeError("First argument must be an int");
-    return;
-  }
-  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
-
-  // buffer
-  if (!info[1]->IsObject() || !node::Buffer::HasInstance(info[1])) {
-    Nan::ThrowTypeError("Second argument must be a buffer");
-    return;
-  }
-
-  // offset
-  if (!info[2]->IsInt32()) {
-    Nan::ThrowTypeError("Third argument must be an int");
-    return;
-  }
-  int offset = Nan::To<v8::Int32>(info[2]).ToLocalChecked()->Value();
-
-  // bytes to read
-  if (!info[3]->IsInt32()) {
-    Nan::ThrowTypeError("Fourth argument must be an int");
-    return;
-  }
-  int bytesToRead = Nan::To<v8::Int32>(info[3]).ToLocalChecked()->Value();
-
-  // callback
-  if (!info[4]->IsFunction()) {
-    Nan::ThrowTypeError("Fifth argument must be a function");
-    return;
-  }
-
-  ReadBaton* data = new ReadBaton();
-  memset(data, 0, sizeof(ReadBaton));
-  data->fd = fd;
-  data->offset = offset;
-  data->bytesToRead = bytesToRead;
-  v8::Local<v8::Object> buffer = info[1]->ToObject();
-  data->bufferData = node::Buffer::Data(buffer);
-  data->callback.Reset(info[4].As<v8::Function>());
-
-  uv_work_t* req = new uv_work_t();
-  req->data = data;
-  uv_queue_work(uv_default_loop(), req, EIO_Read, (uv_after_work_cb)EIO_AfterRead);
-}
-
-void EIO_AfterRead(uv_work_t* req) {
-  Nan::HandleScope scope;
-  ReadBaton* data = static_cast<ReadBaton*>(req->data);
-
-  v8::Local<v8::Value> argv[2];
-
-  if (data->errorString[0]) {
-    argv[0] = Nan::Error(data->errorString);
-    argv[1] = Nan::Undefined();
-  } else {
-    argv[0] = Nan::Null();
-    argv[1] = Nan::New<v8::Integer>((int)data->bytesRead);
-  }
-
-  data->callback.Call(2, argv);
-
-  delete data;
-  delete req;
-}
-#endif
 
 NAN_METHOD(Close) {
   // file descriptor
@@ -388,7 +258,7 @@ NAN_METHOD(Flush) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
-  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
+  int fd = Nan::To<int>(info[0]).FromJust();
 
   // callback
   if (!info[1]->IsFunction()) {
@@ -432,7 +302,7 @@ NAN_METHOD(Set) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
-  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
+  int fd = Nan::To<int>(info[0]).FromJust();
 
   // options
   if (!info[1]->IsObject()) {
@@ -487,7 +357,7 @@ NAN_METHOD(Get) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
-  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
+  int fd = Nan::To<int>(info[0]).FromJust();
 
   // callback
   if (!info[1]->IsFunction()) {
@@ -539,7 +409,7 @@ NAN_METHOD(Drain) {
     Nan::ThrowTypeError("First argument must be an int");
     return;
   }
-  int fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
+  int fd = Nan::To<int>(info[0]).FromJust();
 
   // callback
   if (!info[1]->IsFunction()) {
@@ -611,18 +481,16 @@ extern "C" {
     Nan::SetMethod(target, "get", Get);
     Nan::SetMethod(target, "open", Open);
     Nan::SetMethod(target, "update", Update);
-    Nan::SetMethod(target, "write", Write);
-#ifdef WIN32
-    Nan::SetMethod(target, "read", Read);
-#endif
     Nan::SetMethod(target, "close", Close);
     Nan::SetMethod(target, "list", List);
     Nan::SetMethod(target, "flush", Flush);
     Nan::SetMethod(target, "drain", Drain);
-
-#ifndef WIN32
-    ReadPoller::Init(target);
-#endif
+    #ifdef WIN32
+    Nan::SetMethod(target, "write", Write);
+    Nan::SetMethod(target, "read", Read);
+    #else
+    Poller::Init(target);
+    #endif
   }
 }
 

@@ -3,7 +3,7 @@
     {
       'target_name': 'serialport',
       'sources': [
-        'src/serialport.cpp',
+        'src/serialport.cpp'
       ],
       'include_dirs': [
         '<!(node -e "require(\'nan\')")'
@@ -26,7 +26,7 @@
           {
             'sources': [
               'src/serialport_unix.cpp',
-              'src/read-poller.cpp',
+              'src/poller.cpp'
             ],
             'xcode_settings': {
               'OTHER_LDFLAGS': [
@@ -39,7 +39,7 @@
           {
             'sources': [
               'src/serialport_unix.cpp',
-              'src/read-poller.cpp',
+              'src/poller.cpp'
             ],
           }
         ],

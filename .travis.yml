@@ -92,7 +92,6 @@ before_install:
   # socat -d -d -unlink-close pty,raw,nonblock,echo=0,link=ttyV0 pty,raw,nonblock,echo=0,link=ttyV1 &
   # ./bin/echo.js --port ttyV0 &
   # export TEST_PORT=ttyV1
-  # export DISABLE_PORT_FEATURE=baudrate.25000,set.set,get.get
 
 - >
   if [[ ! -z $TRAVIS_ELECTRON_VERSION ]]; then
