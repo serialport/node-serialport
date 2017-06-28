@@ -92,7 +92,7 @@ In addition to reading the [article mentioned above](http://www.voodootikigod.co
     * _static_
         * [`.Binding`](#module_serialport--SerialPort.Binding) : [<code>BaseBinding</code>](#module_serialport--SerialPort..BaseBinding)
         * [`.parsers`](#module_serialport--SerialPort.parsers) : <code>object</code>
-        * [`.list(callback)`](#module_serialport--SerialPort.list) : <code>function</code>
+        * [`.list([callback])`](#module_serialport--SerialPort.list) ⇒ <code>Promise</code>
     * _inner_
         * [~BaseBinding](#module_serialport--SerialPort..BaseBinding)
             * [`new BaseBinding(options)`](#new_module_serialport--SerialPort..BaseBinding_new)
@@ -539,8 +539,7 @@ Set control flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.c
 <a name="module_serialport--SerialPort+get"></a>
 
 #### `serialPort.get([callback])`
-Returns the control flags (CTS, DSR, DCD) on the open port.
-Uses [`GetCommModemStatus`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363258(v=vs.85).aspx) for Windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for mac and linux.
+Returns the control flags (CTS, DSR, DCD) on the open port.Uses [`GetCommModemStatus`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363258(v=vs.85).aspx) for Windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for mac and linux.
 
 **Kind**: instance method of [<code>SerialPort</code>](#exp_module_serialport--SerialPort)  
 
@@ -735,14 +734,15 @@ parser.on('data', console.log);
 
 <a name="module_serialport--SerialPort.list"></a>
 
-#### `SerialPort.list(callback)` : <code>function</code>
+#### `SerialPort.list([callback])` ⇒ <code>Promise</code>
 Retrieves a list of available serial ports with metadata. Only the `comName` is guaranteed. If unavailable the other fields will be undefined. The `comName` is either the path or an identifier (eg `COM1`) used to open the SerialPort.
 
 **Kind**: static method of [<code>SerialPort</code>](#exp_module_serialport--SerialPort)  
+**Returns**: <code>Promise</code> - Resolves with the list of available serial ports.  
 
 | Param | Type |
 | --- | --- |
-| callback | <code>listCallback</code> | 
+| [callback] | <code>listCallback</code> | 
 
 **Example**  
 ```js
@@ -761,6 +761,7 @@ Retrieves a list of available serial ports with metadata. Only the `comName` is 
 
 ```js
 var SerialPort = require('serialport');
+// callback approach
 SerialPort.list(function (err, ports) {
   ports.forEach(function(port) {
     console.log(port.comName);
@@ -768,6 +769,10 @@ SerialPort.list(function (err, ports) {
     console.log(port.manufacturer);
   });
 });
+// promise approach
+SerialPort.list()
+  .then(ports) {...});
+  .catch(err) {...});
 ```
 
 * * *
