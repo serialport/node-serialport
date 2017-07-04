@@ -1,4 +1,6 @@
 ---
+notifications:
+  email: false
 language: cpp
 addons:
   apt:
