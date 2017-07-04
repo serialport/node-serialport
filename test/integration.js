@@ -149,7 +149,7 @@ function integrationTest(platform, testPort, binding) {
       });
     });
 
-    describe.only('#read and #write', () => {
+    describe('#read and #write', () => {
       it('5k test', function(done) {
         this.timeout(20000);
         // 5k of random data

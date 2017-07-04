@@ -16,12 +16,9 @@ Poller::Poller(int fd) {
 }
 
 Poller::~Poller() {
-  fprintf(stdout, "~Poller going away\n");
   // if we call uv_poll_stop after uv_poll_init failed we segfault
   if (uv_poll_init_success) {
-    fprintf(stdout, "~Poller being stopped\n");
     uv_poll_stop(poll_handle);
-    fprintf(stdout, "~Poller being closed\n");
     uv_close((uv_handle_t*) poll_handle, Poller::onClose);
   } else {
     delete poll_handle;
@@ -29,14 +26,14 @@ Poller::~Poller() {
 }
 
 void Poller::onClose(uv_handle_t* poll_handle) {
-  fprintf(stdout, "~Poller is closed\n");
+  // fprintf(stdout, "~Poller is closed\n");
   delete poll_handle;
 }
 
 // Events can be UV_READABLE | UV_WRITABLE | UV_DISCONNECT
 void Poller::poll(int events) {
   // fprintf(stdout, "Poller:poll for %d\n", events);
-  this->events = events;
+  this->events = this->events | events;
   int status = uv_poll_start(poll_handle, events, Poller::onData);
   if (0 != status) {
     Nan::ThrowTypeError(uv_strerror(status));
