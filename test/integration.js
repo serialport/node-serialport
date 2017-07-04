@@ -149,11 +149,11 @@ function integrationTest(platform, testPort, binding) {
       });
     });
 
-    describe('#read and #write', () => {
+    describe.only('#read and #write', () => {
       it('5k test', function(done) {
         this.timeout(20000);
-        // 5k of random ascii
-        const output = Buffer.from(crypto.randomBytes(5120).toString('ascii'));
+        // 5k of random data
+        const output = crypto.randomBytes(1024 * 5);
         const expectedInput = Buffer.concat([readyData, output]);
         const port = new SerialPort(testPort);
 
@@ -166,9 +166,13 @@ function integrationTest(platform, testPort, binding) {
         port.on('data', (data) => {
           input = Buffer.concat([input, data]);
           if (input.length >= expectedInput.length) {
-            assert.equal(input.length, expectedInput.length);
-            assert.deepEqual(input, expectedInput);
-            port.close(done);
+            try {
+              assert.equal(input.length, expectedInput.length, 'write length matches');
+              assert.deepEqual(input, expectedInput, 'read data matches expected input');
+              port.close(done);
+            } catch (e) {
+              done(e);
+            }
           }
         });
       });
