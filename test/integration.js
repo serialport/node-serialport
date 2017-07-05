@@ -132,6 +132,32 @@ function integrationTest(platform, testPort, binding) {
           });
         });
       });
+
+      it('can be read after closing and opening', (done) => {
+        const port = new SerialPort(testPort, { autoOpen: false });
+        port.open(() => {
+          port.read();
+          port.close();
+        });
+        port.once('close', () => {
+          port.once('data', () => {
+            port.close(done);
+          });
+          port.open();
+        });
+      });
+
+      it('errors if closing during a write', (done) => {
+        const port = new SerialPort(testPort, { autoOpen: false });
+        port.open(() => {
+          port.on('error', err => {
+            assert.instanceOf(err, Error);
+            port.close(() => done());
+          });
+          port.write(Buffer.alloc(1024 * 5, 0));
+          port.close();
+        });
+      });
     });
 
     describe('#update', () => {

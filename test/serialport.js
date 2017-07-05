@@ -318,8 +318,7 @@ describe('SerialPort', () => {
         const port = new SerialPort('/dev/exists', () => {
           port.close(() => {
             port.open(() => {
-              port.binding.write(data, () => {
-              });
+              port.binding.write(data).catch(done);
             });
           });
         });
@@ -867,34 +866,8 @@ describe('SerialPort', () => {
           assert.deepEqual(recvData, testData);
           done();
         });
-        port.binding.write(testData, () => {});
+        port.binding.write(testData);
       });
-    });
-  });
-
-  describe('disconnections', () => {
-    it('emits a disconnect event and closes the port', (done) => {
-      const port = new SerialPort('/dev/exists', () => {
-        assert.isTrue(port.isOpen);
-        port.binding.disconnect();
-      });
-      const spy = sandbox.spy();
-      port.on('disconnect', spy);
-      port.on('close', () => {
-        assert.isFalse(port.isOpen);
-        assert.isTrue(spy.calledOnce);
-        done();
-      });
-    });
-
-    it(`doesn't disconnect a closed port`, (done) => {
-      const port = new SerialPort('/dev/exists', { autoOpen: false });
-      const spy = sandbox.spy();
-      port.on('disconnect', spy);
-      port.on('close', spy);
-      port.binding.disconnect();
-      assert.equal(spy.callCount, 0);
-      done();
     });
   });
 });

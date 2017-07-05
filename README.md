@@ -479,6 +479,8 @@ The write operation is non-blocking. When it returns, data might still not have 
 
 Some devices, like the Arduino, reset when you open a connection to them. In such cases, immediately writing to the device will cause lost data as they wont be ready to receive the data. This is often worked around by having the Arduino send a "ready" byte that your Node program waits for before writing. You can also often get away with waiting around 400ms.
 
+If a port is disconnected during a write, the write will error in addition to the disconnect event.
+
 Even though serialport is a stream, when writing it can accept arrays of bytes in addition to strings and buffers. This extra functionality is pretty sweet.
 
 **Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
@@ -514,6 +516,8 @@ Request a number of bytes from the SerialPort. The `read()` method pulls some da
 
 #### `serialPort.close(callback)`
 Closes an open connection.
+
+If there are in progress writes when the port is closed the writes will error.
 
 **Kind**: instance method of <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 **Emits**: <code>[close](#module_serialport--SerialPort+event_close)</code>  
@@ -828,10 +832,9 @@ You never have to use `Binding` objects directly. SerialPort uses them to access
 - <code>TypeError</code> When given invalid arguments, a `TypeError` is thrown.
 
 
-| Param | Type | Description |
-| --- | --- | --- |
-| options | <code>object</code> |  |
-| options.disconnect | <code>function</code> | function to call when the bindings have detected a disconnected port. Call this function during any operation that detects a disconnect instead of that operations usual callback. The `SerialPort` class will attempt to call `close` after a disconnection and ignore any errors. |
+| Param | Type |
+| --- | --- |
+| options | <code>object</code> | 
 
 
 -
@@ -873,7 +876,9 @@ Closes an open connection
 <a name="module_serialport--SerialPort..BaseBinding+read"></a>
 
 ##### `baseBinding.read(data, offset, length)` ⇒ <code>Promise</code>
-Request a number of bytes from the SerialPort. This function is similar to Node's [`fs.read`](http://nodejs.org/api/fs.html#fs_fs_read_fd_buffer_offset_length_position_callback).
+Request a number of bytes from the SerialPort. This function is similar to Node's [`fs.read`](http://nodejs.org/api/fs.html#fs_fs_read_fd_buffer_offset_length_position_callback) except it will always return at least one byte.
+
+The in progress reads must error when the port is closed with an error object that has the property `canceled` equal to `true`. Any other error will cause a disconnection.
 
 **Kind**: instance method of <code>[BaseBinding](#module_serialport--SerialPort..BaseBinding)</code>  
 **Returns**: <code>Promise</code> - Resolves with the number of bytes read after a read operation.  
@@ -895,6 +900,8 @@ Request a number of bytes from the SerialPort. This function is similar to Node'
 
 ##### `baseBinding.write(data)` ⇒ <code>Promise</code>
 Write bytes to the SerialPort. Only called when there is no pending write operation.
+
+The in progress writes must error when the port is closed with an error object that has the property `canceled` equal to `true`. Any other error will cause a disconnection.
 
 **Kind**: instance method of <code>[BaseBinding](#module_serialport--SerialPort..BaseBinding)</code>  
 **Returns**: <code>Promise</code> - Resolves after the data is passed to the operating system for writing.  

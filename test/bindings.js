@@ -109,15 +109,6 @@ function testBinding(bindingName, Binding, testPort, localTestConfig) {
         assert.instanceOf(binding, Binding);
       });
 
-      it('throws when missing disconnect callback', (done) => {
-        try {
-          new Binding({ });
-        } catch (e) {
-          assert.instanceOf(e, TypeError);
-          done();
-        }
-      });
-
       it('throws when not given an options object', (done) => {
         try {
           new Binding();
@@ -585,11 +576,6 @@ function testBinding(bindingName, Binding, testPort, localTestConfig) {
           });
         });
       });
-    });
-
-    describe('disconnections', () => {
-      it('calls disconnect callback only when detected on a read');
-      it('calls disconnect callback only when detected on a write');
     });
   });
 };

@@ -34,6 +34,9 @@ findArduino().then((portName) => {
   spRepl.context.SerialPort = SerialPort;
   spRepl.context.portName = portName;
   spRepl.context.port = port;
+}).catch((e) => {
+  console.log(e.message);
+  process.exit(1);
 });
 
 // promirepl(graphRepl)
