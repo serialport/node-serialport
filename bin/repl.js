@@ -6,8 +6,9 @@ const SerialPort = require('../');
 // outputs the path to an arduino or nothing
 function findArduino() {
   return new Promise((resolve, reject) => {
-    if (process.argv[2]) {
-      return resolve(process.argv[2]);
+    const envPort = process.argv[2] || process.env.TEST_PORT;
+    if (envPort) {
+      return resolve(envPort);
     }
     SerialPort.list((err, ports) => {
       if (err) { return reject(err) }
