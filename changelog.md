@@ -1,3 +1,9 @@
+Version 5.0.0-beta6
+-------------
+- [all] The `disconnect` event now more reliable. Will be emitted as an error if there are no listeners.
+- [all] `SerialPort.list` now returns a usable promise if a callback is not provided @MikeKovarik
+- [unix] New read/write subsystem. Write CPU dropped from 100% to 0-2%. @reconbot (Thanks to @indutny for getting me unstuck many times!)
+
 Version 5.0.0-beta5
 -------------
 - [docs] An overhaul of the format and language in our docs thanks to @LappleApple
