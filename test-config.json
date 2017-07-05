@@ -1,0 +1,7 @@
+{
+  "all": {},
+  "win32": {
+    "open.unlock": false,
+    "baudrate.25000": false
+  }
+}

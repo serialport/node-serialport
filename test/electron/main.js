@@ -1,10 +1,10 @@
 'use strict';
+/* eslint-disable node/no-missing-require,no-unused-vars,node/no-unpublished-require,node/no-extraneous-require */
 
-// eslint-disable-next-line require-path-exists/exists
 const app = require('electron').app;
 
 try {
-  const serialport = require('../..'); // eslint-disable-line no-unused-vars
+  const serialport = require('../..');
 } catch (e) {
   console.error('Error loading serialport');
   console.error(e);

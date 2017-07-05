@@ -322,31 +322,6 @@ int setup(int fd, OpenBaton *data) {
   return 1;
 }
 
-void EIO_Write(uv_work_t* req) {
-  WriteBaton* data = static_cast<WriteBaton*>(req->data);
-  int bytesWritten = 0;
-
-  do {
-    errno = 0;  // probably don't need this
-    bytesWritten = write(data->fd, data->bufferData + data->offset, data->bufferLength - data->offset);
-    if (-1 != bytesWritten) {
-      // there wasn't an error, do the math on what we actually wrote and keep writing until finished
-      data->offset += bytesWritten;
-      continue;
-    }
-
-    // Try again in another event loop
-    if (errno == EINTR || errno == EAGAIN || errno == EWOULDBLOCK) {
-      return;
-    }
-
-    // EBAD would mean we're "disconnected"
-    // a real error so lets bail
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, calling write", strerror(errno));
-    return;
-  } while (data->bufferLength > data->offset);
-}
-
 void EIO_Close(uv_work_t* req) {
   VoidBaton* data = static_cast<VoidBaton*>(req->data);
 

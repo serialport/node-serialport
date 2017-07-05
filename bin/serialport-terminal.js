@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 
-const SerialPort = require('../');
+const SerialPort = require('../lib/');
 const version = require('../package.json').version;
 const args = require('commander');
 

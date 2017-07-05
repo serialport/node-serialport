@@ -12,7 +12,7 @@
     "module_path": "build/{configuration}/",
     "host": "https://github.com/EmergingTechnologyAdvisors/node-serialport/releases/download/5.0.0-beta5"
   },
-  "main": "./lib",
+  "main": "lib",
   "repository": {
     "type": "git",
     "url": "git://github.com/EmergingTechnologyAdvisors/node-serialport.git"
@@ -63,12 +63,11 @@
   "devDependencies": {
     "chai": "^4.0.2",
     "chai-subset": "^1.5.0",
-    "eslint": "^4.0.0",
+    "eslint": "^4.1.1",
     "eslint-config-standard": "^10.2.1",
     "eslint-plugin-import": "^2.3.0",
-    "eslint-plugin-node": "^5.0.0",
+    "eslint-plugin-node": "^5.1.0",
     "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-require-path-exists": "^1.1.7",
     "eslint-plugin-standard": "^3.0.1",
     "istanbul": "^0.4.4",
     "jsdoc-to-markdown": "^3.0.0",
@@ -81,7 +80,7 @@
     "node-pre-gyp"
   ],
   "engines": {
-    "node": ">= 4.0.0"
+    "node": ">=4.0.0"
   },
   "bin": {
     "serialport-list": "./bin/serialport-list.js",
@@ -91,7 +90,7 @@
   "scripts": {
     "arduino-test": "TEST_PORT=$(./bin/find-arduino.js) npm test",
     "docs": "jsdoc2md --no-cache -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs --partial .docs/edit-warning.hbs -r table --separators --name-format -f lib/* lib/bindings/* lib/parsers/* > README.md",
-    "docs:diff": "jsdoc2md --no-cache -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs --partial .docs/edit-warning.hbs -r table --separators --name-format -f lib/* lib/bindings/* lib/parsers/* | diff -q README.md - || (echo 'Docs out of date, run `npm run docs` and commit the new README.md' && false)",
+    "docs:diff": "jsdoc2md --no-cache -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs --partial .docs/edit-warning.hbs -r table --separators --name-format -f lib/* lib/bindings/* lib/parsers/* | diff README.md - || (echo 'Docs out of date, run `npm run docs` and commit the new README.md' && false)",
     "install": "node-pre-gyp install --fallback-to-build",
     "lint": "eslint lib test bin examples",
     "rebuild-all": "npm rebuild && node-gyp rebuild",

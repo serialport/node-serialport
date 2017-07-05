@@ -3,6 +3,7 @@
 
 const assert = require('chai').assert;
 const Buffer = require('safe-buffer').Buffer;
+const testConfig = require('../test-config.json');
 
 let platform;
 switch (process.platform) {
@@ -41,13 +42,6 @@ const bindingsToTest = [
   platform
 ];
 
-function parseDisabled(envStr) {
-  return (envStr || '').split(',').reduce((disabled, feature) => {
-    disabled[feature] = true;
-    return disabled;
-  }, {});
-}
-
 function disconnect(err) {
   throw (err || new Error('Unknown disconnection'));
 }
@@ -62,21 +56,20 @@ const readyData = Buffer.from('READY');
 bindingsToTest.forEach((bindingName) => {
   const binding = require(`../lib/bindings/${bindingName}`);
   let testPort = process.env.TEST_PORT;
-  let disabledFeatures = parseDisabled(process.env.DISABLE_PORT_FEATURE);
+  const localTestConfig = testConfig[bindingName] || {};
 
   if (bindingName === 'mock') {
     testPort = '/dev/exists';
     binding.createPort(testPort, { echo: true, readyData });
-    disabledFeatures = {};
   }
 
   // eslint-disable-next-line no-use-before-define
-  testBinding(bindingName, binding, testPort, disabledFeatures);
+  testBinding(bindingName, binding, testPort, localTestConfig);
 });
 
-function testBinding(bindingName, Binding, testPort, disabledFeatures) {
+function testBinding(bindingName, Binding, testPort, localTestConfig) {
   function testFeature(feature, description, callback) {
-    if (disabledFeatures[feature]) {
+    if (localTestConfig[feature] === false) {
       return it(`Feature "${feature}" is disabled. "${description}"`);
     }
     it(description, callback);
@@ -114,15 +107,6 @@ function testBinding(bindingName, Binding, testPort, disabledFeatures) {
           disconnect
         });
         assert.instanceOf(binding, Binding);
-      });
-
-      it('throws when missing disconnect callback', (done) => {
-        try {
-          new Binding({ });
-        } catch (e) {
-          assert.instanceOf(e, TypeError);
-          done();
-        }
       });
 
       it('throws when not given an options object', (done) => {
@@ -395,9 +379,9 @@ function testBinding(bindingName, Binding, testPort, disabledFeatures) {
           return binding.write(data);
         });
 
-        it('resolves after a large write', function() {
+        it('resolves after a large write (2k)', function() {
           this.timeout(20000);
-          const data = Buffer.alloc(1024 * 5);
+          const data = Buffer.alloc(1024 * 2);
           return binding.write(data);
         });
       });
@@ -592,11 +576,6 @@ function testBinding(bindingName, Binding, testPort, disabledFeatures) {
           });
         });
       });
-    });
-
-    describe('disconnections', () => {
-      it('calls disconnect callback only when detected on a read');
-      it('calls disconnect callback only when detected on a write');
     });
   });
 };

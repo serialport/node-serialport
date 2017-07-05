@@ -46,16 +46,16 @@ function integrationTest(platform, testPort, binding) {
     describe('static Method', () => {
       describe('.list', () => {
         it('contains the test port', (done) => {
-          function lastPath(name) {
+          function normalizePath(name) {
             const parts = name.split('.');
-            return parts[parts.length - 1];
+            return parts[parts.length - 1].toLowerCase();
           }
 
           SerialPort.list((err, ports) => {
             assert.isNull(err);
             let foundPort = false;
             ports.forEach((port) => {
-              if (lastPath(port.comName) === lastPath(testPort)) {
+              if (normalizePath(port.comName) === normalizePath(testPort)) {
                 foundPort = true;
               }
             });
@@ -132,6 +132,32 @@ function integrationTest(platform, testPort, binding) {
           });
         });
       });
+
+      it('can be read after closing and opening', (done) => {
+        const port = new SerialPort(testPort, { autoOpen: false });
+        port.open(() => {
+          port.read();
+          port.close();
+        });
+        port.once('close', () => {
+          port.once('data', () => {
+            port.close(done);
+          });
+          port.open();
+        });
+      });
+
+      it('errors if closing during a write', (done) => {
+        const port = new SerialPort(testPort, { autoOpen: false });
+        port.open(() => {
+          port.on('error', err => {
+            assert.instanceOf(err, Error);
+            port.close(() => done());
+          });
+          port.write(Buffer.alloc(1024 * 5, 0));
+          port.close();
+        });
+      });
     });
 
     describe('#update', () => {
@@ -150,10 +176,10 @@ function integrationTest(platform, testPort, binding) {
     });
 
     describe('#read and #write', () => {
-      it('5k test', function(done) {
+      it('2k test', function(done) {
         this.timeout(20000);
-        // 5k of random ascii
-        const output = Buffer.from(crypto.randomBytes(5120).toString('ascii'));
+        // 2k of random data
+        const output = crypto.randomBytes(1024 * 2);
         const expectedInput = Buffer.concat([readyData, output]);
         const port = new SerialPort(testPort);
 
@@ -166,9 +192,13 @@ function integrationTest(platform, testPort, binding) {
         port.on('data', (data) => {
           input = Buffer.concat([input, data]);
           if (input.length >= expectedInput.length) {
-            assert.equal(input.length, expectedInput.length);
-            assert.deepEqual(input, expectedInput);
-            port.close(done);
+            try {
+              assert.equal(input.length, expectedInput.length, 'write length matches');
+              assert.deepEqual(input, expectedInput, 'read data matches expected input');
+              port.close(done);
+            } catch (e) {
+              done(e);
+            }
           }
         });
       });

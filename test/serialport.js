@@ -318,8 +318,7 @@ describe('SerialPort', () => {
         const port = new SerialPort('/dev/exists', () => {
           port.close(() => {
             port.open(() => {
-              port.binding.write(data, () => {
-              });
+              port.binding.write(data).catch(done);
             });
           });
         });
@@ -867,34 +866,35 @@ describe('SerialPort', () => {
           assert.deepEqual(recvData, testData);
           done();
         });
-        port.binding.write(testData, () => {});
+        port.binding.write(testData);
       });
     });
   });
 
-  describe('disconnections', () => {
-    it('emits a disconnect event and closes the port', (done) => {
-      const port = new SerialPort('/dev/exists', () => {
-        assert.isTrue(port.isOpen);
-        port.binding.disconnect();
+  describe('disconnect errors', () => {
+    it('emits as a disconnect event on a bad read', (done) => {
+      const port = new SerialPort('/dev/exists');
+      sinon.stub(port.binding, 'read').callsFake(() => {
+        return Promise.reject(new Error('EBAD_ERR'));
       });
-      const spy = sandbox.spy();
-      port.on('disconnect', spy);
-      port.on('close', () => {
-        assert.isFalse(port.isOpen);
-        assert.isTrue(spy.calledOnce);
+      port.on('disconnect', (err) => {
+        assert.instanceOf(err, Error);
         done();
       });
+      port.on('error', done);
+      port.read();
     });
 
-    it(`doesn't disconnect a closed port`, (done) => {
-      const port = new SerialPort('/dev/exists', { autoOpen: false });
-      const spy = sandbox.spy();
-      port.on('disconnect', spy);
-      port.on('close', spy);
-      port.binding.disconnect();
-      assert.equal(spy.callCount, 0);
-      done();
+    it('emits as an error event if there are no listeners', (done) => {
+      const port = new SerialPort('/dev/exists');
+      sinon.stub(port.binding, 'read').callsFake(() => {
+        return Promise.reject(new Error('attack ships on fire off the shoulder of Orion'));
+      });
+      port.on('error', (err) => {
+        assert.instanceOf(err, Error);
+        done();
+      });
+      port.read();
     });
   });
 });
