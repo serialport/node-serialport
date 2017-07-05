@@ -870,4 +870,31 @@ describe('SerialPort', () => {
       });
     });
   });
+
+  describe('disconnect errors', () => {
+    it('emits as a disconnect event on a bad read', (done) => {
+      const port = new SerialPort('/dev/exists');
+      sinon.stub(port.binding, 'read').callsFake(() => {
+        return Promise.reject(new Error('EBAD_ERR'));
+      });
+      port.on('disconnect', (err) => {
+        assert.instanceOf(err, Error);
+        done();
+      });
+      port.on('error', done);
+      port.read();
+    });
+
+    it('emits as an error event if there are no listeners', (done) => {
+      const port = new SerialPort('/dev/exists');
+      sinon.stub(port.binding, 'read').callsFake(() => {
+        return Promise.reject(new Error('attack ships on fire off the shoulder of Orion'));
+      });
+      port.on('error', (err) => {
+        assert.instanceOf(err, Error);
+        done();
+      });
+      port.read();
+    });
+  });
 });

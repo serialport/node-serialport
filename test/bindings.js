@@ -379,9 +379,9 @@ function testBinding(bindingName, Binding, testPort, localTestConfig) {
           return binding.write(data);
         });
 
-        it('resolves after a large write', function() {
+        it('resolves after a large write (2k)', function() {
           this.timeout(20000);
-          const data = Buffer.alloc(1024 * 5);
+          const data = Buffer.alloc(1024 * 2);
           return binding.write(data);
         });
       });

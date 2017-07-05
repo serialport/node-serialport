@@ -46,16 +46,16 @@ function integrationTest(platform, testPort, binding) {
     describe('static Method', () => {
       describe('.list', () => {
         it('contains the test port', (done) => {
-          function lastPath(name) {
+          function normalizePath(name) {
             const parts = name.split('.');
-            return parts[parts.length - 1];
+            return parts[parts.length - 1].toLowerCase();
           }
 
           SerialPort.list((err, ports) => {
             assert.isNull(err);
             let foundPort = false;
             ports.forEach((port) => {
-              if (lastPath(port.comName) === lastPath(testPort)) {
+              if (normalizePath(port.comName) === normalizePath(testPort)) {
                 foundPort = true;
               }
             });
@@ -176,10 +176,10 @@ function integrationTest(platform, testPort, binding) {
     });
 
     describe('#read and #write', () => {
-      it('5k test', function(done) {
+      it('2k test', function(done) {
         this.timeout(20000);
-        // 5k of random data
-        const output = crypto.randomBytes(1024 * 5);
+        // 2k of random data
+        const output = crypto.randomBytes(1024 * 2);
         const expectedInput = Buffer.concat([readyData, output]);
         const port = new SerialPort(testPort);
 

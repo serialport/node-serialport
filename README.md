@@ -657,7 +657,7 @@ The `data` event puts the port in flowing mode. Data is emitted as soon as it's 
 <a name="module_serialport--SerialPort+event_disconnect"></a>
 
 #### `Event: "disconnect"`
-The `disconnect` event's callback is called with an error object. This will always happen before a `close` event if a disconnection is detected.
+The `disconnect` event's callback is called with an error object. This will always happen before a `close` event if a disconnection is detected. If a disconnect happens and there is no event handler for the disconnect event an error event will be emitted instead. The error will have the `disconnected` property set to `true`.
 
 **Kind**: event emitted by <code>[SerialPort](#exp_module_serialport--SerialPort)</code>  
 
