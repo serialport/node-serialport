@@ -125,7 +125,7 @@ script:
     npm run lint
   fi
 
-- npm run docs:diff
+# - npm run docs:diff
 - >
   if [[ -z $TRAVIS_ELECTRON_VERSION ]]; then
     node ./
