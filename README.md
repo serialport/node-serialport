@@ -68,6 +68,7 @@ In addition to reading the [article mentioned above](http://www.voodootikigod.co
   * [Windows](#windows)
 * [Usage](#usage)
   * [Opening a Port](#opening-a-port)
+  * [Testing](#testing)
   * [Debugging](#debugging)
   * [Error Handling](#error-handling)
 * [SerialPort](#exp_module_serialport--SerialPort) ⏏
@@ -368,6 +369,19 @@ port.write(Buffer.from('Hi Mom!'));
 ```
 
 Enjoy and do cool things with this code.
+
+### Testing
+
+Testing is an important feature of any library. To aid in our own tests we've developed a `MockBinding` a fake hardware binding that doesn't actually need any hardware to run. This class passes all of the same tests as our hardware based bindings and provides a few additional test related interfaces. To use the mock binding check out the example [here](/examples/mocking.js).
+
+```js
+const SerialPort = require('serialport/test');
+const MockBinding = SerialPort.Binding;
+
+// Create a port and disable the echo.
+MockBinding.createPort('/dev/ROBOT', { echo: false });
+cont port = new SerialPort('/dev/ROBOT')
+```
 
 ### Debugging
 
