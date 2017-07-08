@@ -582,7 +582,7 @@ Uses [`GetCommModemStatus`](https://msdn.microsoft.com/en-us/library/windows/des
 <a name="module_serialport--SerialPort+flush"></a>
 
 #### `serialPort.flush([callback])`
-Flush discards data received but not read, and written but not transmitted. For more technical details, see [`tcflush(fd, TCIFLUSH)`](http://linux.die.net/man/3/tcflush) for Mac/Linux and [`FlushFileBuffers`](http://msdn.microsoft.com/en-us/library/windows/desktop/aa364439) for Windows.
+Flush discards data received but not read, and written but not transmitted by the operating system. For more technical details, see [`tcflush(fd, TCIOFLUSH)`](http://linux.die.net/man/3/tcflush) for Mac/Linux and [`FlushFileBuffers`](http://msdn.microsoft.com/en-us/library/windows/desktop/aa364439) for Windows.
 
 **Kind**: instance method of [<code>SerialPort</code>](#exp_module_serialport--SerialPort)  
 
