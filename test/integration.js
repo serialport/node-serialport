@@ -203,5 +203,30 @@ function integrationTest(platform, testPort, binding) {
         });
       });
     });
+
+    describe('flush', () => {
+      it('discards any received data', (done) => {
+        const port = new SerialPort(testPort);
+        port.on('open', () => process.nextTick(() => {
+          port.flush(err => {
+            port.on('readable', () => {
+              try {
+                assert.isNull(port.read());
+              } catch (e) {
+                return done(e);
+              }
+              done(new Error('got a readable event after flushing the port'));
+            });
+            try {
+              assert.isNull(err);
+              assert.isNull(port.read());
+            } catch (e) {
+              return done(e);
+            }
+            done();
+          });
+        }));
+      });
+    });
   });
 }

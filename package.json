@@ -83,8 +83,9 @@
     "node": ">=4.0.0"
   },
   "bin": {
-    "serialport-list": "./bin/serialport-list.js",
-    "serialport-term": "./bin/serialport-terminal.js"
+    "serialport-list": "./bin/list.js",
+    "serialport-repl": "./bin/repl.js",
+    "serialport-term": "./bin/terminal.js"
   },
   "license": "MIT",
   "scripts": {
@@ -94,6 +95,7 @@
     "install": "node-pre-gyp install --fallback-to-build",
     "lint": "eslint lib test bin examples",
     "rebuild-all": "npm rebuild && node-gyp rebuild",
+    "repl": "node bin/repl.js",
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
     "test": "istanbul cover ./node_modules/mocha/bin/_mocha",
     "test:watch": "mocha -w",

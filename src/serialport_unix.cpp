@@ -169,17 +169,19 @@ int setBaudRate(ConnectionOptionsBaton *data) {
     }
   #endif
 
-  // If we have a good baud rate set it and lets go
-  if (-1 != baudRate) {
-    cfsetospeed(&options, baudRate);
-    cfsetispeed(&options, baudRate);
-    tcflush(fd, TCIFLUSH);
-    tcsetattr(fd, TCSANOW, &options);
-    return 1;
+  if (-1 == baudRate) {
+    snprintf(data->errorString, sizeof(data->errorString), "Error baud rate of %d is not supported on your platform", data->baudRate);
+    return -1;
   }
 
-  snprintf(data->errorString, sizeof(data->errorString), "Error baud rate of %d is not supported on your platform", data->baudRate);
-  return -1;
+  // If we have a good baud rate set it and lets go
+  cfsetospeed(&options, baudRate);
+  cfsetispeed(&options, baudRate);
+  // throw away all the buffered data
+  tcflush(fd, TCIOFLUSH);
+  // make the changes now
+  tcsetattr(fd, TCSANOW, &options);
+  return 1;
 }
 
 void EIO_Update(uv_work_t* req) {
@@ -303,9 +305,6 @@ int setup(int fd, OpenBaton *data) {
   options.c_cc[VMIN]= data->vmin;
   options.c_cc[VTIME]= data->vtime;
 
-  // why?
-  tcflush(fd, TCIFLUSH);
-
   // Note that tcsetattr() returns success if any of the requested changes could be successfully carried out.
   // Therefore, when making multiple changes it may be necessary to follow this call with a further call to
   // tcgetattr() to check that all changes have been performed successfully.
@@ -318,6 +317,9 @@ int setup(int fd, OpenBaton *data) {
       return -1;
     }
   }
+
+  // flush all unread and wrote data up to this point because it could have been received or sent with bad settings
+  tcflush(fd, TCIOFLUSH);
 
   return 1;
 }
