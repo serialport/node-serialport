@@ -49,7 +49,7 @@ describe('RegexParser', () => {
   it('throws when called with a 0 length delimiter', () => {
     assert.throws(() => {
       new RegexParser({
-        delimiter: Buffer.from(0)
+        delimiter: Buffer.alloc(0)
       });
     });
 

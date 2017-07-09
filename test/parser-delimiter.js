@@ -49,7 +49,7 @@ describe('DelimiterParser', () => {
   it('throws when called with a 0 length delimiter', () => {
     assert.throws(() => {
       new DelimiterParser({
-        delimiter: Buffer.from(0)
+        delimiter: Buffer.alloc(0)
       });
     });
 
