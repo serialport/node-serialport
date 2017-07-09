@@ -21,3 +21,4 @@ node_modules
 npm-debug.log
 coverage
 .mailmap
+package-lock.json

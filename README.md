@@ -759,6 +759,15 @@ var parser = port.pipe(Readline({delimiter: '\r\n'}));
 parser.on('data', console.log);
 ```
 
+To use the `Ready` parser provide a byte start sequence. After the bytes have been received data events will be passed through.
+```js
+var SerialPort = require('serialport');
+var Ready = SerialPort.parsers.Ready;
+var port = new SerialPort('/dev/tty-usbserial1');
+var parser = port.pipe(Ready({data: 'READY'}));
+parser.on('data', console.log); // all data after READY is received
+```
+
 * * *
 
 <a name="module_serialport--SerialPort.list"></a>

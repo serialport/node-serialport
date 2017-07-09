@@ -223,9 +223,25 @@ function integrationTest(platform, testPort, binding) {
             } catch (e) {
               return done(e);
             }
-            done();
+            port.close(done);
           });
         }));
+      });
+      it('deals with flushing during a read', (done) => {
+        const port = new SerialPort(testPort);
+        port.on('error', done);
+        const ready = port.pipe(new SerialPort.parsers.Ready({ delimiter: 'READY' }));
+        ready.on('ready', () => {
+          // we should have a pending read now since we're in flowing mode
+          port.flush((err) => {
+            try {
+              assert.isNull(err);
+            } catch (e) {
+              return done(e);
+            }
+            port.close(done);
+          });
+        });
       });
     });
   });
