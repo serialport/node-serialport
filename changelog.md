@@ -1,3 +1,8 @@
+Version 5.0.0-beta7
+-------------
+- [all] Removed the `disconnect` event. The `close` event now fires with a disconnect error object in the event of a disconnection.
+- [all] Exposed mocking serialport on `serialport/test`
+
 Version 5.0.0-beta6
 -------------
 - [all] The `disconnect` event now more reliable. Will be emitted as an error if there are no listeners.
