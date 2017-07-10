@@ -88,7 +88,6 @@ In addition to reading the [article mentioned above](http://www.voodootikigod.co
         * [`Event: "error"`](#module_serialport--SerialPort+event_error)
         * [`Event: "open"`](#module_serialport--SerialPort+event_open)
         * [`Event: "data"`](#module_serialport--SerialPort+event_data)
-        * [`Event: "disconnect"`](#module_serialport--SerialPort+event_disconnect)
         * [`Event: "close"`](#module_serialport--SerialPort+event_close)
     * _static_
         * [`.Binding`](#module_serialport--SerialPort.Binding) : [<code>BaseBinding</code>](#module_serialport--SerialPort..BaseBinding)
@@ -421,7 +420,7 @@ You should never have to wrap a Node-Serialport object in a try/catch statement 
 
 ### SerialPort ⏏
 **Kind**: Exported class  
-**Emits**: [<code>open</code>](#module_serialport--SerialPort+event_open), [<code>data</code>](#module_serialport--SerialPort+event_data), [<code>close</code>](#module_serialport--SerialPort+event_close), [<code>error</code>](#module_serialport--SerialPort+event_error), [<code>disconnect</code>](#module_serialport--SerialPort+event_disconnect)  
+**Emits**: [<code>open</code>](#module_serialport--SerialPort+event_open), [<code>data</code>](#module_serialport--SerialPort+event_data), [<code>close</code>](#module_serialport--SerialPort+event_close), [<code>error</code>](#module_serialport--SerialPort+event_error)  
 **Properties**
 
 | Name | Type | Description |
@@ -493,7 +492,7 @@ The write operation is non-blocking. When it returns, data might still not have 
 
 Some devices, like the Arduino, reset when you open a connection to them. In such cases, immediately writing to the device will cause lost data as they wont be ready to receive the data. This is often worked around by having the Arduino send a "ready" byte that your Node program waits for before writing. You can also often get away with waiting around 400ms.
 
-If a port is disconnected during a write, the write will error in addition to the disconnect event.
+If a port is disconnected during a write, the write will error in addition to the `close` event.
 
 Even though serialport is a stream, when writing it can accept arrays of bytes in addition to strings and buffers. This extra functionality is pretty sweet.
 
@@ -668,19 +667,10 @@ The `data` event puts the port in flowing mode. Data is emitted as soon as it's 
 
 * * *
 
-<a name="module_serialport--SerialPort+event_disconnect"></a>
-
-#### `Event: "disconnect"`
-The `disconnect` event's callback is called with an error object. This will always happen before a `close` event if a disconnection is detected. If a disconnect happens and there is no event handler for the disconnect event an error event will be emitted instead. The error will have the `disconnected` property set to `true`.
-
-**Kind**: event emitted by [<code>SerialPort</code>](#exp_module_serialport--SerialPort)  
-
-* * *
-
 <a name="module_serialport--SerialPort+event_close"></a>
 
 #### `Event: "close"`
-The `close` event's callback is called with no arguments when the port is closed. In the event of an error, an error event is triggered.
+The `close` event's callback is called with no arguments when the port is closed. In the case of a disconnect it will be called with a Disconnect Error object (`err.disconnected == true`). In the event of a close error (unlikely), an error event is triggered.
 
 **Kind**: event emitted by [<code>SerialPort</code>](#exp_module_serialport--SerialPort)  
 
