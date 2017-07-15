@@ -164,6 +164,7 @@ int setBaudRate(ConnectionOptionsBaton *data) {
         snprintf(data->errorString, sizeof(data->errorString), "Error: %s calling ioctl(.., IOSSIOSPEED, %ld )", strerror(errno), speed );
         return -1;
       } else {
+        tcflush(fd, TCIOFLUSH);
         return 1;
       }
     }
@@ -201,19 +202,6 @@ int setup(int fd, OpenBaton *data) {
     snprintf(data->errorString, sizeof(data->errorString), "Error %s Cannot open %s", strerror(errno), data->path);
     return -1;
   }
-
-  // Copy the connection options into the ConnectionOptionsBaton to set the baud rate
-  ConnectionOptionsBaton* connectionOptions = new ConnectionOptionsBaton();
-  memset(connectionOptions, 0, sizeof(ConnectionOptionsBaton));
-  connectionOptions->fd = fd;
-  connectionOptions->baudRate = data->baudRate;
-
-  if (-1 == setBaudRate(connectionOptions)) {
-    strncpy(data->errorString, connectionOptions->errorString, sizeof(data->errorString));
-    delete(connectionOptions);
-    return -1;
-  }
-  delete(connectionOptions);
 
   // Get port configuration for modification
   struct termios options;
@@ -318,8 +306,22 @@ int setup(int fd, OpenBaton *data) {
     }
   }
 
+  // Copy the connection options into the ConnectionOptionsBaton to set the baud rate
+  ConnectionOptionsBaton* connectionOptions = new ConnectionOptionsBaton();
+  memset(connectionOptions, 0, sizeof(ConnectionOptionsBaton));
+  connectionOptions->fd = fd;
+  connectionOptions->baudRate = data->baudRate;
+
+  if (-1 == setBaudRate(connectionOptions)) {
+    strncpy(data->errorString, connectionOptions->errorString, sizeof(data->errorString));
+    delete(connectionOptions);
+    return -1;
+  }
+  delete(connectionOptions);
+
   // flush all unread and wrote data up to this point because it could have been received or sent with bad settings
-  tcflush(fd, TCIOFLUSH);
+  // Not needed since setBaudRate does this for us
+  // tcflush(fd, TCIOFLUSH);
 
   return 1;
 }
