@@ -367,7 +367,7 @@ describe('SerialPort', () => {
         const port = new SerialPort('/dev/exists');
         port.on('open', () => {
           port.write(data, () => {
-            assert.deepEqual(data, port.binding.port.lastWrite);
+            assert.deepEqual(data, port.binding.lastWrite);
             done();
           });
         });
@@ -378,7 +378,7 @@ describe('SerialPort', () => {
         port.on('open', () => {
           const data = 'Crazy!';
           port.write(data, () => {
-            const lastWrite = port.binding.port.lastWrite;
+            const lastWrite = port.binding.lastWrite;
             assert.deepEqual(Buffer.from(data), lastWrite);
             done();
           });
@@ -390,7 +390,7 @@ describe('SerialPort', () => {
         port.on('open', () => {
           const data = 'COFFEE';
           port.write(data, 'hex', () => {
-            const lastWrite = port.binding.port.lastWrite;
+            const lastWrite = port.binding.lastWrite;
             assert.deepEqual(Buffer.from(data, 'hex'), lastWrite);
             done();
           });
@@ -402,7 +402,7 @@ describe('SerialPort', () => {
         port.on('open', () => {
           const data = [0, 32, 44, 88];
           port.write(data, () => {
-            const lastWrite = port.binding.port.lastWrite;
+            const lastWrite = port.binding.lastWrite;
             assert.deepEqual(Buffer.from(data), lastWrite);
             done();
           });
@@ -423,7 +423,7 @@ describe('SerialPort', () => {
           port.write('abc');
           port.write(Buffer.from('123'), () => {
             assert.equal(spy.callCount, 1);
-            assert.deepEqual(port.binding.port.lastWrite, Buffer.from('abc123'));
+            assert.deepEqual(port.binding.lastWrite, Buffer.from('abc123'));
             done();
           });
           port.uncork();
