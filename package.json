@@ -54,7 +54,7 @@
   ],
   "dependencies": {
     "bindings": "1.2.1",
-    "commander": "^2.9.0",
+    "commander": "^2.11.0",
     "debug": "^2.6.6",
     "nan": "^2.6.2",
     "node-pre-gyp": "^0.6.36",
@@ -65,7 +65,7 @@
     "chai-subset": "^1.5.0",
     "eslint": "^4.1.1",
     "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-import": "^2.3.0",
+    "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-node": "^5.1.0",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
@@ -74,7 +74,7 @@
     "mocha": "^3.4.2",
     "node-pre-gyp-github": "^1.1.2",
     "proxyquire": "^1.7.10",
-    "sinon": "^2.2.0"
+    "sinon": "^2.3.8"
   },
   "bundledDependencies": [
     "node-pre-gyp"
