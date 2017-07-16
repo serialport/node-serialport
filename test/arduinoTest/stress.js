@@ -4,7 +4,6 @@
 // `npm run stress` to run these tests
 
 const Buffer = require('safe-buffer').Buffer;
-const assert = require('chai').assert;
 const util = require('util');
 const SerialPort = require('../../');
 require('colors'); // this modifies String.prototype

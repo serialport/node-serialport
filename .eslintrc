@@ -14,6 +14,10 @@
   "parserOptions": {
     "ecmaVersion": 2017
   },
+  "globals": {
+    "assert": false,
+    "makeTestFeature": false
+  },
   "rules": {
     "no-unused-vars": [2, { "vars": "all", "args": "after-used" }],
     "no-var": 2,

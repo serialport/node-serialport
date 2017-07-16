@@ -2,7 +2,6 @@
 /* eslint-disable no-new */
 
 const Buffer = require('safe-buffer').Buffer;
-const assert = require('chai').assert;
 const sinon = require('sinon');
 
 const DelimiterParser = require('../lib/parsers/delimiter');
