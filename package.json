@@ -61,6 +61,7 @@
     "safe-buffer": "^5.0.1"
   },
   "devDependencies": {
+    "bluebird": "^3.5.0",
     "chai": "^4.0.2",
     "chai-subset": "^1.5.0",
     "eslint": "^4.1.1",

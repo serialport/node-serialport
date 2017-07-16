@@ -178,19 +178,22 @@ function integrationTest(platform, testPort, binding) {
         // 2k of random data
         const input = crypto.randomBytes(1024 * 2);
         const port = new SerialPort(testPort);
+        port.on('error', done);
         const ready = port.pipe(new SerialPort.parsers.Ready({ delimiter: readyData }));
+
         // this will trigger from the "READY" the arduino sends when it's... ready
         ready.on('ready', () => {
           port.write(input);
         });
 
-        let output = Buffer.alloc(0);
+        const readData = Buffer.alloc(input.length, 0);
+        let bytesRead = 0;
         ready.on('data', (data) => {
-          output = Buffer.concat([output, data]);
-          if (output.length >= input.length) {
+          bytesRead += data.copy(readData, bytesRead);
+          if (bytesRead >= input.length) {
             try {
-              assert.equal(output.length, input.length, 'write length matches');
-              assert.deepEqual(output, input, 'read data matches expected output');
+              assert.equal(readData.length, input.length, 'write length matches');
+              assert.deepEqual(readData, input, 'read data matches expected readData');
               port.close(done);
             } catch (e) {
               done(e);
@@ -200,7 +203,7 @@ function integrationTest(platform, testPort, binding) {
       });
     });
 
-    describe('flush', () => {
+    describe('#flush', () => {
       it('discards any received data', (done) => {
         const port = new SerialPort(testPort);
         port.on('open', () => process.nextTick(() => {
