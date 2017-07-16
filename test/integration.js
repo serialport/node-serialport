@@ -1,7 +1,6 @@
 'use strict';
 const Buffer = require('safe-buffer').Buffer;
 const crypto = require('crypto');
-const assert = require('chai').assert;
 const SerialPort = require('../');
 
 let platform;
@@ -33,6 +32,8 @@ integrationTest(platform, process.env.TEST_PORT, defaultBinding);
 // Be careful to close the ports when you're done with them
 // Ports are by default exclusively locked so a failure fails all tests
 function integrationTest(platform, testPort, binding) {
+  const testFeature = makeTestFeature(platform);
+
   describe(`${platform} SerialPort Integration Tests`, () => {
     if (!testPort) {
       it(`${platform} tests requires an Arduino loaded with the arduinoEcho program on a serialport set to the TEST_PORT env var`);
@@ -161,11 +162,7 @@ function integrationTest(platform, testPort, binding) {
     });
 
     describe('#update', () => {
-      if (platform === 'win32') {
-        return it("Isn't supported on windows yet");
-      }
-
-      it('allows changing the baud rate of an open port', (done) => {
+      testFeature('port.update-baudrate', 'allows changing the baud rate of an open port', (done) => {
         const port = new SerialPort(testPort, () => {
           port.update({ baudRate: 57600 }, (err) => {
             assert.isNull(err);
@@ -179,22 +176,21 @@ function integrationTest(platform, testPort, binding) {
       it('2k test', function(done) {
         this.timeout(20000);
         // 2k of random data
-        const output = crypto.randomBytes(1024 * 2);
-        const expectedInput = Buffer.concat([readyData, output]);
+        const input = crypto.randomBytes(1024 * 2);
         const port = new SerialPort(testPort);
-
+        const ready = port.pipe(new SerialPort.parsers.Ready({ delimiter: readyData }));
         // this will trigger from the "READY" the arduino sends when it's... ready
-        port.once('data', () => {
-          port.write(output);
+        ready.on('ready', () => {
+          port.write(input);
         });
 
-        let input = Buffer.alloc(0);
-        port.on('data', (data) => {
-          input = Buffer.concat([input, data]);
-          if (input.length >= expectedInput.length) {
+        let output = Buffer.alloc(0);
+        ready.on('data', (data) => {
+          output = Buffer.concat([output, data]);
+          if (output.length >= input.length) {
             try {
-              assert.equal(input.length, expectedInput.length, 'write length matches');
-              assert.deepEqual(input, expectedInput, 'read data matches expected input');
+              assert.equal(output.length, input.length, 'write length matches');
+              assert.deepEqual(output, input, 'read data matches expected output');
               port.close(done);
             } catch (e) {
               done(e);

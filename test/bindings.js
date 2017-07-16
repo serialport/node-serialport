@@ -1,9 +1,6 @@
 'use strict';
 /* eslint-disable no-new */
-
-const assert = require('chai').assert;
 const Buffer = require('safe-buffer').Buffer;
-const testConfig = require('../test-config.json');
 
 let platform;
 switch (process.platform) {
@@ -56,7 +53,6 @@ const readyData = Buffer.from('READY');
 bindingsToTest.forEach((bindingName) => {
   const binding = require(`../lib/bindings/${bindingName}`);
   let testPort = process.env.TEST_PORT;
-  const localTestConfig = testConfig[bindingName] || {};
 
   if (bindingName === 'mock') {
     testPort = '/dev/exists';
@@ -64,17 +60,11 @@ bindingsToTest.forEach((bindingName) => {
   }
 
   // eslint-disable-next-line no-use-before-define
-  testBinding(bindingName, binding, testPort, localTestConfig);
+  testBinding(bindingName, binding, testPort);
 });
 
-function testBinding(bindingName, Binding, testPort, localTestConfig) {
-  function testFeature(feature, description, callback) {
-    if (localTestConfig[feature] === false) {
-      return it(`Feature "${feature}" is disabled. "${description}"`);
-    }
-    it(description, callback);
-  }
-
+function testBinding(bindingName, Binding, testPort) {
+  const testFeature = makeTestFeature(bindingName);
   describe(`bindings/${bindingName}`, () => {
     describe('static method', () => {
       describe('.list', () => {

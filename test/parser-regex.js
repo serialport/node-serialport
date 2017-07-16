@@ -1,7 +1,6 @@
 'use strict';
 /* eslint-disable no-new */
 
-const assert = require('chai').assert;
 const Buffer = require('safe-buffer').Buffer;
 const sinon = require('sinon');
 
