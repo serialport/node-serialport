@@ -598,7 +598,7 @@ Flush discards data received but not read, and written but not transmitted by th
 <a name="module_serialport--SerialPort+drain"></a>
 
 #### `serialPort.drain([callback])`
-Waits until all output data is transmitted to the serial port. See [`tcdrain()`](http://linux.die.net/man/3/tcdrain) or [FlushFileBuffers()](https://msdn.microsoft.com/en-us/library/windows/desktop/aa364439(v=vs.85).aspx) for more information.
+Waits until all output data is transmitted to the serial port. After any pending write has completed it calls [`tcdrain()`](http://linux.die.net/man/3/tcdrain) or [FlushFileBuffers()](https://msdn.microsoft.com/en-us/library/windows/desktop/aa364439(v=vs.85).aspx) to ensure it has been written to the device.
 
 **Kind**: instance method of [<code>SerialPort</code>](#exp_module_serialport--SerialPort)  
 
@@ -607,13 +607,12 @@ Waits until all output data is transmitted to the serial port. See [`tcdrain()`]
 | [callback] | [<code>errorCallback</code>](#module_serialport--SerialPort..errorCallback) | Called once the drain operation returns. |
 
 **Example**  
-Writes `data` and waits until it has finished transmitting to the target serial port before calling the callback.
+Write the `data` and wait until it has finished transmitting to the target serial port before calling the callback.
 
 ```js
 function writeAndDrain (data, callback) {
-  sp.write(data, function () {
-    sp.drain(callback);
-  });
+  port.write(data);
+  port.drain(callback);
 }
 ```
 
@@ -1008,7 +1007,7 @@ Flush (discard) data received but not read, and written but not transmitted.
 <a name="module_serialport--SerialPort..BaseBinding+drain"></a>
 
 ##### `baseBinding.drain()` ⇒ <code>Promise</code>
-Drain waits until all output data is transmitted to the serial port.
+Drain waits until all output data is transmitted to the serial port. An in progress write should be completed before this returns.
 
 **Kind**: instance method of [<code>BaseBinding</code>](#module_serialport--SerialPort..BaseBinding)  
 **Returns**: <code>Promise</code> - Resolves once the drain operation finishes.  

@@ -416,6 +416,17 @@ function testBinding(bindingName, Binding, testPort) {
         it('drains the port', () => {
           return binding.drain();
         });
+
+        it('waits for in progress writes to finish', function(done) {
+          this.timeout(10000);
+          let finishedWrite = false;
+          binding.write(Buffer.alloc(1024 * 2)).then(() => {
+            finishedWrite = true;
+          }).catch(done);
+          binding.drain(() => {
+            assert.isTrue(finishedWrite);
+          }).then(done, done);
+        });
       });
 
       describe('#flush', () => {
