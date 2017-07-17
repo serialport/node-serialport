@@ -1,3 +1,11 @@
+Version 5.0.0-beta8
+-------------
+If we're lucky this will be the last of the betas. The remaining potentially blocking issues have to do with improving `SerialPort.list` which would change their output. The two issues are #1220 and #1084. I need help on those two issues, if I'm not able to close them soon, I'll release anyway, and they'll be fixed for 6x. This release is large enough. -@reconbot
+
+- [linux] Add the `ttyAP` subsystem to serialport list thanks to @fly19890211 for reporting it
+- [all] Have drain wait for pending JS write operations before calling system drain thanks to @digitalhack for reporting it
+- [unix] Move setting up the baudrate to the end of the open() to better support custom baudrates
+
 Version 5.0.0-beta7
 -------------
 - [all] Removed the `disconnect` event. The `close` event now fires with a disconnect error object in the event of a disconnection.
