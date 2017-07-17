@@ -208,6 +208,14 @@ function testBinding(bindingName, Binding, testPort) {
           });
         });
 
+        testFeature('baudrate.250000', 'supports a custom baudRate of 1000000', () => {
+          const customRates = Object.assign({}, defaultOpenOptions, { baudRate: 250000 });
+          return binding.open(testPort, customRates).then(() => {
+            assert.equal(binding.isOpen, true);
+            return binding.close();
+          });
+        });
+
         describe('optional locking', () => {
           it('locks the port by default', () => {
             const binding2 = new Binding({ disconnect });
@@ -322,12 +330,6 @@ function testBinding(bindingName, Binding, testPort) {
 
         it('updates baudRate', () => {
           return binding.update({ baudRate: 57600 });
-        });
-
-        testFeature('baudrate.25000', 'updates baudRate to a custom rate', () => {
-          return binding.update({ baudRate: 25000 }).then(() => {
-            return binding.update({ baudRate: defaultOpenOptions.baudRate });
-          });
         });
       });
 
