@@ -477,7 +477,7 @@ Changes the baud rate for an open port. Throws if you provide a bad argument. Em
 | Param | Type | Description |
 | --- | --- | --- |
 | [options] | <code>object</code> | Only supports `baudRate`. |
-| [options.baudRate] | <code>number</code> | The baud rate of the port to be opened. This should match one of the commonly available baud rates, such as 110, 300, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, or 115200. The device connected to the serial port is not guaranteed to support the requested baud rate, even if the port itself supports that baud rate. |
+| [options.baudRate] | <code>number</code> | The baud rate of the port to be opened. This should match one of the commonly available baud rates, such as 110, 300, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, or 115200. Custom rates are supported best effort per platform. The device connected to the serial port is not guaranteed to support the requested baud rate, even if the port itself supports that baud rate. |
 | [callback] | [<code>errorCallback</code>](#module_serialport--SerialPort..errorCallback) | Called once the port's baud rate changes. If `.update` is called without a callback, and there is an error, an error event is emitted. |
 
 
@@ -1069,7 +1069,7 @@ A callback called with an error or an object with the modem line values (cts, ds
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
 | autoOpen | <code>boolean</code> | <code>true</code> | Automatically opens the port on `nextTick`. |
-| baudRate | <code>number</code> | <code>9600</code> | The baud rate of the port to be opened. This should match one of the commonly available baud rates, such as 110, 300, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, or 115200. The device connected to the serial port is not guaranteed to support the requested baud rate, even if the port itself supports that baud rate. |
+| baudRate | <code>number</code> | <code>9600</code> | The baud rate of the port to be opened. This should match one of the commonly available baud rates, such as 110, 300, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, or 115200. Custom rates are supported best effort per platform. The device connected to the serial port is not guaranteed to support the requested baud rate, even if the port itself supports that baud rate. |
 | dataBits | <code>number</code> | <code>8</code> | Must be one of these: 8, 7, 6, or 5. |
 | highWaterMark | <code>number</code> | <code>16384</code> | The size of the read and write buffers defaults to 16k. |
 | lock | <code>boolean</code> | <code>true</code> | Prevent other processes from opening the port. Windows does not currently support `false`. |

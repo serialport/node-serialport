@@ -329,6 +329,12 @@ function testBinding(bindingName, Binding, testPort) {
             return binding.update({ baudRate: defaultOpenOptions.baudRate });
           });
         });
+
+        testFeature('baudrate.250000', 'updates baudRate to a 250000 baud', () => {
+          return binding.update({ baudRate: 250000 }).then(() => {
+            return binding.update({ baudRate: defaultOpenOptions.baudRate });
+          });
+        });
       });
 
       describe('#write', () => {
