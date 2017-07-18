@@ -1,7 +1,10 @@
 .docs
+.eslintrc
 .github
+.istanbul.yml
 .jshintrc
 .travis.yml
+.vscode
 appveyor.yml
 AUTHORS.md
 changelog.md
@@ -11,6 +14,7 @@ examples/
 Gruntfile.js
 PUBLISHING.md
 test/
+test-config.json
 UPGRADE_GUIDE.md
 changelog.md
 .DS_Store
