@@ -435,7 +435,7 @@ static stDeviceListItem* GetSerialDevices() {
     bsdPathAsCFString = IORegistryEntrySearchCFProperty(
       modemService,
       kIOServicePlane,
-      CFSTR(kIOCalloutDeviceKey),
+      CFSTR(kIODialinDeviceKey),
       kCFAllocatorDefault,
       kIORegistryIterateRecursively);
 
