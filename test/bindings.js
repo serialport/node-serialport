@@ -51,21 +51,27 @@ const readyData = Buffer.from('READY');
 
 // Test our mock binding and the binding for the platform we're running on
 bindingsToTest.forEach((bindingName) => {
-  const binding = require(`../lib/bindings/${bindingName}`);
+  const Binding = require(`../lib/bindings/${bindingName}`);
   let testPort = process.env.TEST_PORT;
 
   if (bindingName === 'mock') {
     testPort = '/dev/exists';
-    binding.createPort(testPort, { echo: true, readyData });
   }
 
   // eslint-disable-next-line no-use-before-define
-  testBinding(bindingName, binding, testPort);
+  testBinding(bindingName, Binding, testPort);
 });
 
 function testBinding(bindingName, Binding, testPort) {
   const testFeature = makeTestFeature(bindingName);
+
   describe(`bindings/${bindingName}`, () => {
+    before(() => {
+      if (bindingName === 'mock') {
+        Binding.createPort(testPort, { echo: true, readyData });
+      }
+    });
+
     describe('static method', () => {
       describe('.list', () => {
         it('returns an array', () => {

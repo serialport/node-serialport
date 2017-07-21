@@ -14,14 +14,12 @@ describe('SerialPort', () => {
   beforeEach(() => {
     SerialPort.Binding = mockBinding;
     sandbox = sinon.sandbox.create();
-
-    // Create a port for fun and profit
-    mockBinding.reset();
     mockBinding.createPort('/dev/exists', { echo: true, readyData: new Buffer(0) });
   });
 
   afterEach(() => {
     sandbox.restore();
+    mockBinding.reset();
   });
 
   describe('constructor', () => {
@@ -318,13 +316,13 @@ describe('SerialPort', () => {
         const port = new SerialPort('/dev/exists', () => {
           port.close(() => {
             port.open(() => {
-              port.binding.write(data).catch(done);
+              port.binding.emitData(data);
             });
           });
-        });
-        port.once('data', (res) => {
-          assert.deepEqual(res, data);
-          done();
+          port.once('data', (res) => {
+            assert.deepEqual(res, data);
+            done();
+          });
         });
       });
 
@@ -756,12 +754,13 @@ describe('SerialPort', () => {
     });
 
     describe('#drain', () => {
-      it('errors when port is not open', (done) => {
+      it('waits for an open port', (done) => {
         const port = new SerialPort('/dev/exists', { autoOpen: false });
         port.drain((err) => {
-          assert.instanceOf(err, Error);
+          assert.isNull(err);
           done();
         });
+        port.open();
       });
 
       it('calls drain on the bindings', (done) => {
@@ -799,6 +798,19 @@ describe('SerialPort', () => {
         });
         port.on('error', (err) => {
           assert.instanceOf(err, Error);
+          done();
+        });
+      });
+
+      it('waits for in progress or queued writes to finish', (done) => {
+        const port = new SerialPort('/dev/exists');
+        port.on('error', done);
+        let finishedWrite = false;
+        port.write(Buffer.alloc(10), () => {
+          finishedWrite = true;
+        });
+        port.drain(() => {
+          assert.isTrue(finishedWrite);
           done();
         });
       });

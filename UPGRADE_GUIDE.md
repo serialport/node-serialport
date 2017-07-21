@@ -4,6 +4,7 @@ Upgrading from 4.x to 5.x
 
 - Removed the `disconnect` event. The `close` event now fires with a disconnect error object in the event of a disconnection.
 - `drain` now waits for the current javascript write to complete before calling the system level drain.
+- `port.isOpen` is now a property not a function
 
 The exact changes will go here see #1046
 
