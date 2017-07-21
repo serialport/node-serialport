@@ -609,7 +609,7 @@ Waits until all output data is transmitted to the serial port. After any pending
 | [callback] | [<code>errorCallback</code>](#module_serialport--SerialPort..errorCallback) | Called once the drain operation returns. |
 
 **Example**  
-Write the `data` and wait until it has finished transmitting to the target serial port before calling the callback.
+Write the `data` and wait until it has finished transmitting to the target serial port before calling the callback. This will queue until the port is open and writes are finished.
 
 ```js
 function writeAndDrain (data, callback) {

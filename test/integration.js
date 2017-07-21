@@ -17,21 +17,20 @@ switch (process.platform) {
 const readyData = Buffer.from('READY');
 
 // test everything on our mock biding and natively
-const defaultBinding = SerialPort.Binding;
-const mockBinding = require('../lib/bindings/mock');
+const DetectedBinding = SerialPort.Binding;
+const MockBinding = require('../lib/bindings/mock');
 
 const mockTestPort = '/dev/exists';
-mockBinding.createPort(mockTestPort, { echo: true, readyData });
 
 // eslint-disable-next-line no-use-before-define
-integrationTest('mock', mockTestPort, mockBinding);
+integrationTest('mock', mockTestPort, MockBinding);
 
 // eslint-disable-next-line no-use-before-define
-integrationTest(platform, process.env.TEST_PORT, defaultBinding);
+integrationTest(platform, process.env.TEST_PORT, DetectedBinding);
 
 // Be careful to close the ports when you're done with them
 // Ports are by default exclusively locked so a failure fails all tests
-function integrationTest(platform, testPort, binding) {
+function integrationTest(platform, testPort, Binding) {
   const testFeature = makeTestFeature(platform);
 
   describe(`${platform} SerialPort Integration Tests`, () => {
@@ -40,8 +39,11 @@ function integrationTest(platform, testPort, binding) {
       return;
     }
 
-    beforeEach(() => {
-      SerialPort.Binding = binding;
+    before(() => {
+      if (Binding === MockBinding) {
+        MockBinding.createPort(testPort, { echo: true, readyData });
+      }
+      SerialPort.Binding = Binding;
     });
 
     describe('static Method', () => {
@@ -136,15 +138,23 @@ function integrationTest(platform, testPort, binding) {
 
       it('can be read after closing and opening', (done) => {
         const port = new SerialPort(testPort, { autoOpen: false });
-        port.open(() => {
-          port.read();
+        port.on('error', done);
+
+        port.open((err) => {
+          assert.isNull(err);
+        });
+        port.once('data', () => {
           port.close();
         });
-        port.once('close', () => {
+
+        port.once('close', (err) => {
+          assert.isNull(err);
+          port.open((err) => {
+            assert.isNull(err);
+          });
           port.once('data', () => {
             port.close(done);
           });
-          port.open();
         });
       });
 
@@ -240,6 +250,22 @@ function integrationTest(platform, testPort, binding) {
             }
             port.close(done);
           });
+        });
+      });
+    });
+
+    describe('#drain', () => {
+      it('waits for in progress or queued writes to finish', (done) => {
+        const port = new SerialPort(testPort);
+        port.on('error', done);
+        let finishedWrite = false;
+        port.write(Buffer.alloc(10), () => {
+          finishedWrite = true;
+        });
+        port.drain((err) => {
+          assert.isNull(err);
+          assert.isTrue(finishedWrite);
+          done();
         });
       });
     });
