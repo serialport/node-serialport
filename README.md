@@ -377,8 +377,8 @@ Testing is an important feature of any library. To aid in our own tests we've de
 const SerialPort = require('serialport/test');
 const MockBinding = SerialPort.Binding;
 
-// Create a port and disable the echo.
-MockBinding.createPort('/dev/ROBOT', { echo: false });
+// Create a port and enable the echo and recording.
+MockBinding.createPort('/dev/ROBOT', { echo: true, record: true })
 cont port = new SerialPort('/dev/ROBOT')
 ```
 
