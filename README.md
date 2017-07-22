@@ -21,11 +21,13 @@ https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/master/CONTRI
 
 ## Intro to Node-Serialport
 
-Imagine a world in which you can write JavaScript to control blenders, lights, security systems, or even robots. That's right—robots! Thanks to Node-Serialport, that world is here.
+Imagine a world in which you can write JavaScript to control blenders, lights, security systems, or even robots. That's right—robots! Thanks to Node Serialport, that world is here.
 
-Node-Serialport provides a very simple interface for the low-level serial port code necessary to program [Arduino](http://www.arduino.cc/) chipsets, [X10](http://www.smarthome.com/manuals/protocol.txt) wireless communications, and even the rising [Z-Wave](http://www.z-wave.com/modules/ZwaveStart/) and [Zigbee](http://www.zigbee.org/) standards. The physical world is your oyster with this goodie.
+Node-Serialport provides a stream interface for the low-level serial port code necessary to controll [Arduino](http://www.arduino.cc/) chipsets, X10 interfaces, [Zigbee](http://www.zigbee.org/) radios, highway signs, lcd screens, cash drawers, motor controllers, sensor packages, fork lifts, modems, drones, CNC machines, plotters, vending machines, ccTalk coin accecptors, SMS Gateways, RFID scanners and much more. Chances are if if you have a hardware device that's meant to be controlled, it speaks serial. The physical world is your oyster with this goodie.
 
 For a full breakdown of why we made Node-Serialport, please read [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics). It explains why one would want to program robots in JS in the first place.
+
+We're not against firmware but we're better than it.
 
 ## Quick Answers to Important Questions
 - **For support**, open a [GitHub issue](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/new).
