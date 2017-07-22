@@ -8,11 +8,16 @@ const MockBinding = SerialPort.Binding;
 
 const portPath = 'COM_ANYTHING';
 
-// By default the mock bindings pretend to be an arduino with the `arduinoEcho` program loaded.
+// The mock bindings can pretend to be an arduino with the `arduinoEcho` program loaded.
 // This will echo any byte written to the port and will emit "READY" data after opening.
+// You enable this by passing `echo: true`
 
-// Create a port and disable the echo.
-MockBinding.createPort(portPath, { echo: false });
+// Another additional option is `record`, if `record: true` is present all
+// writes will be recorded into a single buffer for the lifetime of the port
+// it can be read from `port.binding.recording`.
+
+// Create a port
+MockBinding.createPort(portPath, { echo: false, record: false });
 
 const port = new SerialPort(portPath);
 port.on('open', () => {
