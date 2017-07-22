@@ -1,7 +1,7 @@
 {
   "name": "serialport",
   "version": "5.0.0-beta8",
-  "description": "Node.js package to access serial ports. Welcome your robotic JavaScript overlords. Better yet, program them!",
+  "description": "Node.js package to access serial ports. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!",
   "author": {
     "name": "Chris Williams",
     "email": "voodootikigod@gmail.com",
@@ -18,13 +18,22 @@
     "url": "git://github.com/EmergingTechnologyAdvisors/node-serialport.git"
   },
   "keywords": [
+    "ccTalk",
+    "com port",
     "data logging",
     "hardware",
     "iot",
     "johnny-five",
+    "modem",
     "nodebots",
+    "RFID",
+    "sensor",
     "serial port",
-    "serialport"
+    "serial",
+    "serialport",
+    "sms gateway",
+    "stream",
+    "tty"
   ],
   "maintainers": [
     {
