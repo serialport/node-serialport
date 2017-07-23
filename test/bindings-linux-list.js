@@ -49,10 +49,10 @@ const ports =
 
 const portOutput = [
   {
-    comName: '/dev/ttyS0',
+    comName: '/dev/ttyS0'
   },
   {
-    comName: '/dev/ttyS1',
+    comName: '/dev/ttyS1'
   },
   {
     comName: '/dev/ttyUSB-Arduino',
@@ -64,7 +64,7 @@ const portOutput = [
   },
   {
     comName: '/dev/ttyAMA_im_a_programmer',
-    pnpId: 'pci-NATA_Siolynx2_C8T6VI1F-if00-port0',
+    pnpId: 'pci-NATA_Siolynx2_C8T6VI1F-if00-port0'
   },
   {
     comName: '/dev/ttyMFD0',
@@ -72,7 +72,7 @@ const portOutput = [
     productId: '0x0043'
   },
   {
-    comName: '/dev/rfcomm4',
+    comName: '/dev/rfcomm4'
   }
 ];
 
@@ -85,14 +85,6 @@ describe('listLinux', () => {
     listLinux.setPorts(ports);
     return listLinux().then((ports) => {
       assert.deepEqual(ports, portOutput);
-    });
-  });
-  it('returns an error to callback', () => {
-    listLinux.error(true);
-    return listLinux().then(() => {
-      assert.isFalse(true, `shouldn't succeed`);
-    }, (err) => {
-      assert.instanceOf(err, Error);
     });
   });
 });
