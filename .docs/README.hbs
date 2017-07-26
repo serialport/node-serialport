@@ -334,7 +334,7 @@ const MockBinding = SerialPort.Binding;
 
 // Create a port and enable the echo and recording.
 MockBinding.createPort('/dev/ROBOT', { echo: true, record: true })
-cont port = new SerialPort('/dev/ROBOT')
+const port = new SerialPort('/dev/ROBOT')
 ```
 
 ### Debugging
