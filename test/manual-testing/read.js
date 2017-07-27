@@ -1,22 +1,26 @@
 /* eslint-disable node/no-missing-require */
 'use strict';
 const SerialPort = require('../../');
-const { exec } = require('child_process');
+const exec = require('child_process').exec;
 
 // Serial receiver device 
 const port = process.env.TEST_PORT_RX;
 // Expected number of bytes to receive (should make `size` in drain.js)
 const expected = 512;
+const ByteLength = SerialPort.parsers.ByteLength;
+const parser = port.pipe(new ByteLength({ length: expected }));
 
 if (!port) {
-  console.error('Please pass TEST_PORT environment variable');
+  console.error('Please pass TEST_PORT_RX environment variable');
   process.exit(1);
 }
 
 // Create read device
 const serialPort = new SerialPort(port, (err) => {
   if (err) { throw err }
+});
 
+serialPort.on('open', () => {
   // Run the drain script from the sender device
   exec('node drain.js', (err, stdout) => {
     if (err) {
@@ -27,16 +31,10 @@ const serialPort = new SerialPort(port, (err) => {
     console.log(stdout);
 
     // Read back the data received on the read device after a short timout to ensure transmission
-    setTimeout(() => {
-      serialPort.on('data', (data) => {
-        console.log(`Recieved data dength: ${data.length} B`);
-        if (data.length === expected) {
-          process.exit(0);
-        } else {
-          process.exit(1);
-        }
-      });
-    }, 100);
+    parser.on('data', (data) => {
+      console.log(`Sucessfully received data dength: ${data.length} B`);
+      process.exit(0);
+    });
 
     // Set a timeout so the process exits if no data received
     setTimeout(() => {
