@@ -1,14 +1,13 @@
 /* eslint-disable node/no-missing-require */
 'use strict';
 const SerialPort = require('../../');
+const ByteLength = SerialPort.parsers.ByteLength;
 const exec = require('child_process').exec;
 
 // Serial receiver device 
 const port = process.env.TEST_PORT_RX;
 // Expected number of bytes to receive (should make `size` in drain.js)
 const expected = 512;
-const ByteLength = SerialPort.parsers.ByteLength;
-const parser = port.pipe(new ByteLength({ length: expected }));
 
 if (!port) {
   console.error('Please pass TEST_PORT_RX environment variable');
@@ -29,6 +28,7 @@ serialPort.on('open', () => {
     }
 
     console.log(stdout);
+    const parser = serialPort.pipe(new ByteLength({ length: expected }));
 
     // Read back the data received on the read device after a short timout to ensure transmission
     parser.on('data', (data) => {
