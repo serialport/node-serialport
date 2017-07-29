@@ -788,6 +788,8 @@ parser.on('data', console.log);
 #### `SerialPort.list([callback])` ⇒ <code>Promise</code>
 Retrieves a list of available serial ports with metadata. Only the `comName` is guaranteed. If unavailable the other fields will be undefined. The `comName` is either the path or an identifier (eg `COM1`) used to open the SerialPort.
 
+We make an effort to identify the hardware attached and have consistent results between systems. Linux and OS X are mostly consistent. Windows relies on 3rd party device drivers for the information and is unable to guarantee the information. On windows If you have a USB connected device can we provide a serial number otherwise it will be `undefined`. The `pnpId` and `locationId` are not the same or present on all systems. The examples below were run with the same Arduino Uno.
+
 **Kind**: static method of [<code>SerialPort</code>](#exp_module_serialport--SerialPort)  
 **Returns**: <code>Promise</code> - Resolves with the list of available serial ports.  
 
@@ -797,17 +799,38 @@ Retrieves a list of available serial ports with metadata. Only the `comName` is 
 
 **Example**  
 ```js
-// example port information
+// OSX example port
 {
-  comName: '/dev/cu.usbmodem1421',
+  comName: '/dev/tty.usbmodem1421',
   manufacturer: 'Arduino (www.arduino.cc)',
-  serialNumber: '757533138333964011C1',
+  serialNumber: '752303138333518011C1',
   pnpId: undefined,
-  locationId: '0x14200000',
-  vendorId: '0x2341',
-  productId: '0x0043'
+  locationId: '14500000',
+  productId: '0043',
+  vendorId: '2341'
 }
 
+// Linux example port
+{
+  comName: '/dev/ttyACM0',
+  manufacturer: 'Arduino (www.arduino.cc)',
+  serialNumber: '752303138333518011C1',
+  pnpId: 'usb-Arduino__www.arduino.cc__0043_752303138333518011C1-if00',
+  locationId: undefined,
+  productId: '0043',
+  vendorId: '2341'
+}
+
+// Windows example port
+{
+  comName: 'COM3',
+  manufacturer: 'Arduino LLC (www.arduino.cc)',
+  serialNumber: '752303138333518011C1',
+  pnpId: 'USB\\VID_2341&PID_0043\\752303138333518011C1',
+  locationId: 'Port_#0003.Hub_#0001',
+  productId: '0043',
+  vendorId: '2341'
+}
 ```
 
 ```js
@@ -820,6 +843,7 @@ SerialPort.list(function (err, ports) {
     console.log(port.manufacturer);
   });
 });
+
 // promise approach
 SerialPort.list()
   .then(ports) {...});
@@ -1145,15 +1169,15 @@ $ serialport-list -h
 
 
 $ serialport-list
-/dev/cu.Bluetooth-Incoming-Port
-/dev/cu.usbmodem1421    Arduino (www.arduino.cc)
+/dev/tty.Bluetooth-Incoming-Port
+/dev/tty.usbmodem1421    Arduino (www.arduino.cc)
 
 $ serialport-list -f json
-[{"comName":"/dev/cu.Bluetooth-Incoming-Port"},{"comName":"/dev/cu.usbmodem1421","manufacturer":"Arduino (www.arduino.cc)","serialNumber":"752303138333518011C1","locationId":"0x14200000","vendorId":"0x2341","productId":"0x0043"}]
+[{"comName":"/dev/tty.Bluetooth-Incoming-Port"},{"comName":"/dev/tty.usbmodem1421","manufacturer":"Arduino (www.arduino.cc)","serialNumber":"752303138333518011C1","locationId":"14200000","vendorId":"2341","productId":"0043"}]
 
 $ serialport-list -f jsonline
-{"comName":"/dev/cu.Bluetooth-Incoming-Port"}
-{"comName":"/dev/cu.usbmodem1421","manufacturer":"Arduino (www.arduino.cc)","serialNumber":"752303138333518011C1","locationId":"0x14200000","vendorId":"0x2341","productId":"0x0043"}
+{"comName":"/dev/tty.Bluetooth-Incoming-Port"}
+{"comName":"/dev/tty.usbmodem1421","manufacturer":"Arduino (www.arduino.cc)","serialNumber":"752303138333518011C1","locationId":"14200000","vendorId":"2341","productId":"0043"}
 ```
 
 ### Serial Port Terminal
@@ -1179,8 +1203,8 @@ $ serialport-term -h
     --echo --localecho             Print characters as you type them
 
 $ serialport-term -l
-/dev/cu.Bluetooth-Incoming-Port
-/dev/cu.usbmodem1421    Arduino (www.arduino.cc)
+/dev/tty.Bluetooth-Incoming-Port
+/dev/tty.usbmodem1421    Arduino (www.arduino.cc)
 ```
 
 ### Serial Port Repl
@@ -1188,31 +1212,31 @@ $ serialport-term -l
 
 You can make use of the `serialport-repl` command with;
 ```bash
-serialport-repl # to auto detect an arduino
-serialport-repl /path/name # to connect to a specific port
+$ serialport-repl # to auto detect an arduino
+$ serialport-repl /dev/tty.usbmodem1421 # to connect to a specific port
 ```
 
 It will load a serialport object with debugging turned on.
 ```
   serialport:binding:auto-detect loading DarwinBinding +0ms
-port = SerialPort("/path/name", { autoOpen: false })
+port = SerialPort("/dev/tty.usbmodem1421", { autoOpen: false })
 globals { SerialPort, portName, port }
 > SerialPort.list()
   serialport:main .list +6s
-[ { comName: '/path/name',
-    manufacturer: undefined,
-    serialNumber: undefined,
+[ { comName: '/dev/tty.usbmodem1421',
+    manufacturer: 'Arduino (www.arduino.cc)',
+    serialNumber: '752303138333518011C1',
     pnpId: undefined,
-    locationId: undefined,
-    vendorId: undefined,
-    productId: undefined } ]
+    locationId: '14200000',
+    vendorId: '2341',
+    productId: '0043' } ]
 > port.write('Calling all Autobots!')
 true
 > port.read()
   serialport:main _read queueing _read for after open +1m
 null
 > port.open()
-  serialport:main opening path: serialport-repl +30s
+  serialport:main opening path: /dev/tty.usbmodem1421 +30s
   serialport:bindings open +1ms
 ```
 

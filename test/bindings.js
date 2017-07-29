@@ -34,6 +34,16 @@ const defaultSetFlags = Object.freeze({
   rts: true
 });
 
+const listFields = [
+  'comName',
+  'manufacturer',
+  'serialNumber',
+  'pnpId',
+  'locationId',
+  'vendorId',
+  'productId'
+];
+
 const bindingsToTest = [
   'mock',
   platform
@@ -81,16 +91,18 @@ function testBinding(bindingName, Binding, testPort) {
         });
 
         it('has objects with undefined when there is no data', () => {
-          return Binding.list().then((data) => {
-            assert.isArray(data);
-            if (data.length === 0) {
+          return Binding.list().then((ports) => {
+            assert.isArray(ports);
+            if (ports.length === 0) {
               console.log('no ports to test');
               return;
             }
-            const obj = data[0];
-            Object.keys(obj).forEach((key) => {
-              assert.notEqual(obj[key], '', 'empty values should be undefined');
-              assert.isNotNull(obj[key], 'empty values should be undefined');
+            ports.forEach(port => {
+              assert.containSubset(Object.keys(port), listFields);
+              Object.keys(port).forEach((key) => {
+                assert.notEqual(port[key], '', 'empty values should be undefined');
+                assert.isNotNull(port[key], 'empty values should be undefined');
+              });
             });
           });
         });

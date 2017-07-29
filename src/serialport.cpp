@@ -1,5 +1,9 @@
 #include "./serialport.h"
 
+#ifdef __APPLE__
+  #include "./darwin_list.h"
+#endif
+
 #ifdef WIN32
   #define strncasecmp strnicmp
   #include "./serialport_win.h"
@@ -186,68 +190,6 @@ void EIO_AfterClose(uv_work_t* req) {
   }
   data->callback.Call(1, argv);
 
-  delete data;
-  delete req;
-}
-
-NAN_METHOD(List) {
-  // callback
-  if (!info[0]->IsFunction()) {
-    Nan::ThrowTypeError("First argument must be a function");
-    return;
-  }
-
-  ListBaton* baton = new ListBaton();
-  strcpy(baton->errorString, "");
-  baton->callback.Reset(info[0].As<v8::Function>());
-
-  uv_work_t* req = new uv_work_t();
-  req->data = baton;
-  uv_queue_work(uv_default_loop(), req, EIO_List, (uv_after_work_cb)EIO_AfterList);
-}
-
-void setIfNotEmpty(v8::Local<v8::Object> item, std::string key, const char *value) {
-  v8::Local<v8::String> v8key = Nan::New<v8::String>(key).ToLocalChecked();
-  if (strlen(value) > 0) {
-    Nan::Set(item, v8key, Nan::New<v8::String>(value).ToLocalChecked());
-  } else {
-    Nan::Set(item, v8key, Nan::Undefined());
-  }
-}
-
-void EIO_AfterList(uv_work_t* req) {
-  Nan::HandleScope scope;
-
-  ListBaton* data = static_cast<ListBaton*>(req->data);
-
-  v8::Local<v8::Value> argv[2];
-  if (data->errorString[0]) {
-    argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
-    argv[1] = Nan::Undefined();
-  } else {
-    v8::Local<v8::Array> results = Nan::New<v8::Array>();
-    int i = 0;
-    for (std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it, i++) {
-      v8::Local<v8::Object> item = Nan::New<v8::Object>();
-
-      setIfNotEmpty(item, "comName", (*it)->comName.c_str());
-      setIfNotEmpty(item, "manufacturer", (*it)->manufacturer.c_str());
-      setIfNotEmpty(item, "serialNumber", (*it)->serialNumber.c_str());
-      setIfNotEmpty(item, "pnpId", (*it)->pnpId.c_str());
-      setIfNotEmpty(item, "locationId", (*it)->locationId.c_str());
-      setIfNotEmpty(item, "vendorId", (*it)->vendorId.c_str());
-      setIfNotEmpty(item, "productId", (*it)->productId.c_str());
-
-      Nan::Set(results, i, item);
-    }
-    argv[0] = Nan::Null();
-    argv[1] = results;
-  }
-  data->callback.Call(2, argv);
-
-  for (std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it) {
-    delete *it;
-  }
   delete data;
   delete req;
 }
@@ -482,12 +424,17 @@ extern "C" {
     Nan::SetMethod(target, "open", Open);
     Nan::SetMethod(target, "update", Update);
     Nan::SetMethod(target, "close", Close);
-    Nan::SetMethod(target, "list", List);
     Nan::SetMethod(target, "flush", Flush);
     Nan::SetMethod(target, "drain", Drain);
+
+    #ifdef __APPLE__
+    Nan::SetMethod(target, "list", List);
+    #endif
+
     #ifdef WIN32
     Nan::SetMethod(target, "write", Write);
     Nan::SetMethod(target, "read", Read);
+    Nan::SetMethod(target, "list", List);
     #else
     Poller::Init(target);
     #endif

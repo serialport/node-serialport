@@ -25,7 +25,8 @@
         {
           'sources': [
             'src/serialport_unix.cpp',
-            'src/poller.cpp'
+            'src/poller.cpp',
+            'src/darwin_list.cpp'
           ],
           'xcode_settings': {
             'OTHER_LDFLAGS': [
