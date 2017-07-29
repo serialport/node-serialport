@@ -7,12 +7,6 @@ const sinon = require('sinon');
 const ReadlineParser = require('../lib/parsers/readline');
 
 describe('ReadlineParser', () => {
-  it('works without new', () => {
-    // eslint-disable-next-line new-cap
-    const parser = ReadlineParser();
-    assert.instanceOf(parser, ReadlineParser);
-  });
-
   it('transforms data to strings split on a delimiter', () => {
     const spy = sinon.spy();
     const parser = new ReadlineParser();

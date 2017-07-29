@@ -7,12 +7,6 @@ const sinon = require('sinon');
 const ReadyParser = require('../lib/parsers/ready');
 
 describe('ReadyParser', () => {
-  it('works without new', () => {
-    // eslint-disable-next-line new-cap
-    const parser = ReadyParser({ delimiter: Buffer.from([0]) });
-    assert.instanceOf(parser, ReadyParser);
-  });
-
   it('emits data received after the ready data', () => {
     const spy = sinon.spy();
     const parser = new ReadyParser({
