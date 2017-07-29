@@ -136,7 +136,8 @@ function integrationTest(platform, testPort, Binding) {
         });
       });
 
-      it('can be read after closing and opening', (done) => {
+      it('can be read after closing and opening', function(done) {
+        this.timeout(6000);
         const port = new SerialPort(testPort, { autoOpen: false });
         port.on('error', done);
 
