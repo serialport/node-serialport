@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 'use strict';
+const repl = require('repl');
+const promirepl = require('promirepl').promirepl;
+
 process.env.DEBUG = process.env.DEBUG || '*';
 const SerialPort = require('../');
 
@@ -20,24 +23,22 @@ function findArduino() {
         }
       });
       if (!resolved) {
-        reject(new Error('No arduinos found'));
+        reject(new Error('No arduinos found. You must specify a port to load.\n\nFor example:\n\tserialport-repl COM3\n\tserialport-repl /dev/tty.my-serialport'));
       }
     });
   });
 }
 
-const repl = require('repl');
-// const { promirepl } = require('promirepl')
-
 findArduino().then((portName) => {
+  console.log(`port = SerialPort("${portName}", { autoOpen: false })`);
+  console.log('globals { SerialPort, portName, port }');
   const port = new SerialPort(portName, { autoOpen: false });
   const spRepl = repl.start({ prompt: '> ' });
+  promirepl(spRepl);
   spRepl.context.SerialPort = SerialPort;
   spRepl.context.portName = portName;
   spRepl.context.port = port;
 }).catch((e) => {
-  console.log(e.message);
+  console.error(e.message);
   process.exit(1);
 });
-
-// promirepl(graphRepl)

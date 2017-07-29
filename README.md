@@ -117,6 +117,7 @@ In addition to reading the [article mentioned above](http://www.voodootikigod.co
 * [Command Line Tools](#command-line-tools)
   * [Serial Port List](#serial-port-list)
   * [Serial Port Terminal](#serial-port-terminal)
+  * [Serial Port Repl](#serial-port-repl)
 * [License](#license)
 
 ***
@@ -400,14 +401,22 @@ DEBUG=* node myapp.js
 ```
 
 You can enable core dumps on osx with;
-```
+```bash
 ulimit -c unlimited for core dumps
 ```
 
 You can "console.log" from c++ with;
-```
+```c++
 fprintf(stdout, "Hellow World num=%d str=%s\n", 4, "hi");
 ```
+
+You can make use of the `serialport-repl` command with;
+```bash
+serialport-repl # to auto detect an arduino
+serialport-repl /path/name # to connect to a specific port
+```
+
+It will load a serialport object with debugging turned on.
 
 ### Error Handling
 
@@ -1138,7 +1147,7 @@ $ serialport-list -f jsonline
 ```
 
 ### Serial Port Terminal
-`serialport-term provides a basic terminal interface for communicating over a serial port. `ctrl+c` will exit.
+`serialport-term` provides a basic terminal interface for communicating over a serial port. `ctrl+c` will exit.
 
 ```bash
 $ serialport-term -h
@@ -1162,6 +1171,39 @@ $ serialport-term -h
 $ serialport-term -l
 /dev/cu.Bluetooth-Incoming-Port
 /dev/cu.usbmodem1421    Arduino (www.arduino.cc)
+```
+
+### Serial Port Repl
+`serialport-repl` provides a nodejs repl for working with serialport. This is valuable when debugging.
+
+You can make use of the `serialport-repl` command with;
+```bash
+serialport-repl # to auto detect an arduino
+serialport-repl /path/name # to connect to a specific port
+```
+
+It will load a serialport object with debugging turned on.
+```
+  serialport:binding:auto-detect loading DarwinBinding +0ms
+port = SerialPort("/path/name", { autoOpen: false })
+globals { SerialPort, portName, port }
+> SerialPort.list()
+  serialport:main .list +6s
+[ { comName: '/path/name',
+    manufacturer: undefined,
+    serialNumber: undefined,
+    pnpId: undefined,
+    locationId: undefined,
+    vendorId: undefined,
+    productId: undefined } ]
+> port.write('Calling all Autobots!')
+true
+> port.read()
+  serialport:main _read queueing _read for after open +1m
+null
+> port.open()
+  serialport:main opening path: serialport-repl +30s
+  serialport:bindings open +1ms
 ```
 
 ## License
