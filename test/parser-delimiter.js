@@ -7,12 +7,6 @@ const sinon = require('sinon');
 const DelimiterParser = require('../lib/parsers/delimiter');
 
 describe('DelimiterParser', () => {
-  it('works without new', () => {
-    // eslint-disable-next-line new-cap
-    const parser = DelimiterParser({ delimiter: Buffer.from([0]) });
-    assert.instanceOf(parser, DelimiterParser);
-  });
-
   it('transforms data to strings split on a delimiter', () => {
     const spy = sinon.spy();
     const parser = new DelimiterParser({
@@ -29,7 +23,7 @@ describe('DelimiterParser', () => {
   });
 
   it('flushes remaining data when the stream ends', () => {
-    const parser = DelimiterParser({ delimiter: Buffer.from([0]) });
+    const parser = new DelimiterParser({ delimiter: Buffer.from([0]) });
     const spy = sinon.spy();
     parser.on('data', spy);
     parser.write(Buffer.from([1]));
