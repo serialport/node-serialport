@@ -20,6 +20,7 @@ changelog.md
 .DS_Store
 
 # MIRRORED FROM .gitignore PLEASE MAINTAIN
+lib/
 build/
 node_modules
 npm-debug.log
