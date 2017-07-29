@@ -1,10 +1,12 @@
 Upgrading from 4.x to 5.x
 -------------
-5.x is a major rewrite to make node serialport a NodeJS stream. While the api surface is  similar there have been a number of changes to ensure more consistent error handling and operation of a serial port.
+5.x is a major rewrite to make node serialport a NodeJS stream. While the api surface is similar there have been a number of changes to ensure more consistent error handling and operation of a serial port.
 
 - Removed the `disconnect` event. The `close` event now fires with a disconnect error object in the event of a disconnection.
 - `drain` now waits for the current javascript write to complete before calling the system level drain.
 - `port.isOpen` is now a property not a function
+- `SerialPort.list` has slightly different output with more information, decoded strings and `0x` prefixes removed from some properties.
+- `SerialPort.list` now returns a promise if no call back is provided
 
 The exact changes will go here see #1046
 

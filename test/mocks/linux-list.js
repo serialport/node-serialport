@@ -2,26 +2,24 @@
 
 'use strict';
 
+const EventEmitter = require('events');
 const proxyquire = require('proxyquire');
-
+const Readable = require('stream').Readable;
 let mockPorts;
 
 proxyquire.noPreserveCache();
 const listLinux = proxyquire('../../lib/bindings/linux-list', {
   child_process: {
     spawn() {
-      const EventEmitter = require('events');
       const event = new EventEmitter();
-      const Readable = require('stream').Readable;
       const stream = new Readable();
+      event.stdout = stream;
       stream.push(mockPorts);
       stream.push(null);
-      event.stdout = stream;
       return event;
     }
   }
 });
-
 proxyquire.preserveCache();
 
 listLinux.setPorts = (ports) => {

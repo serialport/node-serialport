@@ -1,3 +1,8 @@
+Version 5.0.0-beta9
+-------------
+- [all] `Serialport.list` now has more consistent output across all platforms.
+- [linux] `Serialport.list` is now faster and less resource intensive thanks to @akaJes for contributing this!
+
 Version 5.0.0-beta8
 -------------
 If we're lucky this will be the last of the betas. The remaining potentially blocking issues have to do with improving `SerialPort.list` which would change their output. The two issues are #1220 and #1084. I need help on those two issues, if I'm not able to close them soon, I'll release anyway, and they'll be fixed for 6x. This release is large enough. -@reconbot

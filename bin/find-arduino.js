@@ -4,16 +4,13 @@
 // outputs the path to an arduino or nothing
 
 const serialport = require('../');
-serialport.list((err, ports) => {
-  if (err) {
-    console.error(err);
+serialport.list()
+  .then(ports => ports.find(port => /arduino/i.test(port.manufacturer)))
+  .then(port => {
+    if (!port) { throw new Error('Arduino Not found') }
+    console.log(port.comName);
+  })
+  .catch((err) => {
+    console.error(err.message);
     process.exit(1);
-  }
-  ports.forEach((port) => {
-    if (/arduino/i.test(port.manufacturer)) {
-      console.log(port.comName);
-      process.exit(0);
-    }
   });
-  process.exit(1);
-});

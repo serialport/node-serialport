@@ -4,14 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <nan.h>
-#include <list>
 #include <string>
 
 #define ERROR_STRING_SIZE 1024
-
-NAN_METHOD(List);
-void EIO_List(uv_work_t* req);
-void EIO_AfterList(uv_work_t* req);
 
 NAN_METHOD(Open);
 void EIO_Open(uv_work_t* req);
@@ -86,22 +81,6 @@ struct ConnectionOptionsBaton {
   Nan::Callback callback;
   int fd;
   int baudRate;
-};
-
-struct ListResultItem {
-  std::string comName;
-  std::string manufacturer;
-  std::string serialNumber;
-  std::string pnpId;
-  std::string locationId;
-  std::string vendorId;
-  std::string productId;
-};
-
-struct ListBaton {
-  Nan::Callback callback;
-  std::list<ListResultItem*> results;
-  char errorString[ERROR_STRING_SIZE];
 };
 
 struct SetBaton {
