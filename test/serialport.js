@@ -5,8 +5,8 @@ const sinon = require('sinon');
 chai.use(require('chai-subset'));
 const assert = chai.assert;
 
-const SerialPort = require('../lib/serialport');
-const mockBinding = require('../lib/bindings/mock');
+const SerialPort = require('../dist/serialport');
+const mockBinding = require('../dist/bindings/mock');
 
 describe('SerialPort', () => {
   let sandbox;

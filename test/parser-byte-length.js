@@ -3,7 +3,7 @@
 
 const Buffer = require('safe-buffer').Buffer;
 const sinon = require('sinon');
-const ByteLengthParser = require('../lib/parsers/byte-length');
+const ByteLengthParser = require('../dist/parsers/byte-length');
 
 describe('ByteLengthParser', () => {
   it('works without new', () => {

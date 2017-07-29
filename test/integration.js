@@ -18,7 +18,7 @@ const readyData = Buffer.from('READY');
 
 // test everything on our mock biding and natively
 const DetectedBinding = SerialPort.Binding;
-const MockBinding = require('../lib/bindings/mock');
+const MockBinding = require('../dist/bindings/mock');
 
 const mockTestPort = '/dev/exists';
 

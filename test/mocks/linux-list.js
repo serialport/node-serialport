@@ -7,7 +7,7 @@ const proxyquire = require('proxyquire');
 let mockPorts;
 
 proxyquire.noPreserveCache();
-const listLinux = proxyquire('../../lib/bindings/linux-list', {
+const listLinux = proxyquire('../../dist/bindings/linux-list', {
   child_process: {
     spawn() {
       const EventEmitter = require('events');
