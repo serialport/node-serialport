@@ -33,7 +33,8 @@
     "serialport",
     "sms gateway",
     "stream",
-    "tty"
+    "tty",
+    "UART"
   ],
   "maintainers": [
     {
