@@ -10,18 +10,6 @@ addons:
     - g++-4.8
     - g++-4.8-multilib
     - gcc-multilib
-    - libgtk2.0-0
-    - libxtst6
-    - libnotify4
-    - libgconf2-4
-    - libgtk2.0-0:i386
-    - libxtst6:i386
-    - libnotify4:i386
-    - libgconf2-4:i386
-    - libnss3:i386
-    - libasound2:i386
-    - libxss1:i386
-    - socat
 
 # Build matrix
 os:
@@ -29,16 +17,14 @@ os:
 - osx
 env:
   global:
-  - secure: "qEdwCY/ilHkqWkqasN5MgWCnzzop4lEYkbpxEiVMTZBY12p4uV6ysPQ+ZLZcx10Cg90RIQlsPeEANIhCzkWfnQi+ySmeiKY9JR2eSnb69wM7dBQ/uxv04eVChAlZSsDHwmTIIzIzZFsrWrcwwJaENGCJYKqZ9LKOiGFGQ8Is09A="
+  - secure: "L+AGMJc5NAsuym+xzB4FWj0c2rCobosixkoxLBhDBVkLiYsMtfS9y1w8Xz0pbWKJnJAH9tfwHluu5aX2qYk2HbreSyNzy8hbPW+9RbSyAQexeiZG4mLuDEz0xvlpCCQBsS1OfMypQk0/JvL4oA9B/xasrpkeVuPI7dwAz2WcFms="
   matrix:
   - TRAVIS_NODE_VERSION="4"
   - TRAVIS_NODE_VERSION="4" ARCH="x86"
   - TRAVIS_NODE_VERSION="6"
   - TRAVIS_NODE_VERSION="6" ARCH="x86"
-  - TRAVIS_NODE_VERSION="8"
-  - TRAVIS_NODE_VERSION="8" ARCH="x86"
-  - TRAVIS_ELECTRON_VERSION="1.4.12" TRAVIS_NODE_VERSION="6"
-  - TRAVIS_ELECTRON_VERSION="1.4.12" ARCH="x86" TRAVIS_NODE_VERSION="6"
+  - BINARY_BUILDER="true" TRAVIS_NODE_VERSION="8"
+  - BINARY_BUILDER="true" TRAVIS_NODE_VERSION="8" ARCH="x86"
 matrix:
   exclude:
   - os: osx
@@ -46,48 +32,47 @@ matrix:
   - os: osx
     env: TRAVIS_NODE_VERSION="6" ARCH="x86"
   - os: osx
-    env: TRAVIS_NODE_VERSION="8" ARCH="x86"
-  - os: osx
-    env: TRAVIS_ELECTRON_VERSION="1.4.12" ARCH="x86" TRAVIS_NODE_VERSION="6"
-  - os: linux
-    env: TRAVIS_ELECTRON_VERSION="1.4.12" ARCH="x86" TRAVIS_NODE_VERSION="6"
+    env: BINARY_BUILDER="true" TRAVIS_NODE_VERSION="8" ARCH="x86"
 
 before_install:
-# reinstall latest nvm
-- rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh
-- nvm install $TRAVIS_NODE_VERSION
-- PATH=$PATH:`pwd`/node_modules/.bin
 
-- BASE_URL=$(node -p "'https://nodejs.org/dist/' + process.version")
-- X86_FILE=$(node -p "'node-' + process.version + '-' + process.platform + '-x86'")
 # download node if testing x86 architecture
-- if [[ "$ARCH" == "x86" ]]; then wget $BASE_URL/$X86_FILE.tar.gz; tar -xf $X86_FILE.tar.gz; export PATH=$X86_FILE/bin:$PATH; fi
-
-# upgrade npm if on node 4 as it doesn't like our dev peer deps
-- if [[ $TRAVIS_NODE_VERSION == "4" ]]; then npm install -g npm; fi
-
-# print versions
-- uname -a
-- file `which node`
-- node --version
-- node -p 'process.platform + "@" + process.arch'
-- npm --version
+- >
+  if [[ "$ARCH" == "x86" ]]; then
+    BASE_URL=$(node -p "'https://nodejs.org/dist/' + process.version");
+    X86_FILE=$(node -p "'node-' + process.version + '-' + process.platform + '-x86'");
+    wget $BASE_URL/$X86_FILE.tar.gz;
+    tar -xf $X86_FILE.tar.gz;
+    nvm deactivate;
+    export PATH=$X86_FILE/bin:$PATH;
+  else
+    nvm install $TRAVIS_NODE_VERSION
+  fi;
 
 # use g++-4.8 on Linux
 - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.8; fi
 - $CXX --version
 
-# figure out if we should publish
-- PUBLISH_BINARY=false
-# if we are building a tag then publish
-- echo $TRAVIS_BRANCH
-- echo `git describe --tags --always HEAD`
-- if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then PUBLISH_BINARY=true; fi;
-- echo "Publishing native platform Binary Package? ->" $PUBLISH_BINARY
+# upgrade npm if on node 4 as npm2 doesn't like our dev peer deps
+- if [[ $TRAVIS_NODE_VERSION == "4" ]]; then npm install -g npm; fi
 
 # Cleanup the output of npm
 - npm config set progress false
 - npm config set spin false
+
+# print versions
+- uname -a
+- which node; file `which node`
+- node --version
+- node -p 'process.platform + "@" + process.arch'
+- npm --version
+
+# figure out if we should publish
+- PUBLISH_BINARY=false
+- echo $TRAVIS_BRANCH
+- echo `git describe --tags --always HEAD`
+- if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then PUBLISH_BINARY=$BINARY_BUILDER; fi;
+- echo "Publishing native platform Binary Package? ->" $PUBLISH_BINARY
 
 # setup virtual serialports
 # - >
@@ -95,54 +80,26 @@ before_install:
   # ./bin/echo.js --port ttyV0 &
   # export TEST_PORT=ttyV1
 
-- >
-  if [[ ! -z $TRAVIS_ELECTRON_VERSION ]]; then
-    if [[ $TRAVIS_OS_NAME == "linux" ]]; then
-      export DISPLAY=:99.0
-      sh -e /etc/init.d/xvfb start
-    fi
-
-    export npm_config_target=$TRAVIS_ELECTRON_VERSION
-    export npm_config_arch=$ARCH
-    export npm_config_disturl=https://atom.io/download/atom-shell
-    export npm_config_runtime=electron
-
-    npm install --arch=$ARCH electron@$TRAVIS_ELECTRON_VERSION
-    npm install electron-mocha
-
-    echo "installed Electron $TRAVIS_ELECTRON_VERSION"
-  fi
-
 install:
 # ensure source install works
 - npm install --build-from-source
-
 
 script:
   # linting no longer works on node 4
 - >
   if [[ $TRAVIS_NODE_VERSION != "4" ]]; then
     npm run lint
-  fi
+  fi;
 
 - npm run docs:diff
-- >
-  if [[ -z $TRAVIS_ELECTRON_VERSION ]]; then
-    node ./
-    npm test
-  else
-    electron test/electron
-  fi
+- node ./
+- npm test
 
 # if publishing, do it
-- if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp package; fi;
-- if [[ $PUBLISH_BINARY == true ]]; then node-pre-gyp-github publish --release; fi;
-
-# cleanup
-- node-pre-gyp clean
-
-# test binary exists
-- if [[ $PUBLISH_BINARY == true ]]; then npm install --fallback-to-build=false; fi;
+- >
+  if [[ $PUBLISH_BINARY == true ]]; then
+    npm run prebuild-upload;
+  fi;
 
 after_success:
 - bash <(curl -s https://codecov.io/bash)
