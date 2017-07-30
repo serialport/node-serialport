@@ -1,7 +1,18 @@
 Version 5.0.0-beta9
 -------------
-- [all] `Serialport.list` now has more consistent output across all platforms.
-- [linux] `Serialport.list` is now faster and less resource intensive thanks to @akaJes for contributing this!
+This closes all known bugs!
+
+- [all] `SerialPort.list` now has more consistent output across all platforms.
+- [all] Add promise support to serialport-repl
+- [all] Add write recording capabilities to the mock bindings
+- [all] calls to `.drain` now queue behind port open and in progress writes reported by and with lots of testing help from @tuna-f1sh
+- [all] Change the default high water mark to 64k to match `fs.ReadStream`
+- [all] fix(package): update bindings to version 1.3.0
+- [all] SerialPort can now be compressed with `uglify-es` thanks to @rwaldron
+- [docs] fixed a typo thanks to @amilajack
+- [linux] `SerialPort.list` is now faster and less resource intensive thanks to @akaJes!
+- [osx] `SerialPort.list` now returns the `tty` instead of the `cu` thanks to @@kishinmanglani
+- [unix] fix a bug when poller errors would be unhandled thanks to @thiago-sylvain for reporting
 
 Version 5.0.0-beta8
 -------------
