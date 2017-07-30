@@ -40,3 +40,6 @@ port.on('open', () => {
   // To pretend to receive data (only works on open ports)
   port.binding.emitData(Buffer.from('Hi from my test!'));
 });
+
+// When you're done you can destroy all ports with
+MockBinding.reset();
