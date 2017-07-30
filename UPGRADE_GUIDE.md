@@ -1,14 +1,37 @@
 Upgrading from 4.x to 5.x
 -------------
-5.x is a major rewrite to make node serialport a NodeJS stream. While the api surface is similar there have been a number of changes to ensure more consistent error handling and operation of a serial port.
+Node SerialPort 5.0.0 is a major rewrite that improves stability, compatibility and performance. While the api surface is similar there have been a number of changes to ensure consistent error handling and operation of a serial port.
 
+### Platforms
+- Drop NodeJS 0.10, 0.12, 5, and 7 support
+- Add node 8 support (we now only support LTS node versions)
+
+### The SerialPort Object
+- Node SerialPoprt is now a [duplex stream](https://nodejs.org/api/stream.html) and can be paused and resumed on all platforms.
+- `isOpen` is now a property
+- `SerialPort.list` now has more consistent output across all platforms. This means the data in the objects may be different than 4x. Notably the path on OSX now returns the `tty` instead of the `cu` path and the `0x` has been removed from values on linux and osx.
+- `port.path` is now read only
+- removed lowercase options all options are now only accepted camelCase
+- Changed parsers to be transform streams. There are replacements for the built in parsers but custom parsers will have to be modified.
+
+### Open options
+- `bufferSize` is now `highWaterMark` and defaults to 64k.
+- `parser` is removed in favor of using the new transform streams parsers
+
+### Opening and closing
 - Removed the `disconnect` event. The `close` event now fires with a disconnect error object in the event of a disconnection.
-- `drain` now waits for the current javascript write to complete before calling the system level drain.
 - `port.isOpen` is now a property not a function
+
+### Reading and writing.
+- `port.on('data')` still works but `port.read()` and the `readable` event is now the preferred way to get data.
+- `port.read()` is now the best way to read data
+- `port.drain()` now waits for the current javascript write to complete before calling the system level drain.
+
+### Other
+- We now conform to NodeJS error message formats. Most messages have changed.
+- The event loop is no longer held open if there are no active reads or writes
 - `SerialPort.list` has slightly different output with more information, decoded strings and `0x` prefixes removed from some properties.
 - `SerialPort.list` now returns a promise if no call back is provided
-
-The exact changes will go here see #1046
 
 Upgrading from 3.x to 4.x
 -------------

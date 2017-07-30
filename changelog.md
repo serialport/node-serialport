@@ -1,71 +1,78 @@
-Version 5.0.0-beta9
+Version 5.0.0 🎉
 -------------
-This closes all known bugs!
+Nearly [a year in the making](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/4.0.7...5.0.0-beta9) Node SerialPort 5.0.0 is a major rewrite that improves stability, compatibility and performance. The api surface is similar to version 4 there have been a number of changes to ensure consistent error handling and operation of a serial port. Notably we are now a [`Stream`](https://nodejs.org/api/stream.html)! We can also introduce a bindings layer. A small low level api to provide access to underlying hardware. External bindings written in other languages or targeting other platforms can now be used.
 
-- [all] `SerialPort.list` now has more consistent output across all platforms.
-- [all] Add promise support to serialport-repl
-- [all] Add write recording capabilities to the mock bindings
-- [all] calls to `.drain` now queue behind port open and in progress writes reported by and with lots of testing help from @tuna-f1sh
-- [all] Change the default high water mark to 64k to match `fs.ReadStream`
-- [all] fix(package): update bindings to version 1.3.0
-- [all] SerialPort can now be compressed with `uglify-es` thanks to @rwaldron
-- [docs] fixed a typo thanks to @amilajack
-- [linux] `SerialPort.list` is now faster and less resource intensive thanks to @akaJes!
-- [osx] `SerialPort.list` now returns the `tty` instead of the `cu` thanks to @@kishinmanglani
-- [unix] fix a bug when poller errors would be unhandled thanks to @thiago-sylvain for reporting
+Some major cpu performance gains on unix platforms can be found and we're less buggy and better performing on Windows too.
 
-Version 5.0.0-beta8
--------------
-If we're lucky this will be the last of the betas. The remaining potentially blocking issues have to do with improving `SerialPort.list` which would change their output. The two issues are #1220 and #1084. I need help on those two issues, if I'm not able to close them soon, I'll release anyway, and they'll be fixed for 6x. This release is large enough. -@reconbot
+With this release we are now only supporting LTS nodejs platforms and we are dropping NodeJS 0.10, 0.12, 5 and 7 support. We loved directly supporting so many platforms but it was getting in the way making a solid library.
 
-- [linux] Add the `ttyAP` subsystem to serialport list thanks to @fly19890211 for reporting it
-- [all] Have drain wait for pending JS write operations before calling system drain thanks to @digitalhack for reporting it
-- [unix] Move setting up the baudrate to the end of the open() to better support custom baudrates
+See our [upgrade guide](./UPGRADE_GUIDE.md) for detail on what to change to upgrade your app to use `serialport@5.0.0`. It's not much!
 
-Version 5.0.0-beta7
--------------
-- [all] Removed the `disconnect` event. The `close` event now fires with a disconnect error object in the event of a disconnection.
-- [all] Exposed mocking serialport on `serialport/test`
+Thank you to the 25 people who committed code and documentation and every person who submitted bug reports and tested changes!
 
-Version 5.0.0-beta6
--------------
-- [all] The `disconnect` event now more reliable. Will be emitted as an error if there are no listeners.
-- [all] `SerialPort.list` now returns a usable promise if a callback is not provided @MikeKovarik
-- [unix] New read/write subsystem. Write CPU dropped from 100% to 0-2%. @reconbot (Thanks to @indutny for getting me unstuck many times!)
-
-Version 5.0.0-beta5
--------------
-- [docs] An overhaul of the format and language in our docs thanks to @LappleApple
-- [all] Remove the c++ write queue
-- [all] Add node 8 support and drop node 7 support
-
-Version 5.0.0-beta4
--------------
-- [all] add regex stream parser and tests
-- [all] upgrade to non deprecated buffer methods
-- [docs] Add socketio example
-- [windows] Fix unhandled promise rejection when calling read on Windows
-
-Version 5.0.0-beta3
--------------
+Notable Changes
 - [all] Streams rewrite, node serialport is now a node stream! 🎉
+- [all] Drop NodeJS 0.10, 0.12, 5, and 7 support
+- [all] Add node 8 support (we now only support LTS node versions)
 - [all] Introduce a binding layer to provide a common low level interface to work with different platforms.
+- [unix] New read/write subsystem. Write CPU dropped from 100% to 0-2%. @reconbot (Thanks to @indutny for getting me unstuck many times!)
+- [windows] Rewrite reading so it's pausable thanks to @munyirik
+- [docs] An overhaul how we document the api leveraging JSDOC
+- [docs] An overhaul of the format and language in our docs thanks to @LappleApple
+
+Features
+- [all] `isOpen` is now a property #899
+- [all] `SerialPort.list` now has more consistent output across all platforms.
+- [all] `SerialPort.list` returns a promise if a callback is not provided thanks to @MikeKovarik for bug fixes
+- [all] A promise aware `serialport-repl` script for debugging and testing.
 - [all] add `#get` to retrieve modem status flags thanks to @jgillick!
+- [all] Add a `MockBinding` object for testing serialports in your project. Used internally too!
 - [all] Add electron precompiled binaries thanks to @Mike-Dax
+- [all] Add regex stream parser and tests @jessicaquynh
+- [all] Allow reopening after an open error #910
+- [all] calls to `.drain` now queue behind port open and in progress writes reported by and with lots of testing help from @tuna-f1sh
+- [all] Change parsers to be transform streams #922
+- [all] Change the default `highWaterMark` to 64k to match `fs.ReadStream`
 - [all] Conform to NodeJS error message formats
-- [all] Drop NodeJS 0.10 and 0.12 support
-- [all] Fix baud rate parsing in `serialport-terminal` thanks to @radio-miskovice for reporting it!
-- [all] Fix memory leak during opening a port thanks to @indutny
+- [all] Exposed mocking serialport via `require('serialport/test')`
+- [all] Have drain wait for pending JS write operations before calling system drain thanks to @digitalhack for reporting it
+- [all] port.path is now read only #898
 - [all] Refactor internals to make use of es6 and promises
+- [all] Remove lowercase options #898
+- [all] Remove the c++ write queue
 - [all] Remove unnecessary dependencies and polyfills thanks to @mscdex
 - [all] Remove v8 deprecation warnings thanks to @indutny again
+- [all] Removed the `disconnect` event. The `close` event now fires with a disconnect error object in the event of a disconnection.
+- [all] SerialPort can now be compressed with `uglify-es` thanks to @rwaldron
+- [all] update bindings to version 1.3.0
 - [all] Upgrade debug and node-pre-gyp
-- [all] Upgrade nan to fix compile issues on some platforms thanks to @thom-nic
+- [all] Upgrade to non deprecated buffer methods
 - [docs] Add more installation notes on sudo, windows 10, electron and node 7
+- [docs] Add socketio example @jessicaquynh
+- [docs] Electron build docs #965 via @chalkers
 - [docs] Mark new features in 5.0.0 with the fact they started in 5.0.0
-- [windows] Fix file handle leak during opens when errors occur thanks to @enami
+- [docs] Update parser docs to be correct #970 via @jacobq
+- [linux] `SerialPort.list` is now faster and less resource intensive thanks to @akaJes!
+- [linux] Add the `ttyAP` subsystem to serialport list thanks to @fly19890211 for reporting it
+- [osx] `SerialPort.list` now returns the `tty` instead of the `cu` thanks to @kishinmanglani
+- [unix] Flush now gives errors and flushes tx and rx #900
+- [unix] Move setting up the baudrate to the end of the `open()` to better support custom baudrates
 - [windows] Refactoring of `.list` for Windows so it's significantly smaller thanks to @Zensey
-- [windows] Rewrite reading so it's pausable thanks to @munyirik
+
+Fixes
+- [all] Fix baud rate parsing in `serialport-terminal` thanks to @radio-miskovice for reporting it!
+- [all] Fix memory leak during opening a port thanks to @indutny
+- [all] fixed a crash when pausing while reading thanks to @bminer and @baffo32 and others to debug and fix this
+- [all] Upgrade nan to fix compile issues on some platforms thanks to @thom-nic
+- [docs] fixed a typo thanks to @amilajack
+- [docs] Spelling fixes via @Awk34
+- [unix] fix a bug when poller errors would be unhandled thanks to @thiago-sylvain for reporting
+- [windows] Fix file handle leak during opens when errors occur thanks to @enami
+- [windows] Fix flush behavior using PurgeComm fixing #962 via @samisaham
+- [windows] Fix unhandled promise rejection when calling read on Windows
+- [windows] Remove read and write timeouts solving #781 via @giseburt
+
+We also had help testing, debugging, and designing from; @alaq @arve0 @techninja @noopkat @HipsterBrown and more!
 
 Version 4.0.7
 -------------
@@ -86,18 +93,6 @@ Version 4.0.4
 -------------
 - Add precompiled binaries for node 7
 
-Version 5.0.0-beta2
--------------
-- [all] fixed a crash when pausing while reading thanks to @bminer and @baffo32 and others to debug and fix this
-- [all] ReadLineParser has been renamed to ReadlineParser to match worldwide convention
-- [windows] Fix flush behavior using PurgeComm fixing #962 via @samisaham
-- [windows] Remove read and write timeouts solving #781 via @giseburt
-- [docs] Electron build docs #965 via @chalkers
-- [docs] Spelling fixes via @Awk34
-- [docs] Update parser docs to be correct #970 via @jacobq
-- [notes] buffer-indexof is now completely compliant with latest node 6 buffer.indexOf because it's nice to have and we now use it on older nodes
-- [notes] dropped node 5 support, should still work but you shouldn't use it
-
 Version 4.0.3
 -------------
 - Switch to the lie promise library as it's smaller and mimics nodejs's promise closer
@@ -106,16 +101,6 @@ Version 4.0.3
 Version 4.0.2
 -------------
 - [unix] Fix a bug when we'd crash when pausing during a read
-
-Version 5.0.0-beta1
--------------
-- `isOpen` is now a property #899
-- Allow reopening after an open error #910
-- Change parsers to be transform streams #922
-- port.path is now read only #898
-- Remove lowercased options #898
-- Switch to Lie as a promise library (smaller)
-- [unix] Flush now gives errors and flushes tx and rx #900
 
 Version 4.0.1
 -------------
@@ -395,7 +380,7 @@ Version 0.2.1
 - Refactored the parsing code upon data receipt, now allows for dynamic specification of how incoming data is handled.
 - Revised creation interface to use named parameters as an object versions positional parameters.
 
-Version: 0.2
+Version 0.2.0
 ------------
 - Upgraded to node v. 0.4.X compatibility
 
