@@ -13,6 +13,7 @@ CONTRIBUTING.md
 examples/
 Gruntfile.js
 PUBLISHING.md
+lib/
 test/
 test-config.json
 UPGRADE_GUIDE.md
@@ -20,7 +21,6 @@ changelog.md
 .DS_Store
 
 # MIRRORED FROM .gitignore PLEASE MAINTAIN
-lib/
 build/
 node_modules
 npm-debug.log
