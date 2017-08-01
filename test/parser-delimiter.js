@@ -4,7 +4,7 @@
 const Buffer = require('safe-buffer').Buffer;
 const sinon = require('sinon');
 
-const DelimiterParser = require('../lib/parsers/delimiter');
+const DelimiterParser = require('../dist/parsers/delimiter');
 
 describe('DelimiterParser', () => {
   it('transforms data to strings split on a delimiter', () => {

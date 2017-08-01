@@ -9,7 +9,7 @@ if (!port) {
   process.exit(1);
 }
 
-// var Binding = require('../../lib/bindings/mock');
+// var Binding = require('../../dist/bindings/mock');
 // Binding.createPort(port);
 // SerialPort.Binding = Binding;
 // debugger;

@@ -4,7 +4,7 @@
 const Buffer = require('safe-buffer').Buffer;
 const sinon = require('sinon');
 
-const ReadyParser = require('../lib/parsers/ready');
+const ReadyParser = require('../dist/parsers/ready');
 
 describe('ReadyParser', () => {
   it('emits data received after the ready data', () => {

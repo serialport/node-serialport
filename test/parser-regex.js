@@ -4,7 +4,7 @@
 const Buffer = require('safe-buffer').Buffer;
 const sinon = require('sinon');
 
-const RegexParser = require('../lib/parsers/regex');
+const RegexParser = require('../dist/parsers/regex');
 
 describe('RegexParser', () => {
   it('transforms data to strings split on either carriage return or new line', () => {
