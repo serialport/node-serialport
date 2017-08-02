@@ -1,21 +1,21 @@
 {
-  "name": "serialport",
+  "name": "serialport-v5",
   "version": "5.0.0",
-  "description": "Node.js package to access serial ports. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!",
+  "description": "fork with electron support of Node.js package to access serial ports. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!",
   "author": {
     "name": "Chris Williams",
     "email": "voodootikigod@gmail.com",
     "url": "http://www.voodootikigod.com"
   },
   "binary": {
-    "module_name": "serialport",
+    "module_name": "serialport-v5",
     "module_path": "build/{configuration}/",
-    "host": "https://github.com/EmergingTechnologyAdvisors/node-serialport/releases/download/5.0.0"
+    "host": "https://github.com/akaJes/node-serialport/releases/download/5.0.0"
   },
   "main": "lib",
   "repository": {
     "type": "git",
-    "url": "git://github.com/EmergingTechnologyAdvisors/node-serialport.git"
+    "url": "git://github.com/akaJes/node-serialport.git"
   },
   "keywords": [
     "ccTalk",
@@ -85,6 +85,7 @@
     "jsdoc-to-markdown": "^3.0.0",
     "mocha": "^3.4.2",
     "node-pre-gyp-github": "^1.1.2",
+    "pre-gyp-pack": "^1.0.1",
     "proxyquire": "^1.7.10",
     "sinon": "^2.3.8"
   },
@@ -105,6 +106,7 @@
     "docs": "jsdoc2md --no-cache -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs --partial .docs/edit-warning.hbs -r table --separators --name-format -f lib/* lib/bindings/* lib/parsers/* > README.md",
     "docs:diff": "jsdoc2md --no-cache -t .docs/README.hbs --partial .docs/sig-name.hbs --partial .docs/sig-link.hbs --partial .docs/edit-warning.hbs -r table --separators --name-format -f lib/* lib/bindings/* lib/parsers/* | diff README.md - || (echo 'Docs out of date, run `npm run docs` and commit the new README.md' && false)",
     "install": "node-pre-gyp install --fallback-to-build",
+    "package": "pre-gyp-pack",
     "lint": "eslint lib test bin examples",
     "rebuild-all": "npm rebuild && node-gyp rebuild",
     "repl": "node bin/repl.js",
@@ -113,6 +115,56 @@
     "test:watch": "mocha -w",
     "valgrind": "TEST_PORT=$(./bin/find-arduino.js) valgrind --leak-check=full node test/manual-testing/memory-binding.js",
     "debugger": "TEST_PORT=$(./bin/find-arduino.js) node --inspect --debug-brk test/manual-testing/performance.js"
+  },
+  "pre-gyp-pack": {
+    "owner": "akaJes",
+    "repo": "node-serialport",
+    "platforms": {
+      "electron": {
+        "1.6.10": [
+          "ia32",
+          "x64"
+        ],
+        "1.4.16": [
+          "ia32",
+          "x64"
+        ],
+        "1.3.13": [
+          "ia32",
+          "x64"
+        ],
+        "1.2.8": [
+          "ia32",
+          "x64"
+        ],
+        "1.0.2": [
+          "ia32",
+          "x64"
+        ]
+      },
+      "node": {
+        "8.0.0": [
+          "ia32",
+          "x64"
+        ],
+        "7.10.0": [
+          "ia32",
+          "x64"
+        ],
+        "6.10.3": [
+          "ia32",
+          "x64"
+        ],
+        "5.12.0": [
+          "ia32",
+          "x64"
+        ],
+        "4.8.3": [
+          "ia32",
+          "x64"
+        ]
+      }
+    }
   },
   "gypfile": true
 }
