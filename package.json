@@ -1,21 +1,21 @@
 {
-  "name": "serialport-v5",
+  "name": "serialport",
   "version": "5.0.0",
-  "description": "fork with electron support of Node.js package to access serial ports. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!",
+  "description": "Node.js package to access serial ports. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!",
   "author": {
     "name": "Chris Williams",
     "email": "voodootikigod@gmail.com",
     "url": "http://www.voodootikigod.com"
   },
   "binary": {
-    "module_name": "serialport-v5",
+    "module_name": "serialport",
     "module_path": "build/{configuration}/",
-    "host": "https://github.com/akaJes/node-serialport/releases/download/5.0.0"
+    "host": "https://github.com/EmergingTechnologyAdvisors/node-serialport/releases/download/5.0.0"
   },
   "main": "lib",
   "repository": {
     "type": "git",
-    "url": "git://github.com/akaJes/node-serialport.git"
+    "url": "git://github.com/EmergingTechnologyAdvisors/node-serialport.git"
   },
   "keywords": [
     "ccTalk",
@@ -117,7 +117,7 @@
     "debugger": "TEST_PORT=$(./bin/find-arduino.js) node --inspect --debug-brk test/manual-testing/performance.js"
   },
   "pre-gyp-pack": {
-    "owner": "akaJes",
+    "owner": "EmergingTechnologyAdvisors",
     "repo": "node-serialport",
     "platforms": {
       "electron": {
