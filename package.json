@@ -86,7 +86,7 @@
     "mocha": "^3.4.2",
     "node-pre-gyp-github": "^1.1.2",
     "proxyquire": "^1.7.10",
-    "sinon": "^2.3.8"
+    "sinon": "^3.0.0"
   },
   "bundledDependencies": [
     "node-pre-gyp"
