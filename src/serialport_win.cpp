@@ -93,7 +93,12 @@ void EIO_Open(uv_work_t* req) {
   dcb.fOutX = FALSE;
   dcb.fOutxDsrFlow = FALSE;
   dcb.fOutxCtsFlow = FALSE;
-  dcb.fRtsControl = RTS_CONTROL_ENABLE;
+  
+  if (data->rtscts) {
+    dcb.fRtsControl = RTS_CONTROL_ENABLE;
+  } else {
+    dcb.fRtsControl = RTS_CONTROL_DISABLE;
+  }
 
   dcb.fBinary = true;
   dcb.BaudRate = data->baudRate;
