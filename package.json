@@ -62,7 +62,6 @@
     "commander": "^2.11.0",
     "debug": "^2.6.6",
     "nan": "^2.6.2",
-    "prebuild": "^6.2.1",
     "prebuild-install": "^2.2.1",
     "promirepl": "^1.0.1",
     "safe-buffer": "^5.0.1"
@@ -80,6 +79,7 @@
     "istanbul": "^0.4.4",
     "jsdoc-to-markdown": "^3.0.0",
     "mocha": "^3.4.2",
+    "prebuild": "^6.2.1",
     "proxyquire": "^1.7.10",
     "sinon": "^2.3.8"
   },
