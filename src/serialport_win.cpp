@@ -89,11 +89,23 @@ void EIO_Open(uv_work_t* req) {
   dcb.Parity = NOPARITY;
   dcb.ByteSize = 8;
   dcb.StopBits = ONESTOPBIT;
-  dcb.fInX = FALSE;
-  dcb.fOutX = FALSE;
+  
+  
   dcb.fOutxDsrFlow = FALSE;
   dcb.fOutxCtsFlow = FALSE;
-  
+
+  if (data->xon) {
+    dcb.fOutX = TRUE;
+  } else {
+    dcb.fOutX = FALSE;
+  }
+
+  if (data->xoff) {
+    dcb.fInX = TRUE;
+  } else {
+    dcb.fInX = FALSE;
+  }
+
   if (data->rtscts) {
     dcb.fRtsControl = RTS_CONTROL_ENABLE;
   } else {
