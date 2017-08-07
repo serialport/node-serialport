@@ -154,7 +154,7 @@ npm install serialport
 
 ### Installation Special Cases
 
-We use [node-pre-gyp](https://github.com/mapbox/node-pre-gyp) to compile and post binaries of the library for most common use cases (Linux, Mac, Windows on standard processor platforms). If you have a special case, Node-Serialport will work, but it will compile the binary when you install. `node-gyp` requires Python 2.x, so please ensure you have it installed and in your path for all operating systems. Python 3.x will not work.
+We use [prebuild](https://github.com/mafintosh/prebuild) to compile and post binaries of the library for most common use cases (Linux, Mac, Windows on standard processor platforms). If you have a special case, Node-Serialport will work, but it will compile the binary during the install. Compiling with nodejs is done via `node-gyp` which requires Python 2.x, so please ensure you have it installed and in your path for all operating systems. Python 3.x will not work.
 
 This assumes you have everything on your system necessary to compile ANY native module for Node.js. If you don't, then please ensure the following are true for your system before filing a "Does not install" issue.
 
@@ -233,8 +233,12 @@ root@rpi3:~# npm install -g serialport
 /usr/bin/serialport-list -> /usr/lib/node_modules/serialport/bin/serialport-list.js
 /usr/bin/serialport-term -> /usr/lib/node_modules/serialport/bin/serialport-terminal.js
 
-> serialport@4.0.3 install /usr/lib/node_modules/serialport
-> node-pre-gyp install --fallback-to-build
+
+> serialport@6.0.0-beta1 install /Users/wizard/src/node-serialport
+> prebuild-install || node-gyp rebuild
+
+prebuild-install info begin Prebuild-install version 2.2.1
+prebuild-install info install installing standalone, skipping download.
 
 gyp WARN EACCES user "root" does not have permission to access the dev dir "/root/.node-gyp/6.9.1"
 gyp WARN EACCES attempting to reinstall using temporary dev dir "/usr/lib/node_modules/serialport/.node-gyp"
