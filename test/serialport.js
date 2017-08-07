@@ -230,7 +230,7 @@ describe('SerialPort', () => {
 
       it('returns false when the port is opening', (done) => {
         const port = new SerialPort('/dev/exists', { autoOpen: false });
-        sandbox.stub(port.binding, 'open').callsFake(() => {
+        sandbox.stub(SerialPort.Binding.prototype, 'open').callsFake(() => {
           assert.isTrue(port.opening);
           assert.isFalse(port.isOpen);
           done();
@@ -246,13 +246,13 @@ describe('SerialPort', () => {
       });
 
       it('returns false when the port is closing', (done) => {
-        const port = new SerialPort('/dev/exists', {}, function() {
-          sandbox.stub(this.binding, 'close').callsFake(() => {
-            assert.isFalse(port.isOpen);
-            done();
-            return Promise.resolve();
-          });
+        const port = new SerialPort('/dev/exists', {}, () => {
           port.close();
+        });
+        sandbox.stub(SerialPort.Binding.prototype, 'close').callsFake(() => {
+          assert.isFalse(port.isOpen);
+          done();
+          return Promise.resolve();
         });
       });
 
@@ -295,7 +295,7 @@ describe('SerialPort', () => {
           stopBits: 1
         };
         const port = new SerialPort('/dev/exists', { autoOpen: false });
-        sandbox.stub(port.binding, 'open').callsFake((path, opt) => {
+        sandbox.stub(SerialPort.Binding.prototype, 'open').callsFake((path, opt) => {
           assert.equal(path, '/dev/exists');
           assert.containSubset(opt, defaultOptions);
           done();
@@ -348,7 +348,7 @@ describe('SerialPort', () => {
 
       it('allows opening after an open error', (done) => {
         const port = new SerialPort('/dev/exists', { autoOpen: false });
-        const stub = sandbox.stub(port.binding, 'open').callsFake(() => {
+        const stub = sandbox.stub(SerialPort.Binding.prototype, 'open').callsFake(() => {
           return Promise.reject(new Error('Haha no'));
         });
         port.open((err) => {
