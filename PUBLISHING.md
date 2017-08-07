@@ -9,10 +9,10 @@ We use [prebuild](https://github.com/mafintosh/prebuild) to publish these binari
 This can be checked in the .travis.yml file and appveyor.yml file. Within these files, if a git tag is detected a binary will be built and published for each version on each platform.
 
 1. Merge all changes and new features into master
-2. Run `npm run changelog` and modify `CHANGELOG.md` if needed
-3. Bump up npm version in `package.json`
+2. Bump up npm version in `package.json`
+3. Run `npm run changelog` and modify `CHANGELOG.md` if needed
 4. Update the `.docs/README.hbs` to reference this current version and to previous major version docs then regenerate docs `npm run docs`.
-5. Commit then generate new tags based on package.json version number with `git tag v5.0.0 -a` and include the change log in the tag's annotation.
+5. Commit then generate new tags based on package.json version number with `git tag 5.0.0 -a` and include the change log in the tag's annotation.
 6. Push tags to Github with `git push --tags`
 7. `rm -rf package-lock.json node_modules build && npm install`
 8. Publish to npm after builds finish. Builds can take half an hour and occasionally fail for seemingly no reason. Restart any failures in the travis or appeveyor ui. While you wait, remove the content of the Github release message so the tag's text shows. When the entire matrix succeeds and all binaries exist run `npm publish`.

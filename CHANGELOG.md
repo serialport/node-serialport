@@ -1,3 +1,32 @@
+<a name="6.0.0-beta1"></a>
+# [6.0.0-beta1](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/5.0.0...6.0.0-beta1) (2017-08-07)
+
+
+### Bug Fixes
+
+* **linux:** The productID should be a number not a description string ([#1279](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1279)) ([bf46f68](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/bf46f68))
+* **tests:** fixup for [#1279](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1279) ([#1285](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1285)) ([56074f6](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/56074f6))
+* **windows:** Add option to disable RTS ([#1277](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1277)) ([5b8d163](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/5b8d163))
+* **windows:** Parse more types of pnpIds ([#1288](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1288)) ([0b554d7](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/0b554d7)), closes [#1220](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1220)
+
+
+### Chores
+
+* **binaries:** Lets switch to prebuild! ([#1282](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1282)) ([8c36e99](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/8c36e99))
+
+
+### Features
+
+* **test:** tone down codecov comments ([#1289](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1289)) ([749ffac](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/749ffac))
+
+
+### BREAKING CHANGES
+
+* **binaries:** I'm considering the switch to `prebuild` a breaking change because it's substantially changes our install processes. It's also possible the install flags to ensure downloading or building from source has changed slightly. That's not our api per say, but it's enough.
+* **windows:** We previously hard coded to have RTS on for windows at all times it now default to off.
+
+
+
 Version 5.0.0 🎉
 -------------
 Nearly [a year in the making](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/4.0.7...5.0.0-beta9) Node SerialPort 5.0.0 is a major rewrite that improves stability, compatibility and performance. The api surface is similar to version 4 there have been a number of changes to ensure consistent error handling and operation of a serial port. Notably we are now a [`Stream`](https://nodejs.org/api/stream.html)! We can also introduce a bindings layer. A small low level api to provide access to underlying hardware. External bindings written in other languages or targeting other platforms can now be used.

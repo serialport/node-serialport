@@ -1,3 +1,11 @@
+Upgrading from 5.x to 6.x
+-------------
+TLDR: You probably don't have to change anything. You might need to enable `rtscts` in your open options.
+
+* **binaries:** I'm considering the switch to `prebuild` a breaking change because it's substantially changes our install processes. It's also possible the install flags to ensure downloading or building from source has changed slightly. That's not our api per say, but it's enough.
+* **windows:** We previously hard coded to have RTS on for windows at all times it now default to off.
+
+
 Upgrading from 4.x to 5.x
 -------------
 Node SerialPort 5.0.0 is a major rewrite that improves stability, compatibility and performance. While the api surface is similar there have been a number of changes to ensure consistent error handling and operation of a serial port.
