@@ -43,7 +43,7 @@ To request a new feature be added take a look at the [current roadmap](https://g
 
 <a name="pullrequests"></a>
 ## Submitting Pull Requests
-To contribute code to SerialPort, fork the project onto your github account and do your work in a branch. Before you submit the PR, make sure to rebase master into your branch so that you have the most recent changes and nothing breaks or conflicts.  Lint and test your code using [grunt](https://github.com/gruntjs/grunt). Also squash your commits to a reasonable size before submitting.
+To contribute code to SerialPort, fork the project onto your github account and do your work in a branch. Before you submit the PR, make sure to rebase master into your branch so that you have the most recent changes and nothing breaks or conflicts.  Lint and test your code using `npm lint` and `npm test`. Also squash your commits to a reasonable size before submitting.
 
 All contributions must adhere to the eslint rules by maintaining the existing coding style.
 
@@ -56,7 +56,7 @@ It's very important that your pull requests include all of the above in order fo
 <a name="writing-tests"></a>
 ## Writing Tests
 
-Tests are written using [mocha](https://mochajs.org/), [chai](http://chaijs.com/) and [sinon](http://sinonjs.org/).  If you are having issues making a test pass, ask for help in the SerialPort [gitter](https://gitter.im/EmergingTechnologyAdvisors/node-serialport) room.  Tests can be the hardest part to write when contributing code, so don't be discouraged.
+Tests are written using [mocha](https://mochajs.org/), [chai](http://chaijs.com/) and [sinon](http://sinonjs.org/).  If you are having issues making a test pass, ask for help in the SerialPort [gitter](https://gitter.im/EmergingTechnologyAdvisors/node-serialport) room or on your PR.  Tests can be the hardest part to write when contributing code, so don't be discouraged.
 
 <a name="writing-docs"></a>
 ## Writing Documentation

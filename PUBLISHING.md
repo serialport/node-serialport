@@ -4,10 +4,9 @@
 
 Every time a new tag for the latest release is pushed to Github, the continuous integration
 builds in Travis-CI and AppVeyor will generate the binaries for each platform and architecture.
-We use [node-pre-gyp-github](https://github.com/bchr02/node-pre-gyp-github) on top of node-pre-gyp
-to publish these binaries on Github.
+We use [prebuild](https://github.com/mafintosh/prebuild) to publish these binaries on Github.
 
-This can be checked in the .travis.yml file and appveyor.yml file. Within these files, if a git tag is detected a binary will be built and published for each version.
+This can be checked in the .travis.yml file and appveyor.yml file. Within these files, if a git tag is detected a binary will be built and published for each version on each platform.
 
 1. Merge all changes and new features into master
 2. Fill out `changelog.md`
