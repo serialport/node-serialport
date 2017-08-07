@@ -1,16 +1,15 @@
 os: unstable
 environment:
-  NODE_PRE_GYP_GITHUB_TOKEN:
-    secure: VM4yc2j2L3KS5qWLZLY7WUAXoqdB9YkodmXlHC2I+LSF0Y8a2cZ70M0+2+Fd5GkQ
+  prebuild_upload:
+    secure: a/seaM+nUnQWhWUnbyz8fl9vPwuyqDTrFviptDykYp2c46vdTvlAxU6yqD/PpDiI
   COVERALLS_REPO_TOKEN:
     secure: iDcAJCYgJK4tffyzEHbMVR8DatJcIN8eY0h29p9JQkl43TcEcm6Z6JLOBpGDk1MJ
 
   matrix:
   - nodejs_version: "4"
   - nodejs_version: "6"
-  - nodejs_version: "8"
-  - electron_version: "1.4.12"
-    nodejs_version: "6"
+  - binary_builder: "true"
+    nodejs_version: "8"
 
 platform:
 - x86
@@ -25,13 +24,13 @@ matrix:
 
 install:
 - ps: Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:platform;
-- ps: $env:Path += ";$(pwd)\node_modules\.bin";
-# work around bug in npm 2 where id doesn't like our dev dep peers
+# upgrade npm if on node 4 as npm2 doesn't like our dev peer deps
 - ps: >
     if ($env:nodejs_version -eq "4") {
       npm install -g npm | Write-Host;
     }
-    true;
+    npm config set progress false
+    npm config set spin false
 
 - ps: >
     @{
@@ -43,77 +42,42 @@ install:
       "APPVEYOR_REPO_COMMIT_MESSAGE" = $env:APPVEYOR_REPO_COMMIT_MESSAGE
       "git latest tag" = "$(git describe --tags --always HEAD)"
       "appveyor_repo_tag" = $env:appveyor_repo_tag
-      "electron_version" = $env:electron_version
     } | Out-String | Write-Host;
 
 # Check if we're building the latest tag, if so
 # then we publish the binaries if tests pass.
 - ps: >
     if ($env:appveyor_repo_tag -match "true" -and ("$(git describe --tags --always HEAD)" -eq $env:appveyor_repo_tag_name)) {
-      $env:publish_binary = 1;
-    } else {
-      $env:publish_binary = 0;
+      $env:publish_binary = $env:binary_builder;
     }
-    true;
-
-- ps: >
-    if ($env:publish_binary -eq 1) {
+    if ($env:publish_binary -eq "true") {
       "We're publishing a binary!" | Write-Host
     } else {
       "We're not publishing a binary" | Write-Host
     }
     true;
 
-# Cleanup the output of npm
-- ps: >
-    npm config set progress false
-    npm config set spin false
-
 # We don't currently have a port to test on windows
 # - ps: $env:TEST_PORT = "COM1";
 
-# Setup Electron variables
-- ps: >
-    if ($env:electron_version) {
-      "We're an electron build, setup variables" | Write-Host
-      $env:npm_config_target = $env:electron_version
-      $env:npm_config_disturl = "https://atom.io/download/atom-shell"
-      $env:npm_config_runtime = "electron"
-
-      if ($env:plaftorm -eq "x86") {
-        $env:npm_config_arch = "ia32"
-      } else {
-        $env:npm_config_arch = "x64"
-      }
-
-      "Install electron and electron-mocha" | Write-Host
-
-      npm install -g electron@$env:electron_version
-      npm install electron-mocha
-    }
-    true;
-
 build_script:
-- npm install --build-from-source --msvs_version=2013
+- npm install --build-from-source
 
 test_script:
 - ps: >
     if ($env:nodejs_version -ne "4") {
       npm run lint
     }
+    node ./
+
+# If we run npm test in powershell it'll have the wrong encoding so we have to do it like this
+- npm test
+
+- ps: >
+    if ($env:publish_binary -eq "true") {
+      npm run prebuild-upload
+    }
     true;
-
-# If we run npm test in powershell it'll have the wrong encoding
-# so we have to do it like this
-
-- IF DEFINED electron_version (electron test/electron)
-- IF NOT DEFINED electron_version (node ./)
-- IF NOT DEFINED electron_version (npm test)
-
-- IF %PUBLISH_BINARY% == 1 (node-pre-gyp package 2>&1)
-- IF %PUBLISH_BINARY% == 1 (node-pre-gyp-github publish --release 2>&1)
-- IF %PUBLISH_BINARY% == 1 (node-pre-gyp clean)
-- IF %PUBLISH_BINARY% == 1 (npm install --fallback-to-build=false)
 
 after_test:
 - pip install codecov && codecov --file coverage\coverage.json
