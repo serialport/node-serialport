@@ -64,7 +64,8 @@ P: /devices/unknown
 N: ttyMFD0
 E: DEVNAME=/dev/ttyMFD0
 E: ID_VENDOR_ID=0x2343
-E: ID_MODEL_ENC=0043
+E: ID_MODEL_ID=0043
+E: ID_MODEL_ENC=some device made by someone
 
 P: /devices/unknown
 N: rfcomm4
