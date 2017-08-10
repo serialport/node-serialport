@@ -1120,7 +1120,7 @@ A callback called with an error or an object with the modem line values (cts, ds
 | autoOpen | <code>boolean</code> | <code>true</code> | Automatically opens the port on `nextTick`. |
 | baudRate | <code>number</code> | <code>9600</code> | The baud rate of the port to be opened. This should match one of the commonly available baud rates, such as 110, 300, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, or 115200. Custom rates are supported best effort per platform. The device connected to the serial port is not guaranteed to support the requested baud rate, even if the port itself supports that baud rate. |
 | dataBits | <code>number</code> | <code>8</code> | Must be one of these: 8, 7, 6, or 5. |
-| highWaterMark | <code>number</code> | <code>16384</code> | The size of the read and write buffers defaults to 16k. |
+| highWaterMark | <code>number</code> | <code>65536</code> | The size of the read and write buffers defaults to 64k. |
 | lock | <code>boolean</code> | <code>true</code> | Prevent other processes from opening the port. Windows does not currently support `false`. |
 | stopBits | <code>number</code> | <code>1</code> | Must be one of these: 1 or 2. |
 | parity | <code>string</code> | <code>&quot;none&quot;</code> | Must be one of these: 'none', 'even', 'mark', 'odd', 'space'. |
