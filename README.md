@@ -134,7 +134,7 @@ In addition to reading the [article mentioned above](http://www.voodootikigod.co
 | Linux / ARM v8¹ |  ☐  |  ☐  |  ☐  |
 | Linux / MIPSel¹ |  ☐  |  ☐  |  ☐  |
 | Linux / PPC64¹  |  ☐  |  ☐  |  ☐  |
-| Windows² / x86  |  ☑  |  ☑  |  ☑  |
+| Windows² / x86  |  ☐  |  ☑  |  ☑  |
 | Windows² / x64  |  ☑  |  ☑  |  ☑  |
 | OSX³ / x64      |  ☑  |  ☑  |  ☑  |
 
@@ -143,6 +143,8 @@ In addition to reading the [article mentioned above](http://www.voodootikigod.co
 ² Windows 7, 8, 10, and 10 IoT are supported, but our CI tests only Windows Server 2012 R2.
 
 ³ OSX 10.4 Tiger and above are supported, but our CI tests only 10.9.5 Mavericks with Xcode 6.1.
+
+Until Issue #1221 is closed windows will suffer high cpu reads and writes and will require a `UV_THREADPOOL_SIZE` environment variable to be set to 1 + the number of ports you wish to open at a time. (Defaults to `4` which supports 3 ports).
 
 ## Installation Instructions
 
