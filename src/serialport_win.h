@@ -15,6 +15,8 @@ struct WriteBaton {
   size_t bufferLength;
   size_t offset;
   size_t bytesWritten;
+  void* hThread;
+  bool complete;
   Nan::Persistent<v8::Object> buffer;
   Nan::Callback callback;
   int result;
@@ -32,6 +34,8 @@ struct ReadBaton {
   size_t bytesRead;
   size_t bytesToRead;
   size_t offset;
+  void* hThread;
+  bool complete;
   char errorString[ERROR_STRING_SIZE];
   Nan::Callback callback;
 };
