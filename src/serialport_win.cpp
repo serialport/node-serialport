@@ -14,14 +14,7 @@
 // Declare type of pointer to CancelIoEx function
 typedef BOOL (WINAPI *CancelIoExType)(HANDLE hFile, LPOVERLAPPED lpOverlapped);
 
-void EIO_AfterWrite(uv_async_t* req);
-DWORD WriteThread(void* param);
-
-void EIO_AfterRead(uv_async_t* req);
-DWORD ReadThread(void* param);
-
 std::list<int> g_closingHandles;
-COMMTIMEOUTS g_commTimeouts = {0};
 
 
 void ErrorCodeToString(const char* prefix, int errorCode, char *errorStr) {
@@ -162,13 +155,14 @@ void EIO_Open(uv_work_t* req) {
 
   // Set the timeouts for read and write operations.
   // Read operation will wait for at least 1 byte to be received.
-  g_commTimeouts.ReadIntervalTimeout = 0;         // Never timeout, always wait for data.
-  g_commTimeouts.ReadTotalTimeoutMultiplier = 0;  // Do not allow big read timeout when big read buffer used
-  g_commTimeouts.ReadTotalTimeoutConstant = 0;    // Total read timeout (period of read loop)
-  g_commTimeouts.WriteTotalTimeoutConstant = 0;   // Const part of write timeout
-  g_commTimeouts.WriteTotalTimeoutMultiplier = 0; // Variable part of write timeout (per byte)
+  COMMTIMEOUTS commTimeouts = {};
+  commTimeouts.ReadIntervalTimeout = 0;         // Never timeout, always wait for data.
+  commTimeouts.ReadTotalTimeoutMultiplier = 0;  // Do not allow big read timeout when big read buffer used
+  commTimeouts.ReadTotalTimeoutConstant = 0;    // Total read timeout (period of read loop)
+  commTimeouts.WriteTotalTimeoutConstant = 0;   // Const part of write timeout
+  commTimeouts.WriteTotalTimeoutMultiplier = 0; // Variable part of write timeout (per byte)
 
-  if (!SetCommTimeouts(file, &g_commTimeouts)) {
+  if (!SetCommTimeouts(file, &commTimeouts)) {
     ErrorCodeToString("Open (SetCommTimeouts)", GetLastError(), data->errorString);
     CloseHandle(file);
     return;
@@ -445,8 +439,9 @@ void __stdcall ReadIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAP
   // ReadFileEx and GetOverlappedResult retrieved only 1 byte. Read any additional data in the input
   // buffer. Set the timeout to MAXDWORD in order to disable timeouts, so the read operation will
   // return immediately no matter how much data is available.
-  g_commTimeouts.ReadIntervalTimeout = MAXDWORD;
-  if (!SetCommTimeouts((HANDLE)baton->fd, &g_commTimeouts)) {
+  COMMTIMEOUTS commTimeouts = {};
+  commTimeouts.ReadIntervalTimeout = MAXDWORD;
+  if (!SetCommTimeouts((HANDLE)baton->fd, &commTimeouts)) {
     lastError = GetLastError();
     ErrorCodeToString("Setting COM timeout (SetCommTimeouts)", lastError, baton->errorString);
     baton->complete = true;
@@ -478,27 +473,27 @@ void __stdcall ReadIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAP
   }
   CloseHandle(ov->hEvent);
 
-  // Reset the timeout to 0, so that it will block until more data arrives.
-  g_commTimeouts.ReadIntervalTimeout = 0;
-  if (!SetCommTimeouts((HANDLE)baton->fd, &g_commTimeouts)) {
-    lastError = GetLastError();
-    ErrorCodeToString("Setting COM timeout (SetCommTimeouts)", lastError, baton->errorString);
-    baton->complete = true;
-    return;
-  }
-
   baton->bytesRead += bytesTransferred;
   baton->complete = true;
 }
 
 DWORD __stdcall ReadThread(void* param) {
   ReadBaton* baton = static_cast<ReadBaton*>(param);
+  DWORD lastError;
 
   OVERLAPPED* ov = new OVERLAPPED;
   memset(ov, 0, sizeof(OVERLAPPED));
   ov->hEvent = static_cast<void*>(baton);
 
   while (!baton->complete) {
+    // Reset the read timeout to 0, so that it will block until more data arrives.
+    COMMTIMEOUTS commTimeouts = {};
+    commTimeouts.ReadIntervalTimeout = 0;
+    if (!SetCommTimeouts((HANDLE)baton->fd, &commTimeouts)) {
+      lastError = GetLastError();
+      ErrorCodeToString("Setting COM timeout (SetCommTimeouts)", lastError, baton->errorString);
+      break;
+    }
     // ReadFileEx doesn't use overlapped's hEvent, so it is reserved for user data.
     ov->hEvent = static_cast<HANDLE>(baton);
     char* offsetPtr = baton->bufferData + baton->offset;
@@ -507,9 +502,9 @@ DWORD __stdcall ReadThread(void* param) {
     // Only read 1 byte, so that the callback will be triggered once any data arrives.
     ReadFileEx((HANDLE)baton->fd, offsetPtr, 1, ov, ReadIOCompletion);
     // Error codes when call is successful, such as ERROR_MORE_DATA.
-    DWORD errorCode = GetLastError();
-    if (errorCode != ERROR_SUCCESS) {
-      ErrorCodeToString("Reading from COM port (ReadFileEx)", errorCode, baton->errorString);
+    lastError = GetLastError();
+    if (lastError != ERROR_SUCCESS) {
+      ErrorCodeToString("Reading from COM port (ReadFileEx)", lastError, baton->errorString);
       break;
     }
     // IOCompletion routine is only called once this thread is in an alertable wait state.

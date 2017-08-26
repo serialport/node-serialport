@@ -25,7 +25,9 @@ struct WriteBaton {
 
 NAN_METHOD(Write);
 void EIO_Write(uv_work_t* req);
-void EIO_AfterWrite(uv_work_t* req);
+void EIO_AfterWrite(uv_async_t* req);
+DWORD WriteThread(void* param);
+
 
 struct ReadBaton {
   int fd;
@@ -42,7 +44,9 @@ struct ReadBaton {
 
 NAN_METHOD(Read);
 void EIO_Read(uv_work_t* req);
-void EIO_AfterRead(uv_work_t* req);
+void EIO_AfterRead(uv_async_t* req);
+DWORD ReadThread(void* param);
+
 
 NAN_METHOD(List);
 void EIO_List(uv_work_t* req);
