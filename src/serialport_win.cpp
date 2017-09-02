@@ -90,8 +90,8 @@ void EIO_Open(uv_work_t* req) {
   dcb.Parity = NOPARITY;
   dcb.ByteSize = 8;
   dcb.StopBits = ONESTOPBIT;
-  
-  
+
+
   dcb.fOutxDsrFlow = FALSE;
   dcb.fOutxCtsFlow = FALSE;
 
@@ -453,7 +453,7 @@ void __stdcall ReadIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAP
 
   // ReadFile, unlike ReadFileEx, needs an event in the overlapped structure.
   ov->hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-  if (!ReadFile((HANDLE)baton->fd, offsetPtr, baton->bufferLength - baton->bytesRead, &bytesTransferred, ov)) {
+  if (!ReadFile((HANDLE)baton->fd, offsetPtr, baton->bytesToRead, &bytesTransferred, ov)) {
     errorCode = GetLastError();
 
     if (errorCode != ERROR_IO_PENDING) {
@@ -472,7 +472,7 @@ void __stdcall ReadIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAP
     }
   }
   CloseHandle(ov->hEvent);
-
+  baton->bytesToRead -= bytesTransferred;
   baton->bytesRead += bytesTransferred;
   baton->complete = true;
 }
