@@ -1,3 +1,16 @@
+<a name="6.0.0-beta2"></a>
+# [6.0.0-beta2](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/v6.0.0-beta1...v6.0.0-beta2) (2017-09-07)
+
+
+### Bug Fixes
+
+* **docs:** Add a note about windows support ([76b7191](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/76b7191)), closes [#1299](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1299)
+* **docs:** correct default highWaterMark to 65536 bytes ([e83ec4e](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/e83ec4e))
+* **package:** update debug to version 3.0.0 ([#1292](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1292)) ([4987750](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/4987750))
+* **docs:** Fixed typo in upgrade guide ([#1321](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1321)) ([bf251a9](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/bf251a9))
+* **windows:** Asynchronous callbacks for reading and writing ([#1328](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1328)) ([69de595](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/69de595)), closes [#1221](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1221)
+
+
 <a name="6.0.0-beta1"></a>
 # [6.0.0-beta1](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/5.0.0...6.0.0-beta1) (2017-08-07)
 
