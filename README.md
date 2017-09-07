@@ -725,6 +725,8 @@ The default `Parsers` are [Transform streams](https://nodejs.org/api/stream.html
 | ByteLength | <code>Class</code> | is a transform stream that emits data as a buffer after a specific number of bytes are received. |
 | Delimiter | <code>Class</code> | is a transform stream that emits data each time a byte sequence is received. |
 | Readline | <code>Class</code> | is a transform stream that emits data after a newline delimiter is received. |
+| Ready | <code>Class</code> | is a transform stream that waits for a sequence of "ready" bytes before emitting a ready event and emitting data events |
+| Regex | <code>Class</code> | is a transform stream that uses a regular expression to split the incoming text upon. |
 
 **Example**  
 ```js
@@ -767,7 +769,7 @@ const parser = port.pipe(new Readline({ delimiter: '\r\n' }));
 parser.on('data', console.log);
 ```
 
-To use the `Ready` parser provide a byte start sequence. After the bytes have been received data events are passed through.
+To use the `Ready` parser provide a byte start sequence. After the bytes have been received a ready event is fired and data events are passed through.
 ```js
 const SerialPort = require('serialport');
 const Ready = SerialPort.parsers.Ready;
