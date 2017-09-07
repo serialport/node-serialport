@@ -12,14 +12,14 @@ This can be checked in the .travis.yml file and appveyor.yml file. Within these 
 2. Bump up npm version in `package.json`
 3. Run `npm run changelog` and modify `CHANGELOG.md` if needed
 4. Update the `.docs/README.hbs` to reference this current version and to previous major version docs then regenerate docs `npm run docs`.
-5. Commit then generate new tags based on package.json version number with `git tag 5.0.0 -a` and include the change log in the tag's annotation.
+5. Commit then generate new tags based on package.json version number with `git tag v5.0.0 -a` and include the change log in the tag's annotation.
 6. Push tags to Github with `git push --tags`
 7. `rm -rf package-lock.json node_modules build && npm install`
 8. Publish to npm after builds finish. Builds can take half an hour and occasionally fail for seemingly no reason. Restart any failures in the travis or appeveyor ui. While you wait, remove the content of the Github release message so the tag's text shows. When the entire matrix succeeds and all binaries exist run `npm publish`.
 9. Kick off the build matrix for either the master or beta branch on [serialport-test-pilot](https://travis-ci.org/j5js/serialport-test-pilot). It will install serialport from npm on a wide range of systems.
 
 Differences for beta release
-* Tag like: `git tag 6.0.0-beta6 -a` and include the change log in the tag's annotation.
+* Tag like: `git tag v6.0.0-beta3 -a` and include the change log in the tag's annotation.
 * Publish with `npm publish --tag beta`
 
 ## Config Travis, AppVeyor and Github to generate all of the binaries.
