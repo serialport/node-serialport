@@ -1,4 +1,4 @@
-/* eslint-disable node/no-missing-require */
+/* eslint-disable node/no-missing-require, node/no-extraneous-require */
 'use strict';
 
 // `npm run stress` to run these tests
