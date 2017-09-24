@@ -18,7 +18,7 @@ const serialport = require('serialport');
 const SerialPort = serialport.SerialPort;
 
 const serial = new SerialPort('/dev/cu.usbmodem1411', {
-  baudrate: 9600,
+  baudRate: 9600,
   parser: SerialPort.parsers.byteLength(1)
 });
 

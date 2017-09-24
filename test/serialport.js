@@ -95,6 +95,12 @@ describe('SerialPort', () => {
       }
     });
 
+    it('throws an error when given bad baudrate even with a callback', function() {
+      assert.throws(() => {
+        this.port = new SerialPort('/dev/exists', { baudrate: 9600 }, () => {});
+      });
+    });
+
     it('errors with a non number baudRate', function(done) {
       try {
         this.port = new SerialPort('/bad/port', { baudRate: 'whatever' });
