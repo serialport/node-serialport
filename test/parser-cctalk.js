@@ -6,13 +6,33 @@ const sinon = require('sinon');
 const CCTalkParser = require('../lib/parsers/cctalk');
 
 describe('CCTalkParser', () => {
-  it('continues looking for bytes in additional writes', () => {
+  it('emits data for a default length message', () => {
+    const data = Buffer.from([2, 0, 1, 254, 217]);
+    const spy = sinon.spy();
+    const parser = new CCTalkParser();
+    parser.on('data', spy);
+    parser.write(data);
+    assert.equal(spy.callCount, 1);
+    // assert.deepEqual(spy.callArgWith(Buffer.from([2, 0, 1, 254, 217])));
+  });
+
+  it('emits data for a 7 byte length message', () => {
     const parser = new CCTalkParser();
     const spy = sinon.spy();
-    // parser.on('data', spy);
-    // parser.write(Buffer.from([1, 0, 2]));
-    // parser.write(Buffer.from([254, 217]));
+    parser.on('data', spy);
+    parser.write(Buffer.from([2, 2, 1, 254, 1, 1, 217]));
+    assert.equal(spy.callCount, 1);
+    assert.deepEqual(spy.getCall(0).args[0], Buffer.from([2, 2, 1, 254, 1, 1, 217]));
   });
-  // TODO: case crc message got data 2 bits
-  // TODO: case process remaining buffer
+
+  it('emits 2 times data first length 7 secund length 5', () => {
+    const parser = new CCTalkParser();
+    const spy = sinon.spy();
+    parser.on('data', spy);
+    parser.write(Buffer.from([2, 2, 1, 254, 1, 1, 217, 2, 0, 1, 254, 217]));
+    assert.equal(spy.callCount, 2);
+    assert.deepEqual(spy.getCall(0).args[0], Buffer.from([2, 2, 1, 254, 1, 1, 217]));
+    assert.deepEqual(spy.getCall(1).args[0], Buffer.from([2, 0, 1, 254, 217]));
+  });
 });
+// TODO: parser.write(Buffer.from([2, 2, 1, 254, 1, 1, 217, 2, 0, 1, 254, 217, 2, 2, 1, 251, 1, 1, 217, 2, 2, 1, 252, 1, 1, 217, 2, 0, 1, 253, 217]));
