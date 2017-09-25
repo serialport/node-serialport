@@ -13,7 +13,7 @@ describe('CCTalkParser', () => {
     parser.on('data', spy);
     parser.write(data);
     assert.equal(spy.callCount, 1);
-    // assert.deepEqual(spy.callArgWith(Buffer.from([2, 0, 1, 254, 217])));
+    assert.deepEqual(spy.getCall(0).args[0], Buffer.from([2, 0, 1, 254, 217]));
   });
 
   it('emits data for a 7 byte length message', () => {
