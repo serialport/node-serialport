@@ -788,6 +788,15 @@ const parser = port.pipe(new Regex({ regex: /[\r\n]+/ }));
 parser.on('data', console.log);
 ```
 
+To use the `CCTalk` parser you need to provide nothing. CCTalk Messages get emitted as buffer.
+```js
+const SerialPort = require('serialport');
+const CCTalk = SerialPort.parsers.CCTalk;
+const port = new SerialPort('/dev/ttyUSB0');
+const parser = port.pipe(new CCtalk());
+parser.on('data', console.log);
+```
+
 * * *
 
 <a name="module_serialport--SerialPort.list"></a>
