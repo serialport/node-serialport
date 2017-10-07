@@ -1,3 +1,19 @@
+<a name="6.0.0-beta3"></a>
+# [6.0.0-beta3](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/v6.0.0-beta2...v6.0.0-beta3) (2017-10-07)
+
+
+### Bug Fixes
+
+* **docs:** add missing parsers to properties list ([3faadac](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/3faadac))
+
+
+### Features
+
+* **open:** Throw on incorrect baudrate option ([#1347](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1347)) ([a3b8d35](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/a3b8d35))
+* **parsers:** Add cctalk parsers ([#1342](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1342)) ([bcb492f](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/bcb492f))
+
+
+
 <a name="6.0.0-beta2"></a>
 # [6.0.0-beta2](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/v6.0.0-beta1...v6.0.0-beta2) (2017-09-07)
 
