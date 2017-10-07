@@ -82,7 +82,7 @@
     "mocha": "^4.0.0",
     "prebuild": "^6.2.1",
     "proxyquire": "^1.7.10",
-    "sinon": "^3.3.0"
+    "sinon": "^4.0.0"
   },
   "engines": {
     "node": ">=4.0.0"
