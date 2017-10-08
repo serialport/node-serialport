@@ -30,6 +30,9 @@ void ErrorCodeToString(const char* prefix, int errorCode, char *errorStr) {
   case ERROR_OPERATION_ABORTED:
     _snprintf_s(errorStr, ERROR_STRING_SIZE, _TRUNCATE, "%s: Operation aborted", prefix);
     break;
+  case ERROR_INVALID_PARAMETER:
+    _snprintf_s(errorStr, ERROR_STRING_SIZE, _TRUNCATE, "%s: The parameter is incorrect", prefix);
+    break;      
   default:
     _snprintf_s(errorStr, ERROR_STRING_SIZE, _TRUNCATE, "%s: Unknown error code %d", prefix, errorCode);
     break;
