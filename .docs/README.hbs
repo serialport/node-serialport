@@ -32,10 +32,10 @@ We're not against firmware but we're better than it.
 
 You're reading the README for Node-Serialport's master branch. You probably want to see the README for our most recent release. See our [changelog](CHANGELOG.md) for what's new, and our [upgrade guide](UPGRADE_GUIDE.md) for a walk-through on differences between major versions.
 
-- [`serialport@6.0.0-beta3` docs](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/6.0.0-beta3/README.md) the latest `6.x` release.
+- [`serialport@6.0.0` docs](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/6.0.0/README.md) the latest `6.x` release.
 - [`serialport@4.0.7` docs](https://github.com/EmergingTechnologyAdvisors/node-serialport/blob/4.0.7/README.md) the latest `4.x` release.
 
-Older versions are no longer supported.
+Older versions are no longer supported but their docs can be found by looking through release tags.
 
 ***
 ## Helpful Resources for Getting Started with Node-Serialport
@@ -95,8 +95,6 @@ In addition to reading the [article mentioned above](http://www.voodootikigod.co
 ² Windows 7, 8, 10, and 10 IoT are supported, but our CI tests only Windows Server 2012 R2.
 
 ³ OSX 10.4 Tiger and above are supported, but our CI tests only 10.9.5 Mavericks with Xcode 6.1.
-
-Until Issue #1221 is closed windows will suffer high cpu reads and writes and will require a `UV_THREADPOOL_SIZE` environment variable to be set to 1 + the number of ports you wish to open at a time. (Defaults to `4` which supports 3 ports).
 
 ## Installation Instructions
 
@@ -228,6 +226,8 @@ npm install serialport --build-from-source
 ```
 
 Node-gyp's documentation doesn't mention it, but it sometimes helps to create a C++ project in [Visual Studio](https://www.visualstudio.com/) so that it will install any necessary components not already installed during the past two hours of setup. This will solve some instances of `Failed to locate: "CL.exe"`.
+
+An old issue that you may still run into. When working with multiple Serial Ports you can set the `UV_THREADPOOL_SIZE` environment variable to be set to 1 + the number of ports you wish to open at a time. (Defaults to `4` which supports 3 open ports).
 
 ## Usage
 

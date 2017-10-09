@@ -1,6 +1,6 @@
 {
   "name": "serialport",
-  "version": "6.0.0-beta3",
+  "version": "6.0.0",
   "description": "Node.js package to access serial ports. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!",
   "author": {
     "name": "Chris Williams",
@@ -27,6 +27,7 @@
     "serial",
     "serialport",
     "sms gateway",
+    "sms",
     "stream",
     "tty",
     "UART"

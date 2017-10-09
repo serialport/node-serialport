@@ -1,3 +1,13 @@
+<a name="6.0.0"></a>
+# [6.0.0](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/v6.0.0-beta3...v6.0.0) (2017-10-09)
+
+
+### Features
+
+* **windows:** Add ERROR_INVALID_PARAMETER to supported bindings errors ([#1354](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1354)) ([4ff9c67](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/4ff9c67))
+
+
+
 <a name="6.0.0-beta3"></a>
 # [6.0.0-beta3](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/v6.0.0-beta2...v6.0.0-beta3) (2017-10-07)
 
