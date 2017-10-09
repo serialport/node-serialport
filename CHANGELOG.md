@@ -1,51 +1,26 @@
 <a name="6.0.0"></a>
-# [6.0.0](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/v6.0.0-beta3...v6.0.0) (2017-10-09)
-
-
-### Features
-
-* **windows:** Add ERROR_INVALID_PARAMETER to supported bindings errors ([#1354](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1354)) ([4ff9c67](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/4ff9c67))
-
-
-
-<a name="6.0.0-beta3"></a>
-# [6.0.0-beta3](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/v6.0.0-beta2...v6.0.0-beta3) (2017-10-07)
-
-
-### Bug Fixes
-
-* **docs:** add missing parsers to properties list ([3faadac](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/3faadac))
+# [6.0.0](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/5.0.0...v6.0.0) (2017-10-09)
 
 
 ### Features
 
 * **open:** Throw on incorrect baudrate option ([#1347](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1347)) ([a3b8d35](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/a3b8d35))
 * **parsers:** Add cctalk parsers ([#1342](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1342)) ([bcb492f](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/bcb492f))
-
-
-
-<a name="6.0.0-beta2"></a>
-# [6.0.0-beta2](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/v6.0.0-beta1...v6.0.0-beta2) (2017-09-07)
+* **test:** tone down codecov comments ([#1289](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1289)) ([749ffac](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/749ffac))
+* **windows:** Add ERROR_INVALID_PARAMETER to supported bindings errors ([#1354](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1354)) ([4ff9c67](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/4ff9c67))
 
 
 ### Bug Fixes
 
 * **docs:** Add a note about windows support ([76b7191](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/76b7191)), closes [#1299](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1299)
+* **docs:** add missing parsers to properties list ([3faadac](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/3faadac))
 * **docs:** correct default highWaterMark to 65536 bytes ([e83ec4e](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/e83ec4e))
-* **package:** update debug to version 3.0.0 ([#1292](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1292)) ([4987750](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/4987750))
 * **docs:** Fixed typo in upgrade guide ([#1321](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1321)) ([bf251a9](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/bf251a9))
-* **windows:** Asynchronous callbacks for reading and writing ([#1328](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1328)) ([69de595](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/69de595)), closes [#1221](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1221)
-
-
-<a name="6.0.0-beta1"></a>
-# [6.0.0-beta1](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/5.0.0...6.0.0-beta1) (2017-08-07)
-
-
-### Bug Fixes
-
 * **linux:** The productID should be a number not a description string ([#1279](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1279)) ([bf46f68](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/bf46f68))
+* **package:** update debug to version 3.0.0 ([#1292](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1292)) ([4987750](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/4987750))
 * **tests:** fixup for [#1279](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1279) ([#1285](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1285)) ([56074f6](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/56074f6))
 * **windows:** Add option to disable RTS ([#1277](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1277)) ([5b8d163](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/5b8d163))
+* **windows:** Asynchronous callbacks for reading and writing ([#1328](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1328)) ([69de595](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/69de595)), closes [#1221](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1221)
 * **windows:** Parse more types of pnpIds ([#1288](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1288)) ([0b554d7](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/0b554d7)), closes [#1220](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1220)
 
 
@@ -53,17 +28,10 @@
 
 * **binaries:** Lets switch to prebuild! ([#1282](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1282)) ([8c36e99](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/8c36e99))
 
-
-### Features
-
-* **test:** tone down codecov comments ([#1289](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1289)) ([749ffac](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/749ffac))
-
-
 ### BREAKING CHANGES
 
-* **binaries:** I'm considering the switch to `prebuild` a breaking change because it's substantially changes our install processes. It's also possible the install flags to ensure downloading or building from source has changed slightly. That's not our api per say, but it's enough.
+* **binaries:** We switched to `prebuild` a breaking change because it's substantially changes our install processes. It's also possible the install flags to ensure downloading or building from source has changed slightly. That's not our api per say, but it's enough.
 * **windows:** We previously hard coded to have RTS on for windows at all times it now default to off.
-
 
 
 Version 5.0.0 🎉
