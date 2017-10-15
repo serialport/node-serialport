@@ -284,7 +284,6 @@ int setup(int fd, OpenBaton *data) {
 
   // Copy the connection options into the ConnectionOptionsBaton to set the baud rate
   ConnectionOptionsBaton* connectionOptions = new ConnectionOptionsBaton();
-  memset(connectionOptions, 0, sizeof(ConnectionOptionsBaton));
   connectionOptions->fd = fd;
   connectionOptions->baudRate = data->baudRate;
 

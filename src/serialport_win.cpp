@@ -286,7 +286,6 @@ NAN_METHOD(Write) {
   }
 
   WriteBaton* baton = new WriteBaton();
-  memset(baton, 0, sizeof(WriteBaton));
   baton->fd = fd;
   baton->buffer.Reset(buffer);
   baton->bufferData = bufferData;
@@ -404,7 +403,6 @@ NAN_METHOD(Read) {
   }
 
   ReadBaton* baton = new ReadBaton();
-  memset(baton, 0, sizeof(ReadBaton));
   baton->fd = fd;
   baton->offset = offset;
   baton->bytesToRead = bytesToRead;
