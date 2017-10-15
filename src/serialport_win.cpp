@@ -349,6 +349,7 @@ void EIO_AfterWrite(uv_async_t* req) {
   Nan::HandleScope scope;
   WriteBaton* baton = static_cast<WriteBaton*>(req->data);
   WaitForSingleObject(baton->hThread, INFINITE);
+  CloseHandle(baton->hThread);
   delete req;
 
   v8::Local<v8::Value> argv[1];
@@ -526,6 +527,7 @@ void EIO_AfterRead(uv_async_t* req) {
   Nan::HandleScope scope;
   ReadBaton* baton = static_cast<ReadBaton*>(req->data);
   WaitForSingleObject(baton->hThread, INFINITE);
+  CloseHandle(baton->hThread);
   delete req;
 
   v8::Local<v8::Value> argv[2];
