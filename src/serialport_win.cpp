@@ -327,7 +327,7 @@ DWORD __stdcall WriteThread(LPVOID param) {
     char* offsetPtr = baton->bufferData + baton->offset;
     // WriteFileEx requires calling GetLastError even upon success. Clear the error beforehand.
     SetLastError(0);
-    WriteFileEx((HANDLE)baton->fd, offsetPtr, static_cast<DWORD>(baton->bufferLength), ov, WriteIOCompletion);
+    WriteFileEx((HANDLE)baton->fd, offsetPtr, static_cast<DWORD>(baton->bufferLength - baton->offset), ov, WriteIOCompletion);
     // Error codes when call is successful, such as ERROR_MORE_DATA.
     DWORD lastError = GetLastError();
     if (lastError != ERROR_SUCCESS) {
@@ -434,6 +434,7 @@ void __stdcall ReadIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAP
     return;
   }
   if (bytesTransferred) {
+    baton->bytesToRead -= bytesTransferred;
     baton->bytesRead += bytesTransferred;
     baton->offset += bytesTransferred;
   }
