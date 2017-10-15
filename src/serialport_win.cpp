@@ -320,7 +320,7 @@ DWORD __stdcall WriteThread(LPVOID param) {
   WriteBaton* baton = static_cast<WriteBaton*>(param);
 
   OVERLAPPED* ov = new OVERLAPPED;
-  memset(ov, 0, sizeof(ov));
+  memset(ov, 0, sizeof(OVERLAPPED));
   ov->hEvent = static_cast<void*>(baton);
 
   while (!baton->complete) {
@@ -454,6 +454,7 @@ void __stdcall ReadIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAP
   char* offsetPtr = baton->bufferData + baton->offset;
 
   // ReadFile, unlike ReadFileEx, needs an event in the overlapped structure.
+  memset(ov, 0, sizeof(OVERLAPPED));
   ov->hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
   if (!ReadFile((HANDLE)baton->fd, offsetPtr, baton->bytesToRead, &bytesTransferred, ov)) {
     errorCode = GetLastError();
