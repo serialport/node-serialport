@@ -54,7 +54,6 @@ NAN_METHOD(Open) {
   }
 
   OpenBaton* baton = new OpenBaton();
-  memset(baton, 0, sizeof(OpenBaton));
   strcpy(baton->path, *path);
   baton->baudRate = getIntFromObject(options, "baudRate");
   baton->dataBits = getIntFromObject(options, "dataBits");
@@ -125,7 +124,6 @@ NAN_METHOD(Update) {
   }
 
   ConnectionOptionsBaton* baton = new ConnectionOptionsBaton();
-  memset(baton, 0, sizeof(ConnectionOptionsBaton));
 
   baton->fd = fd;
   baton->baudRate = getIntFromObject(options, "baudRate");
@@ -169,7 +167,6 @@ NAN_METHOD(Close) {
   }
 
   VoidBaton* baton = new VoidBaton();
-  memset(baton, 0, sizeof(VoidBaton));
   baton->fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
   baton->callback.Reset(info[1].As<v8::Function>());
 
@@ -210,7 +207,6 @@ NAN_METHOD(Flush) {
   v8::Local<v8::Function> callback = info[1].As<v8::Function>();
 
   VoidBaton* baton = new VoidBaton();
-  memset(baton, 0, sizeof(VoidBaton));
   baton->fd = fd;
   baton->callback.Reset(callback);
 
@@ -261,7 +257,6 @@ NAN_METHOD(Set) {
   v8::Local<v8::Function> callback = info[2].As<v8::Function>();
 
   SetBaton* baton = new SetBaton();
-  memset(baton, 0, sizeof(SetBaton));
   baton->fd = fd;
   baton->callback.Reset(callback);
   baton->brk = getBoolFromObject(options, "brk");
@@ -308,7 +303,6 @@ NAN_METHOD(Get) {
   }
 
   GetBaton* baton = new GetBaton();
-  memset(baton, 0, sizeof(GetBaton));
   baton->fd = fd;
   baton->cts = false;
   baton->dsr = false;
@@ -360,7 +354,6 @@ NAN_METHOD(Drain) {
   }
 
   VoidBaton* baton = new VoidBaton();
-  memset(baton, 0, sizeof(VoidBaton));
   baton->fd = fd;
   baton->callback.Reset(info[1].As<v8::Function>());
 

@@ -286,7 +286,6 @@ NAN_METHOD(Write) {
   }
 
   WriteBaton* baton = new WriteBaton();
-  memset(baton, 0, sizeof(WriteBaton));
   baton->fd = fd;
   baton->buffer.Reset(buffer);
   baton->bufferData = bufferData;
@@ -320,14 +319,14 @@ DWORD __stdcall WriteThread(LPVOID param) {
   WriteBaton* baton = static_cast<WriteBaton*>(param);
 
   OVERLAPPED* ov = new OVERLAPPED;
-  memset(ov, 0, sizeof(ov));
+  memset(ov, 0, sizeof(OVERLAPPED));
   ov->hEvent = static_cast<void*>(baton);
 
   while (!baton->complete) {
     char* offsetPtr = baton->bufferData + baton->offset;
     // WriteFileEx requires calling GetLastError even upon success. Clear the error beforehand.
     SetLastError(0);
-    WriteFileEx((HANDLE)baton->fd, offsetPtr, static_cast<DWORD>(baton->bufferLength), ov, WriteIOCompletion);
+    WriteFileEx((HANDLE)baton->fd, offsetPtr, static_cast<DWORD>(baton->bufferLength - baton->offset), ov, WriteIOCompletion);
     // Error codes when call is successful, such as ERROR_MORE_DATA.
     DWORD lastError = GetLastError();
     if (lastError != ERROR_SUCCESS) {
@@ -350,6 +349,7 @@ void EIO_AfterWrite(uv_async_t* req) {
   Nan::HandleScope scope;
   WriteBaton* baton = static_cast<WriteBaton*>(req->data);
   WaitForSingleObject(baton->hThread, INFINITE);
+  CloseHandle(baton->hThread);
   delete req;
 
   v8::Local<v8::Value> argv[1];
@@ -404,7 +404,6 @@ NAN_METHOD(Read) {
   }
 
   ReadBaton* baton = new ReadBaton();
-  memset(baton, 0, sizeof(ReadBaton));
   baton->fd = fd;
   baton->offset = offset;
   baton->bytesToRead = bytesToRead;
@@ -434,6 +433,7 @@ void __stdcall ReadIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAP
     return;
   }
   if (bytesTransferred) {
+    baton->bytesToRead -= bytesTransferred;
     baton->bytesRead += bytesTransferred;
     baton->offset += bytesTransferred;
   }
@@ -454,6 +454,7 @@ void __stdcall ReadIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAP
   char* offsetPtr = baton->bufferData + baton->offset;
 
   // ReadFile, unlike ReadFileEx, needs an event in the overlapped structure.
+  memset(ov, 0, sizeof(OVERLAPPED));
   ov->hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
   if (!ReadFile((HANDLE)baton->fd, offsetPtr, baton->bytesToRead, &bytesTransferred, ov)) {
     errorCode = GetLastError();
@@ -526,6 +527,7 @@ void EIO_AfterRead(uv_async_t* req) {
   Nan::HandleScope scope;
   ReadBaton* baton = static_cast<ReadBaton*>(req->data);
   WaitForSingleObject(baton->hThread, INFINITE);
+  CloseHandle(baton->hThread);
   delete req;
 
   v8::Local<v8::Value> argv[2];
