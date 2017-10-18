@@ -39,6 +39,12 @@ void ErrorCodeToString(const char* prefix, int errorCode, char *errorStr) {
   }
 }
 
+void AsyncCloseCallback(uv_handle_t* handle)
+{
+  uv_async_t* async = (uv_async_t*)handle;
+  delete async;
+}
+
 void EIO_Open(uv_work_t* req) {
   OpenBaton* data = static_cast<OpenBaton*>(req->data);
 
@@ -293,9 +299,13 @@ NAN_METHOD(Write) {
   baton->offset = 0;
   baton->callback.Reset(info[2].As<v8::Function>());
   baton->complete = false;
+
+  uv_async_t* async = new uv_async_t;
+  uv_async_init(uv_default_loop(), async, EIO_AfterWrite);
+  async->data = baton;
   // WriteFileEx requires a thread that can block. Create a new thread to
   // run the write operation, saving the handle so it can be deallocated later.
-  baton->hThread = CreateThread(NULL, 0, WriteThread, baton, 0, NULL);
+  baton->hThread = CreateThread(NULL, 0, WriteThread, async, 0, NULL);
 }
 
 void __stdcall WriteIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAPPED* ov) {
@@ -316,7 +326,8 @@ void __stdcall WriteIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLA
 }
 
 DWORD __stdcall WriteThread(LPVOID param) {
-  WriteBaton* baton = static_cast<WriteBaton*>(param);
+  uv_async_t* async = static_cast<uv_async_t*>(param);
+  WriteBaton* baton = static_cast<WriteBaton*>(async->data);
 
   OVERLAPPED* ov = new OVERLAPPED;
   memset(ov, 0, sizeof(OVERLAPPED));
@@ -338,9 +349,6 @@ DWORD __stdcall WriteThread(LPVOID param) {
   }
   delete ov;
   // Signal the main thread to run the callback.
-  uv_async_t* async = new uv_async_t;
-  uv_async_init(uv_default_loop(), async, EIO_AfterWrite);
-  async->data = baton;
   uv_async_send(async);
   ExitThread(0);
 }
@@ -350,7 +358,7 @@ void EIO_AfterWrite(uv_async_t* req) {
   WriteBaton* baton = static_cast<WriteBaton*>(req->data);
   WaitForSingleObject(baton->hThread, INFINITE);
   CloseHandle(baton->hThread);
-  delete req;
+  uv_close((uv_handle_t*)req, AsyncCloseCallback);
 
   v8::Local<v8::Value> argv[1];
   if (baton->errorString[0]) {
@@ -411,6 +419,10 @@ NAN_METHOD(Read) {
   baton->bufferData = node::Buffer::Data(buffer);
   baton->callback.Reset(info[4].As<v8::Function>());
   baton->complete = false;
+
+  uv_async_t* async = new uv_async_t;
+  uv_async_init(uv_default_loop(), async, EIO_AfterRead);
+  async->data = baton;
   // ReadFileEx requires a thread that can block. Create a new thread to
   // run the read operation, saving the handle so it can be deallocated later.
   baton->hThread = CreateThread(NULL, 0, ReadThread, baton, 0, NULL);
@@ -482,7 +494,8 @@ void __stdcall ReadIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAP
 }
 
 DWORD __stdcall ReadThread(LPVOID param) {
-  ReadBaton* baton = static_cast<ReadBaton*>(param);
+  uv_async_t* async = static_cast<uv_async_t*>(param);
+  ReadBaton* baton = static_cast<ReadBaton*>(async->data);
   DWORD lastError;
 
   OVERLAPPED* ov = new OVERLAPPED;
@@ -516,9 +529,6 @@ DWORD __stdcall ReadThread(LPVOID param) {
   }
   delete ov;
   // Signal the main thread to run the callback.
-  uv_async_t* async = new uv_async_t;
-  uv_async_init(uv_default_loop(), async, EIO_AfterRead);
-  async->data = baton;
   uv_async_send(async);
   ExitThread(0);
 }
@@ -528,7 +538,7 @@ void EIO_AfterRead(uv_async_t* req) {
   ReadBaton* baton = static_cast<ReadBaton*>(req->data);
   WaitForSingleObject(baton->hThread, INFINITE);
   CloseHandle(baton->hThread);
-  delete req;
+  uv_close((uv_handle_t*)req, AsyncCloseCallback);
 
   v8::Local<v8::Value> argv[2];
   if (baton->errorString[0]) {
