@@ -1,3 +1,14 @@
+<a name="6.0.2"></a>
+## [6.0.2](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/v6.0.0...v6.0.2) (2017-10-22)
+
+
+### Bug Fixes
+
+* **windows:** Fix async handle leak ([#1367](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1367)) ([c1d9d88](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/c1d9d88)), closes [#1363](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1363)
+* **windows:** Fix read & write bugs for windows ([#1364](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1364)) ([0e4b1f9](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/0e4b1f9))
+
+
+
 <a name="6.0.0"></a>
 # [6.0.0](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/5.0.0...v6.0.0) (2017-10-09)
 
