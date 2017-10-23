@@ -80,7 +80,6 @@
     "eslint-plugin-standard": "^3.0.1",
     "istanbul": "^0.4.4",
     "jsdoc-to-markdown": "^3.0.0",
-    "just-extend": "1.1.22",
     "mocha": "^4.0.0",
     "prebuild": "^6.2.1",
     "proxyquire": "^1.7.10",
