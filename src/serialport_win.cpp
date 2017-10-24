@@ -425,7 +425,7 @@ NAN_METHOD(Read) {
   async->data = baton;
   // ReadFileEx requires a thread that can block. Create a new thread to
   // run the read operation, saving the handle so it can be deallocated later.
-  baton->hThread = CreateThread(NULL, 0, ReadThread, baton, 0, NULL);
+  baton->hThread = CreateThread(NULL, 0, ReadThread, async, 0, NULL);
 }
 
 void __stdcall ReadIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAPPED* ov) {
