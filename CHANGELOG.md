@@ -1,3 +1,14 @@
+<a name="6.0.4"></a>
+## [6.0.4](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/v6.0.3...v6.0.4) (2017-10-26)
+
+
+### Bug Fixes
+
+* **packages:** just-extend isn't necessary anymore ([#1376](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1376)) ([8f650c3](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/8f650c3))
+* **windows:** bad parameter for ReadThread (windows) ([#1377](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1377)) ([6f3afbe](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/6f3afbe))
+
+
+
 <a name="6.0.3"></a>
 ## [6.0.3](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/v6.0.0...v6.0.3) (2017-10-22)
 
