@@ -1,0 +1,7 @@
+dir: lib
+packageJson: package.json
+articles:
+ 	- Overview: README.md
+branches:
+  - master
+  - jsdoc

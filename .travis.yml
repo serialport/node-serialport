@@ -91,7 +91,6 @@ script:
     npm run lint
   fi;
 
-- npm run docs:diff
 - node ./
 - npm test
 
