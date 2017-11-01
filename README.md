@@ -1,7 +1,7 @@
 # Node Serialport
 
 [![npm](https://img.shields.io/npm/dm/serialport.svg?maxAge=2592000)](http://npmjs.com/package/serialport)
-[![Gitter chat](https://badges.gitter.im/node-serialport/node-serialport.svg)](https://gitter.im/node-serialport/node-serialport)
+[![Gitter chat](https://badges.gitter.im/EmergingTechnologyAdvisors/node-serialport.svg)](https://gitter.im/EmergingTechnologyAdvisors/node-serialport)
 [![Known Vulnerabilities](https://snyk.io/test/github/node-serialport/node-serialport/badge.svg)](https://snyk.io/test/github/node-serialport/node-serialport)
 [![codecov](https://codecov.io/gh/node-serialport/node-serialport/branch/master/graph/badge.svg)](https://codecov.io/gh/node-serialport/node-serialport)
 [![Build Status](https://travis-ci.org/node-serialport/node-serialport.svg?branch=master)](https://travis-ci.org/node-serialport/node-serialport)
