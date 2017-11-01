@@ -1,53 +1,53 @@
 <a name="6.0.4"></a>
-## [6.0.4](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/v6.0.3...v6.0.4) (2017-10-26)
+## [6.0.4](https://github.com/node-serialport/node-serialport/compare/v6.0.3...v6.0.4) (2017-10-26)
 
 
 ### Bug Fixes
 
-* **packages:** just-extend isn't necessary anymore ([#1376](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1376)) ([8f650c3](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/8f650c3))
-* **windows:** bad parameter for ReadThread (windows) ([#1377](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1377)) ([6f3afbe](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/6f3afbe))
+* **packages:** just-extend isn't necessary anymore ([#1376](https://github.com/node-serialport/node-serialport/issues/1376)) ([8f650c3](https://github.com/node-serialport/node-serialport/commit/8f650c3))
+* **windows:** bad parameter for ReadThread (windows) ([#1377](https://github.com/node-serialport/node-serialport/issues/1377)) ([6f3afbe](https://github.com/node-serialport/node-serialport/commit/6f3afbe))
 
 
 
 <a name="6.0.3"></a>
-## [6.0.3](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/v6.0.0...v6.0.3) (2017-10-22)
+## [6.0.3](https://github.com/node-serialport/node-serialport/compare/v6.0.0...v6.0.3) (2017-10-22)
 
 ### Bug Fixes
 
-* **windows:** Fix async handle leak ([#1367](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1367)) ([c1d9d88](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/c1d9d88)), closes [#1363](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1363)
-* **windows:** Fix read & write bugs for windows ([#1364](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1364)) ([0e4b1f9](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/0e4b1f9))
+* **windows:** Fix async handle leak ([#1367](https://github.com/node-serialport/node-serialport/issues/1367)) ([c1d9d88](https://github.com/node-serialport/node-serialport/commit/c1d9d88)), closes [#1363](https://github.com/node-serialport/node-serialport/issues/1363)
+* **windows:** Fix read & write bugs for windows ([#1364](https://github.com/node-serialport/node-serialport/issues/1364)) ([0e4b1f9](https://github.com/node-serialport/node-serialport/commit/0e4b1f9))
 
 
 
 <a name="6.0.0"></a>
-# [6.0.0](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/5.0.0...v6.0.0) (2017-10-09)
+# [6.0.0](https://github.com/node-serialport/node-serialport/compare/5.0.0...v6.0.0) (2017-10-09)
 
 
 ### Features
 
-* **open:** Throw on incorrect baudrate option ([#1347](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1347)) ([a3b8d35](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/a3b8d35))
-* **parsers:** Add cctalk parsers ([#1342](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1342)) ([bcb492f](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/bcb492f))
-* **test:** tone down codecov comments ([#1289](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1289)) ([749ffac](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/749ffac))
-* **windows:** Add ERROR_INVALID_PARAMETER to supported bindings errors ([#1354](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1354)) ([4ff9c67](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/4ff9c67))
+* **open:** Throw on incorrect baudrate option ([#1347](https://github.com/node-serialport/node-serialport/issues/1347)) ([a3b8d35](https://github.com/node-serialport/node-serialport/commit/a3b8d35))
+* **parsers:** Add cctalk parsers ([#1342](https://github.com/node-serialport/node-serialport/issues/1342)) ([bcb492f](https://github.com/node-serialport/node-serialport/commit/bcb492f))
+* **test:** tone down codecov comments ([#1289](https://github.com/node-serialport/node-serialport/issues/1289)) ([749ffac](https://github.com/node-serialport/node-serialport/commit/749ffac))
+* **windows:** Add ERROR_INVALID_PARAMETER to supported bindings errors ([#1354](https://github.com/node-serialport/node-serialport/issues/1354)) ([4ff9c67](https://github.com/node-serialport/node-serialport/commit/4ff9c67))
 
 
 ### Bug Fixes
 
-* **docs:** Add a note about windows support ([76b7191](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/76b7191)), closes [#1299](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1299)
-* **docs:** add missing parsers to properties list ([3faadac](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/3faadac))
-* **docs:** correct default highWaterMark to 65536 bytes ([e83ec4e](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/e83ec4e))
-* **docs:** Fixed typo in upgrade guide ([#1321](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1321)) ([bf251a9](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/bf251a9))
-* **linux:** The productID should be a number not a description string ([#1279](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1279)) ([bf46f68](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/bf46f68))
-* **package:** update debug to version 3.0.0 ([#1292](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1292)) ([4987750](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/4987750))
-* **tests:** fixup for [#1279](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1279) ([#1285](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1285)) ([56074f6](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/56074f6))
-* **windows:** Add option to disable RTS ([#1277](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1277)) ([5b8d163](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/5b8d163))
-* **windows:** Asynchronous callbacks for reading and writing ([#1328](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1328)) ([69de595](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/69de595)), closes [#1221](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1221)
-* **windows:** Parse more types of pnpIds ([#1288](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1288)) ([0b554d7](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/0b554d7)), closes [#1220](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1220)
+* **docs:** Add a note about windows support ([76b7191](https://github.com/node-serialport/node-serialport/commit/76b7191)), closes [#1299](https://github.com/node-serialport/node-serialport/issues/1299)
+* **docs:** add missing parsers to properties list ([3faadac](https://github.com/node-serialport/node-serialport/commit/3faadac))
+* **docs:** correct default highWaterMark to 65536 bytes ([e83ec4e](https://github.com/node-serialport/node-serialport/commit/e83ec4e))
+* **docs:** Fixed typo in upgrade guide ([#1321](https://github.com/node-serialport/node-serialport/issues/1321)) ([bf251a9](https://github.com/node-serialport/node-serialport/commit/bf251a9))
+* **linux:** The productID should be a number not a description string ([#1279](https://github.com/node-serialport/node-serialport/issues/1279)) ([bf46f68](https://github.com/node-serialport/node-serialport/commit/bf46f68))
+* **package:** update debug to version 3.0.0 ([#1292](https://github.com/node-serialport/node-serialport/issues/1292)) ([4987750](https://github.com/node-serialport/node-serialport/commit/4987750))
+* **tests:** fixup for [#1279](https://github.com/node-serialport/node-serialport/issues/1279) ([#1285](https://github.com/node-serialport/node-serialport/issues/1285)) ([56074f6](https://github.com/node-serialport/node-serialport/commit/56074f6))
+* **windows:** Add option to disable RTS ([#1277](https://github.com/node-serialport/node-serialport/issues/1277)) ([5b8d163](https://github.com/node-serialport/node-serialport/commit/5b8d163))
+* **windows:** Asynchronous callbacks for reading and writing ([#1328](https://github.com/node-serialport/node-serialport/issues/1328)) ([69de595](https://github.com/node-serialport/node-serialport/commit/69de595)), closes [#1221](https://github.com/node-serialport/node-serialport/issues/1221)
+* **windows:** Parse more types of pnpIds ([#1288](https://github.com/node-serialport/node-serialport/issues/1288)) ([0b554d7](https://github.com/node-serialport/node-serialport/commit/0b554d7)), closes [#1220](https://github.com/node-serialport/node-serialport/issues/1220)
 
 
 ### Chores
 
-* **binaries:** Lets switch to prebuild! ([#1282](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/1282)) ([8c36e99](https://github.com/EmergingTechnologyAdvisors/node-serialport/commit/8c36e99))
+* **binaries:** Lets switch to prebuild! ([#1282](https://github.com/node-serialport/node-serialport/issues/1282)) ([8c36e99](https://github.com/node-serialport/node-serialport/commit/8c36e99))
 
 ### BREAKING CHANGES
 
@@ -57,7 +57,7 @@
 
 Version 5.0.0 🎉
 -------------
-Nearly [a year in the making](https://github.com/EmergingTechnologyAdvisors/node-serialport/compare/4.0.7...5.0.0-beta9) Node SerialPort 5.0.0 is a major rewrite that improves stability, compatibility and performance. The api surface is similar to version 4 there have been a number of changes to ensure consistent error handling and operation of a serial port. Notably we are now a [`Stream`](https://nodejs.org/api/stream.html)! We can also introduce a bindings layer. A small low level api to provide access to underlying hardware. External bindings written in other languages or targeting other platforms can now be used.
+Nearly [a year in the making](https://github.com/node-serialport/node-serialport/compare/4.0.7...5.0.0-beta9) Node SerialPort 5.0.0 is a major rewrite that improves stability, compatibility and performance. The api surface is similar to version 4 there have been a number of changes to ensure consistent error handling and operation of a serial port. Notably we are now a [`Stream`](https://nodejs.org/api/stream.html)! We can also introduce a bindings layer. A small low level api to provide access to underlying hardware. External bindings written in other languages or targeting other platforms can now be used.
 
 Some major cpu performance gains on unix platforms can be found and we're less buggy and better performing on Windows too.
 

@@ -15,7 +15,7 @@ There are a lot of ways to get involved and help out:
 <a name="reporting-issues"></a>
 ## Reporting An Issue
 
-SerialPort does it's [issue tracking](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues) through github. To report an issue first search the repo to make sure that it has not been reported before.  If no one has reported the bug before, create a new issue and be sure to include the following information:
+SerialPort does it's [issue tracking](https://github.com/node-serialport/node-serialport/issues) through github. To report an issue first search the repo to make sure that it has not been reported before.  If no one has reported the bug before, create a new issue and be sure to include the following information:
 
 Operating System and Hardware:
 NodeJS Version:
@@ -36,7 +36,7 @@ If the issue has been reported before but you have new information to help troub
 
 <a name="requesting-features"></a>
 ## Requesting Features
-To request a new feature be added take a look at the [current roadmap](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues/746) and create a [github issue](https://github.com/EmergingTechnologyAdvisors/node-serialport/issues) and include:
+To request a new feature be added take a look at the [current roadmap](https://github.com/node-serialport/node-serialport/issues/746) and create a [github issue](https://github.com/node-serialport/node-serialport/issues) and include:
 
 **What feature you'd like to see:**
 **Why this is important to you:** (this is here because it's interesting knowing what cool things people are working on and also could help community members make suggestions for work-arounds until the feature is built)
@@ -56,12 +56,12 @@ It's very important that your pull requests include all of the above in order fo
 <a name="writing-tests"></a>
 ## Writing Tests
 
-Tests are written using [mocha](https://mochajs.org/), [chai](http://chaijs.com/) and [sinon](http://sinonjs.org/).  If you are having issues making a test pass, ask for help in the SerialPort [gitter](https://gitter.im/EmergingTechnologyAdvisors/node-serialport) room or on your PR.  Tests can be the hardest part to write when contributing code, so don't be discouraged.
+Tests are written using [mocha](https://mochajs.org/), [chai](http://chaijs.com/) and [sinon](http://sinonjs.org/).  If you are having issues making a test pass, ask for help in the SerialPort [gitter](https://gitter.im/node-serialport/node-serialport) room or on your PR.  Tests can be the hardest part to write when contributing code, so don't be discouraged.
 
 <a name="writing-docs"></a>
 ## Writing Documentation
 
-We are always looking to improve our docs.  If you find that any are lacking information or have wrong information, fix and submit a PR.  If you're looking for areas to start writing docs for, see the [docs](https://github.com/EmergingTechnologyAdvisors/node-serialport/labels/docs) label in issues.
+We are always looking to improve our docs.  If you find that any are lacking information or have wrong information, fix and submit a PR.  If you're looking for areas to start writing docs for, see the [docs](https://github.com/node-serialport/node-serialport/labels/docs) label in issues.
 
 We use [jsdoc](http://usejsdoc.org/) and [jsdoc-to-markdown](https://github.com/jsdoc2md/jsdoc-to-markdown) to generate our docs. Make your changes to `.docs/README.hbs` or the documentation blocks in the JavaScript files and run `npm run docs` to update `README.md`.
 
