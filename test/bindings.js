@@ -226,7 +226,7 @@ function testBinding(bindingName, Binding, testPort) {
           });
         });
 
-        testFeature('baudrate.250000', 'supports a custom baudRate of 1000000', () => {
+        testFeature('baudrate.250000', 'supports a custom baudRate of 250000', () => {
           const customRates = Object.assign({}, defaultOpenOptions, { baudRate: 250000 });
           return binding.open(testPort, customRates).then(() => {
             assert.equal(binding.isOpen, true);
