@@ -39,7 +39,8 @@
         {
           'sources': [
             'src/serialport_unix.cpp',
-            'src/poller.cpp'
+            'src/poller.cpp',
+            'src/custom_baudrate.cpp'
           ]
         }
       ]
