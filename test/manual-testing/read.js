@@ -4,7 +4,7 @@ const SerialPort = require('../../');
 const ByteLength = SerialPort.parsers.ByteLength;
 const exec = require('child_process').exec;
 
-// Serial receiver device 
+// Serial receiver device
 const port = process.env.TEST_PORT_RX;
 // Expected number of bytes to receive (should make `size` in drain.js)
 const expected = 512;
