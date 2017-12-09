@@ -60,7 +60,7 @@
     "commander": "^2.11.0",
     "debug": "^3.1.0",
     "nan": "^2.6.2",
-    "prebuild-install": "^2.2.1",
+    "prebuild-install": "^2.4.1",
     "promirepl": "^1.0.1",
     "safe-buffer": "^5.0.1"
   },
