@@ -281,7 +281,7 @@ void EIO_List(uv_work_t* req) {
   }
 
   stDeviceListItem* devices = GetSerialDevices();
-  if (*(devices->length) > 0) {
+  if (devices != NULL && *(devices->length) > 0) {
     stDeviceListItem* next = devices;
 
     for (int i = 0, len = *(devices->length); i < len; i++) {
