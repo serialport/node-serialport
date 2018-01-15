@@ -25,6 +25,8 @@ env:
   - TRAVIS_NODE_VERSION="6" ARCH="x86"
   - BINARY_BUILDER="true" TRAVIS_NODE_VERSION="8"
   - BINARY_BUILDER="true" TRAVIS_NODE_VERSION="8" ARCH="x86"
+  - TRAVIS_NODE_VERSION="9"
+  - TRAVIS_NODE_VERSION="9" ARCH="x86"
 matrix:
   exclude:
   - os: osx
@@ -33,6 +35,8 @@ matrix:
     env: TRAVIS_NODE_VERSION="6" ARCH="x86"
   - os: osx
     env: BINARY_BUILDER="true" TRAVIS_NODE_VERSION="8" ARCH="x86"
+  - os: osx
+    env: TRAVIS_NODE_VERSION="9" ARCH="x86"
 
 before_install:
 

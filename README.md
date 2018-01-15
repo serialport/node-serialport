@@ -80,24 +80,26 @@ d* [Command Line Tools](#command-line-tools)
 ### Platform Support
 `serialport` supports NodeJS v4 and upwards. For versions 0.10 and 0.12, use `serialport@4`. The platforms, architectures and Node versions that `serialport` supports are the following;
 
-| Platform / Arch | Node v4.x | Node v6.x | Node v8.x |
-|       ---       | --- | --- | --- |
-| Linux / ia32    |  ☑  |  ☑  |  ☑  |
-| Linux / x64     |  ☑  |  ☑  |  ☑  |
-| Linux / ARM v6¹ |  ☐  |  ☐  |  ☐  |
-| Linux / ARM v7¹ |  ☐  |  ☐  |  ☐  |
-| Linux / ARM v8¹ |  ☐  |  ☐  |  ☐  |
-| Linux / MIPSel¹ |  ☐  |  ☐  |  ☐  |
-| Linux / PPC64¹  |  ☐  |  ☐  |  ☐  |
-| Windows² / x86  |  ☐  |  ☑  |  ☑  |
-| Windows² / x64  |  ☑  |  ☑  |  ☑  |
-| OSX³ / x64      |  ☑  |  ☑  |  ☑  |
+| Platform / Arch | Node v4.x | Node v6.x | Node v8.x | Node v9.x |
+|       ---       | --- | --- | --- | --- |
+| Linux / ia32    |  ☑  |  ☑  |  ☑  |  ☐  |
+| Linux / x64     |  ☑  |  ☑  |  ☑  |  ☐  |
+| Linux / ARM v6¹ |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / ARM v7¹ |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / ARM v8¹ |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / MIPSel¹ |  ☐  |  ☐  |  ☐  |  ☐  |
+| Linux / PPC64¹  |  ☐  |  ☐  |  ☐  |  ☐  |
+| Windows² / x86  |  ☐  |  ☑  |  ☑  |  ☐  |
+| Windows² / x64  |  ☑  |  ☑  |  ☑  |  ☐  |
+| OSX³ / x64      |  ☑  |  ☑  |  ☑  |  ☐  |
 
 ¹ ARM, MIPSel and PPC64¹ platforms are not currently part of our testing or build matrix, but are known to work.
 
 ² Windows 7, 8, 10, and 10 IoT are supported, but our CI tests only Windows Server 2012 R2.
 
 ³ OSX 10.4 Tiger and above are supported, but our CI tests only 10.9.5 Mavericks with Xcode 6.1.
+
+⁴ Node 9 is not supported but we're providing builds for it.
 
 ## Installation Instructions
 
