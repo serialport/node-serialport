@@ -37,7 +37,7 @@ function listPorts() {
 };
 
 function setupPort() {
-  if(args.port) {
+  if (args.port) {
     createPort(args.port);
   }
 
@@ -48,13 +48,13 @@ function setupPort() {
       args.missingArgument('port');
       process.exit(-1);
     } else {
-      if(ports.length > 0) {
-        var portSelection = new List({
+      if (ports.length > 0) {
+        const portSelection = new List({
           name: 'serial-port-selection',
           message: 'Select a serial port to open',
           choices: ports.map((port, i) => `[${i + 1}]\t${port.comName}\t${port.pnpId || ''}\t${port.manufacturer || ''}`)
         });
-  
+
         portSelection.run()
           .then(answer => {
             const choice = answer.split('\t')[1];
