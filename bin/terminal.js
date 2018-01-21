@@ -12,10 +12,9 @@ function makeNumber(input) {
 
 args
   .version(version)
-  .usage('-p <port> [options]')
+  .usage('[options]')
   .description('A basic terminal interface for communicating over a serial port. Pressing ctrl+c exits.')
   .option('-l --list', 'List available ports then exit')
-  // TODO make the port not a flag as it's always required
   .option('-p, --port <port>', 'Path or Name of serial port')
   .option('-b, --baud <baudrate>', 'Baud rate default: 9600', makeNumber, 9600)
   .option('--databits <databits>', 'Data bits default: 8', makeNumber, 8)
