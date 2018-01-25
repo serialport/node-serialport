@@ -15,11 +15,30 @@ describe('DelimiterParser', () => {
     parser.on('data', spy);
     parser.write(Buffer.from('I love robots\nEach '));
     parser.write(Buffer.from('and Every One\n'));
+    parser.write(Buffer.from('\n'));
     parser.write(Buffer.from('even you!'));
 
     assert.deepEqual(spy.getCall(0).args[0], Buffer.from('I love robots'));
     assert.deepEqual(spy.getCall(1).args[0], Buffer.from('Each and Every One'));
     assert(spy.calledTwice);
+  });
+
+  it('includes delimiter when includeDelimiter is true', () => {
+    const spy = sinon.spy();
+    const parser = new DelimiterParser({
+      delimiter: Buffer.from('\n'),
+      includeDelimiter: true
+    });
+    parser.on('data', spy);
+    parser.write(Buffer.from('I love robots\nEach '));
+    parser.write(Buffer.from('and Every One\n'));
+    parser.write(Buffer.from('\n'));
+    parser.write(Buffer.from('even you!'));
+
+    assert.deepEqual(spy.getCall(0).args[0], Buffer.from('I love robots\n'));
+    assert.deepEqual(spy.getCall(1).args[0], Buffer.from('Each and Every One\n'));
+    assert.deepEqual(spy.getCall(2).args[0], Buffer.from('\n'));
+    assert.equal(spy.callCount, 3);
   });
 
   it('flushes remaining data when the stream ends', () => {
