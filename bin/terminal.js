@@ -46,7 +46,7 @@ function setupPort() {
       console.error('Error listing ports, and missing port argument.', err);
       args.outputHelp();
       args.missingArgument('port');
-      process.exit(-1);
+      process.exit(4);
     } else {
       if (ports.length > 0) {
         const portSelection = new List({
@@ -63,12 +63,12 @@ function setupPort() {
           })
           .catch(error => {
             console.log(`Could not select a port: ${error}`);
-            process.exit(-2);
+            process.exit(2);
           });
       } else {
         args.outputHelp();
         args.missingArgument('port');
-        process.exit(-1);
+        process.exit(3);
       }
     }
   });
