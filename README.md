@@ -21,7 +21,7 @@ We're not against firmware but we're better than it.
 ## Quick Answers to Important Questions
 - [**API Docs**](https://doclets.io/node-serialport/node-serialport/)
 - **For support**, open a [GitHub issue](https://github.com/node-serialport/node-serialport/issues/new).
-- **For discussions, design ideas, and clarifications**, please join our [Gitter chat room](https://gitter.im/node-serialport/node-serialport).
+- **For discussions, design ideas, and clarifications**, please join our [Gitter chat room](https://gitter.im/EmergingTechnologyAdvisors/node-serialport).
 - **To test Node-Serialport**, we recommend two related projects—[Browser Serialport](https://github.com/garrows/browser-serialport) ("just like Node Serialport, but for browser apps") and [Serialport Test Piliot](https://github.com/j5js/serialport-test-pilot).
 - **To contribute**, please review our [contribution guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md). You might want to check out our [roadmap](https://github.com/node-serialport/node-serialport/issues/746). We also have issues tagged ["good first PR"](https://github.com/node-serialport/node-serialport/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+pr%22), if you'd like to start somewhere specific. We'll do our best to support you until we merge your PR.
 
