@@ -114,24 +114,17 @@ int setBaudRate(ConnectionOptionsBaton *data) {
   // If there is a custom baud rate on linux you can do the following trick with B38400
   #if defined(__linux__) && defined(ASYNC_SPD_CUST)
     if (baudRate == -1) {
-      struct serial_struct serinfo;
-      serinfo.reserved_char[0] = 0;
-      if (-1 != ioctl(fd, TIOCGSERIAL, &serinfo)) {
-        serinfo.flags &= ~ASYNC_SPD_MASK;
-        serinfo.flags |= ASYNC_SPD_CUST;
-        serinfo.custom_divisor = (serinfo.baud_base + (data->baudRate / 2)) / data->baudRate;
-        if (serinfo.custom_divisor < 1)
-          serinfo.custom_divisor = 1;
+      int err = set_custom_baudrate(fd, data->baudRate);
 
-        ioctl(fd, TIOCSSERIAL, &serinfo);
-        ioctl(fd, TIOCGSERIAL, &serinfo);
-      } else {
-        snprintf(data->errorString, sizeof(data->errorString), "Error: %s setting custom baud rate of %d", strerror(errno), data->baudRate);
+      if (err == -1) {
+        snprintf(data->errorString, sizeof(data->errorString), "Error: %s || while retrieving termios2 info", strerror(errno));
+        return -1;
+      } else if(err == -2) {
+        snprintf(data->errorString, sizeof(data->errorString), "Error: %s || while setting custom baud rate of %d", strerror(errno), data->baudRate);
         return -1;
       }
 
-      // Now we use "B38400" to trigger the special baud rate.
-      baudRate = B38400;
+      return 1;
     }
   #endif
 
