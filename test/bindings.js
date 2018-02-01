@@ -212,26 +212,29 @@ function testBinding(bindingName, Binding, testPort) {
 
         testFeature('baudrate.25000', 'supports a custom baudRate of 25000', () => {
           const customRates = Object.assign({}, defaultOpenOptions, { baudRate: 25000 });
-          return binding.open(testPort, customRates).then(() => {
-            assert.equal(binding.isOpen, true);
-            return binding.close();
-          });
+          return binding.open(testPort, customRates)
+            .then(() => assert.equal(binding.isOpen, true))
+            .then(() => binding.getBaudRate())
+            .then((res) => assert.equal(res.baudRate, customRates.baudRate))
+            .then(() => binding.close());
         });
 
         testFeature('baudrate.1000000', 'supports a custom baudRate of 1000000', () => {
           const customRates = Object.assign({}, defaultOpenOptions, { baudRate: 1000000 });
-          return binding.open(testPort, customRates).then(() => {
-            assert.equal(binding.isOpen, true);
-            return binding.close();
-          });
+          return binding.open(testPort, customRates)
+            .then(() => assert.equal(binding.isOpen, true))
+            .then(() => binding.getBaudRate())
+            .then((res) => assert.equal(res.baudRate, customRates.baudRate))
+            .then(() => binding.close());
         });
 
         testFeature('baudrate.250000', 'supports a custom baudRate of 250000', () => {
           const customRates = Object.assign({}, defaultOpenOptions, { baudRate: 250000 });
-          return binding.open(testPort, customRates).then(() => {
-            assert.equal(binding.isOpen, true);
-            return binding.close();
-          });
+          return binding.open(testPort, customRates)
+            .then(() => assert.equal(binding.isOpen, true))
+            .then(() => binding.getBaudRate())
+            .then((res) => assert.equal(res.baudRate, customRates.baudRate))
+            .then(() => binding.close());
         });
 
         describe('optional locking', () => {
