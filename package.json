@@ -79,7 +79,7 @@
     "istanbul": "^0.4.4",
     "jsdoc": "^3.5.5",
     "mocha": "^4.0.0",
-    "prebuild": "^7.0.0",
+    "prebuild": "^7.4.0",
     "proxyquire": "^1.7.10",
     "sinon": "^4.1.5"
   },
