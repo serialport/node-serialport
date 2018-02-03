@@ -4,6 +4,7 @@
 const SerialPort = require('../lib/');
 const version = require('../package.json').version;
 const args = require('commander');
+const List = require('prompt-list');
 
 function makeNumber(input) {
   return Number(input);
@@ -11,10 +12,9 @@ function makeNumber(input) {
 
 args
   .version(version)
-  .usage('-p <port> [options]')
+  .usage('[options]')
   .description('A basic terminal interface for communicating over a serial port. Pressing ctrl+c exits.')
   .option('-l --list', 'List available ports then exit')
-  // TODO make the port not a flag as it's always required
   .option('-p, --port <port>', 'Path or Name of serial port')
   .option('-b, --baud <baudrate>', 'Baud rate default: 9600', makeNumber, 9600)
   .option('--databits <databits>', 'Data bits default: 8', makeNumber, 8)
@@ -36,13 +36,45 @@ function listPorts() {
   });
 };
 
-function createPort() {
-  if (!args.port) {
-    args.outputHelp();
-    args.missingArgument('port');
-    process.exit(-1);
+function setupPort() {
+  if (args.port) {
+    createPort(args.port);
   }
 
+  SerialPort.list((err, ports) => {
+    if (err) {
+      console.error('Error listing ports, and missing port argument.', err);
+      args.outputHelp();
+      args.missingArgument('port');
+      process.exit(4);
+    } else {
+      if (ports.length > 0) {
+        const portSelection = new List({
+          name: 'serial-port-selection',
+          message: 'Select a serial port to open',
+          choices: ports.map((port, i) => `[${i + 1}]\t${port.comName}\t${port.pnpId || ''}\t${port.manufacturer || ''}`)
+        });
+
+        portSelection.run()
+          .then(answer => {
+            const choice = answer.split('\t')[1];
+            console.log(`Opening serial port: ${choice}`);
+            createPort(choice);
+          })
+          .catch(error => {
+            console.log(`Could not select a port: ${error}`);
+            process.exit(2);
+          });
+      } else {
+        args.outputHelp();
+        args.missingArgument('port');
+        process.exit(3);
+      }
+    }
+  });
+}
+
+function createPort(selectedPort) {
   const openOptions = {
     baudRate: args.baud,
     dataBits: args.databits,
@@ -50,7 +82,7 @@ function createPort() {
     stopBits: args.stopbits
   };
 
-  const port = new SerialPort(args.port, openOptions);
+  const port = new SerialPort(selectedPort, openOptions);
 
   process.stdin.resume();
   process.stdin.setRawMode(true);
@@ -82,5 +114,5 @@ function createPort() {
 if (args.list) {
   listPorts();
 } else {
-  createPort();
+  setupPort();
 }

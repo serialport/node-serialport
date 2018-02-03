@@ -62,6 +62,7 @@
     "nan": "^2.6.2",
     "prebuild-install": "^2.4.1",
     "promirepl": "^1.0.1",
+    "prompt-list": "^3.1.2",
     "safe-buffer": "^5.0.1"
   },
   "devDependencies": {
@@ -99,6 +100,7 @@
     "lint": "eslint lib test bin examples",
     "rebuild-all": "npm rebuild && node-gyp rebuild",
     "repl": "node bin/repl.js",
+    "terminal": "node bin/terminal.js",
     "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
     "test": "istanbul cover ./node_modules/mocha/bin/_mocha",
     "test:watch": "mocha -w",
