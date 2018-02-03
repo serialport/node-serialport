@@ -24,6 +24,7 @@
 #if defined(__linux__)
 #include <sys/ioctl.h>
 #include <linux/serial.h>
+#include "custom_baudrate.h"
 #endif
 
 int ToStopBitsConstant(SerialPortStopBits stopBits);
@@ -100,6 +101,8 @@ int setBaudRate(ConnectionOptionsBaton *data) {
   // lookup the standard baudrates from the table
   int baudRate = ToBaudConstant(data->baudRate);
   int fd = data->fd;
+
+  set_custom_baudrate(fd, 250000);
 
   // get port options
   struct termios options;
