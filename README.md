@@ -148,6 +148,24 @@ To recompile `serialport` (or any native Node.js module) for Electron, you can u
 
 For an example project, check out [`electron-serialport`](https://github.com/johnny-five-io/electron-serialport).
 
+#### NW.js
+
+[NW.js](https://nwjs.io/) is an app runtime based on Chromium and node.js.
+
+Like Electron, NW.js also requires compilation against its own specific headers.
+
+To instruct `prebuild` to build against the correct headers, place a file named `.prebuildrc` on your package root with the following content:
+
+```
+build_from_source=true
+runtime=node-webkit
+target=<target_version>
+```
+
+Where `<target_version>` is the NW.js version you are building against (for example, `0.26.6`).
+
+OBS: NW.js support requires `prebuild >= 7.3.0`.
+
 #### Illegal Instruction
 
 The pre-compiled binaries assume a fully capable chip. Intel's [Galileo 2](https://software.intel.com/en-us/iot/hardware/galileo), for example, lacks a few instruction sets from the `ia32` architecture. A few other platforms have similar issues. If you get `Illegal Instruction` when trying to run Node-Serialport, you'll need to ask npm to rebuild the Serialport binary.
