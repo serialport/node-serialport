@@ -95,7 +95,7 @@
   "license": "MIT",
   "scripts": {
     "arduino-test": "TEST_PORT=$(./bin/find-arduino.js) npm test",
-    "changelog": "conventional-changelog -i CHANGELOG.md -p angular -s",
+    "changelog": "conventional-changelog -i CHANGELOG.md -s",
     "docs": "jsdoc -c ./.jsdoc.json ",
     "lint": "eslint lib test bin examples",
     "rebuild-all": "npm rebuild && node-gyp rebuild",
