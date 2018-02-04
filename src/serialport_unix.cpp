@@ -359,6 +359,7 @@ void EIO_Get(uv_work_t* req) {
   data->dcd = bits & TIOCM_CD;
 }
 
+#if defined(__linux__) && defined(ASYNC_SPD_CUST)
 void EIO_GetBaudRate(uv_work_t* req) {
   GetBaudRateBaton* data = static_cast<GetBaudRateBaton*>(req->data);
 
@@ -370,6 +371,7 @@ void EIO_GetBaudRate(uv_work_t* req) {
 
   data->baudRate = outbaud;
 }
+#endif
 
 void EIO_Flush(uv_work_t* req) {
   VoidBaton* data = static_cast<VoidBaton*>(req->data);
