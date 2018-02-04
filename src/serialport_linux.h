@@ -3,7 +3,7 @@
 
 int set_custom_baudrate(const int fd, const unsigned int baudrate);
 
-int get_custom_baudrate(const int fd, unsigned int * const outbaud);
+int linuxGetSystemBaudRate(const int fd, unsigned int * const outbaud);
 
 #endif
 

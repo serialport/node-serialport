@@ -3,7 +3,8 @@
 #include <sys/ioctl.h>
 #include <asm/termbits.h>
 
-int set_custom_baudrate(const int fd, const unsigned int baudrate) {
+// Uses the termios2 interface to set nonstandard baud rates
+int linuxSetCustomBaudRate(const int fd, const unsigned int baudrate) {
     struct termios2 t;
 
     if(ioctl(fd, TCGETS2, &t)) {
@@ -21,7 +22,8 @@ int set_custom_baudrate(const int fd, const unsigned int baudrate) {
     return 0;
 }
 
-int get_custom_baudrate(const int fd, unsigned int * const outbaud) {
+// Uses termios2 interface to retrieve system reported baud rate
+int linuxGetSystemBaudRate(const int fd, unsigned int * const outbaud) {
   struct termios2 t;
 
   if(ioctl(fd, TCGETS2, &t)) {

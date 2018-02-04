@@ -102,8 +102,6 @@ int setBaudRate(ConnectionOptionsBaton *data) {
   int baudRate = ToBaudConstant(data->baudRate);
   int fd = data->fd;
 
-  set_custom_baudrate(fd, 250000);
-
   // get port options
   struct termios options;
   if (-1 == tcgetattr(fd, &options)) {
@@ -114,7 +112,7 @@ int setBaudRate(ConnectionOptionsBaton *data) {
   // If there is a custom baud rate on linux you can do the following trick with B38400
   #if defined(__linux__) && defined(ASYNC_SPD_CUST)
     if (baudRate == -1) {
-      int err = set_custom_baudrate(fd, data->baudRate);
+      int err = linuxSetCustomBaudRate(fd, data->baudRate);
 
       if (err == -1) {
         snprintf(data->errorString, sizeof(data->errorString), "Error: %s || while retrieving termios2 info", strerror(errno));
@@ -365,7 +363,7 @@ void EIO_GetBaudRate(uv_work_t* req) {
   GetBaudRateBaton* data = static_cast<GetBaudRateBaton*>(req->data);
 
   unsigned int outbaud;
-  if (-1 == get_custom_baudrate(data->fd, &outbaud)) {
+  if (-1 == linuxGetSystemBaudRate(data->fd, &outbaud)) {
     snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get baud rate", strerror(errno));
     return;
   }

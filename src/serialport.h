@@ -32,7 +32,7 @@ NAN_METHOD(Get);
 void EIO_Get(uv_work_t* req);
 void EIO_AfterGet(uv_work_t* req);
 
-NAN_METHOD(Get);
+NAN_METHOD(GetBaudRate);
 void EIO_GetBaudRate(uv_work_t* req);
 void EIO_AfterGetBaudRate(uv_work_t* req);
 
