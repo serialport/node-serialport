@@ -24,53 +24,40 @@ args
   .option('--echo --localecho', 'Print characters as you type them.')
   .parse(process.argv);
 
+function logErrorAndExit(error) {
+  console.error(error);
+  process.exit(1);
+}
+
 function listPorts() {
-  SerialPort.list((err, ports) => {
-    if (err) {
-      console.error('Error listing ports', err);
-    } else {
-      ports.forEach((port) => {
-        console.log(`${port.comName}\t${port.pnpId || ''}\t${port.manufacturer || ''}`);
-      });
-    }
+  SerialPort.list().then(ports => {
+    ports.forEach((port) => {
+      console.log(`${port.comName}\t${port.pnpId || ''}\t${port.manufacturer || ''}`);
+    });
+  }, err => {
+    console.error('Error listing ports', err);
   });
 };
 
-function setupPort() {
-  if (args.port) {
-    createPort(args.port);
-  }
-
-  SerialPort.list((err, ports) => {
-    if (err) {
-      console.error('Error listing ports, and missing port argument.', err);
-      args.outputHelp();
-      args.missingArgument('port');
-      process.exit(4);
-    } else {
-      if (ports.length > 0) {
-        const portSelection = new List({
-          name: 'serial-port-selection',
-          message: 'Select a serial port to open',
-          choices: ports.map((port, i) => `[${i + 1}]\t${port.comName}\t${port.pnpId || ''}\t${port.manufacturer || ''}`)
-        });
-
-        portSelection.run()
-          .then(answer => {
-            const choice = answer.split('\t')[1];
-            console.log(`Opening serial port: ${choice}`);
-            createPort(choice);
-          })
-          .catch(error => {
-            console.log(`Could not select a port: ${error}`);
-            process.exit(2);
-          });
-      } else {
-        args.outputHelp();
-        args.missingArgument('port');
-        process.exit(3);
-      }
+function askForPort() {
+  return SerialPort.list().then(ports => {
+    if (ports.length === 0) {
+      console.error('No ports detected and none specified');
+      process.exit(2);
     }
+
+    const portSelection = new List({
+      name: 'serial-port-selection',
+      message: 'Select a serial port to open',
+      choices: ports.map((port, i) => `[${i + 1}]\t${port.comName}\t${port.pnpId || ''}\t${port.manufacturer || ''}`)
+    });
+
+    return portSelection.run()
+      .then(answer => {
+        const choice = answer.split('\t')[1];
+        console.log(`Opening serial port: ${choice}`);
+        return choice;
+      });
   });
 }
 
@@ -114,5 +101,5 @@ function createPort(selectedPort) {
 if (args.list) {
   listPorts();
 } else {
-  setupPort();
+  Promise.resolve(args.port || askForPort()).then(createPort).catch(logErrorAndExit);
 }
