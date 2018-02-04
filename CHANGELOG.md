@@ -1,3 +1,29 @@
+<a name="6.0.5"></a>
+## 6.0.5 (2018-02-04)
+
+* fix(changelog): drop the augular changelog as it misses commits ([7d0ff88](https://github.com/node-serialport/node-serialport/commit/7d0ff88))
+* fix(docs): Put gitter link back ([f8f3ce5](https://github.com/node-serialport/node-serialport/commit/f8f3ce5))
+* fix(terminal): specifying a port now behaves correctly (#1463) ([1fa20e7](https://github.com/node-serialport/node-serialport/commit/1fa20e7)), closes [#1463](https://github.com/node-serialport/node-serialport/issues/1463)
+* chore(build): build on node 9 ([a819bca](https://github.com/node-serialport/node-serialport/commit/a819bca))
+* chore(docs): fix appveyor links in readme ([388d37b](https://github.com/node-serialport/node-serialport/commit/388d37b))
+* chore(package): update commander to version 2.13.0 ([a94fea0](https://github.com/node-serialport/node-serialport/commit/a94fea0))
+* chore(package): update mocha to version 5.0.0 (#1446) ([e728ff3](https://github.com/node-serialport/node-serialport/commit/e728ff3)), closes [#1446](https://github.com/node-serialport/node-serialport/issues/1446)
+* chore(package): update prebuild to version 7.0.0 ([bc46149](https://github.com/node-serialport/node-serialport/commit/bc46149))
+* chore(package): update prebuild-install to version 2.4.1 ([13e8d0a](https://github.com/node-serialport/node-serialport/commit/13e8d0a))
+* chore(package): update sinon to version 4.1.5 ([699a907](https://github.com/node-serialport/node-serialport/commit/699a907))
+* chore(packages): upgrade eslint ([416cfe3](https://github.com/node-serialport/node-serialport/commit/416cfe3))
+* chore(packages): upgrade sinon ([17148df](https://github.com/node-serialport/node-serialport/commit/17148df))
+* Add null check code ([602793d](https://github.com/node-serialport/node-serialport/commit/602793d))
+* Adding in port selection to serialport-term. (#1448) ([9f543b6](https://github.com/node-serialport/node-serialport/commit/9f543b6)), closes [#1448](https://github.com/node-serialport/node-serialport/issues/1448)
+* Bumping prebuild version and updating docs with info about building against NW.js headers. (#1461) ([672c198](https://github.com/node-serialport/node-serialport/commit/672c198)), closes [#1461](https://github.com/node-serialport/node-serialport/issues/1461)
+* docs(readme): Fix broken link to gitter (#1457) ([3e68e8f](https://github.com/node-serialport/node-serialport/commit/3e68e8f)), closes [#1457](https://github.com/node-serialport/node-serialport/issues/1457)
+* docs(readyParser): correct the required parameters (#1392) ([dcd256d](https://github.com/node-serialport/node-serialport/commit/dcd256d)), closes [#1392](https://github.com/node-serialport/node-serialport/issues/1392)
+* feat(docs): Switch to JSDOC docs not in the readme (#1383) ([60fc047](https://github.com/node-serialport/node-serialport/commit/60fc047)), closes [#1383](https://github.com/node-serialport/node-serialport/issues/1383)
+* feat(parsers): Adding option to include delimiter in the DelimiterParser transform. (#1453) ([6a3ab65](https://github.com/node-serialport/node-serialport/commit/6a3ab65)), closes [#1453](https://github.com/node-serialport/node-serialport/issues/1453)
+* feat(parsers): ByteLength is now more efficient (#1402) ([f7eb2f0](https://github.com/node-serialport/node-serialport/commit/f7eb2f0)), closes [#1402](https://github.com/node-serialport/node-serialport/issues/1402)
+
+
+
 <a name="6.0.4"></a>
 ## [6.0.4](https://github.com/node-serialport/node-serialport/compare/v6.0.3...v6.0.4) (2017-10-26)
 
