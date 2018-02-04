@@ -24,7 +24,7 @@
 #if defined(__linux__)
 #include <sys/ioctl.h>
 #include <linux/serial.h>
-#include "custom_baudrate.h"
+#include "serialport_linux.h"
 #endif
 
 int ToStopBitsConstant(SerialPortStopBits stopBits);

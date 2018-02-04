@@ -132,7 +132,7 @@ NAN_METHOD(Update) {
   uv_work_t* req = new uv_work_t();
   req->data = baton;
 
-  uv_queue_work(uv_default_loop(), req, EIO_Update, (uv_after_work_cb)EIO_AfterUpdate)
+  uv_queue_work(uv_default_loop(), req, EIO_Update, (uv_after_work_cb)EIO_AfterUpdate);
 }
 
 void EIO_AfterUpdate(uv_work_t* req) {

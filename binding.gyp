@@ -35,12 +35,20 @@
           }
         }
       ],
-      ['OS!="win"',
+      ['OS=="linux"',
         {
           'sources': [
             'src/serialport_unix.cpp',
             'src/poller.cpp',
-            'src/custom_baudrate.cpp'
+            'src/serialport_linux.cpp'
+          ]
+        }
+      ],
+      ['OS!="win"',
+        {
+          'sources': [
+            'src/serialport_unix.cpp',
+            'src/poller.cpp'
           ]
         }
       ]
