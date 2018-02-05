@@ -270,7 +270,7 @@ void EIO_GetBaudRate(uv_work_t* req) {
     return;
   }
 
-  data->baudRate = (unsigned int)dcb.BaudRate;
+  data->baudRate = (int)dcb.BaudRate;
 }
 
 bool IsClosingHandle(int fd) {

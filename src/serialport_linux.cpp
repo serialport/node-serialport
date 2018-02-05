@@ -23,14 +23,14 @@ int linuxSetCustomBaudRate(const int fd, const unsigned int baudrate) {
 }
 
 // Uses termios2 interface to retrieve system reported baud rate
-int linuxGetSystemBaudRate(const int fd, unsigned int * const outbaud) {
+int linuxGetSystemBaudRate(const int fd, int* const outbaud) {
   struct termios2 t;
 
   if(ioctl(fd, TCGETS2, &t)) {
     return -1;
   }
 
-  *outbaud = t.c_ospeed;
+  *outbaud = (int)t.c_ospeed;
 
   return 0;
 }

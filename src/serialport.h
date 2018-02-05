@@ -112,7 +112,7 @@ struct GetBaudRateBaton {
   int fd;
   Nan::Callback callback;
   char errorString[ERROR_STRING_SIZE];
-  unsigned int baudRate;
+  int baudRate;
 };
 
 struct VoidBaton {

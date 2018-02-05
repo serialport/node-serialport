@@ -361,7 +361,7 @@ void EIO_Get(uv_work_t* req) {
 
 void EIO_GetBaudRate(uv_work_t* req) {
   GetBaudRateBaton* data = static_cast<GetBaudRateBaton*>(req->data);
-  unsigned int outbaud;
+  int outbaud;
 
   #if defined(__linux__) && defined(ASYNC_SPD_CUST)
   if (-1 == linuxGetSystemBaudRate(data->fd, &outbaud)) {
