@@ -361,9 +361,9 @@ void EIO_Get(uv_work_t* req) {
 
 void EIO_GetBaudRate(uv_work_t* req) {
   GetBaudRateBaton* data = static_cast<GetBaudRateBaton*>(req->data);
+  unsigned int outbaud;
 
   #if defined(__linux__) && defined(ASYNC_SPD_CUST)
-  unsigned int outbaud;
   if (-1 == linuxGetSystemBaudRate(data->fd, &outbaud)) {
     snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get baud rate", strerror(errno));
     return;
