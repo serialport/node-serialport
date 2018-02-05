@@ -210,27 +210,27 @@ function testBinding(bindingName, Binding, testPort) {
           });
         });
 
-        testFeature('baudrate.25000', 'supports a custom baudRate of 25000', () => {
-          const customRates = Object.assign({}, defaultOpenOptions, { baudRate: 25000 });
-          return binding.open(testPort, customRates).then(() => {
-            assert.equal(binding.isOpen, true);
-            return binding.close();
-          });
-        });
+        describe('arbitrary baud rates', () => {
+          [25000, 1000000, 250000].forEach((testBaud) => {
+            describe(`${testBaud} baud`, () => {
+              const customRates = Object.assign({}, defaultOpenOptions, { baudRate: testBaud });
+              testFeature(`baudrate.${testBaud}`, `opens at ${testBaud} baud`, () => {
+                return binding.open(testPort, customRates)
+                  .then(() => {
+                    assert.equal(binding.isOpen, true);
+                    return binding.close();
+                  });
+              });
 
-        testFeature('baudrate.1000000', 'supports a custom baudRate of 1000000', () => {
-          const customRates = Object.assign({}, defaultOpenOptions, { baudRate: 1000000 });
-          return binding.open(testPort, customRates).then(() => {
-            assert.equal(binding.isOpen, true);
-            return binding.close();
-          });
-        });
-
-        testFeature('baudrate.250000', 'supports a custom baudRate of 1000000', () => {
-          const customRates = Object.assign({}, defaultOpenOptions, { baudRate: 250000 });
-          return binding.open(testPort, customRates).then(() => {
-            assert.equal(binding.isOpen, true);
-            return binding.close();
+              testFeature(`baudrate.${testBaud}_check`, `sets ${testBaud} baud successfully`, () => {
+                return binding.open(testPort, customRates)
+                  .then(() => binding.getBaudRate())
+                  .then((res) => {
+                    assert.equal(res.baudRate, customRates.baudRate);
+                    return binding.close();
+                  });
+              });
+            });
           });
         });
 

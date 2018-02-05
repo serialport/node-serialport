@@ -258,6 +258,21 @@ void EIO_Get(uv_work_t* req) {
   data->dcd = bits & MS_RLSD_ON;
 }
 
+void EIO_GetBaudRate(uv_work_t* req) {
+  GetBaudRateBaton* data = static_cast<GetBaudRateBaton*>(req->data);
+
+  DCB dcb = { 0 };
+  SecureZeroMemory(&dcb, sizeof(DCB));
+  dcb.DCBlength = sizeof(DCB);
+
+  if (!GetCommState((HANDLE)data->fd, &dcb)) {
+    ErrorCodeToString("Getting baud rate (GetCommState)", GetLastError(), data->errorString);
+    return;
+  }
+
+  data->baudRate = (int)dcb.BaudRate;
+}
+
 bool IsClosingHandle(int fd) {
   for (std::list<int>::iterator it = g_closingHandles.begin(); it != g_closingHandles.end(); ++it) {
     if (fd == *it) {

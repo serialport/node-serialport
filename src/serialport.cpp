@@ -339,6 +339,53 @@ void EIO_AfterGet(uv_work_t* req) {
   delete req;
 }
 
+NAN_METHOD(GetBaudRate) {
+  // file descriptor
+  if (!info[0]->IsInt32()) {
+    Nan::ThrowTypeError("First argument must be an int");
+    return;
+  }
+  int fd = Nan::To<int>(info[0]).FromJust();
+
+  // callback
+  if (!info[1]->IsFunction()) {
+    Nan::ThrowTypeError("Second argument must be a function");
+    return;
+  }
+
+  GetBaudRateBaton* baton = new GetBaudRateBaton();
+  baton->fd = fd;
+  baton->baudRate = 0;
+  baton->callback.Reset(info[1].As<v8::Function>());
+
+  uv_work_t* req = new uv_work_t();
+  req->data = baton;
+  uv_queue_work(uv_default_loop(), req, EIO_GetBaudRate, (uv_after_work_cb)EIO_AfterGetBaudRate);
+}
+
+void EIO_AfterGetBaudRate(uv_work_t* req) {
+  Nan::HandleScope scope;
+
+  GetBaudRateBaton* data = static_cast<GetBaudRateBaton*>(req->data);
+
+  v8::Local<v8::Value> argv[2];
+
+  if (data->errorString[0]) {
+    argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
+    argv[1] = Nan::Undefined();
+  } else {
+    v8::Local<v8::Object> results = Nan::New<v8::Object>();
+    results->Set(Nan::New<v8::String>("baudRate").ToLocalChecked(), Nan::New<v8::Integer>(data->baudRate));
+
+    argv[0] = Nan::Null();
+    argv[1] = results;
+  }
+  data->callback.Call(2, argv);
+
+  delete data;
+  delete req;
+}
+
 NAN_METHOD(Drain) {
   // file descriptor
   if (!info[0]->IsInt32()) {
@@ -414,6 +461,7 @@ extern "C" {
     Nan::HandleScope scope;
     Nan::SetMethod(target, "set", Set);
     Nan::SetMethod(target, "get", Get);
+    Nan::SetMethod(target, "getBaudRate", GetBaudRate);
     Nan::SetMethod(target, "open", Open);
     Nan::SetMethod(target, "update", Update);
     Nan::SetMethod(target, "close", Close);

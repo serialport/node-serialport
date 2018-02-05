@@ -32,6 +32,10 @@ NAN_METHOD(Get);
 void EIO_Get(uv_work_t* req);
 void EIO_AfterGet(uv_work_t* req);
 
+NAN_METHOD(GetBaudRate);
+void EIO_GetBaudRate(uv_work_t* req);
+void EIO_AfterGetBaudRate(uv_work_t* req);
+
 NAN_METHOD(Drain);
 void EIO_Drain(uv_work_t* req);
 void EIO_AfterDrain(uv_work_t* req);
@@ -102,6 +106,13 @@ struct GetBaton {
   bool cts;
   bool dsr;
   bool dcd;
+};
+
+struct GetBaudRateBaton {
+  int fd;
+  Nan::Callback callback;
+  char errorString[ERROR_STRING_SIZE];
+  int baudRate;
 };
 
 struct VoidBaton {

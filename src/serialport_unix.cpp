@@ -24,6 +24,7 @@
 #if defined(__linux__)
 #include <sys/ioctl.h>
 #include <linux/serial.h>
+#include "serialport_linux.h"
 #endif
 
 int ToStopBitsConstant(SerialPortStopBits stopBits);
@@ -111,24 +112,17 @@ int setBaudRate(ConnectionOptionsBaton *data) {
   // If there is a custom baud rate on linux you can do the following trick with B38400
   #if defined(__linux__) && defined(ASYNC_SPD_CUST)
     if (baudRate == -1) {
-      struct serial_struct serinfo;
-      serinfo.reserved_char[0] = 0;
-      if (-1 != ioctl(fd, TIOCGSERIAL, &serinfo)) {
-        serinfo.flags &= ~ASYNC_SPD_MASK;
-        serinfo.flags |= ASYNC_SPD_CUST;
-        serinfo.custom_divisor = (serinfo.baud_base + (data->baudRate / 2)) / data->baudRate;
-        if (serinfo.custom_divisor < 1)
-          serinfo.custom_divisor = 1;
+      int err = linuxSetCustomBaudRate(fd, data->baudRate);
 
-        ioctl(fd, TIOCSSERIAL, &serinfo);
-        ioctl(fd, TIOCGSERIAL, &serinfo);
-      } else {
-        snprintf(data->errorString, sizeof(data->errorString), "Error: %s setting custom baud rate of %d", strerror(errno), data->baudRate);
+      if (err == -1) {
+        snprintf(data->errorString, sizeof(data->errorString), "Error: %s || while retrieving termios2 info", strerror(errno));
+        return -1;
+      } else if(err == -2) {
+        snprintf(data->errorString, sizeof(data->errorString), "Error: %s || while setting custom baud rate of %d", strerror(errno), data->baudRate);
         return -1;
       }
 
-      // Now we use "B38400" to trigger the special baud rate.
-      baudRate = B38400;
+      return 1;
     }
   #endif
 
@@ -363,6 +357,26 @@ void EIO_Get(uv_work_t* req) {
   data->cts = bits & TIOCM_CTS;
   data->dsr = bits & TIOCM_DSR;
   data->dcd = bits & TIOCM_CD;
+}
+
+void EIO_GetBaudRate(uv_work_t* req) {
+  GetBaudRateBaton* data = static_cast<GetBaudRateBaton*>(req->data);
+  int outbaud;
+
+  #if defined(__linux__) && defined(ASYNC_SPD_CUST)
+  if (-1 == linuxGetSystemBaudRate(data->fd, &outbaud)) {
+    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get baud rate", strerror(errno));
+    return;
+  }
+  #endif
+
+  // TODO implement on mac
+  #if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
+  snprintf(data->errorString, sizeof(data->errorString), "Error: System baud rate check not implemented on darwin");
+  return;
+  #endif
+
+  data->baudRate = outbaud;
 }
 
 void EIO_Flush(uv_work_t* req) {
