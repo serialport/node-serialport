@@ -3,6 +3,12 @@
   "win32": {
     "open.unlock": false,
     "baudrate.25000": false,
+    "baudrate.25000_check": false,
     "port.update-baudrate": false
+  },
+  "darwin": {
+    "baudrate.25000_check": false,
+    "baudrate.1000000_check": false,
+    "baudrate.250000_check": false
   }
 }
