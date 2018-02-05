@@ -265,7 +265,7 @@ void EIO_GetBaudRate(uv_work_t* req) {
   SecureZeroMemory(&dcb, sizeof(DCB));
   dcb.DCBlength = sizeof(DCB);
 
-  if (!GetCommState(file, &dcb)) {
+  if (!GetCommState((HANDLE)data->fd, &dcb)) {
     ErrorCodeToString("Open (GetCommState)", GetLastError(), data->errorString);
     CloseHandle(file);
     return;
