@@ -266,8 +266,7 @@ void EIO_GetBaudRate(uv_work_t* req) {
   dcb.DCBlength = sizeof(DCB);
 
   if (!GetCommState((HANDLE)data->fd, &dcb)) {
-    ErrorCodeToString("Open (GetCommState)", GetLastError(), data->errorString);
-    CloseHandle(file);
+    ErrorCodeToString("Getting baud rate (GetCommState)", GetLastError(), data->errorString);
     return;
   }
 
