@@ -368,6 +368,7 @@ void EIO_GetBaudRate(uv_work_t* req) {
     snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get baud rate", strerror(errno));
     return;
   }
+  #endif
 
   // TODO implement on mac
   #if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
