@@ -358,8 +358,9 @@ Enjoy and do cool things with this code.
 Testing is an important feature of any library. To aid in our own tests we've developed a `MockBinding` a fake hardware binding that doesn't actually need any hardware to run. This class passes all of the same tests as our hardware based bindings and provides a few additional test related interfaces. To use the mock binding check out the example [here](/examples/mocking.js).
 
 ```js
-const SerialPort = require('serialport/test');
-const MockBinding = SerialPort.Binding;
+const SerialPort = require('serialport');
+const MockBinding = require('serialport/lib/bindings/mock');
+SerialPort.Binding = MockBinding
 
 // Create a port and enable the echo and recording.
 MockBinding.createPort('/dev/ROBOT', { echo: true, record: true })
