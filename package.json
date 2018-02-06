@@ -1,6 +1,6 @@
 {
   "name": "serialport",
-  "version": "6.0.5",
+  "version": "6.1.0",
   "description": "Node.js package to access serial ports. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!",
   "main": "lib",
   "repository": {

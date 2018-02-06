@@ -1,3 +1,12 @@
+<a name="6.1.0"></a>
+# 6.1.0 (2018-02-06)
+
+* chore(github): lock old issues and prs ([c8d2655](https://github.com/node-serialport/node-serialport/commit/c8d2655))
+* chore(package): update eslint-plugin-node to version 6.0.0 (#1466) ([bac94a0](https://github.com/node-serialport/node-serialport/commit/bac94a0)), closes [#1466](https://github.com/node-serialport/node-serialport/issues/1466)
+* feat(linux): Custom baud rates for linux (eg 250k baudrate) (#1464) ([910438c](https://github.com/node-serialport/node-serialport/commit/910438c)), closes [#1464](https://github.com/node-serialport/node-serialport/issues/1464)
+
+
+
 <a name="6.0.5"></a>
 ## 6.0.5 (2018-02-04)
 
