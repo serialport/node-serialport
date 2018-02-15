@@ -427,7 +427,8 @@ function testBinding(bindingName, Binding, testPort) {
         }
 
         let binding;
-        beforeEach(() => {
+        beforeEach(function () {
+          this.timeout(20000);
           binding = new Binding({
             disconnect
           });
