@@ -195,9 +195,10 @@ function integrationTest(platform, testPort, Binding) {
         port.on('error', done);
         const ready = port.pipe(new SerialPort.parsers.Ready({ delimiter: readyData }));
 
+        port.write(readyData);
         // this will trigger from the "READY" the arduino sends when it's... ready
         ready.on('ready', () => {
-          port.write(input);
+          port.flush(() => port.write(input));
         });
 
         const readData = Buffer.alloc(input.length, 0);
