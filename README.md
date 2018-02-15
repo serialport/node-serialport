@@ -19,7 +19,7 @@ For a full breakdown of why we made Node-Serialport, please read [NodeBots - The
 We're not against firmware but we're better than it.
 
 ## Quick Answers to Important Questions
-- [**API Docs**](https://doclets.io/node-serialport/node-serialport/)
+- [**API Docs**](https://node-serialport.github.io/node-serialport/)
 - **For support**, open a [GitHub issue](https://github.com/node-serialport/node-serialport/issues/new).
 - **For discussions, design ideas, and clarifications**, please join our [Gitter chat room](https://gitter.im/EmergingTechnologyAdvisors/node-serialport).
 - **To test Node-Serialport**, we recommend two related projects—[Browser Serialport](https://github.com/garrows/browser-serialport) ("just like Node Serialport, but for browser apps") and [Serialport Test Piliot](https://github.com/j5js/serialport-test-pilot).
@@ -29,7 +29,7 @@ We're not against firmware but we're better than it.
 
 ## API Documentation
 
-Can be found at https://doclets.io/node-serialport/node-serialport/
+Can be found at https://node-serialport.github.io/node-serialport/
 
 See our [changelog](CHANGELOG.md) for what's new, and our [upgrade guide](UPGRADE_GUIDE.md) for a walk-through on differences between major versions.
 

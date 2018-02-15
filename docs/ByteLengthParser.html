@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>ByteLengthParser - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BaseBinding.html">BaseBinding</a><ul class='methods'><li data-type='method'><a href="BaseBinding.html#.list">list</a></li><li data-type='method'><a href="BaseBinding.html#close">close</a></li><li data-type='method'><a href="BaseBinding.html#drain">drain</a></li><li data-type='method'><a href="BaseBinding.html#flush">flush</a></li><li data-type='method'><a href="BaseBinding.html#get">get</a></li><li data-type='method'><a href="BaseBinding.html#getBaudRate">getBaudRate</a></li><li data-type='method'><a href="BaseBinding.html#open">open</a></li><li data-type='method'><a href="BaseBinding.html#read">read</a></li><li data-type='method'><a href="BaseBinding.html#set">set</a></li><li data-type='method'><a href="BaseBinding.html#update">update</a></li><li data-type='method'><a href="BaseBinding.html#write">write</a></li></ul></li><li><a href="ByteLengthParser.html">ByteLengthParser</a></li><li><a href="CCTalkParser.html">CCTalkParser</a></li><li><a href="DelimiterParser.html">DelimiterParser</a></li><li><a href="Poller.html">Poller</a><ul class='methods'><li data-type='method'><a href="Poller.html#once">once</a></li><li data-type='method'><a href="Poller.html#poll">poll</a></li><li data-type='method'><a href="Poller.html#stop">stop</a></li></ul></li><li><a href="ReadLineParser.html">ReadLineParser</a></li><li><a href="ReadyParser.html">ReadyParser</a></li><li><a href="RegexParser.html">RegexParser</a></li><li><a href="SerialPort.html">SerialPort</a><ul class='members'><li data-type='member'><a href="SerialPort.html#.Binding">Binding</a></li><li data-type='member'><a href="SerialPort.html#.parsers">parsers</a></li></ul><ul class='methods'><li data-type='method'><a href="SerialPort.html#.list">list</a></li><li data-type='method'><a href="SerialPort.html#close">close</a></li><li data-type='method'><a href="SerialPort.html#drain">drain</a></li><li data-type='method'><a href="SerialPort.html#flush">flush</a></li><li data-type='method'><a href="SerialPort.html#get">get</a></li><li data-type='method'><a href="SerialPort.html#open">open</a></li><li data-type='method'><a href="SerialPort.html#set">set</a></li><li data-type='method'><a href="SerialPort.html#update">update</a></li></ul></li></ul><h3>Events</h3><ul><li><a href="module-serialport.html#event:close">close</a></li><li><a href="module-serialport.html#event:data">data</a></li><li><a href="module-serialport.html#event:error">error</a></li><li><a href="module-serialport.html#event:open">open</a></li></ul><h3>Global</h3><ul><li><a href="global.html#EVENTS">EVENTS</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">ByteLengthParser</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        ByteLengthParser
+        </h2>
+        
+            <div class="class-description"><p>A transform stream that emits data as a buffer after a specific number of bytes are received.</p></div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="ByteLengthParser"><span class="type-signature"></span>new ByteLengthParser<span class="signature">(options)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+<dl class="details">
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="parsers_byte-length.js.html">parsers/byte-length.js</a>, <a href="parsers_byte-length.js.html#line20">line 20</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>To use the `ByteLength` parser:
+```js
+const SerialPort = require('serialport');
+const ByteLength = SerialPort.parsers.ByteLength
+const port = new SerialPort('/dev/tty-usbserial1');
+const parser = port.pipe(new ByteLength({length: 8}));
+parser.on('data', console.log); // will have 8 bytes per data event
+```</code></pre>
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>length</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the number of bytes on each data event</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li>Transform</li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Feb 15 2018 16:36:25 GMT-0500 (EST) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

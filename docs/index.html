@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Home - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BaseBinding.html">BaseBinding</a><ul class='methods'><li data-type='method'><a href="BaseBinding.html#.list">list</a></li><li data-type='method'><a href="BaseBinding.html#close">close</a></li><li data-type='method'><a href="BaseBinding.html#drain">drain</a></li><li data-type='method'><a href="BaseBinding.html#flush">flush</a></li><li data-type='method'><a href="BaseBinding.html#get">get</a></li><li data-type='method'><a href="BaseBinding.html#getBaudRate">getBaudRate</a></li><li data-type='method'><a href="BaseBinding.html#open">open</a></li><li data-type='method'><a href="BaseBinding.html#read">read</a></li><li data-type='method'><a href="BaseBinding.html#set">set</a></li><li data-type='method'><a href="BaseBinding.html#update">update</a></li><li data-type='method'><a href="BaseBinding.html#write">write</a></li></ul></li><li><a href="ByteLengthParser.html">ByteLengthParser</a></li><li><a href="CCTalkParser.html">CCTalkParser</a></li><li><a href="DelimiterParser.html">DelimiterParser</a></li><li><a href="Poller.html">Poller</a><ul class='methods'><li data-type='method'><a href="Poller.html#once">once</a></li><li data-type='method'><a href="Poller.html#poll">poll</a></li><li data-type='method'><a href="Poller.html#stop">stop</a></li></ul></li><li><a href="ReadLineParser.html">ReadLineParser</a></li><li><a href="ReadyParser.html">ReadyParser</a></li><li><a href="RegexParser.html">RegexParser</a></li><li><a href="SerialPort.html">SerialPort</a><ul class='members'><li data-type='member'><a href="SerialPort.html#.Binding">Binding</a></li><li data-type='member'><a href="SerialPort.html#.parsers">parsers</a></li></ul><ul class='methods'><li data-type='method'><a href="SerialPort.html#.list">list</a></li><li data-type='method'><a href="SerialPort.html#close">close</a></li><li data-type='method'><a href="SerialPort.html#drain">drain</a></li><li data-type='method'><a href="SerialPort.html#flush">flush</a></li><li data-type='method'><a href="SerialPort.html#get">get</a></li><li data-type='method'><a href="SerialPort.html#open">open</a></li><li data-type='method'><a href="SerialPort.html#set">set</a></li><li data-type='method'><a href="SerialPort.html#update">update</a></li></ul></li></ul><h3>Events</h3><ul><li><a href="module-serialport.html#event:close">close</a></li><li><a href="module-serialport.html#event:data">data</a></li><li><a href="module-serialport.html#event:error">error</a></li><li><a href="module-serialport.html#event:open">open</a></li></ul><h3>Global</h3><ul><li><a href="global.html#EVENTS">EVENTS</a></li></ul>
+</nav>
+
+<div id="main">
+    
+
+    
+
+
+
+    
+
+
+
+
+
+
+
+
+
+    
+
+
+    <section class="readme">
+        <article><h1>Node Serialport</h1><p><a href="http://npmjs.com/package/serialport"><img src="https://img.shields.io/npm/dm/serialport.svg?maxAge=2592000" alt="npm"></a><br><a href="https://gitter.im/EmergingTechnologyAdvisors/node-serialport"><img src="https://badges.gitter.im/EmergingTechnologyAdvisors/node-serialport.svg" alt="Gitter chat"></a><br><a href="https://snyk.io/test/github/node-serialport/node-serialport"><img src="https://snyk.io/test/github/node-serialport/node-serialport/badge.svg" alt="Known Vulnerabilities"></a><br><a href="https://codecov.io/gh/node-serialport/node-serialport"><img src="https://codecov.io/gh/node-serialport/node-serialport/branch/master/graph/badge.svg" alt="codecov"></a><br><a href="https://travis-ci.org/node-serialport/node-serialport"><img src="https://travis-ci.org/node-serialport/node-serialport.svg?branch=master" alt="Build Status"></a><br><a href="https://ci.appveyor.com/project/serialport/node-serialport/branch/master"><img src="https://ci.appveyor.com/api/projects/status/u6xe3iao2crd7akn/branch/master?svg=true" alt="Build status"></a><br><a href="https://greenkeeper.io/"><img src="https://badges.greenkeeper.io/node-serialport/node-serialport.svg" alt="Greenkeeper badge"></a></p>
+<h2>Intro to Node-Serialport</h2><p>Imagine a world in which you can write JavaScript to control blenders, lights, security systems, or even robots. That's right—robots! Thanks to Node Serialport, that world is here.</p>
+<p>Node-Serialport provides a stream interface for the low-level serial port code necessary to controll <a href="http://www.arduino.cc/">Arduino</a> chipsets, X10 interfaces, <a href="http://www.zigbee.org/">Zigbee</a> radios, highway signs, lcd screens, cash drawers, motor controllers, sensor packages, fork lifts, modems, drones, CNC machines, plotters, vending machines, ccTalk coin accecptors, SMS Gateways, RFID scanners and much more. If if you have a hardware device with an <a href="https://en.wikipedia.org/wiki/Universal_asynchronous_receiver/transmitter">UART</a> we can speak to it. The physical world is your oyster with this goodie.</p>
+<p>For a full breakdown of why we made Node-Serialport, please read <a href="http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics">NodeBots - The Rise of JS Robotics</a>. It explains why one would want to program robots in JS in the first place.</p>
+<p>We're not against firmware but we're better than it.</p>
+<h2>Quick Answers to Important Questions</h2><ul>
+<li><a href="https://doclets.io/node-serialport/node-serialport/"><strong>API Docs</strong></a></li>
+<li><strong>For support</strong>, open a <a href="https://github.com/node-serialport/node-serialport/issues/new">GitHub issue</a>.</li>
+<li><strong>For discussions, design ideas, and clarifications</strong>, please join our <a href="https://gitter.im/EmergingTechnologyAdvisors/node-serialport">Gitter chat room</a>.</li>
+<li><strong>To test Node-Serialport</strong>, we recommend two related projects—<a href="https://github.com/garrows/browser-serialport">Browser Serialport</a> (&quot;just like Node Serialport, but for browser apps&quot;) and <a href="https://github.com/j5js/serialport-test-pilot">Serialport Test Piliot</a>.</li>
+<li><strong>To contribute</strong>, please review our <a href="CONTRIBUTING.md">contribution guide</a> and <a href="CODE_OF_CONDUCT.md">Code of Conduct</a>. You might want to check out our <a href="https://github.com/node-serialport/node-serialport/issues/746">roadmap</a>. We also have issues tagged <a href="https://github.com/node-serialport/node-serialport/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+pr%22">&quot;good first PR&quot;</a>, if you'd like to start somewhere specific. We'll do our best to support you until we merge your PR.</li>
+</ul>
+<hr>
+<h2>API Documentation</h2><p>Can be found at https://doclets.io/node-serialport/node-serialport/</p>
+<p>See our <a href="CHANGELOG.md">changelog</a> for what's new, and our <a href="UPGRADE_GUIDE.md">upgrade guide</a> for a walk-through on differences between major versions.</p>
+<p>Older versions are no longer supported but their docs can be found by looking through release tags.</p>
+<p>You can generate the docs by running</p>
+<pre class="prettyprint source lang-bash"><code>npm run docs</code></pre><p>And browsing to <code>./docs/index.html</code>.</p>
+<hr>
+<h2>Helpful Resources for Getting Started with Node-Serialport</h2><p>In addition to reading the <a href="http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics">article mentioned above</a>, these others might help you:</p>
+<ul>
+<li><a href="http://johnny-five.io/#hello-world">Johnny-Five</a>: The Johnny-Five Robotics and IoT platform's six-line &quot;Hello World&quot; (awesome).</li>
+<li><a href="http://nexxylove.tumblr.com/post/20159263403/arduino-node-security-sensor-hacking">Arduino Node Security Sensor Hacking</a>: A great all-around &quot;how do I use this&quot; article.</li>
+</ul>
+<hr>
+<h2>Table of Contents</h2><ul>
+<li><a href="#platform-support">Platform Support</a></li>
+<li><a href="#installation-instructions">Installation</a></li>
+<li><a href="#installation-special-cases">Installation Special Cases</a><ul>
+<li><a href="#alpine-linux">Alpine Linux</a></li>
+<li><a href="#electron">Electron</a></li>
+<li><a href="#illegal-instruction">Illegal Instruction</a></li>
+<li><a href="#mac-os-x">Mac OS X</a></li>
+<li><a href="#raspberry-pi-linux">Raspberry Pi Linux</a></li>
+<li><a href="#sudo--root">sudo / root</a></li>
+<li><a href="#ubuntudebian-linux">Ubuntu/Debian Linux</a></li>
+<li><a href="#windows">Windows</a></li>
+</ul>
+</li>
+<li><a href="#usage">Usage</a><ul>
+<li><a href="#opening-a-port">Opening a Port</a></li>
+<li><a href="#testing">Testing</a></li>
+<li><a href="#debugging">Debugging</a></li>
+<li><a href="#error-handling">Error Handling</a><br>d* <a href="#command-line-tools">Command Line Tools</a></li>
+<li><a href="#serial-port-list">Serial Port List</a></li>
+<li><a href="#serial-port-terminal">Srial Port Terminal</a></li>
+<li><a href="#serial-port-repl">Serial Port Repl</a></li>
+</ul>
+</li>
+<li><a href="#license">License</a></li>
+</ul>
+<hr>
+<h3>Platform Support</h3><p><code>serialport</code> supports NodeJS v4 and upwards. For versions 0.10 and 0.12, use <code>serialport@4</code>. The platforms, architectures and Node versions that <code>serialport</code> supports are the following;</p>
+<table>
+<thead>
+<tr>
+<th>Platform / Arch</th>
+<th>Node v4.x</th>
+<th>Node v6.x</th>
+<th>Node v8.x</th>
+<th>Node v9.x</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Linux / ia32</td>
+<td>☑</td>
+<td>☑</td>
+<td>☑</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>Linux / x64</td>
+<td>☑</td>
+<td>☑</td>
+<td>☑</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>Linux / ARM v6¹</td>
+<td>☐</td>
+<td>☐</td>
+<td>☐</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>Linux / ARM v7¹</td>
+<td>☐</td>
+<td>☐</td>
+<td>☐</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>Linux / ARM v8¹</td>
+<td>☐</td>
+<td>☐</td>
+<td>☐</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>Linux / MIPSel¹</td>
+<td>☐</td>
+<td>☐</td>
+<td>☐</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>Linux / PPC64¹</td>
+<td>☐</td>
+<td>☐</td>
+<td>☐</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>Windows² / x86</td>
+<td>☐</td>
+<td>☑</td>
+<td>☑</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>Windows² / x64</td>
+<td>☑</td>
+<td>☑</td>
+<td>☑</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>OSX³ / x64</td>
+<td>☑</td>
+<td>☑</td>
+<td>☑</td>
+<td>☐</td>
+</tr>
+</tbody>
+</table>
+<p>¹ ARM, MIPSel and PPC64¹ platforms are not currently part of our testing or build matrix, but are known to work.</p>
+<p>² Windows 7, 8, 10, and 10 IoT are supported, but our CI tests only Windows Server 2012 R2.</p>
+<p>³ OSX 10.4 Tiger and above are supported, but our CI tests only 10.9.5 Mavericks with Xcode 6.1.</p>
+<p>⁴ Node 9 is not supported but we're providing builds for it.</p>
+<h2>Installation Instructions</h2><p>For most &quot;standard&quot; use cases (Node v4.x on Mac, Linux, or Windows on a x86 or x64 processor), Node-Serialport will install nice and easy with:</p>
+<pre class="prettyprint source"><code>npm install serialport</code></pre><h3>Installation Special Cases</h3><p>We use <a href="https://github.com/mafintosh/prebuild">prebuild</a> to compile and post binaries of the library for most common use cases (Linux, Mac, Windows on standard processor platforms). If you have a special case, Node-Serialport will work, but it will compile the binary during the install. Compiling with nodejs is done via <code>node-gyp</code> which requires Python 2.x, so please ensure you have it installed and in your path for all operating systems. Python 3.x will not work.</p>
+<p>This assumes you have everything on your system necessary to compile ANY native module for Node.js. If you don't, then please ensure the following are true for your system before filing a &quot;Does not install&quot; issue.</p>
+<h4>Alpine Linux</h4><p><a href="http://www.alpinelinux.org/">Alpine</a> is a (very) small distro, but it uses the <a href="https://www.musl-libc.org/">musl</a> standard library instead of <a href="https://www.gnu.org/software/libc/">glibc</a> (used by most other Linux distros) so it requires compilation. It's commonly used with Docker. A user has confirmed that Node-Serialport works with <a href="https://github.com/mhart/alpine-node">alpine-node</a>.</p>
+<pre class="prettyprint source"><code># If you don't have node/npm already, add that first
+sudo apk add --no-cache nodejs
+
+# Add the necessary build and runtime dependencies
+sudo apk add --no-cache make gcc g++ python linux-headers udev
+
+# Then we can install serialport, forcing it to compile
+npm install serialport --build-from-source
+
+# If you're installing as root, you'll also need to use the --unsafe-perm flag</code></pre><h4>Electron</h4><p><a href="https://electron.atom.io/">Electron</a> is a framework for creating cross-platform desktop applications. It comes with its own version of the Node.js runtime.</p>
+<p>If you require <code>serialport</code> as a dependency for an Electron project, you must compile it for the version of Electron your project's using.</p>
+<p>When you first install <code>serialport</code> it will compile against the version of Node.js on your machine, not against the Node.js runtime bundled with Electron.</p>
+<p>To recompile <code>serialport</code> (or any native Node.js module) for Electron, you can use <code>electron-rebuild</code>; more info at Electron's <a href="https://github.com/electron/electron-rebuild/blob/master/README.md">README</a>.</p>
+<ol>
+<li><code>npm install --save-dev electron-rebuild</code></li>
+<li>Add <code>electron-rebuild</code> to your project's package.json's install hook</li>
+<li>Run <code>npm install</code></li>
+</ol>
+<p>For an example project, check out <a href="https://github.com/johnny-five-io/electron-serialport"><code>electron-serialport</code></a>.</p>
+<h4>NW.js</h4><p><a href="https://nwjs.io/">NW.js</a> is an app runtime based on Chromium and node.js.</p>
+<p>Like Electron, NW.js also requires compilation against its own specific headers.</p>
+<p>To instruct <code>prebuild</code> to build against the correct headers, place a file named <code>.prebuildrc</code> on your package root with the following content:</p>
+<pre class="prettyprint source"><code>build_from_source=true
+runtime=node-webkit
+target=&lt;target_version></code></pre><p>Where <code>&lt;target_version&gt;</code> is the NW.js version you are building against (for example, <code>0.26.6</code>).</p>
+<p>OBS: NW.js support requires <code>prebuild &gt;= 7.3.0</code>.</p>
+<h4>Illegal Instruction</h4><p>The pre-compiled binaries assume a fully capable chip. Intel's <a href="https://software.intel.com/en-us/iot/hardware/galileo">Galileo 2</a>, for example, lacks a few instruction sets from the <code>ia32</code> architecture. A few other platforms have similar issues. If you get <code>Illegal Instruction</code> when trying to run Node-Serialport, you'll need to ask npm to rebuild the Serialport binary.</p>
+<pre class="prettyprint source lang-bash"><code># Will ask npm to build serialport during install time
+npm install serialport --build-from-source
+
+# If you have a package that depends on serialport, you can ask npm to rebuild it specifically...
+npm rebuild serialport --build-from-source</code></pre><h4>Mac OS X</h4><p>Ensure that you have at a minimum the xCode Command Line Tools installed appropriate for your system configuration. If you recently upgraded the OS, it probably removed your installation of Command Line Tools, please verify before submitting a ticket. To compile <code>node-serialport</code> with Node.js 4.x+, you will need to use g++ v4.8 or higher.</p>
+<h4>Raspberry Pi Linux</h4><p>Follow the instructions for <a href="https://github.com/nebrius/raspi-io/wiki/Getting-a-Raspberry-Pi-ready-for-NodeBots">setting up a Raspberry pi for use with Johnny-Five and Raspi IO</a>. These projects use Node Serialport under the hood.</p>
+<table>
+<thead>
+<tr>
+<th>Revision</th>
+<th>CPU</th>
+<th>Arm Version</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A, A+, B, B+</td>
+<td>32-bit ARM1176JZF-S</td>
+<td>ARMv6</td>
+</tr>
+<tr>
+<td>Compute Module</td>
+<td>32-bit ARM1176JZF-S</td>
+<td>ARMv6</td>
+</tr>
+<tr>
+<td>Zero</td>
+<td>32-bit ARM1176JZF-S</td>
+<td>ARMv6</td>
+</tr>
+<tr>
+<td>B2</td>
+<td>32-bit ARM Cortex-A7</td>
+<td>ARMv7</td>
+</tr>
+<tr>
+<td>B3</td>
+<td>32-bit ARM Cortex-A53</td>
+<td>ARMv8</td>
+</tr>
+</tbody>
+</table>
+<h4>sudo / root</h4><p>If you're going to use <code>sudo</code> or root to install Node-Serialport, <code>npm</code> will require you to use the unsafe parameters flag.</p>
+<pre class="prettyprint source lang-bash"><code>sudo npm install serialport --unsafe-perm --build-from-source</code></pre><p>Failure to use the flag results in an error like this:</p>
+<pre class="prettyprint source lang-bash"><code>root@rpi3:~# npm install -g serialport
+/usr/bin/serialport-list -> /usr/lib/node_modules/serialport/bin/serialport-list.js
+/usr/bin/serialport-term -> /usr/lib/node_modules/serialport/bin/serialport-terminal.js
+
+
+> serialport@6.0.0-beta1 install /Users/wizard/src/node-serialport
+> prebuild-install || node-gyp rebuild
+
+prebuild-install info begin Prebuild-install version 2.2.1
+prebuild-install info install installing standalone, skipping download.
+
+gyp WARN EACCES user &quot;root&quot; does not have permission to access the dev dir &quot;/root/.node-gyp/6.9.1&quot;
+gyp WARN EACCES attempting to reinstall using temporary dev dir &quot;/usr/lib/node_modules/serialport/.node-gyp&quot;
+make: Entering directory '/usr/lib/node_modules/serialport/build'
+make: *** No rule to make target '../.node-gyp/6.9.1/include/node/common.gypi', needed by 'Makefile'.  Stop.
+make: Leaving directory '/usr/lib/node_modules/serialport/build'
+gyp ERR! build error
+gyp ERR! stack Error: `make` failed with exit code: 2</code></pre><h4>Ubuntu/Debian Linux</h4><p>The best way to install any version of Node.js is to use the <a href="https://github.com/nodesource/distributions#installation-instructions">NodeSource Node.js binary distributions</a>. Older versions of Ubuntu install Node.js with the wrong version and binary name. If your Node binary is <code>nodejs</code> instead of <code>node</code>, or if your Node version is <a href="https://github.com/fivdi/onoff/wiki/Node.js-v0.10.29-and-native-addons-on-the-Raspberry-Pi"><code>v0.10.29</code></a>, then you should follow these instructions.</p>
+<p>You'll need the package <code>build-essential</code> to compile <code>serialport</code>. If there's a binary for your platform, you won't need it. Keep rocking!</p>
+<pre class="prettyprint source"><code># Using Ubuntu and Node 6
+curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
+sudo apt-get install -y nodejs
+
+# Using Debian and Node 6 as root
+curl -sL https://deb.nodesource.com/setup_7.x | bash -
+apt-get install -y nodejs</code></pre><h4>Windows</h4><p>Node-Serialport supports Windows 7, 8.1, 10, and 10 IoT. Precompiled binaries are available, but if you want to build it from source you'll need to follow the <a href="https://github.com/nodejs/node-gyp#installation">node-gyp installation</a> instructions. Once you've got things working, you can install Node-Serialport from source with:</p>
+<pre class="prettyprint source lang-powershell"><code>npm install serialport --build-from-source</code></pre><p>Node-gyp's documentation doesn't mention it, but it sometimes helps to create a C++ project in <a href="https://www.visualstudio.com/">Visual Studio</a> so that it will install any necessary components not already installed during the past two hours of setup. This will solve some instances of <code>Failed to locate: &quot;CL.exe&quot;</code>.</p>
+<p>An old issue that you may still run into. When working with multiple Serial Ports you can set the <code>UV_THREADPOOL_SIZE</code> environment variable to be set to 1 + the number of ports you wish to open at a time. (Defaults to <code>4</code> which supports 3 open ports).</p>
+<h2>Usage</h2><h3>Opening a Port</h3><pre class="prettyprint source lang-js"><code>var SerialPort = require('serialport');
+var port = new SerialPort('/dev/tty-usbserial1', {
+  baudRate: 57600
+});</code></pre><p>When opening a serial port, specify (in this order)</p>
+<ol>
+<li>Path to Serial Port - required.</li>
+<li>Options - optional and described below.</li>
+</ol>
+<p>Constructing a <code>SerialPort</code> object immediately opens a port. While you can read and write at any time (it will be queued until the port is open), most port functions require an open port. There are three ways to detect when a port is opened.</p>
+<ul>
+<li>The <code>open</code> event is always emitted when the port is opened.</li>
+<li>The constructor's openCallback is passed to <code>.open()</code>, if you haven't disabled the <code>autoOpen</code> option. If you have disabled it, the callback is ignored.</li>
+<li>The <code>.open()</code> function takes a callback that is called after the port is opened. You can use this if you've disabled the <code>autoOpen</code> option or have previously closed an open port.</li>
+</ul>
+<pre class="prettyprint source lang-js"><code>var SerialPort = require('serialport');
+var port = new SerialPort('/dev/tty-usbserial1');
+
+port.write('main screen turn on', function(err) {
+  if (err) {
+    return console.log('Error on write: ', err.message);
+  }
+  console.log('message written');
+});
+
+// Open errors will be emitted as an error event
+port.on('error', function(err) {
+  console.log('Error: ', err.message);
+})</code></pre><p>Detecting open errors can be moved to the constructor's callback.</p>
+<pre class="prettyprint source lang-js"><code>var SerialPort = require('serialport');
+var port = new SerialPort('/dev/tty-usbserial1', function (err) {
+  if (err) {
+    return console.log('Error: ', err.message);
+  }
+});
+
+port.write('main screen turn on', function(err) {
+  if (err) {
+    return console.log('Error on write: ', err.message);
+  }
+  console.log('message written');
+});</code></pre><p>When disabling the <code>autoOpen</code> option you'll need to open the port on your own.</p>
+<pre class="prettyprint source lang-js"><code>var SerialPort = require('serialport');
+var port = new SerialPort('/dev/tty-usbserial1', { autoOpen: false });
+
+port.open(function (err) {
+  if (err) {
+    return console.log('Error opening port: ', err.message);
+  }
+
+  // Because there's no callback to write, write errors will be emitted on the port:
+  port.write('main screen turn on');
+});
+
+// The open event is always emitted
+port.on('open', function() {
+  // open logic
+});</code></pre><p>Get updates of new data from the serial port as follows:</p>
+<pre class="prettyprint source lang-js"><code>// Switches the port into &quot;flowing mode&quot;
+port.on('data', function (data) {
+  console.log('Data:', data);
+});
+
+// Read data that is available but keep the stream from entering &quot;flowing mode&quot;
+port.on('readable', function () {
+  console.log('Data:', port.read());
+});</code></pre><p>You can write to the serial port by sending a string or buffer to the write method:</p>
+<pre class="prettyprint source lang-js"><code>port.write('Hi Mom!');
+port.write(Buffer.from('Hi Mom!'));</code></pre><p>Enjoy and do cool things with this code.</p>
+<h3>Testing</h3><p>Testing is an important feature of any library. To aid in our own tests we've developed a <code>MockBinding</code> a fake hardware binding that doesn't actually need any hardware to run. This class passes all of the same tests as our hardware based bindings and provides a few additional test related interfaces. To use the mock binding check out the example <a href="/examples/mocking.js">here</a>.</p>
+<pre class="prettyprint source lang-js"><code>const SerialPort = require('serialport/test');
+const MockBinding = SerialPort.Binding;
+
+// Create a port and enable the echo and recording.
+MockBinding.createPort('/dev/ROBOT', { echo: true, record: true })
+const port = new SerialPort('/dev/ROBOT')</code></pre><h3>Debugging</h3><p>We use the <a href="https://www.npmjs.com/package/debug">debug</a> package and log under the <code>serialport</code> namespace:</p>
+<ul>
+<li><code>serialport:main</code> for all high-level/main logging</li>
+<li><code>serialport:binding</code> for all low-level logging</li>
+</ul>
+<p>You can enable logging through environment variables. Check the <a href="https://www.npmjs.com/package/debug">debug</a> docs for info.</p>
+<pre class="prettyprint source lang-bash"><code>DEBUG=serialport:main node myapp.js
+DEBUG=serialport:* node myapp.js
+DEBUG=* node myapp.js</code></pre><p>You can enable core dumps on osx with;</p>
+<pre class="prettyprint source lang-bash"><code>ulimit -c unlimited for core dumps</code></pre><p>You can &quot;console.log&quot; from c++ with;</p>
+<pre class="prettyprint source lang-c++"><code>fprintf(stdout, &quot;Hellow World num=%d str=%s\n&quot;, 4, &quot;hi&quot;);</code></pre><p>You can make use of the <code>serialport-repl</code> command with;</p>
+<pre class="prettyprint source lang-bash"><code>serialport-repl # to auto detect an arduino
+serialport-repl /path/name # to connect to a specific port</code></pre><p>It will load a serialport object with debugging turned on.</p>
+<h3>Error Handling</h3><p>All functions in Node-Serialport follow two conventions:</p>
+<ul>
+<li>Argument errors throw a <code>TypeError</code> object. You'll see these when functions are called with invalid arguments.</li>
+<li>Runtime errors provide <code>Error</code> objects to the function's callback or emit an <a href="#module_serialport--SerialPort+event_error"><code>error event</code></a> if no callback is provided. You'll see these when a runtime error occurs, like trying to open a bad port or setting an unsupported baud rate.</li>
+</ul>
+<p>You should never have to wrap a Node-Serialport object in a try/catch statement if you call the functions with the correct arguments.</p>
+<h2>Command Line Tools</h2><p>If you install <code>serialport</code> globally (e.g., <code>npm install -g serialport</code>), you'll receive two command line tools.</p>
+<h3>Serial Port List</h3><p><code>serialport-list</code> will list all available serial ports in different formats.</p>
+<pre class="prettyprint source lang-bash"><code>$ serialport-list -h
+
+  Usage: serialport-list [options]
+
+  List available serial ports
+
+  Options:
+
+    -h, --help           output usage information
+    -V, --version        output the version number
+    -f, --format &lt;type>  Format the output as text, json, or jsonline. default: text
+
+
+$ serialport-list
+/dev/tty.Bluetooth-Incoming-Port
+/dev/tty.usbmodem1421    Arduino (www.arduino.cc)
+
+$ serialport-list -f json
+[{&quot;comName&quot;:&quot;/dev/tty.Bluetooth-Incoming-Port&quot;},{&quot;comName&quot;:&quot;/dev/tty.usbmodem1421&quot;,&quot;manufacturer&quot;:&quot;Arduino (www.arduino.cc)&quot;,&quot;serialNumber&quot;:&quot;752303138333518011C1&quot;,&quot;locationId&quot;:&quot;14200000&quot;,&quot;vendorId&quot;:&quot;2341&quot;,&quot;productId&quot;:&quot;0043&quot;}]
+
+$ serialport-list -f jsonline
+{&quot;comName&quot;:&quot;/dev/tty.Bluetooth-Incoming-Port&quot;}
+{&quot;comName&quot;:&quot;/dev/tty.usbmodem1421&quot;,&quot;manufacturer&quot;:&quot;Arduino (www.arduino.cc)&quot;,&quot;serialNumber&quot;:&quot;752303138333518011C1&quot;,&quot;locationId&quot;:&quot;14200000&quot;,&quot;vendorId&quot;:&quot;2341&quot;,&quot;productId&quot;:&quot;0043&quot;}</code></pre><h3>Serial Port Terminal</h3><p><code>serialport-term</code> provides a basic terminal interface for communicating over a serial port. <code>ctrl+c</code> will exit.</p>
+<pre class="prettyprint source lang-bash"><code>$ serialport-term -h
+
+  Usage: serialport-term -p &lt;port> [options]
+
+  A basic terminal interface for communicating over a serial port. Pressing ctrl+c exits.
+
+  Options:
+
+    -h, --help                     output usage information
+    -V, --version                  output the version number
+    -l --list                      List available ports then exit
+    -p, --port, --portname &lt;port>  Path or name of serial port
+    -b, --baud &lt;baudrate>          Baud rate default: 9600
+    --databits &lt;databits>          Data bits default: 8
+    --parity &lt;parity>              Parity default: none
+    --stopbits &lt;bits>              Stop bits default: 1
+    --echo --localecho             Print characters as you type them
+
+$ serialport-term -l
+/dev/tty.Bluetooth-Incoming-Port
+/dev/tty.usbmodem1421    Arduino (www.arduino.cc)</code></pre><h3>Serial Port Repl</h3><p><code>serialport-repl</code> provides a nodejs repl for working with serialport. This is valuable when debugging.</p>
+<p>You can make use of the <code>serialport-repl</code> command with;</p>
+<pre class="prettyprint source lang-bash"><code>$ serialport-repl # to auto detect an arduino
+$ serialport-repl /dev/tty.usbmodem1421 # to connect to a specific port</code></pre><p>It will load a serialport object with debugging turned on.</p>
+<pre class="prettyprint source"><code>  serialport:binding:auto-detect loading DarwinBinding +0ms
+port = SerialPort(&quot;/dev/tty.usbmodem1421&quot;, { autoOpen: false })
+globals { SerialPort, portName, port }
+> SerialPort.list()
+  serialport:main .list +6s
+[ { comName: '/dev/tty.usbmodem1421',
+    manufacturer: 'Arduino (www.arduino.cc)',
+    serialNumber: '752303138333518011C1',
+    pnpId: undefined,
+    locationId: '14200000',
+    vendorId: '2341',
+    productId: '0043' } ]
+> port.write('Calling all Autobots!')
+true
+> port.read()
+  serialport:main _read queueing _read for after open +1m
+null
+> port.open()
+  serialport:main opening path: /dev/tty.usbmodem1421 +30s
+  serialport:bindings open +1ms</code></pre><h2>License</h2><p>SerialPort is <a href="LICENSE">MIT licensed</a> and all it's dependencies are MIT or BSD licensed.</p></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Feb 15 2018 16:36:25 GMT-0500 (EST) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>bindings/poller.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BaseBinding.html">BaseBinding</a><ul class='methods'><li data-type='method'><a href="BaseBinding.html#.list">list</a></li><li data-type='method'><a href="BaseBinding.html#close">close</a></li><li data-type='method'><a href="BaseBinding.html#drain">drain</a></li><li data-type='method'><a href="BaseBinding.html#flush">flush</a></li><li data-type='method'><a href="BaseBinding.html#get">get</a></li><li data-type='method'><a href="BaseBinding.html#getBaudRate">getBaudRate</a></li><li data-type='method'><a href="BaseBinding.html#open">open</a></li><li data-type='method'><a href="BaseBinding.html#read">read</a></li><li data-type='method'><a href="BaseBinding.html#set">set</a></li><li data-type='method'><a href="BaseBinding.html#update">update</a></li><li data-type='method'><a href="BaseBinding.html#write">write</a></li></ul></li><li><a href="ByteLengthParser.html">ByteLengthParser</a></li><li><a href="CCTalkParser.html">CCTalkParser</a></li><li><a href="DelimiterParser.html">DelimiterParser</a></li><li><a href="Poller.html">Poller</a><ul class='methods'><li data-type='method'><a href="Poller.html#once">once</a></li><li data-type='method'><a href="Poller.html#poll">poll</a></li><li data-type='method'><a href="Poller.html#stop">stop</a></li></ul></li><li><a href="ReadLineParser.html">ReadLineParser</a></li><li><a href="ReadyParser.html">ReadyParser</a></li><li><a href="RegexParser.html">RegexParser</a></li><li><a href="SerialPort.html">SerialPort</a><ul class='members'><li data-type='member'><a href="SerialPort.html#.Binding">Binding</a></li><li data-type='member'><a href="SerialPort.html#.parsers">parsers</a></li></ul><ul class='methods'><li data-type='method'><a href="SerialPort.html#.list">list</a></li><li data-type='method'><a href="SerialPort.html#close">close</a></li><li data-type='method'><a href="SerialPort.html#drain">drain</a></li><li data-type='method'><a href="SerialPort.html#flush">flush</a></li><li data-type='method'><a href="SerialPort.html#get">get</a></li><li data-type='method'><a href="SerialPort.html#open">open</a></li><li data-type='method'><a href="SerialPort.html#set">set</a></li><li data-type='method'><a href="SerialPort.html#update">update</a></li></ul></li></ul><h3>Events</h3><ul><li><a href="module-serialport.html#event:close">close</a></li><li><a href="module-serialport.html#event:data">data</a></li><li><a href="module-serialport.html#event:error">error</a></li><li><a href="module-serialport.html#event:open">open</a></li></ul><h3>Global</h3><ul><li><a href="global.html#EVENTS">EVENTS</a></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">bindings/poller.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+const debug = require('debug');
+const logger = debug('serialport:poller');
+const EventEmitter = require('events');
+const FDPoller = require('bindings')('serialport.node').Poller;
+
+/**
+ * Enum of event values
+ * @enum {int}
+ */
+const EVENTS = {
+  UV_READABLE: 1,
+  UV_WRITABLE: 2,
+  UV_DISCONNECT: 4
+};
+
+function handleEvent(error, eventFlag) {
+  if (error) {
+    logger('error', error);
+    this.emit('readable', error);
+    this.emit('writable', error);
+    this.emit('disconnect', error);
+    return;
+  }
+  if (eventFlag &amp; EVENTS.UV_READABLE) {
+    logger('received "readable"');
+    this.emit('readable', null);
+  }
+  if (eventFlag &amp; EVENTS.UV_WRITABLE) {
+    logger('received "writable"');
+    this.emit('writable', null);
+  }
+  if (eventFlag &amp; EVENTS.UV_DISCONNECT) {
+    logger('received "disconnect"');
+    this.emit('disconnect', null);
+  }
+}
+
+/**
+ * Polls unix systems for readable or writable states of a file or serialport
+ */
+class Poller extends EventEmitter {
+  constructor(fd) {
+    logger('Creating poller');
+    super();
+    this.poller = new FDPoller(fd, handleEvent.bind(this));
+  }
+  /**
+   * Wait for the next event to occur
+   * @param {string} Event ('readable'|'writable'|'disconnect')
+   * @param {function} callback
+   */
+  once(event) {
+    switch (event) {
+      case 'readable':
+        this.poll(EVENTS.UV_READABLE);
+        break;
+      case 'writable':
+        this.poll(EVENTS.UV_WRITABLE);
+        break;
+      case 'disconnect':
+        this.poll(EVENTS.UV_DISCONNECT);
+        break;
+    }
+    return EventEmitter.prototype.once.apply(this, arguments);
+  }
+
+  /**
+   * Ask the bindings to listen for an event
+   * @param {EVENTS} eventFlag
+   */
+  poll(eventFlag) {
+    eventFlag = eventFlag || 0;
+
+    if (eventFlag &amp; EVENTS.UV_READABLE) {
+      logger('Polling for "readable"');
+    }
+    if (eventFlag &amp; EVENTS.UV_WRITABLE) {
+      logger('Polling for "writable"');
+    }
+    if (eventFlag &amp; EVENTS.UV_DISCONNECT) {
+      logger('Polling for "disconnect"');
+    }
+
+    this.poller.poll(eventFlag);
+  }
+
+  /**
+   * Stop listening for events and cancel all outstanding listening with an error
+   */
+  stop() {
+    logger('Stopping poller');
+    this.poller.stop();
+    const err = new Error('Canceled');
+    err.canceled = true;
+    this.emit('readable', err);
+    this.emit('writable', err);
+    this.emit('disconnect', err);
+  }
+};
+
+Poller.EVENTS = EVENTS;
+
+module.exports = Poller;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Thu Feb 15 2018 16:36:25 GMT-0500 (EST) using the <a href="https://github.com/clenemt/docdash">docdash</a> theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

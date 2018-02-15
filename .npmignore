@@ -18,6 +18,7 @@ test-config.json
 UPGRADE_GUIDE.md
 changelog.md
 .DS_Store
+docs
 
 # MIRRORED FROM .gitignore PLEASE MAINTAIN
 .mailmap
@@ -27,4 +28,3 @@ node_modules
 npm-debug.log
 package-lock.json
 Release/
-docs
