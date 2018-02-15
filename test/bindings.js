@@ -557,7 +557,8 @@ function testBinding(bindingName, Binding, testPort) {
         beforeEach(() => {
           buffer = Buffer.alloc(readyData.length);
           binding = new Binding({ disconnect });
-          return binding.open(testPort, defaultOpenOptions);
+          return binding.open(testPort, defaultOpenOptions)
+            .then(() => binding.write(buffer));
         });
 
         afterEach(() => binding.close());
