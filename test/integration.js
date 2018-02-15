@@ -245,6 +245,7 @@ function integrationTest(platform, testPort, Binding) {
         const port = new SerialPort(testPort);
         port.on('error', done);
         const ready = port.pipe(new SerialPort.parsers.Ready({ delimiter: 'READY' }));
+        port.write(readyData);
         ready.on('ready', () => {
           // we should have a pending read now since we're in flowing mode
           port.flush((err) => {
