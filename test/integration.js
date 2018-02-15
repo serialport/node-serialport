@@ -35,7 +35,7 @@ function integrationTest(platform, testPort, Binding) {
 
   describe(`${platform} SerialPort Integration Tests`, () => {
     if (!testPort) {
-      it(`${platform} tests requires an Arduino loaded with the arduinoEcho program on a serialport set to the TEST_PORT env var`);
+      it(`${platform} tests requires a serial device, such as an Arduino or FTDI module, with shorted TX and RX pins with the TEST_PORT env var set to its address (/dev/ttyXXXX, COMX or similar for your platform)`);
       return;
     }
 
