@@ -1,6 +1,7 @@
 #if defined(__linux__)
 
 #include <sys/ioctl.h>
+#include <asm/ioctls.h>
 #include <asm/termbits.h>
 
 // Uses the termios2 interface to set nonstandard baud rates
