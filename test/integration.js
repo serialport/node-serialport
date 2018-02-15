@@ -175,7 +175,8 @@ function integrationTest(platform, testPort, Binding) {
     });
 
     describe('#update', () => {
-      testFeature('port.update-baudrate', 'allows changing the baud rate of an open port', (done) => {
+      testFeature('port.update-baudrate', 'allows changing the baud rate of an open port', function (done) {
+        this.timeout(6000);
         const port = new SerialPort(testPort, () => {
           port.update({ baudRate: 57600 }, (err) => {
             assert.isNull(err);
