@@ -15,7 +15,7 @@ Node SerialPort 5.0.0 is a major rewrite that improves stability, compatibility 
 - Add node 8 support (we now only support LTS node versions)
 
 ### The SerialPort Object
-- Node SerialPoprt is now a [duplex stream](https://nodejs.org/api/stream.html) and can be paused and resumed on all platforms.
+- Node SerialPort is now a [duplex stream](https://nodejs.org/api/stream.html) and can be paused and resumed on all platforms.
 - `isOpen` is now a property
 - `SerialPort.list` now has more consistent output across all platforms. This means the data in the objects may be different than 4x. Notably the path on OSX now returns the `tty` instead of the `cu` path and the `0x` has been removed from values on linux and osx.
 - `port.path` is now read only
