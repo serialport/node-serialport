@@ -143,7 +143,7 @@ function integrationTest(platform, testPort, Binding) {
 
         port.open((err) => {
           assert.isNull(err);
-          port.write("READY");
+          port.write(readyData);
         });
         port.once('data', () => {
           port.close();
@@ -153,7 +153,7 @@ function integrationTest(platform, testPort, Binding) {
           assert.isNull(err);
           port.open((err) => {
             assert.isNull(err);
-            port.write("READY");
+            port.write(readyData);
           });
           port.once('data', () => {
             port.close(done);
