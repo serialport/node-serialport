@@ -1,5 +1,5 @@
-#include "./serialport_unix.h"
-#include "./serialport.h"
+#include "serialport_unix.h"
+#include "serialport.h"
 
 #include <sys/file.h>
 #include <unistd.h>
@@ -15,13 +15,11 @@
 #if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
 #include <sys/ioctl.h>
 #include <IOKit/serial/ioss.h>
-#endif
 
-#if defined(__OpenBSD__)
+#elif defined(__OpenBSD__)
 #include <sys/ioctl.h>
-#endif
 
-#if defined(__linux__)
+#elif defined(__linux__)
 #include <sys/ioctl.h>
 #include <linux/serial.h>
 #include "serialport_linux.h"
@@ -105,7 +103,8 @@ int setBaudRate(ConnectionOptionsBaton *data) {
   // get port options
   struct termios options;
   if (-1 == tcgetattr(fd, &options)) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s setting custom baud rate of %d", strerror(errno), data->baudRate);
+    snprintf(data->errorString, sizeof(data->errorString),
+             "Error: %s setting custom baud rate of %d", strerror(errno), data->baudRate);
     return -1;
   }
 
@@ -115,10 +114,12 @@ int setBaudRate(ConnectionOptionsBaton *data) {
       int err = linuxSetCustomBaudRate(fd, data->baudRate);
 
       if (err == -1) {
-        snprintf(data->errorString, sizeof(data->errorString), "Error: %s || while retrieving termios2 info", strerror(errno));
+        snprintf(data->errorString, sizeof(data->errorString),
+                 "Error: %s || while retrieving termios2 info", strerror(errno));
         return -1;
-      } else if(err == -2) {
-        snprintf(data->errorString, sizeof(data->errorString), "Error: %s || while setting custom baud rate of %d", strerror(errno), data->baudRate);
+      } else if (err == -2) {
+        snprintf(data->errorString, sizeof(data->errorString),
+                 "Error: %s || while setting custom baud rate of %d", strerror(errno), data->baudRate);
         return -1;
       }
 
@@ -131,7 +132,8 @@ int setBaudRate(ConnectionOptionsBaton *data) {
     if (-1 == baudRate) {
       speed_t speed = data->baudRate;
       if (-1 == ioctl(fd, IOSSIOSPEED, &speed)) {
-        snprintf(data->errorString, sizeof(data->errorString), "Error: %s calling ioctl(.., IOSSIOSPEED, %ld )", strerror(errno), speed );
+        snprintf(data->errorString, sizeof(data->errorString),
+                 "Error: %s calling ioctl(.., IOSSIOSPEED, %ld )", strerror(errno), speed);
         return -1;
       } else {
         tcflush(fd, TCIOFLUSH);
@@ -141,7 +143,8 @@ int setBaudRate(ConnectionOptionsBaton *data) {
   #endif
 
   if (-1 == baudRate) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error baud rate of %d is not supported on your platform", data->baudRate);
+    snprintf(data->errorString, sizeof(data->errorString),
+             "Error baud rate of %d is not supported on your platform", data->baudRate);
     return -1;
   }
 
@@ -163,7 +166,8 @@ void EIO_Update(uv_work_t* req) {
 int setup(int fd, OpenBaton *data) {
   int dataBits = ToDataBitsConstant(data->dataBits);
   if (-1 == dataBits) {
-    snprintf(data->errorString, sizeof(data->errorString), "Invalid data bits setting %d", data->dataBits);
+    snprintf(data->errorString, sizeof(data->errorString),
+             "Invalid data bits setting %d", data->dataBits);
     return -1;
   }
 
@@ -299,7 +303,8 @@ void EIO_Close(uv_work_t* req) {
   VoidBaton* data = static_cast<VoidBaton*>(req->data);
 
   if (-1 == close(data->fd)) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, unable to close fd %d", strerror(errno), data->fd);
+    snprintf(data->errorString, sizeof(data->errorString),
+             "Error: %s, unable to close fd %d", strerror(errno), data->fd);
   }
 }
 
@@ -370,7 +375,7 @@ void EIO_GetBaudRate(uv_work_t* req) {
   }
   #endif
 
-  // TODO implement on mac
+  // TODO(Fumon) implement on mac
   #if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
   snprintf(data->errorString, sizeof(data->errorString), "Error: System baud rate check not implemented on darwin");
   return;

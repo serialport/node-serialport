@@ -67,6 +67,7 @@
   },
   "devDependencies": {
     "bluebird": "^3.5.0",
+    "cc": "^1.0.1",
     "chai": "^4.0.2",
     "chai-subset": "^1.5.0",
     "conventional-changelog-cli": "^1.3.2",
@@ -97,7 +98,7 @@
     "arduino-test": "TEST_PORT=$(./bin/find-arduino.js) npm test",
     "changelog": "conventional-changelog -i CHANGELOG.md -s",
     "docs": "jsdoc -c ./.jsdoc.json ",
-    "lint": "eslint lib test bin examples",
+    "lint": "eslint lib test bin examples && cc",
     "rebuild-all": "npm rebuild && node-gyp rebuild",
     "repl": "node bin/repl.js",
     "terminal": "node bin/terminal.js",
@@ -111,5 +112,16 @@
     "prebuild": "prebuild --all --strip --verbose",
     "prebuild-upload": "prebuild --all --strip --verbose"
   },
-  "gypfile": true
+  "gypfile": true,
+  "cc": {
+    "filter": [
+      "legal/copyright",
+      "build/include"
+    ],
+    "files": [
+        "src/*.cpp",
+        "src/*.h"
+    ],
+    "linelength": "120"
+  }
 }
