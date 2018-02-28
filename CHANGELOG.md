@@ -1,3 +1,14 @@
+<a name="6.1.1"></a>
+## <small>6.1.1 (2018-02-28)</small>
+
+* chore(docs): Minor spelling and grammer changes. ([093c85d](https://github.com/node-serialport/node-serialport/commit/093c85d))
+* fix(linux): Adds missing header file for musl libc (eg alpine) (#1487) ([02e2bfe](https://github.com/node-serialport/node-serialport/commit/02e2bfe)), closes [#1487](https://github.com/node-serialport/node-serialport/issues/1487) [#1470](https://github.com/node-serialport/node-serialport/issues/1470)
+* docs: Add appropriate thanks to the changelog ([a3b3663](https://github.com/node-serialport/node-serialport/commit/a3b3663))
+* docs(api): commit docs for github pages ([792459d](https://github.com/node-serialport/node-serialport/commit/792459d))
+* docs(changelog) :fix typo (#1484) ([2da025e](https://github.com/node-serialport/node-serialport/commit/2da025e)), closes [#1484](https://github.com/node-serialport/node-serialport/issues/1484)
+
+
+
 <a name="6.1.0"></a>
 # 6.1.0 (2018-02-06)
 
