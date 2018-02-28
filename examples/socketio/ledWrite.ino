@@ -9,6 +9,6 @@ void loop() {
   while (Serial.available()) {
     int byte = Serial.read();
     digitalWrite(LED_BUILTIN, byte);
-    Serial.print(byte);
+    Serial.write(byte);
   }
 }

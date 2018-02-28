@@ -12,15 +12,16 @@
 const app = require('express')();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-const port = process.env.PORT || 3000;
+const tcpPort = process.env.PORT || 3000;
 
-const serialport = require('serialport');
-const SerialPort = serialport.SerialPort;
+const SerialPort = require('serialport');
 
-const serial = new SerialPort('/dev/cu.usbmodem1411', {
-  baudRate: 9600,
-  parser: SerialPort.parsers.byteLength(1)
+const port = new SerialPort('/dev/cu.usbmodem1411', {
+  baudRate: 9600
 });
+
+const byteParser = new SerialPort.parsers.ByteLength({ length: 1 });
+port.pipe(byteParser);
 
 // Values to send over to Arduino.
 const HIGH = Buffer.from([1]);
@@ -36,8 +37,8 @@ app.get('/', (req, res) => {
   res.sendfile('index.html');
 });
 
-http.listen(port, () => {
-  console.log(`listening on *:${port}`);
+http.listen(tcpPort, () => {
+  console.log(`listening on http://localhost:${tcpPort}`);
 });
 
 /* ===========================================
@@ -57,10 +58,10 @@ io.on('connection', (socket) => {
     console.log('Message received: ', msg);
     switch (msg) {
       case 'on':
-        serial.write(HIGH);
+        port.write(HIGH);
         break;
       case 'off':
-        serial.write(LOW);
+        port.write(LOW);
         break;
       default:
         break;
@@ -74,15 +75,14 @@ io.on('connection', (socket) => {
 *
 =========================================== */
 
-serial.on('open', () => {
+port.on('open', () => {
   console.log('Port is open!');
 });
 
 /**
- * EventListener to receive data from .ino script uploaded to Arduino.
- *
+ * listen to the bytes as they are parsed from the parser.
  */
-serial.on('data', (data) => {
+byteParser.on('data', (data) => {
   let message;
 
   if (HIGH.compare(data) === 0) {
@@ -96,7 +96,7 @@ serial.on('data', (data) => {
   io.sockets.emit('new message', message);
 });
 
-serial.on('close', () => {
+port.on('close', () => {
   console.log('Serial port disconnected.');
   io.sockets.emit('close');
 });
