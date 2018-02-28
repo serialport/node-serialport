@@ -10,6 +10,9 @@
 #include <IOKit/serial/ioss.h>
 #endif
 
+#include <string>
+#include <list>
+
 uv_mutex_t list_mutex;
 Boolean lockInitialised = FALSE;
 
@@ -21,7 +24,7 @@ NAN_METHOD(List) {
   }
 
   ListBaton* baton = new ListBaton();
-  strcpy(baton->errorString, "");
+  snprintf(baton->errorString, sizeof(baton->errorString), "");
   baton->callback.Reset(info[0].As<v8::Function>());
 
   uv_work_t* req = new uv_work_t();
@@ -99,19 +102,19 @@ static void ExtractUsbInformation(stSerialDevice *serialDevice, IOUSBDeviceInter
   UInt32 locationID;
   kernResult = (*deviceInterface)->GetLocationID(deviceInterface, &locationID);
   if (KERN_SUCCESS == kernResult) {
-    snprintf(serialDevice->locationId, 11, "%08x", locationID);
+    snprintf(serialDevice->locationId, sizeof(serialDevice->locationId), "%08x", locationID);
   }
 
   UInt16 vendorID;
   kernResult = (*deviceInterface)->GetDeviceVendor(deviceInterface, &vendorID);
   if (KERN_SUCCESS == kernResult) {
-    snprintf(serialDevice->vendorId, 7, "%04x", vendorID);
+    snprintf(serialDevice->vendorId, sizeof(serialDevice->vendorId), "%04x", vendorID);
   }
 
   UInt16 productID;
   kernResult = (*deviceInterface)->GetDeviceProduct(deviceInterface, &productID);
   if (KERN_SUCCESS == kernResult) {
-    snprintf(serialDevice->productId, 7, "%04x", productID);
+    snprintf(serialDevice->productId, sizeof(serialDevice->productId), "%04x", productID);
   }
 }
 
@@ -152,9 +155,9 @@ static stDeviceListItem* GetSerialDevices() {
       CFRelease(bsdPathAsCFString);
 
       if (result) {
-        stDeviceListItem *deviceListItem = (stDeviceListItem*) malloc(sizeof(stDeviceListItem));
+        stDeviceListItem *deviceListItem = reinterpret_cast<stDeviceListItem*>( malloc(sizeof(stDeviceListItem)));
         stSerialDevice *serialDevice = &(deviceListItem->value);
-        strcpy(serialDevice->port, bsdPath);
+        snprintf(serialDevice->port, sizeof(serialDevice->port), bsdPath);
         memset(serialDevice->locationId, 0, sizeof(serialDevice->locationId));
         memset(serialDevice->vendorId, 0, sizeof(serialDevice->vendorId));
         memset(serialDevice->productId, 0, sizeof(serialDevice->productId));
@@ -196,7 +199,7 @@ static stDeviceListItem* GetSerialDevices() {
                           kCFStringEncodingUTF8);
 
             if (result) {
-              strcpy(serialDevice->manufacturer, manufacturer);
+              snprintf(serialDevice->manufacturer, sizeof(serialDevice->manufacturer), manufacturer);
             }
 
             CFRelease(manufacturerAsCFString);
@@ -219,7 +222,7 @@ static stDeviceListItem* GetSerialDevices() {
                           kCFStringEncodingUTF8);
 
             if (result) {
-              strcpy(serialDevice->serialNumber, serialNumber);
+              snprintf(serialDevice->serialNumber, sizeof(serialDevice->serialNumber), serialNumber);
             }
 
             CFRelease(serialNumberAsCFString);
@@ -240,7 +243,7 @@ static stDeviceListItem* GetSerialDevices() {
 
           // Use the plugin interface to retrieve the device interface.
           res = (*plugInInterface)->QueryInterface(plugInInterface, CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID),
-                               (LPVOID*) &deviceInterface);
+                               reinterpret_cast<LPVOID*> (&deviceInterface));
 
           // Now done with the plugin interface.
           (*plugInInterface)->Release(plugInInterface);

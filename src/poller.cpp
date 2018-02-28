@@ -19,7 +19,7 @@ Poller::~Poller() {
   // if we call uv_poll_stop after uv_poll_init failed we segfault
   if (uv_poll_init_success) {
     uv_poll_stop(poll_handle);
-    uv_close((uv_handle_t*) poll_handle, Poller::onClose);
+    uv_close(reinterpret_cast<uv_handle_t*> (poll_handle), Poller::onClose);
   } else {
     delete poll_handle;
   }

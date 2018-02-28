@@ -1,8 +1,9 @@
-#ifndef SRC_SERIALPORT_DARWIN_LIST_H_
-#define SRC_SERIALPORT_DARWIN_LIST_H_
+#ifndef SRC_DARWIN_LIST_H_
+#define SRC_DARWIN_LIST_H_
+#include <sys/param.h>  // For MAXPATHLEN
 #include <nan.h>
 #include <list>
-#include <sys/param.h> // For MAXPATHLEN
+#include <string>
 
 #define ERROR_STRING_SIZE 1024
 
@@ -41,4 +42,4 @@ typedef struct DeviceListItem {
     int* length;
 } stDeviceListItem;
 
-#endif  // SRC_SERIALPORT_DARWIN_LIST_H_
+#endif  // SRC_DARWIN_LIST_H_

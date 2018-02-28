@@ -54,7 +54,7 @@ NAN_METHOD(Open) {
   }
 
   OpenBaton* baton = new OpenBaton();
-  strcpy(baton->path, *path);
+  snprintf(baton->path, sizeof(baton->path), *path);
   baton->baudRate = getIntFromObject(options, "baudRate");
   baton->dataBits = getIntFromObject(options, "dataBits");
   baton->parity = ToParityEnum(getStringFromObj(options, "parity"));

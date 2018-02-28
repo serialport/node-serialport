@@ -7,7 +7,7 @@
 #include <windows.h>
 #include <Setupapi.h>
 #include <devguid.h>
-#pragma comment (lib, "setupapi.lib")
+#pragma comment(lib, "setupapi.lib")
 
 #define MAX_BUFFER_SIZE 1000
 
@@ -32,16 +32,15 @@ void ErrorCodeToString(const char* prefix, int errorCode, char *errorStr) {
     break;
   case ERROR_INVALID_PARAMETER:
     _snprintf_s(errorStr, ERROR_STRING_SIZE, _TRUNCATE, "%s: The parameter is incorrect", prefix);
-    break;      
+    break;
   default:
     _snprintf_s(errorStr, ERROR_STRING_SIZE, _TRUNCATE, "%s: Unknown error code %d", prefix, errorCode);
     break;
   }
 }
 
-void AsyncCloseCallback(uv_handle_t* handle)
-{
-  uv_async_t* async = (uv_async_t*)handle;
+void AsyncCloseCallback(uv_handle_t* handle) {
+  uv_async_t* async = reinterpret_cast<uv_async_t*>(handle);
   delete async;
 }
 
@@ -68,8 +67,7 @@ void EIO_Open(uv_work_t* req) {
     NULL,
     OPEN_EXISTING,
     FILE_FLAG_OVERLAPPED,  // allows for reading and writing at the same time and sets the handle for asynchronous I/O
-    NULL
-  );
+    NULL);
 
   if (file == INVALID_HANDLE_VALUE) {
     DWORD errorCode = GetLastError();
@@ -164,11 +162,11 @@ void EIO_Open(uv_work_t* req) {
   // Set the timeouts for read and write operations.
   // Read operation will wait for at least 1 byte to be received.
   COMMTIMEOUTS commTimeouts = {};
-  commTimeouts.ReadIntervalTimeout = 0;         // Never timeout, always wait for data.
-  commTimeouts.ReadTotalTimeoutMultiplier = 0;  // Do not allow big read timeout when big read buffer used
-  commTimeouts.ReadTotalTimeoutConstant = 0;    // Total read timeout (period of read loop)
-  commTimeouts.WriteTotalTimeoutConstant = 0;   // Const part of write timeout
-  commTimeouts.WriteTotalTimeoutMultiplier = 0; // Variable part of write timeout (per byte)
+  commTimeouts.ReadIntervalTimeout = 0;          // Never timeout, always wait for data.
+  commTimeouts.ReadTotalTimeoutMultiplier = 0;   // Do not allow big read timeout when big read buffer used
+  commTimeouts.ReadTotalTimeoutConstant = 0;     // Total read timeout (period of read loop)
+  commTimeouts.WriteTotalTimeoutConstant = 0;    // Const part of write timeout
+  commTimeouts.WriteTotalTimeoutMultiplier = 0;  // Variable part of write timeout (per byte)
 
   if (!SetCommTimeouts(file, &commTimeouts)) {
     ErrorCodeToString("Open (SetCommTimeouts)", GetLastError(), data->errorString);
@@ -180,7 +178,7 @@ void EIO_Open(uv_work_t* req) {
   PurgeComm(file, PURGE_RXCLEAR);
   PurgeComm(file, PURGE_TXCLEAR);
 
-  data->result = (int)file;
+  data->result = (int)file;  // NOLINT
 }
 
 void EIO_Update(uv_work_t* req) {
@@ -270,7 +268,7 @@ void EIO_GetBaudRate(uv_work_t* req) {
     return;
   }
 
-  data->baudRate = (int)dcb.BaudRate;
+  data->baudRate = static_cast<int>(dcb.BaudRate);
 }
 
 bool IsClosingHandle(int fd) {
@@ -352,7 +350,8 @@ DWORD __stdcall WriteThread(LPVOID param) {
     char* offsetPtr = baton->bufferData + baton->offset;
     // WriteFileEx requires calling GetLastError even upon success. Clear the error beforehand.
     SetLastError(0);
-    WriteFileEx((HANDLE)baton->fd, offsetPtr, static_cast<DWORD>(baton->bufferLength - baton->offset), ov, WriteIOCompletion);
+    WriteFileEx((HANDLE)baton->fd, offsetPtr,
+                static_cast<DWORD>(baton->bufferLength - baton->offset), ov, WriteIOCompletion);
     // Error codes when call is successful, such as ERROR_MORE_DATA.
     DWORD lastError = GetLastError();
     if (lastError != ERROR_SUCCESS) {
@@ -373,7 +372,7 @@ void EIO_AfterWrite(uv_async_t* req) {
   WriteBaton* baton = static_cast<WriteBaton*>(req->data);
   WaitForSingleObject(baton->hThread, INFINITE);
   CloseHandle(baton->hThread);
-  uv_close((uv_handle_t*)req, AsyncCloseCallback);
+  uv_close(reinterpret_cast<uv_handle_t*>(req), AsyncCloseCallback);
 
   v8::Local<v8::Value> argv[1];
   if (baton->errorString[0]) {
@@ -553,7 +552,7 @@ void EIO_AfterRead(uv_async_t* req) {
   ReadBaton* baton = static_cast<ReadBaton*>(req->data);
   WaitForSingleObject(baton->hThread, INFINITE);
   CloseHandle(baton->hThread);
-  uv_close((uv_handle_t*)req, AsyncCloseCallback);
+  uv_close(reinterpret_cast<uv_handle_t*>(req), AsyncCloseCallback);
 
   v8::Local<v8::Value> argv[2];
   if (baton->errorString[0]) {
@@ -561,7 +560,7 @@ void EIO_AfterRead(uv_async_t* req) {
     argv[1] = Nan::Undefined();
   } else {
     argv[0] = Nan::Null();
-    argv[1] = Nan::New<v8::Integer>((int)baton->bytesRead);
+    argv[1] = Nan::New<v8::Integer>(static_cast<int>(baton->bytesRead));
   }
 
   baton->callback.Call(2, argv);
@@ -588,9 +587,8 @@ void EIO_Close(uv_work_t* req) {
   }
 }
 
-char *copySubstring(char *someString, int n)
-{
-  char *new_ = (char*)malloc(sizeof(char)*n + 1);
+char *copySubstring(char *someString, int n) {
+  char *new_ = reinterpret_cast<char*>(malloc(sizeof(char)*n + 1));
   strncpy_s(new_, n + 1, someString, n);
   new_[n] = '\0';
   return new_;
@@ -604,7 +602,7 @@ NAN_METHOD(List) {
   }
 
   ListBaton* baton = new ListBaton();
-  strcpy(baton->errorString, "");
+  snprintf(baton->errorString, sizeof(baton->errorString), "");
   baton->callback.Reset(info[0].As<v8::Function>());
 
   uv_work_t* req = new uv_work_t();
@@ -615,7 +613,7 @@ NAN_METHOD(List) {
 void EIO_List(uv_work_t* req) {
   ListBaton* data = static_cast<ListBaton*>(req->data);
 
-  GUID *guidDev = (GUID*)& GUID_DEVCLASS_PORTS;
+  GUID *guidDev = (GUID*)& GUID_DEVCLASS_PORTS;  // NOLINT
   HDEVINFO hDevInfo = SetupDiGetClassDevs(guidDev, NULL, NULL, DIGCF_PRESENT | DIGCF_PROFILE);
   SP_DEVINFO_DATA deviceInfoData;
 
@@ -662,10 +660,16 @@ void EIO_List(uv_work_t* req) {
       productId = copySubstring(productId, 4);
     }
 
-    if (SetupDiGetDeviceRegistryProperty(hDevInfo, &deviceInfoData, SPDRP_LOCATION_INFORMATION, &dwPropertyRegDataType, (BYTE*)szBuffer, sizeof(szBuffer), &dwSize)) {
+    if (SetupDiGetDeviceRegistryProperty(hDevInfo, &deviceInfoData,
+                                         SPDRP_LOCATION_INFORMATION, &dwPropertyRegDataType,
+                                         reinterpret_cast<BYTE*>(szBuffer),
+                                         sizeof(szBuffer), &dwSize)) {
       locationId = strdup(szBuffer);
     }
-    if (SetupDiGetDeviceRegistryProperty(hDevInfo, &deviceInfoData, SPDRP_MFG, &dwPropertyRegDataType, (BYTE*)szBuffer, sizeof(szBuffer), &dwSize)) {
+    if (SetupDiGetDeviceRegistryProperty(hDevInfo, &deviceInfoData,
+                                         SPDRP_MFG, &dwPropertyRegDataType,
+                                         reinterpret_cast<BYTE*>(szBuffer),
+                                         sizeof(szBuffer), &dwSize)) {
       manufacturer = strdup(szBuffer);
     }
 

@@ -8,7 +8,7 @@
 int linuxSetCustomBaudRate(const int fd, const unsigned int baudrate) {
     struct termios2 t;
 
-    if(ioctl(fd, TCGETS2, &t)) {
+    if (ioctl(fd, TCGETS2, &t)) {
       return -1;
     }
 
@@ -16,7 +16,7 @@ int linuxSetCustomBaudRate(const int fd, const unsigned int baudrate) {
     t.c_cflag |= BOTHER;
     t.c_ospeed = t.c_ispeed = baudrate;
 
-    if(ioctl(fd, TCSETS2, &t)) {
+    if (ioctl(fd, TCSETS2, &t)) {
       return -2;
     }
 
@@ -27,11 +27,11 @@ int linuxSetCustomBaudRate(const int fd, const unsigned int baudrate) {
 int linuxGetSystemBaudRate(const int fd, int* const outbaud) {
   struct termios2 t;
 
-  if(ioctl(fd, TCGETS2, &t)) {
+  if (ioctl(fd, TCGETS2, &t)) {
     return -1;
   }
 
-  *outbaud = (int)t.c_ospeed;
+  *outbaud = static_cast<int>(t.c_ospeed);
 
   return 0;
 }
