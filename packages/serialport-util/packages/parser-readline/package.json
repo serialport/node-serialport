@@ -1,0 +1,14 @@
+{
+  "name": "parser-readline",
+  "main": "readline.js",
+  "version": "1.0.0",
+  "dependencies": {
+    "parser-delimiter": "^1.0.0",
+    "safe-buffer": "^5.1.1"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/node-serialport/parsers.git"
+  }
+}
