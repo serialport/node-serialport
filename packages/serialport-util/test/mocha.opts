@@ -1,0 +1,3 @@
+packages/*/*-test.js
+--bail
+--require ./test/chai
