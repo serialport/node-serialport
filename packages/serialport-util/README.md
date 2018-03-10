@@ -13,6 +13,9 @@ Working with streams of binary data can be hard, this monorepo is a collection o
 - Parser ready
 - Parser regex
 
+## API Docs
+You can find the api docs in `/docs` or view them online here: https://node-serialport.github.io/parsers/
+
 ## License
 SerialPort Parsers are all [MIT licensed](LICENSE) and all it's dependencies are MIT or BSD licensed.
 
@@ -41,7 +44,9 @@ To request a new feature be added create a [github issue](https://github.com/nod
 
 <a name="pullrequests"></a>
 ## Submitting Pull Requests
-To contribute code to SerialPort Parsers, fork the project onto your github account and do your work in a branch. Before you submit the PR, make sure to rebase master into your branch so that you have the most recent changes and nothing breaks or conflicts.  Lint and test your code using `npm lint` and `npm test`. Also squash your commits to a reasonable size before submitting.
+To contribute code to SerialPort Parsers, fork the project onto your github account and do your work in a branch. Before you submit the PR, make sure to rebase master into your branch so that you have the most recent changes and nothing breaks or conflicts.  Lint and test your code using `npm run lint` and `npm run test`.
+
+You can use the generator `npm run generate` as a starting point for new streams.
 
 All contributions must adhere to the eslint rules by maintaining the existing coding style.
 

@@ -1,0 +1,13 @@
+{
+  "name": "{{dashCase name}}",
+  "version": "1.0.0",
+  "main": "{{dashCase name}}.js",
+  "dependencies": {
+    "safe-buffer": "^5.1.1"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/node-serialport/parsers.git"
+  }
+}
