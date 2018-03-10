@@ -7,9 +7,6 @@ node_js:
   - "6"
   - "8"
   - "9"
-
-before_install:
-- npm install -g npm
 install:
 - npm install
 - ./node_modules/.bin/lerna bootstrap
