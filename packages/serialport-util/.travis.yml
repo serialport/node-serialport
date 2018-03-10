@@ -10,7 +10,6 @@ node_js:
 
 before_install:
 - npm install -g npm
-
 install:
 - npm install
 - ./node_modules/.bin/lerna bootstrap
@@ -18,5 +17,5 @@ script:
 - npm run exec-test
 - npm run lint
 - npm run test
-
-after_success: npm run coverage
+after_success:
+- bash <(curl -s https://codecov.io/bash)

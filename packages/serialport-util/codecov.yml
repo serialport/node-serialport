@@ -1,0 +1,4 @@
+# add the following to your codecov.yml
+parsers:
+  javascript:
+    enable_partials: yes
