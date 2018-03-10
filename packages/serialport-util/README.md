@@ -1,8 +1,9 @@
 # Serialport Parsers
 
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
-[![Build Status](https://travis-ci.org/node-serialport/parsers.svg?branch=master)](https://travis-ci.org/node-serialport/parsers)
 [![Greenkeeper badge](https://badges.greenkeeper.io/node-serialport/parsers.svg)](https://greenkeeper.io/)
+[![Build Status](https://travis-ci.org/node-serialport/parsers.svg?branch=master)](https://travis-ci.org/node-serialport/parsers)
+[![codecov](https://codecov.io/gh/node-serialport/parsers/branch/master/graph/badge.svg)](https://codecov.io/gh/node-serialport/parsers)
 
 Working with streams of binary data can be hard, this monorepo is a collection of projects that make it easier. We currently have the following projects.
 
