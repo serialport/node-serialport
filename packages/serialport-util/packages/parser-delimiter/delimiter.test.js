@@ -143,4 +143,16 @@ describe('DelimiterParser', () => {
     assert.deepEqual(spy.getCall(1).args[0], Buffer.from('binary data'))
     assert.deepEqual(spy.getCall(2).args[0], Buffer.from('sent from a Moteino'))
   })
+
+  it('works if a multibyte delimiter crosses a chunk boundary', () => {
+    const parser = new DelimiterParser({ delimiter: Buffer.from([0, 1]) })
+    const spy = sinon.spy()
+    parser.on('data', spy)
+    parser.write(Buffer.from([1,2,3,0]))
+    parser.write(Buffer.from([1,2,3,0]))
+    parser.write(Buffer.from([1]))
+    assert.equal(spy.callCount, 2)
+    assert.deepEqual(spy.getCall(0).args[0], Buffer.from([1,2,3]))
+    assert.deepEqual(spy.getCall(1).args[0], Buffer.from([2,3]))
+  })
 })
