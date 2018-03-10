@@ -46,6 +46,9 @@ describe('ReadyParser', () => {
 
   it('throws when not provided with a delimiter', () => {
     assert.throws(() => {
+      new ReadyParser()
+    })
+    assert.throws(() => {
       new ReadyParser({})
     })
   })

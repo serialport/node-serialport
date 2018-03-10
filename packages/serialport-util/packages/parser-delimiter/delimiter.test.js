@@ -56,6 +56,9 @@ describe('DelimiterParser', () => {
     assert.throws(() => {
       new DelimiterParser({})
     })
+    assert.throws(() => {
+      new DelimiterParser()
+    })
   })
 
   it('throws when called with a 0 length delimiter', () => {
