@@ -2,12 +2,11 @@
 	"name": "serialport-parsers",
 	"private": true,
 	"scripts": {
-		"coverage": "nyc report --reporter=text-lcov | coveralls",
 		"docs": "jsdoc -c ./.jsdoc.json ",
 		"exec-test": "lerna exec node ./",
 		"generate": "plop",
 		"lint": "standard --env mocha packages",
-		"test": "nyc --reporter=html --reporter=text mocha"
+		"test": "nyc --reporter=html --reporter=text --reporter lcovonly mocha"
 	},
 	"license": "MIT",
 	"repository": {
@@ -16,7 +15,6 @@
 	},
 	"devDependencies": {
 		"chai": "^4.1.2",
-		"coveralls": "^3.0.0",
 		"docdash": "^0.4.0",
 		"jsdoc": "^3.5.5",
 		"lerna": "^2.9.0",
