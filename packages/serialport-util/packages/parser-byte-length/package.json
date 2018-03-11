@@ -1,6 +1,6 @@
 {
   "name": "parser-byte-length",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "byte-length.js",
   "dependencies": {
     "safe-buffer": "^5.1.1"
