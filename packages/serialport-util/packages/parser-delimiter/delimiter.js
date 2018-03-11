@@ -1,16 +1,17 @@
 'use strict'
 const Buffer = require('safe-buffer').Buffer
 const Transform = require('stream').Transform
+
 /**
  * A transform stream that emits data each time a byte sequence is received.
  * @extends Transform
+ * @summary To use the `Delimiter` parser, provide a delimiter as a string, buffer, or array of bytes. Runs in O(n) time.
  * @example
-// To use the `Delimiter` parser, provide a delimiter as a string, buffer, or array of bytes:
-const SerialPort = require('serialport');
-const Delimiter = SerialPort.parsers.Delimiter;
-const port = new SerialPort('/dev/tty-usbserial1');
-const parser = port.pipe(new Delimiter({ delimiter: '\n' }));
-parser.on('data', console.log);
+const SerialPort = require('serialport')
+const Delimiter = require('parser-delimiter')
+const port = new SerialPort('/dev/tty-usbserial1')
+const parser = port.pipe(new Delimiter({ delimiter: '\n' }))
+parser.on('data', console.log)
  */
 class DelimiterParser extends Transform {
   constructor (options) {
@@ -46,6 +47,6 @@ class DelimiterParser extends Transform {
     this.buffer = Buffer.alloc(0)
     cb()
   }
-};
+}
 
 module.exports = DelimiterParser

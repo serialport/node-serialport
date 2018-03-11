@@ -3,17 +3,17 @@ const Buffer = require('safe-buffer').Buffer
 const Transform = require('stream').Transform
 
 /**
- * A transform stream that emits data as a buffer after a specific number of bytes are received.
+ * Emit data every number of bytes
  * @extends Transform
  * @param {Object} options parser options object
  * @param {Number} options.length the number of bytes on each data event
+ * @summary A transform stream that emits data as a buffer after a specific number of bytes are received. Runs in O(n) time.
  * @example
-// To use the `ByteLength` parser:
-const SerialPort = require('serialport');
-const ByteLength = SerialPort.parsers.ByteLength
-const port = new SerialPort('/dev/tty-usbserial1');
-const parser = port.pipe(new ByteLength({length: 8}));
-parser.on('data', console.log); // will have 8 bytes per data event
+const SerialPort = require('serialport')
+const ByteLength = require('parser-byte-length')
+const port = new SerialPort('/dev/tty-usbserial1')
+const parser = port.pipe(new ByteLength({length: 8}))
+parser.on('data', console.log) // will have 8 bytes per data event
  */
 class ByteLengthParser extends Transform {
   constructor (options) {
@@ -53,6 +53,6 @@ class ByteLengthParser extends Transform {
     this.buffer = Buffer.alloc(this.length)
     cb()
   }
-};
+}
 
 module.exports = ByteLengthParser
