@@ -15,24 +15,9 @@ There are a lot of ways to get involved and help out:
 <a name="reporting-issues"></a>
 ## Reporting An Issue
 
-SerialPort does it's [issue tracking](https://github.com/node-serialport/node-serialport/issues) through github. To report an issue first search the repo to make sure that it has not been reported before.  If no one has reported the bug before, create a new issue and be sure to include the following information:
-
-Operating System and Hardware:
-NodeJS Version:
-Serialport version:
-Python Version (if you're having trouble building serialport):
-
-
-**Operating System:** (e.g Windows, OSX, Linux)
-**NodeJS Version:**
-**SerialPort Version**
-**Hardware you are having an issue with:** (e.g. arduino, another computer, etc)
-**What your expectations are:**
-**What the actual outcome is:**
-**Steps to reproduce (including code samples):**
+SerialPort does it's [issue tracking](https://github.com/node-serialport/node-serialport/issues) through github. To report an issue first search the repo to make sure that it has not been reported before.  If no one has reported the bug before, create a new issue and be sure to follow the issue template.
 
 If the issue has been reported before but you have new information to help troubleshoot the issue, add a comment to the thread with the same information as requested above.
-
 
 <a name="requesting-features"></a>
 ## Requesting Features
@@ -43,7 +28,7 @@ To request a new feature be added take a look at the [current roadmap](https://g
 
 <a name="pullrequests"></a>
 ## Submitting Pull Requests
-To contribute code to SerialPort, fork the project onto your github account and do your work in a branch. Before you submit the PR, make sure to rebase master into your branch so that you have the most recent changes and nothing breaks or conflicts.  Lint and test your code using `npm lint` and `npm test`. Also squash your commits to a reasonable size before submitting.
+To contribute code to SerialPort, fork the project onto your github account and do your work in a branch. Before you submit the PR, make sure to rebase master into your branch so that you have the most recent changes and nothing breaks or conflicts.  Lint and test your code using `npm run lint` and `npm run test`.
 
 All contributions must adhere to the eslint rules by maintaining the existing coding style.
 
