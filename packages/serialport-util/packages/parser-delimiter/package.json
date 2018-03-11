@@ -1,7 +1,7 @@
 {
   "name": "parser-delimiter",
   "main": "delimiter.js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "dependencies": {
     "safe-buffer": "^5.1.1"
   },
