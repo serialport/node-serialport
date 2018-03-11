@@ -1,18 +1,18 @@
 'use strict'
 const Buffer = require('safe-buffer').Buffer
 const Transform = require('stream').Transform
+
 /**
  * A transform stream that waits for a sequence of "ready" bytes before emitting a ready event and emitting data events
- *
- * To use the `Ready` parser provide a byte start sequence. After the bytes have been received a ready event is fired and data events are passed through.
+ * @summary To use the `Ready` parser provide a byte start sequence. After the bytes have been received a ready event is fired and data events are passed through.
  * @extends Transform
  * @example
-const SerialPort = require('serialport');
-const Ready = SerialPort.parsers.Ready;
-const port = new SerialPort('/dev/tty-usbserial1');
-const parser = port.pipe(new Ready({ delimiter: 'READY' }));
+const SerialPort = require('serialport')
+const Ready = = require('parser-ready')
+const port = new SerialPort('/dev/tty-usbserial1')
+const parser = port.pipe(new Ready({ delimiter: 'READY' }))
 parser.on('ready', () => console.log('the ready byte sequence has been received'))
-parser.on('data', console.log); // all data after READY is received
+parser.on('data', console.log) // all data after READY is received
  */
 class ReadyParser extends Transform {
   /**
@@ -61,6 +61,6 @@ class ReadyParser extends Transform {
     }
     cb()
   }
-};
+}
 
 module.exports = ReadyParser

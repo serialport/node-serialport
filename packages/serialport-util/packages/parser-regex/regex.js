@@ -1,16 +1,17 @@
 'use strict'
 const Transform = require('stream').Transform
+
 /**
  * A transform stream that uses a regular expression to split the incoming text upon.
  *
  * To use the `Regex` parser provide a regular expression to split the incoming text upon. Data is emitted as string controllable by the `encoding` option (defaults to `utf8`).
  * @extends Transform
  * @example
-const SerialPort = require('serialport');
-const Regex = SerialPort.parsers.Regex;
-const port = new SerialPort('/dev/tty-usbserial1');
-const parser = port.pipe(new Regex({ regex: /[\r\n]+/ }));
-parser.on('data', console.log);
+const SerialPort = require('serialport')
+const Regex = = require('parser-regex')
+const port = new SerialPort('/dev/tty-usbserial1')
+const parser = port.pipe(new Regex({ regex: /[\r\n]+/ }))
+parser.on('data', console.log)
  */
 class RegexParser extends Transform {
   constructor (options) {
@@ -28,13 +29,13 @@ class RegexParser extends Transform {
     super(opts)
 
     this.regex = opts.regex
-    this.buffer = ''
+    this.data = ''
   }
 
   _transform (chunk, encoding, cb) {
-    const data = this.buffer + chunk
+    const data = this.data + chunk
     const parts = data.split(this.regex)
-    this.buffer = parts.pop()
+    this.data = parts.pop()
 
     parts.forEach((part) => {
       this.push(part)
@@ -43,10 +44,10 @@ class RegexParser extends Transform {
   }
 
   _flush (cb) {
-    this.push(this.buffer)
-    this.buffer = ''
+    this.push(this.data)
+    this.data = ''
     cb()
   }
-};
+}
 
 module.exports = RegexParser

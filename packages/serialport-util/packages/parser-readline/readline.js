@@ -1,17 +1,17 @@
 'use strict'
 const Buffer = require('safe-buffer').Buffer
 const DelimiterParser = require('parser-delimiter')
+
 /**
  *  A transform stream that emits data after a newline delimiter is received.
- *
- *  To use the `Readline` parser, provide a delimiter (defaults to `\n`). Data is emitted as string controllable by the `encoding` option (defaults to `utf8`).
+ * @summary To use the `Readline` parser, provide a delimiter (defaults to `\n`). Data is emitted as string controllable by the `encoding` option (defaults to `utf8`).
  * @extends DelimiterParser
  * @example
-const SerialPort = require('serialport');
-const Readline = SerialPort.parsers.Readline;
-const port = new SerialPort('/dev/tty-usbserial1');
-const parser = port.pipe(new Readline({ delimiter: '\r\n' }));
-parser.on('data', console.log);
+const SerialPort = require('serialport')
+const Readline = = require('parser-readline')
+const port = new SerialPort('/dev/tty-usbserial1')
+const parser = port.pipe(new Readline({ delimiter: '\r\n' }))
+parser.on('data', console.log)
 */
 class ReadLineParser extends DelimiterParser {
   constructor (options) {
@@ -26,6 +26,6 @@ class ReadLineParser extends DelimiterParser {
 
     super(opts)
   }
-};
+}
 
 module.exports = ReadLineParser
