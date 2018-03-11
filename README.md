@@ -20,16 +20,17 @@ We're not against firmware but we're better than it.
 
 ## Quick Answers to Important Questions
 - [**API Docs**](https://node-serialport.github.io/node-serialport/)
+- [Parsers API Docs](https://node-serialport.github.io/parsers/)
 - **For support**, open a [GitHub issue](https://github.com/node-serialport/node-serialport/issues/new).
 - **For discussions, design ideas, and clarifications**, please join our [Gitter chat room](https://gitter.im/EmergingTechnologyAdvisors/node-serialport).
-- **To test Node-Serialport**, we recommend two related projects—[Browser Serialport](https://github.com/garrows/browser-serialport) ("just like Node Serialport, but for browser apps") and [Serialport Test Piliot](https://github.com/j5js/serialport-test-pilot).
 - **To contribute**, please review our [contribution guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md). You might want to check out our [roadmap](https://github.com/node-serialport/node-serialport/issues/746). We also have issues tagged ["good first PR"](https://github.com/node-serialport/node-serialport/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+pr%22), if you'd like to start somewhere specific. We'll do our best to support you until we merge your PR.
 
 ***
 
 ## API Documentation
 
-Can be found at https://node-serialport.github.io/node-serialport/
+- [API Docs](https://node-serialport.github.io/parsers/)
+- [Parsers API Docs](https://node-serialport.github.io/parsers/)
 
 See our [changelog](CHANGELOG.md) for what's new, and our [upgrade guide](UPGRADE_GUIDE.md) for a walk-through on differences between major versions.
 
@@ -42,6 +43,8 @@ npm run docs
 ```
 
 And browsing to `./docs/index.html`.
+
+Parsers have been spun out in to their own [GitHub Repo](https://github.com/node-serialport/parsers).
 
 ***
 ## Helpful Resources for Getting Started with Node-Serialport
@@ -69,7 +72,7 @@ In addition to reading the [article mentioned above](http://www.voodootikigod.co
   * [Testing](#testing)
   * [Debugging](#debugging)
   * [Error Handling](#error-handling)
-d* [Command Line Tools](#command-line-tools)
+* [Command Line Tools](#command-line-tools)
   * [Serial Port List](#serial-port-list)
   * [Srial Port Terminal](#serial-port-terminal)
   * [Serial Port Repl](#serial-port-repl)
