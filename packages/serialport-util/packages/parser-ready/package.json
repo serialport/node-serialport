@@ -1,7 +1,7 @@
 {
   "name": "parser-ready",
   "main": "ready.js",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "dependencies": {
     "safe-buffer": "^5.1.1"
   },
