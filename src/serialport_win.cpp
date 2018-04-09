@@ -388,6 +388,7 @@ void EIO_AfterWrite(uv_async_t* req) {
     argv[0] = Nan::Null();
   }
   baton->callback.Call(1, argv);
+  baton->buffer.Reset();
   delete baton;
 }
 
