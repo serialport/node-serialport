@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>bindings/poller.js - Postman Documentation</title>
+    <title>bindings/darwin.js - Postman Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -35,7 +35,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">bindings/poller.js</h1>
+    <h1 class="page-title">bindings/darwin.js</h1>
     
 
     
@@ -46,107 +46,108 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>'use strict';
-const debug = require('debug');
-const logger = debug('serialport:poller');
-const EventEmitter = require('events');
-const FDPoller = require('bindings')('serialport.node').Poller;
+const binding = require('bindings')('serialport.node');
+const BaseBinding = require('./base');
+const Poller = require('./poller');
+const promisify = require('../util').promisify;
+const unixRead = require('./unix-read');
+const unixWrite = require('./unix-write');
 
-const EVENTS = {
-  UV_READABLE: 1,
-  UV_WRITABLE: 2,
-  UV_DISCONNECT: 4
-};
+const defaultBindingOptions = Object.freeze({
+  vmin: 1,
+  vtime: 0
+});
 
-function handleEvent(error, eventFlag) {
-  if (error) {
-    logger('error', error);
-    this.emit('readable', error);
-    this.emit('writable', error);
-    this.emit('disconnect', error);
-    return;
+/**
+ * The Darwin binding layer for OSX
+ */
+class DarwinBinding extends BaseBinding {
+  static list() {
+    return promisify(binding.list)();
   }
-  if (eventFlag &amp; EVENTS.UV_READABLE) {
-    logger('received "readable"');
-    this.emit('readable', null);
+
+  constructor(opt) {
+    super(opt);
+    this.bindingOptions = Object.assign({}, defaultBindingOptions, opt.bindingOptions || {});
+    this.fd = null;
+    this.writeOperation = null;
   }
-  if (eventFlag &amp; EVENTS.UV_WRITABLE) {
-    logger('received "writable"');
-    this.emit('writable', null);
+
+  get isOpen() {
+    return this.fd !== null;
   }
-  if (eventFlag &amp; EVENTS.UV_DISCONNECT) {
-    logger('received "disconnect"');
-    this.emit('disconnect', null);
+
+  open(path, options) {
+    return super.open(path, options)
+      .then(() => {
+        this.openOptions = Object.assign({}, this.bindingOptions, options);
+        return promisify(binding.open)(path, this.openOptions);
+      })
+      .then((fd) => {
+        this.fd = fd;
+        this.poller = new Poller(fd);
+      });
+  }
+
+  close() {
+    return super.close()
+      .then(() => {
+        const fd = this.fd;
+        this.poller.stop();
+        this.poller = null;
+        this.openOptions = null;
+        this.fd = null;
+        return promisify(binding.close)(fd);
+      });
+  }
+
+  read(buffer, offset, length) {
+    return super.read(buffer, offset, length)
+      .then(() => unixRead.call(this, buffer, offset, length));
+  }
+
+  write(buffer) {
+    this.writeOperation = super.write(buffer)
+      .then(() => unixWrite.call(this, buffer))
+      .then(() => {
+        this.writeOperation = null;
+      });
+    return this.writeOperation;
+  }
+
+  update(options) {
+    return super.update(options)
+      .then(() => promisify(binding.update)(this.fd, options));
+  }
+
+  set(options) {
+    return super.set(options)
+      .then(() => promisify(binding.set)(this.fd, options));
+  }
+
+  get() {
+    return super.get()
+      .then(() => promisify(binding.get)(this.fd));
+  }
+
+  getBaudRate() {
+    return super.get()
+      .then(() => promisify(binding.getBaudRate)(this.fd));
+  }
+
+  drain() {
+    return super.drain()
+      .then(() => Promise.resolve(this.writeOperation))
+      .then(() => promisify(binding.drain)(this.fd));
+  }
+
+  flush() {
+    return super.flush()
+      .then(() => promisify(binding.flush)(this.fd));
   }
 }
 
-/**
- * Polls unix systems for readable or writable states of a file or serialport
- */
-class Poller extends EventEmitter {
-  constructor(fd) {
-    logger('Creating poller');
-    super();
-    this.poller = new FDPoller(fd, handleEvent.bind(this));
-  }
-  /**
-   * Wait for the next event to occur
-   * @param {string} event ('readable'|'writable'|'disconnect')
-   * @returns {Poller} returns itself
-   */
-  once(event) {
-    switch (event) {
-      case 'readable':
-        this.poll(EVENTS.UV_READABLE);
-        break;
-      case 'writable':
-        this.poll(EVENTS.UV_WRITABLE);
-        break;
-      case 'disconnect':
-        this.poll(EVENTS.UV_DISCONNECT);
-        break;
-    }
-    return EventEmitter.prototype.once.apply(this, arguments);
-  }
-
-  /**
-   * Ask the bindings to listen for an event, it is recommend to use `.once()` for easy use
-   * @param {EVENTS} eventFlag polls for an event or group of events based upon a flag.
-   * @returns {undefined}
-   */
-  poll(eventFlag) {
-    eventFlag = eventFlag || 0;
-
-    if (eventFlag &amp; EVENTS.UV_READABLE) {
-      logger('Polling for "readable"');
-    }
-    if (eventFlag &amp; EVENTS.UV_WRITABLE) {
-      logger('Polling for "writable"');
-    }
-    if (eventFlag &amp; EVENTS.UV_DISCONNECT) {
-      logger('Polling for "disconnect"');
-    }
-
-    this.poller.poll(eventFlag);
-  }
-
-  /**
-   * Stop listening for events and cancel all outstanding listening with an error
-   * @returns {undefined}
-   */
-  stop() {
-    logger('Stopping poller');
-    this.poller.stop();
-    const err = new Error('Canceled');
-    err.canceled = true;
-    this.emit('readable', err);
-    this.emit('writable', err);
-    this.emit('disconnect', err);
-  }
-};
-
-Poller.EVENTS = EVENTS;
-
-module.exports = Poller;
+module.exports = DarwinBinding;
 </code></pre>
         </article>
     </section>

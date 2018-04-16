@@ -29,7 +29,7 @@ We're not against firmware but we're better than it.
 
 ## API Documentation
 
-- [API Docs](https://node-serialport.github.io/parsers/)
+- [**API Docs**](https://node-serialport.github.io/node-serialport/)
 - [Parsers API Docs](https://node-serialport.github.io/parsers/)
 
 See our [changelog](CHANGELOG.md) for what's new, and our [upgrade guide](UPGRADE_GUIDE.md) for a walk-through on differences between major versions.
