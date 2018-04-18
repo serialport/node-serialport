@@ -1,3 +1,31 @@
+<a name="6.2.0"></a>
+## 6.2.0 (2018-04-18)
+
+This is a recommended release for everyone on windows as it fixes a memory leak in write operations.
+
+* docs: fix missing options objects and descriptions (#1504) ([e8b73c2](https://github.com/node-serialport/node-serialport/commit/e8b73c2)), closes [#1504](https://github.com/node-serialport/node-serialport/issues/1504)
+* docs: node 9 is working well these days ([b585c11](https://github.com/node-serialport/node-serialport/commit/b585c11))
+* docs: Switch to @reconbot/jsdoc-theme for docs ([a31078f](https://github.com/node-serialport/node-serialport/commit/a31078f))
+* docs(contributing): clean up the instructions a little bit ([71f2480](https://github.com/node-serialport/node-serialport/commit/71f2480))
+* docs(parsers): improve the parser examples ([41f1d2d](https://github.com/node-serialport/node-serialport/commit/41f1d2d))
+* fix(windows): Reset Buffer after write operations are complete to free memory (#1547) ([a1eef11](https://github.com/node-serialport/node-serialport/commit/a1eef11)), closes [#1547](https://github.com/node-serialport/node-serialport/issues/1547)
+* chore: Avoid using deprecated Buffer constructor (#1510) ([0c1533b](https://github.com/node-serialport/node-serialport/commit/0c1533b)), closes [#1510](https://github.com/node-serialport/node-serialport/issues/1510) [/nodejs.org/api/deprecations.html#deprecations_dep0005](https://github.com//nodejs.org/api/deprecations.html/issues/deprecations_dep0005)
+* chore: fix package json indents ([7c9b609](https://github.com/node-serialport/node-serialport/commit/7c9b609))
+* chore: move parsers to their new packages and clean up docs ([4bccb62](https://github.com/node-serialport/node-serialport/commit/4bccb62))
+* chore: remove old doc file ([37a8373](https://github.com/node-serialport/node-serialport/commit/37a8373))
+* chore(docs): Minor spelling change ([8a13e9f](https://github.com/node-serialport/node-serialport/commit/8a13e9f))
+* chore(package): update eslint-config-standard to version 11.0.0 (#1492) ([cf5b8fb](https://github.com/node-serialport/node-serialport/commit/cf5b8fb)), closes [#1492](https://github.com/node-serialport/node-serialport/issues/1492)
+* chore(package): update proxyquire to version 2.0.0 (#1511) ([bac0237](https://github.com/node-serialport/node-serialport/commit/bac0237)), closes [#1511](https://github.com/node-serialport/node-serialport/issues/1511)
+* chore(package): update sinon to version 5.0.0 ([9dbccbc](https://github.com/node-serialport/node-serialport/commit/9dbccbc))
+* chore(packages): ugprade conventional-changelog-cli@1.3.15 ([270c2be](https://github.com/node-serialport/node-serialport/commit/270c2be))
+* chore(packages): ugprade nan@2.9.2 (#1503) ([557afa4](https://github.com/node-serialport/node-serialport/commit/557afa4)), closes [#1503](https://github.com/node-serialport/node-serialport/issues/1503)
+* chore(packages): upgrade conventional-changelog@1.3.12 ([2b8f957](https://github.com/node-serialport/node-serialport/commit/2b8f957))
+* feat: upgrade socket-io example to latest serialport and fix bug (#1505) ([86e5ab0](https://github.com/node-serialport/node-serialport/commit/86e5ab0)), closes [#1505](https://github.com/node-serialport/node-serialport/issues/1505)
+* feat(linter): Added 'cc' to lint the C++ code on 'npm lint' (#1501) ([59960a3](https://github.com/node-serialport/node-serialport/commit/59960a3)), closes [#1501](https://github.com/node-serialport/node-serialport/issues/1501)
+* feat(windows): Fetch USB serial number by lookups in win registry (#1483) ([45b3a2f](https://github.com/node-serialport/node-serialport/commit/45b3a2f)), closes [#1483](https://github.com/node-serialport/node-serialport/issues/1483) [#1459](https://github.com/node-serialport/node-serialport/issues/1459)
+
+
+
 <a name="6.1.1"></a>
 ## <small>6.1.1 (2018-02-28)</small>
 
