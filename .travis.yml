@@ -19,24 +19,24 @@ env:
   global:
   - secure: "L+AGMJc5NAsuym+xzB4FWj0c2rCobosixkoxLBhDBVkLiYsMtfS9y1w8Xz0pbWKJnJAH9tfwHluu5aX2qYk2HbreSyNzy8hbPW+9RbSyAQexeiZG4mLuDEz0xvlpCCQBsS1OfMypQk0/JvL4oA9B/xasrpkeVuPI7dwAz2WcFms="
   matrix:
-  - TRAVIS_NODE_VERSION="4"
-  - TRAVIS_NODE_VERSION="4" ARCH="x86"
   - TRAVIS_NODE_VERSION="6"
   - TRAVIS_NODE_VERSION="6" ARCH="x86"
   - BINARY_BUILDER="true" TRAVIS_NODE_VERSION="8"
   - BINARY_BUILDER="true" TRAVIS_NODE_VERSION="8" ARCH="x86"
   - TRAVIS_NODE_VERSION="9"
   - TRAVIS_NODE_VERSION="9" ARCH="x86"
+  - TRAVIS_NODE_VERSION="10"
+  - TRAVIS_NODE_VERSION="10" ARCH="x86"
 matrix:
   exclude:
-  - os: osx
-    env: TRAVIS_NODE_VERSION="4" ARCH="x86"
   - os: osx
     env: TRAVIS_NODE_VERSION="6" ARCH="x86"
   - os: osx
     env: BINARY_BUILDER="true" TRAVIS_NODE_VERSION="8" ARCH="x86"
   - os: osx
     env: TRAVIS_NODE_VERSION="9" ARCH="x86"
+  - os: osx
+    env: TRAVIS_NODE_VERSION="10" ARCH="x86"
 
 before_install:
 
@@ -56,9 +56,6 @@ before_install:
 # use g++-4.8 on Linux
 - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.8; fi
 - $CXX --version
-
-# upgrade npm if on node 4 as npm2 doesn't like our dev peer deps
-- if [[ $TRAVIS_NODE_VERSION == "4" ]]; then npm install -g npm; fi
 
 # Cleanup the output of npm
 - npm config set progress false
@@ -89,12 +86,7 @@ install:
 - npm install --build-from-source
 
 script:
-  # linting no longer works on node 4
-- >
-  if [[ $TRAVIS_NODE_VERSION != "4" ]]; then
-    npm run lint
-  fi;
-
+- npm run lint
 - node ./
 - npm test
 

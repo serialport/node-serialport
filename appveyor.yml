@@ -6,30 +6,19 @@ environment:
     secure: iDcAJCYgJK4tffyzEHbMVR8DatJcIN8eY0h29p9JQkl43TcEcm6Z6JLOBpGDk1MJ
 
   matrix:
-  - nodejs_version: "4"
   - nodejs_version: "6"
   - binary_builder: "true"
     nodejs_version: "8"
   - nodejs_version: "9"
+  - nodejs_version: "10"
 
 platform:
 - x86
 - x64
 
-# Dropping support for node 4 on 32 windows because it has isuses with ssl certs and npm
-matrix:
-  exclude:
-    - platform: x86
-      nodejs_version: "4"
-
-
 install:
 - ps: Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:platform;
-# upgrade npm if on node 4 as npm2 doesn't like our dev peer deps
 - ps: >
-    if ($env:nodejs_version -eq "4") {
-      npm install -g npm | Write-Host;
-    }
     npm config set progress false
     npm config set spin false
 
@@ -66,9 +55,7 @@ build_script:
 
 test_script:
 - ps: >
-    if ($env:nodejs_version -ne "4") {
-      npm run lint
-    }
+    npm run lint
     node ./
 
 # If we run npm test in powershell it'll have the wrong encoding so we have to do it like this
