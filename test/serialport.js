@@ -13,7 +13,7 @@ describe('SerialPort', () => {
 
   beforeEach(() => {
     SerialPort.Binding = mockBinding;
-    sandbox = sinon.sandbox.create();
+    sandbox = sinon.createSandbox();
     mockBinding.createPort('/dev/exists', { echo: true, readyData: new Buffer(0) });
   });
 
