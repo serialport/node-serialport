@@ -157,7 +157,7 @@ static stDeviceListItem* GetSerialDevices() {
       if (result) {
         stDeviceListItem *deviceListItem = reinterpret_cast<stDeviceListItem*>( malloc(sizeof(stDeviceListItem)));
         stSerialDevice *serialDevice = &(deviceListItem->value);
-        snprintf(serialDevice->port, sizeof(serialDevice->port), bsdPath);
+        snprintf(serialDevice->port, sizeof(serialDevice->port), "%s", bsdPath);
         memset(serialDevice->locationId, 0, sizeof(serialDevice->locationId));
         memset(serialDevice->vendorId, 0, sizeof(serialDevice->vendorId));
         memset(serialDevice->productId, 0, sizeof(serialDevice->productId));
@@ -199,7 +199,7 @@ static stDeviceListItem* GetSerialDevices() {
                           kCFStringEncodingUTF8);
 
             if (result) {
-              snprintf(serialDevice->manufacturer, sizeof(serialDevice->manufacturer), manufacturer);
+              snprintf(serialDevice->manufacturer, sizeof(serialDevice->manufacturer), "%s", manufacturer);
             }
 
             CFRelease(manufacturerAsCFString);
@@ -222,7 +222,7 @@ static stDeviceListItem* GetSerialDevices() {
                           kCFStringEncodingUTF8);
 
             if (result) {
-              snprintf(serialDevice->serialNumber, sizeof(serialDevice->serialNumber), serialNumber);
+              snprintf(serialDevice->serialNumber, sizeof(serialDevice->serialNumber), "%s", serialNumber);
             }
 
             CFRelease(serialNumberAsCFString);
