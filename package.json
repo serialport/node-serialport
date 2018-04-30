@@ -66,7 +66,7 @@
     "parser-readline": "^1.0.2",
     "parser-ready": "^1.0.2",
     "parser-regex": "^1.0.2",
-    "prebuild-install": "^2.5.3",
+    "prebuild-install": "^3.0.0",
     "promirepl": "^1.0.1",
     "prompt-list": "^3.1.2",
     "safe-buffer": "^5.0.1"
