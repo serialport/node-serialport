@@ -1,0 +1,13 @@
+{
+  "name": "parser-slip-encoder",
+  "main": "slip-encoder.js",
+  "version": "1.0.2",
+  "dependencies": {
+    "safe-buffer": "^5.1.1"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/node-serialport/parsers.git"
+  }
+}
