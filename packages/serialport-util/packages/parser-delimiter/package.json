@@ -1,9 +1,12 @@
 {
-  "name": "parser-delimiter",
+  "name": "@serialport/parser-delimiter",
   "main": "delimiter.js",
   "version": "1.0.2",
   "dependencies": {
     "safe-buffer": "^5.1.1"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "license": "MIT",
   "repository": {

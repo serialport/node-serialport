@@ -1,9 +1,12 @@
 {
-  "name": "{{dashCase name}}",
+  "name": "@serialport/{{dashCase name}}",
   "version": "1.0.0",
   "main": "{{dashCase name}}.js",
   "dependencies": {
-    "safe-buffer": "^5.1.1"
+    "safe-buffer": "^5.1.2"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "license": "MIT",
   "repository": {

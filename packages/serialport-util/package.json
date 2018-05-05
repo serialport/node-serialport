@@ -1,11 +1,12 @@
 {
-	"name": "serialport-parsers",
+	"name": "@serialport/parsers",
 	"private": true,
 	"scripts": {
 		"docs": "jsdoc -c ./.jsdoc.json ",
 		"exec-test": "lerna exec node ./",
 		"generate": "plop",
 		"lint": "standard --env mocha packages",
+		"publish": "lerna publish",
 		"test": "nyc --reporter=html --reporter=text --reporter lcovonly mocha"
 	},
 	"license": "MIT",
