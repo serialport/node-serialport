@@ -8,7 +8,7 @@ const Transform = require('stream').Transform
  * @extends Transform
  * @example
 const SerialPort = require('serialport')
-const Ready = = require('parser-ready')
+const Ready = require('parser-ready')
 const port = new SerialPort('/dev/tty-usbserial1')
 const parser = port.pipe(new Ready({ delimiter: 'READY' }))
 parser.on('ready', () => console.log('the ready byte sequence has been received'))
