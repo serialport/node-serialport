@@ -8,7 +8,7 @@ const Transform = require('stream').Transform
  * @extends Transform
  * @example
 const SerialPort = require('serialport')
-const Regex = = require('parser-regex')
+const Regex = require('parser-regex')
 const port = new SerialPort('/dev/tty-usbserial1')
 const parser = port.pipe(new Regex({ regex: /[\r\n]+/ }))
 parser.on('data', console.log)
