@@ -8,7 +8,7 @@ const Buffer = require('safe-buffer').Buffer
  * @summary A transform stream that emits CCTalk packets as they are received.
  * @example
 const SerialPort = require('serialport')
-const CCTalk = require('parser-cctalk')
+const CCTalk = require('@serialport/parser-cctalk')
 const port = new SerialPort('/dev/ttyUSB0')
 const parser = port.pipe(new CCtalk())
 parser.on('data', console.log)

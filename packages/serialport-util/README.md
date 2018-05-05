@@ -13,6 +13,7 @@ Working with streams of binary data can be hard, this monorepo is a collection o
 - Parser readline
 - Parser ready
 - Parser regex
+- Parser slip-encoder
 
 ## API Docs
 You can find the api docs in `/docs` or view them online here: https://node-serialport.github.io/parsers/
