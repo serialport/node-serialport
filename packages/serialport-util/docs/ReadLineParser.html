@@ -121,7 +121,7 @@
     <h5>Example</h5>
     
     <pre class="prettyprint"><code>const SerialPort = require('serialport')
-const Readline = = require('parser-readline')
+const Readline = require('parser-readline')
 const port = new SerialPort('/dev/tty-usbserial1')
 const parser = port.pipe(new Readline({ delimiter: '\r\n' }))
 parser.on('data', console.log)</code></pre>
