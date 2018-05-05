@@ -1,9 +1,12 @@
 {
-  "name": "parser-byte-length",
+  "name": "@serialport/parser-byte-length",
   "version": "1.0.2",
   "main": "byte-length.js",
   "dependencies": {
     "safe-buffer": "^5.1.1"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "license": "MIT",
   "repository": {

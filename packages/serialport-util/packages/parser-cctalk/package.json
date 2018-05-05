@@ -1,9 +1,12 @@
 {
-  "name": "parser-cctalk",
+  "name": "@serialport/parser-cctalk",
   "version": "1.0.2",
   "main": "cctalk.js",
   "dependencies": {
     "safe-buffer": "^5.1.1"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "license": "MIT",
   "repository": {
