@@ -18,7 +18,7 @@ const ESC_ESC = 0xDD;
 * @example
 // Read lines from a text file, then SLIP-encode each and send them to a serial port
 const SerialPort = require('serialport')
-const SlipEncoder = require('parser-slip-encoder')
+const SlipEncoder = require('@serialport/parser-slip-encoder')
 const Readline = require('parser-readline')
 const fileReader = require('fs').createReadStream('/tmp/some-file.txt');
 const port = new SerialPort('/dev/tty-usbserial1')

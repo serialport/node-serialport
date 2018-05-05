@@ -8,7 +8,7 @@ const DelimiterParser = require('parser-delimiter')
  * @extends DelimiterParser
  * @example
 const SerialPort = require('serialport')
-const Readline = require('parser-readline')
+const Readline = require('@serialport/parser-readline')
 const port = new SerialPort('/dev/tty-usbserial1')
 const parser = port.pipe(new Readline({ delimiter: '\r\n' }))
 parser.on('data', console.log)

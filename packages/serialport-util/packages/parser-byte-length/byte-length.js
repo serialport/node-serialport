@@ -10,7 +10,7 @@ const Transform = require('stream').Transform
  * @summary A transform stream that emits data as a buffer after a specific number of bytes are received. Runs in O(n) time.
  * @example
 const SerialPort = require('serialport')
-const ByteLength = require('parser-byte-length')
+const ByteLength = require('@serialport/parser-byte-length')
 const port = new SerialPort('/dev/tty-usbserial1')
 const parser = port.pipe(new ByteLength({length: 8}))
 parser.on('data', console.log) // will have 8 bytes per data event
