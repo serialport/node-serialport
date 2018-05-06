@@ -85,7 +85,7 @@ In addition to reading the [article mentioned above](http://www.voodootikigod.co
 
 | Platform / Arch | Node v4.x | Node v6.x | Node v8.x | Node v9.x | Node v10.x |
 |       ---       | --- | --- | --- | --- | --- |
-| Linux / ia32    |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
+| Linux / ia32    |  ☑  |  ☑  |  ☑  |  ☑  |  ☐  |
 | Linux / x64     |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
 | Linux / ARM v6¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
 | Linux / ARM v7¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
