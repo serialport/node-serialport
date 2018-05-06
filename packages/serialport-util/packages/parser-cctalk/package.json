@@ -1,6 +1,6 @@
 {
   "name": "@serialport/parser-cctalk",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "cctalk.js",
   "dependencies": {
     "safe-buffer": "^5.1.1"
