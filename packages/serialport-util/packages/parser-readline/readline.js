@@ -1,6 +1,6 @@
 'use strict'
 const Buffer = require('safe-buffer').Buffer
-const DelimiterParser = require('parser-delimiter')
+const DelimiterParser = require('@serialport/parser-delimiter')
 
 /**
  *  A transform stream that emits data after a newline delimiter is received.
