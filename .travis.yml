@@ -37,10 +37,13 @@ matrix:
     env: TRAVIS_NODE_VERSION="9" ARCH="x86"
   - os: osx
     env: TRAVIS_NODE_VERSION="10" ARCH="x86"
+  - os: linux
+    env: TRAVIS_NODE_VERSION="10" ARCH="x86"
 
 before_install:
 
 # download node if testing x86 architecture
+- nvm install $TRAVIS_NODE_VERSION
 - >
   if [[ "$ARCH" == "x86" ]]; then
     BASE_URL=$(node -p "'https://nodejs.org/dist/' + process.version");
@@ -48,9 +51,7 @@ before_install:
     wget $BASE_URL/$X86_FILE.tar.gz;
     tar -xf $X86_FILE.tar.gz;
     nvm deactivate;
-    export PATH=$X86_FILE/bin:$PATH;
-  else
-    nvm install $TRAVIS_NODE_VERSION
+    export PATH=`pwd`/$X86_FILE/bin:$PATH;
   fi;
 
 # use g++-4.8 on Linux
