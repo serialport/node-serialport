@@ -35,7 +35,7 @@ function integrationTest(platform, testPort, Binding) {
 
   describe(`${platform} SerialPort Integration Tests`, () => {
     if (!testPort) {
-      it(`${platform} tests requires an Arduino loaded with the arduinoEcho program on a serialport set to the TEST_PORT env var`);
+      it(`${platform} tests requires a serial device, such as an Arduino or FTDI module, with shorted TX and RX pins with the TEST_PORT env var set to its address (/dev/ttyXXXX, COMX or similar for your platform)`);
       return;
     }
 
@@ -143,6 +143,7 @@ function integrationTest(platform, testPort, Binding) {
 
         port.open((err) => {
           assert.isNull(err);
+          port.write(readyData);
         });
         port.once('data', () => {
           port.close();
@@ -152,6 +153,7 @@ function integrationTest(platform, testPort, Binding) {
           assert.isNull(err);
           port.open((err) => {
             assert.isNull(err);
+            port.write(readyData);
           });
           port.once('data', () => {
             port.close(done);
@@ -173,7 +175,8 @@ function integrationTest(platform, testPort, Binding) {
     });
 
     describe('#update', () => {
-      testFeature('port.update-baudrate', 'allows changing the baud rate of an open port', (done) => {
+      testFeature('port.update-baudrate', 'allows changing the baud rate of an open port', function (done) {
+        this.timeout(6000);
         const port = new SerialPort(testPort, () => {
           port.update({ baudRate: 57600 }, (err) => {
             assert.isNull(err);
@@ -192,9 +195,10 @@ function integrationTest(platform, testPort, Binding) {
         port.on('error', done);
         const ready = port.pipe(new SerialPort.parsers.Ready({ delimiter: readyData }));
 
+        port.write(readyData);
         // this will trigger from the "READY" the arduino sends when it's... ready
         ready.on('ready', () => {
-          port.write(input);
+          port.flush(() => port.write(input));
         });
 
         const readData = Buffer.alloc(input.length, 0);
@@ -241,6 +245,7 @@ function integrationTest(platform, testPort, Binding) {
         const port = new SerialPort(testPort);
         port.on('error', done);
         const ready = port.pipe(new SerialPort.parsers.Ready({ delimiter: 'READY' }));
+        port.write(readyData);
         ready.on('ready', () => {
           // we should have a pending read now since we're in flowing mode
           port.flush((err) => {

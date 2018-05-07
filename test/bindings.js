@@ -390,7 +390,10 @@ function testBinding(bindingName, Binding, testPort) {
           return binding.open(testPort, defaultOpenOptions);
         });
 
-        afterEach(() => binding.close());
+        afterEach(function () {
+          this.timeout(20000);
+          binding.close();
+        });
 
         it('resolves after a small write', () => {
           const data = Buffer.from('simple write of 24 bytes');
@@ -424,7 +427,8 @@ function testBinding(bindingName, Binding, testPort) {
         }
 
         let binding;
-        beforeEach(() => {
+        beforeEach(function () {
+          this.timeout(20000);
           binding = new Binding({
             disconnect
           });
@@ -553,7 +557,8 @@ function testBinding(bindingName, Binding, testPort) {
         beforeEach(() => {
           buffer = Buffer.alloc(readyData.length);
           binding = new Binding({ disconnect });
-          return binding.open(testPort, defaultOpenOptions);
+          return binding.open(testPort, defaultOpenOptions)
+            .then(() => binding.write(buffer));
         });
 
         afterEach(() => binding.close());
