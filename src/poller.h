@@ -26,6 +26,7 @@ class Poller : public Nan::ObjectWrap {
   static NAN_METHOD(New);
   static NAN_METHOD(poll);
   static NAN_METHOD(stop);
+  static NAN_METHOD(destroy);
   static inline Nan::Persistent<v8::Function> & constructor();
 };
 
