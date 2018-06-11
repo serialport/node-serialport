@@ -162,6 +162,7 @@ static stDeviceListItem* GetSerialDevices() {
         memset(serialDevice->vendorId, 0, sizeof(serialDevice->vendorId));
         memset(serialDevice->productId, 0, sizeof(serialDevice->productId));
         serialDevice->manufacturer[0] = '\0';
+        serialDevice->description[0] = '\0';
         serialDevice->serialNumber[0] = '\0';
         deviceListItem->next = NULL;
         deviceListItem->length = &length;
@@ -203,6 +204,28 @@ static stDeviceListItem* GetSerialDevices() {
             }
 
             CFRelease(manufacturerAsCFString);
+          }
+
+          CFStringRef descriptionAsCFString = (CFStringRef) IORegistryEntryCreateCFProperty(device,
+                      CFSTR(kUSBProductString),
+                      kCFAllocatorDefault,
+                      0);
+
+          if (descriptionAsCFString) {
+            Boolean result;
+            char    description[MAXPATHLEN];
+
+            // Convert from a CFString to a C (NUL-terminated)
+            result = CFStringGetCString(descriptionAsCFString,
+                          description,
+                          sizeof(description),
+                          kCFStringEncodingUTF8);
+
+            if (result) {
+              snprintf(serialDevice->description, sizeof(serialDevice->description), "%s", description);
+            }
+
+            CFRelease(descriptionAsCFString);
           }
 
           CFStringRef serialNumberAsCFString = (CFStringRef) IORegistryEntrySearchCFProperty(device,
@@ -305,6 +328,9 @@ void EIO_List(uv_work_t* req) {
       if (*device.manufacturer) {
         resultItem->manufacturer = device.manufacturer;
       }
+      if (*device.description) {
+        resultItem->description = device.description;
+      }
       if (*device.serialNumber) {
         resultItem->serialNumber = device.serialNumber;
       }
@@ -338,6 +364,7 @@ void EIO_AfterList(uv_work_t* req) {
 
       setIfNotEmpty(item, "comName", (*it)->comName.c_str());
       setIfNotEmpty(item, "manufacturer", (*it)->manufacturer.c_str());
+      setIfNotEmpty(item, "description", (*it)->description.c_str());
       setIfNotEmpty(item, "serialNumber", (*it)->serialNumber.c_str());
       setIfNotEmpty(item, "pnpId", (*it)->pnpId.c_str());
       setIfNotEmpty(item, "locationId", (*it)->locationId.c_str());

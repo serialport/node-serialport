@@ -14,6 +14,7 @@ void EIO_AfterList(uv_work_t* req);
 struct ListResultItem {
   std::string comName;
   std::string manufacturer;
+  std::string description;
   std::string serialNumber;
   std::string pnpId;
   std::string locationId;
@@ -33,6 +34,7 @@ typedef struct SerialDevice {
     char vendorId[MAXPATHLEN];
     char productId[MAXPATHLEN];
     char manufacturer[MAXPATHLEN];
+    char description[MAXPATHLEN];
     char serialNumber[MAXPATHLEN];
 } stSerialDevice;
 
