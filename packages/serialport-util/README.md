@@ -1,11 +1,11 @@
-# Serialport Parsers
+# Serialport Utilities
 
 [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
-[![Greenkeeper badge](https://badges.greenkeeper.io/node-serialport/parsers.svg)](https://greenkeeper.io/)
-[![Build Status](https://travis-ci.org/node-serialport/parsers.svg?branch=master)](https://travis-ci.org/node-serialport/parsers)
-[![codecov](https://codecov.io/gh/node-serialport/parsers/branch/master/graph/badge.svg)](https://codecov.io/gh/node-serialport/parsers)
+[![Greenkeeper badge](https://badges.greenkeeper.io/node-serialport/utilities.svg)](https://greenkeeper.io/)
+[![Build Status](https://travis-ci.org/node-serialport/utilities.svg?branch=master)](https://travis-ci.org/node-serialport/utilities)
+[![codecov](https://codecov.io/gh/node-serialport/utilities/branch/master/graph/badge.svg)](https://codecov.io/gh/node-serialport/utilities)
 
-Working with streams of binary data can be hard, this monorepo is a collection of projects that make it easier. We currently have the following projects.
+Working with serialports can be hard, this monorepo is a collection of projects that make it easier. We currently have the following projects.
 
 - Parser Byte Length
 - Parser cctalk
@@ -16,10 +16,16 @@ Working with streams of binary data can be hard, this monorepo is a collection o
 - Parser slip-encoder
 
 ## API Docs
-You can find the api docs in `/docs` or view them online here: https://node-serialport.github.io/parsers/
+You can find the api docs in `/docs` or view them online here: https://node-serialport.github.io/utilities/
 
 ## License
-SerialPort Parsers are all [MIT licensed](LICENSE) and all it's dependencies are MIT or BSD licensed.
+SerialPort Utilities are all [MIT licensed](LICENSE) and all it's dependencies are MIT or BSD licensed.
+
+# Developing
+1. Clone this repo `git clone git@github.com:node-serialport/utilities.git`
+1. Run `npx lerna bootstrap` to setup local package dependencies (run this any time you depend on a package local to this repo)
+1. Run `npm test` to ensure everything is working properly
+1. Run `npm run generate` to generate a new project
 
 # Contributing
 
@@ -35,18 +41,18 @@ There are a lot of ways to get involved and help out:
 <a name="reporting-issues"></a>
 ## Reporting An Issue
 
-SerialPort Parsers does it's [issue tracking](https://github.com/node-serialport/parsers/issues) through github. To report an issue first search the repo to make sure that it has not been reported before.  If no one has reported the bug before, create a new issue and be sure to follow the template.
+SerialPort Utilities does it's [issue tracking](https://github.com/node-serialport/utilities/issues) through github. To report an issue first search the repo to make sure that it has not been reported before.  If no one has reported the bug before, create a new issue and be sure to follow the template.
 
 <a name="requesting-features"></a>
 ## Requesting Features
-To request a new feature be added create a [github issue](https://github.com/node-serialport/parsers/issues/new) and include:
+To request a new feature be added create a [github issue](https://github.com/node-serialport/utilities/issues/new) and include:
 
 **What feature you'd like to see:**
 **Why this is important to you:** (this is here because it's interesting knowing what cool things people are working on and also could help community members make suggestions for work-arounds until the feature is built)
 
 <a name="pullrequests"></a>
 ## Submitting Pull Requests
-To contribute code to SerialPort Parsers, fork the project onto your github account and do your work in a branch. Before you submit the PR, make sure to rebase master into your branch so that you have the most recent changes and nothing breaks or conflicts.  Lint and test your code using `npm run lint` and `npm run test`.
+To contribute code to SerialPort Utilities, fork the project onto your github account and do your work in a branch. Before you submit the PR, make sure to rebase master into your branch so that you have the most recent changes and nothing breaks or conflicts.  Lint and test your code using `npm run lint` and `npm run test`.
 
 You can use the generator `npm run generate` as a starting point for new streams.
 
@@ -66,7 +72,7 @@ Tests are written using [mocha](https://mochajs.org/), [chai](http://chaijs.com/
 <a name="writing-docs"></a>
 ## Writing Documentation
 
-We are always looking to improve our docs.  If you find that any are lacking information or have wrong information, fix and submit a PR.  If you're looking for areas to start writing docs for, see the [docs](https://github.com/node-serialport/parsers/labels/docs) label in issues.
+We are always looking to improve our docs.  If you find that any are lacking information or have wrong information, fix and submit a PR.  If you're looking for areas to start writing docs for, see the [docs](https://github.com/node-serialport/utilities/labels/docs) label in issues.
 
 We use [jsdoc](http://usejsdoc.org/) to generate our docs. Make your changes to `README.md` or the documentation blocks in the JavaScript files and run `npm run docs` to generate new documentation in `/docs/`.
 

@@ -1,5 +1,5 @@
 {
-	"name": "@serialport/parsers",
+	"name": "@serialport/utilities",
 	"private": true,
 	"scripts": {
 		"docs": "jsdoc -c ./.jsdoc.json ",
@@ -12,7 +12,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git://github.com/node-serialport/parsers.git"
+		"url": "git://github.com/node-serialport/utilities.git"
 	},
 	"devDependencies": {
 		"chai": "^4.1.2",
