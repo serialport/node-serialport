@@ -1,12 +1,12 @@
 	module.exports = function (plop) {
 	  plop.setGenerator('package', {
-	    description: 'Make a new Stream package',
+	    description: 'Make a new project',
 
 	    // inquirer prompts
 	    prompts: [{
 	      type: 'input',
 	      name: 'name',
-	      message: 'Stream name: '
+	      message: 'Project name: '
 	    }],
 
 	    // actions to perform
