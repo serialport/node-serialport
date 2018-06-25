@@ -5,8 +5,8 @@
 
 const SerialPort = require('../lib/index');
 
-SerialPort.list().then((list)=>{
-    console.log(list);
-}).catch((error)=>{
-    console.error(error);
+SerialPort.list().then((list) => {
+  console.log(list);
+}).catch((error) => {
+  console.error(error);
 });
