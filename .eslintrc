@@ -1,6 +1,5 @@
 {
   "extends": [
-    "standard",
     "plugin:node/recommended"
   ],
   "plugins": [
@@ -31,7 +30,6 @@
     "prefer-template": 2,
     "semi": [2, "always", {"omitLastInOneLineBlock": true}],
     "space-before-function-paren": [2, "never"],
-    "standard/object-curly-even-spacing": 0,
     "valid-jsdoc": [0]
   }
 }
