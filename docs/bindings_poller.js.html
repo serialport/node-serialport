@@ -136,6 +136,16 @@ class Poller extends EventEmitter {
   stop() {
     logger('Stopping poller');
     this.poller.stop();
+    this.emitCanceled();
+  }
+
+  destroy() {
+    logger('Destroying poller');
+    this.poller.destroy();
+    this.emitCanceled();
+  }
+
+  emitCanceled() {
     const err = new Error('Canceled');
     err.canceled = true;
     this.emit('readable', err);
@@ -159,7 +169,7 @@ module.exports = Poller;
 <br class="clear">
 
 <footer>
-    Documentation generated at Sun Apr 15 2018 22:06:31 GMT-0400 (EDT)
+    Documentation generated at Mon Jun 25 2018 03:04:41 GMT-0400 (EDT)
 </footer>
 
 <script>prettyPrint();</script>
