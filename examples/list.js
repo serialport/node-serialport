@@ -1,12 +1,10 @@
 /* eslint-disable node/no-missing-require */
 'use strict';
 
-// Use a Readline parser
+const SerialPort = require('serialport');
 
-const SerialPort = require('../lib/index');
-
-SerialPort.list().then((list) => {
-  console.log(list);
-}).catch((error) => {
+SerialPort.list().then((ports) => {
+  console.log(ports);
+}, (error) => {
   console.error(error);
 });
