@@ -1,6 +1,6 @@
 {
   "name": "serialport",
-  "version": "6.2.0",
+  "version": "6.2.1",
   "description": "Node.js package to access serial ports. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!",
   "main": "lib",
   "repository": {
@@ -86,6 +86,7 @@
     "jsdoc": "^3.5.5",
     "mocha": "^5.2.0",
     "prebuild": "^7.6.0",
+    "prebuild-ci": "^2.2.3",
     "proxyquire": "^2.0.0",
     "sinon": "^6.0.1"
   },
@@ -114,7 +115,7 @@
     "install": "prebuild-install || node-gyp rebuild",
     "rebuild": "prebuild --compile",
     "prebuild": "prebuild --all --strip --verbose",
-    "prebuild-upload": "prebuild --all --strip --verbose"
+    "prebuild-ci": "prebuild-ci"
   },
   "gypfile": true,
   "cc": {

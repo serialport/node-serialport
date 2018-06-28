@@ -17,28 +17,23 @@ os:
 - osx
 env:
   global:
-  - secure: "L+AGMJc5NAsuym+xzB4FWj0c2rCobosixkoxLBhDBVkLiYsMtfS9y1w8Xz0pbWKJnJAH9tfwHluu5aX2qYk2HbreSyNzy8hbPW+9RbSyAQexeiZG4mLuDEz0xvlpCCQBsS1OfMypQk0/JvL4oA9B/xasrpkeVuPI7dwAz2WcFms="
+  - secure: "H6kgK5KzVP34pId84/GsnLd6Qb2mwYJ3W4tWurK3QetqVh1kH0qC7LOc6gg9ZTIIu750hZDNofl1h7Ttm2jTzfCtAsPdX3wuuBpIi87ZBZY2fwm6zD1anqF0AdKK9IyKYJaSWFjgNzRvzob6VYWxvYFXaKNT948gseuW/f2uSxI="
   matrix:
   - TRAVIS_NODE_VERSION="6"
   - TRAVIS_NODE_VERSION="6" ARCH="x86"
-  - BINARY_BUILDER="true" TRAVIS_NODE_VERSION="8"
-  - BINARY_BUILDER="true" TRAVIS_NODE_VERSION="8" ARCH="x86"
+  - TRAVIS_NODE_VERSION="8"
+  - TRAVIS_NODE_VERSION="8" ARCH="x86"
   - TRAVIS_NODE_VERSION="9"
   - TRAVIS_NODE_VERSION="9" ARCH="x86"
   - TRAVIS_NODE_VERSION="10"
-  - TRAVIS_NODE_VERSION="10" ARCH="x86"
 matrix:
   exclude:
   - os: osx
     env: TRAVIS_NODE_VERSION="6" ARCH="x86"
   - os: osx
-    env: BINARY_BUILDER="true" TRAVIS_NODE_VERSION="8" ARCH="x86"
+    env: TRAVIS_NODE_VERSION="8" ARCH="x86"
   - os: osx
     env: TRAVIS_NODE_VERSION="9" ARCH="x86"
-  - os: osx
-    env: TRAVIS_NODE_VERSION="10" ARCH="x86"
-  - os: linux
-    env: TRAVIS_NODE_VERSION="10" ARCH="x86"
 
 before_install:
 
@@ -73,14 +68,8 @@ before_install:
 - PUBLISH_BINARY=false
 - echo $TRAVIS_BRANCH
 - echo `git describe --tags --always HEAD`
-- if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then PUBLISH_BINARY=$BINARY_BUILDER; fi;
+- if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then PUBLISH_BINARY=true; fi;
 - echo "Publishing native platform Binary Package? ->" $PUBLISH_BINARY
-
-# setup virtual serialports
-# - >
-  # socat -d -d -unlink-close pty,raw,nonblock,echo=0,link=ttyV0 pty,raw,nonblock,echo=0,link=ttyV1 &
-  # ./bin/echo.js --port ttyV0 &
-  # export TEST_PORT=ttyV1
 
 install:
 # ensure source install works
@@ -94,7 +83,8 @@ script:
 # if publishing, do it
 - >
   if [[ $PUBLISH_BINARY == true ]]; then
-    npm run prebuild-upload;
+    echo "building and uploading binaries"
+    npm run prebuild-ci;
   fi;
 
 after_success:

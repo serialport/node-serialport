@@ -85,7 +85,7 @@ In addition to reading the [article mentioned above](http://www.voodootikigod.co
 
 | Platform / Arch | Node v4.x | Node v6.x | Node v8.x | Node v9.x | Node v10.x |
 |       ---       | --- | --- | --- | --- | --- |
-| Linux / ia32    |  ☑  |  ☑  |  ☑  |  ☑  |  ☐  |
+| Linux / ia32⁴   |  ☑  |  ☑  |  ☑  |  ☑  |  ☐  |
 | Linux / x64     |  ☑  |  ☑  |  ☑  |  ☑  |  ☑  |
 | Linux / ARM v6¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
 | Linux / ARM v7¹ |  ☐  |  ☐  |  ☐  |  ☐  |  ☐  |
@@ -101,6 +101,8 @@ In addition to reading the [article mentioned above](http://www.voodootikigod.co
 ² Windows 7, 8, 10, and 10 IoT are supported, but our CI tests only Windows Server 2012 R2.
 
 ³ OSX 10.4 Tiger and above are supported, but our CI tests only 10.9.5 Mavericks with Xcode 6.1.
+
+⁴ NodeJS has dropped prebuilt binaries for NodeJS 10 on 32bit linux. As a result it's too difficult to maintain  support. However if you build nodejs and serialport yourself it will probably work.
 
 ## Installation Instructions
 
