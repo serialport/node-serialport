@@ -1,2 +1,5 @@
 --bail
 --require ./test/initializers
+packages/*/test/**/*.js
+packages/*/*.test.js
+

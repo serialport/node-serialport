@@ -1,5 +1,5 @@
-#ifndef SRC_SERIALPORT_H_
-#define SRC_SERIALPORT_H_
+#ifndef PACKAGES_SERIALPORT_SRC_SERIALPORT_H_
+#define PACKAGES_SERIALPORT_SRC_SERIALPORT_H_
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -123,4 +123,4 @@ struct VoidBaton {
 
 int setup(int fd, OpenBaton *data);
 int setBaudRate(ConnectionOptionsBaton *data);
-#endif  // SRC_SERIALPORT_H_
+#endif  // PACKAGES_SERIALPORT_SRC_SERIALPORT_H_

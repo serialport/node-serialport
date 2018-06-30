@@ -51,14 +51,11 @@ install:
 # - ps: $env:TEST_PORT = "COM1";
 
 build_script:
-- npm install --build-from-source
+- npm install
+- npm run build-from-source
 
 test_script:
-- ps: >
-    npm run lint
-    node ./
-
-# If we run npm test in powershell it'll have the wrong encoding so we have to do it like this
+- npm run lint
 - npm test
 
 - ps: >
@@ -68,6 +65,6 @@ test_script:
     true;
 
 after_test:
-- pip install codecov && codecov --file coverage\coverage.json
+- npm run coverage
 
 deploy: OFF

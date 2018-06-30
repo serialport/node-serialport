@@ -1,5 +1,5 @@
-#ifndef SRC_SERIALPORT_WIN_H_
-#define SRC_SERIALPORT_WIN_H_
+#ifndef PACKAGES_SERIALPORT_SRC_SERIALPORT_WIN_H_
+#define PACKAGES_SERIALPORT_SRC_SERIALPORT_WIN_H_
 // #include <stdio.h>
 // #include <stdlib.h>
 // #include <string.h>
@@ -68,4 +68,4 @@ struct ListBaton {
   char errorString[ERROR_STRING_SIZE];
 };
 
-#endif  // SRC_SERIALPORT_WIN_H_
+#endif  // PACKAGES_SERIALPORT_SRC_SERIALPORT_WIN_H_

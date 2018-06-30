@@ -5,7 +5,7 @@
 
 const Buffer = require('safe-buffer').Buffer;
 const util = require('util');
-const SerialPort = require('../../');
+const SerialPort = require('../');
 require('colors'); // this modifies String.prototype
 // var fs = require('fs');
 

@@ -18,9 +18,10 @@
     "makeTestFeature": false
   },
   "rules": {
+    "no-process-exit": 0,
     "no-unused-vars": [2, { "vars": "all", "args": "after-used" }],
     "no-var": 2,
-    "no-process-exit": 0,
+    "node/no-extraneous-require": 0,
     "node/no-unsupported-features": [2, {"version" : 4}],
     "node/shebang": 0,
     "object-curly-spacing": [2, "always"],
