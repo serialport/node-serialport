@@ -12,6 +12,10 @@ environment:
   - nodejs_version: "9"
   - nodejs_version: "10"
 
+  exclude:
+  - platform: x86
+  - nodejs_version: "4"
+
 platform:
 - x86
 - x64
