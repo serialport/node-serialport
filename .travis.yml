@@ -21,12 +21,8 @@ env:
   matrix:
   - TRAVIS_NODE_VERSION="4" SKIP_LINT="true"
   - TRAVIS_NODE_VERSION="4" SKIP_LINT="true" ARCH="x86"
-  - TRAVIS_NODE_VERSION="5" SKIP_LINT="true"
-  - TRAVIS_NODE_VERSION="5" SKIP_LINT="true" ARCH="x86"
   - TRAVIS_NODE_VERSION="6"
   - TRAVIS_NODE_VERSION="6" ARCH="x86"
-  - TRAVIS_NODE_VERSION="7"
-  - TRAVIS_NODE_VERSION="7" ARCH="x86"
   - TRAVIS_NODE_VERSION="8"
   - TRAVIS_NODE_VERSION="8" ARCH="x86"
   - TRAVIS_NODE_VERSION="9"
@@ -35,13 +31,9 @@ env:
 matrix:
   exclude:
   - os: osx
-    env: TRAVIS_NODE_VERSION="4" ARCH="x86"
-  - os: osx
-    env: TRAVIS_NODE_VERSION="5" ARCH="x86"
+    env: TRAVIS_NODE_VERSION="4" SKIP_LINT="true" ARCH="x86"
   - os: osx
     env: TRAVIS_NODE_VERSION="6" ARCH="x86"
-  - os: osx
-    env: TRAVIS_NODE_VERSION="7" ARCH="x86"
   - os: osx
     env: TRAVIS_NODE_VERSION="8" ARCH="x86"
   - os: osx
