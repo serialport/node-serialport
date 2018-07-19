@@ -17,6 +17,7 @@
     "modem",
     "nodebots",
     "RFID",
+    "robotics",
     "sensor",
     "serial port",
     "serial",
@@ -85,8 +86,7 @@
     "istanbul": "^0.4.4",
     "jsdoc": "^3.5.5",
     "mocha": "^5.2.0",
-    "prebuild": "^7.6.0",
-    "prebuild-ci": "^2.2.3",
+    "prebuild": "github:reconbot/prebuild#reconbot/build_v8_with_gn",
     "proxyquire": "^2.0.0",
     "sinon": "^6.0.1"
   },
@@ -115,7 +115,7 @@
     "install": "prebuild-install || node-gyp rebuild",
     "rebuild": "prebuild --compile",
     "prebuild": "prebuild --all --strip --verbose",
-    "prebuild-ci": "prebuild-ci"
+    "prebuild-upload": "prebuild --all --strip --verbose"
   },
   "gypfile": true,
   "cc": {

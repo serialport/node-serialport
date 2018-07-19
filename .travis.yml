@@ -17,12 +17,12 @@ os:
 - osx
 env:
   global:
-  - secure: "H6kgK5KzVP34pId84/GsnLd6Qb2mwYJ3W4tWurK3QetqVh1kH0qC7LOc6gg9ZTIIu750hZDNofl1h7Ttm2jTzfCtAsPdX3wuuBpIi87ZBZY2fwm6zD1anqF0AdKK9IyKYJaSWFjgNzRvzob6VYWxvYFXaKNT948gseuW/f2uSxI="
+  - secure: "L+AGMJc5NAsuym+xzB4FWj0c2rCobosixkoxLBhDBVkLiYsMtfS9y1w8Xz0pbWKJnJAH9tfwHluu5aX2qYk2HbreSyNzy8hbPW+9RbSyAQexeiZG4mLuDEz0xvlpCCQBsS1OfMypQk0/JvL4oA9B/xasrpkeVuPI7dwAz2WcFms="
   matrix:
   - TRAVIS_NODE_VERSION="6"
   - TRAVIS_NODE_VERSION="6" ARCH="x86"
-  - TRAVIS_NODE_VERSION="8"
-  - TRAVIS_NODE_VERSION="8" ARCH="x86"
+  - BINARY_BUILDER="true" TRAVIS_NODE_VERSION="8"
+  - BINARY_BUILDER="true" TRAVIS_NODE_VERSION="8" ARCH="x86"
   - TRAVIS_NODE_VERSION="9"
   - TRAVIS_NODE_VERSION="9" ARCH="x86"
   - TRAVIS_NODE_VERSION="10"
@@ -31,7 +31,7 @@ matrix:
   - os: osx
     env: TRAVIS_NODE_VERSION="6" ARCH="x86"
   - os: osx
-    env: TRAVIS_NODE_VERSION="8" ARCH="x86"
+    env: BINARY_BUILDER="true" TRAVIS_NODE_VERSION="8" ARCH="x86"
   - os: osx
     env: TRAVIS_NODE_VERSION="9" ARCH="x86"
 
@@ -68,7 +68,7 @@ before_install:
 - PUBLISH_BINARY=false
 - echo $TRAVIS_BRANCH
 - echo `git describe --tags --always HEAD`
-- if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then PUBLISH_BINARY=true; fi;
+- if [[ $TRAVIS_BRANCH == `git describe --tags --always HEAD` ]]; then PUBLISH_BINARY=$BINARY_BUILDER; fi;
 - echo "Publishing native platform Binary Package? ->" $PUBLISH_BINARY
 
 install:
@@ -84,7 +84,7 @@ script:
 - >
   if [[ $PUBLISH_BINARY == true ]]; then
     echo "building and uploading binaries"
-    npm run prebuild-ci;
+    npm run prebuild-upload;
   fi;
 
 after_success:
