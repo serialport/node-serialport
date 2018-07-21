@@ -73,7 +73,7 @@
     "safe-buffer": "^5.1.2"
   },
   "devDependencies": {
-    "@reconbot/jsdoc-theme": "^1.0.0",
+    "@reconbot/jsdoc-theme": "^1.0.3",
     "bluebird": "^3.5.0",
     "cc": "^1.0.1",
     "chai": "^4.0.2",

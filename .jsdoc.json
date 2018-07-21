@@ -28,6 +28,7 @@
     "_tutorials": "./examples"
   },
   "reconbot": {
-    "github": "https://github.com/node-serialport/node-serialport"
+    "github": "https://github.com/node-serialport/node-serialport",
+    "project": "SerialPort"
   }
 }
