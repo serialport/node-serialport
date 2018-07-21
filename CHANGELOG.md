@@ -1,3 +1,13 @@
+<a name="6.2.2"></a>
+## 6.2.2 (2018-07-21)
+
+* fix: npm and git ignore for prebuild ([fb565fd](https://github.com/node-serialport/node-serialport/commit/fb565fd))
+* fix: Remove a new Buffer() call (#1603) ([e21fe7a](https://github.com/node-serialport/node-serialport/commit/e21fe7a)), closes [#1603](https://github.com/node-serialport/node-serialport/issues/1603)
+* Add support for beaglebone serial ports. (#1600) ([384eb37](https://github.com/node-serialport/node-serialport/commit/384eb37)), closes [#1600](https://github.com/node-serialport/node-serialport/issues/1600)
+* put back prebuild binary builders (#1602) ([4160aca](https://github.com/node-serialport/node-serialport/commit/4160aca)), closes [#1602](https://github.com/node-serialport/node-serialport/issues/1602)
+
+
+
 <a name="6.2.1"></a>
 ## 6.2.1 (2018-06-28)
 
