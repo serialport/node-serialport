@@ -6,10 +6,15 @@ environment:
     secure: iDcAJCYgJK4tffyzEHbMVR8DatJcIN8eY0h29p9JQkl43TcEcm6Z6JLOBpGDk1MJ
 
   matrix:
+  - nodejs_version: "4"
   - nodejs_version: "6"
   - nodejs_version: "8"
   - nodejs_version: "9"
   - nodejs_version: "10"
+
+  exclude:
+  - platform: x86
+  - nodejs_version: "4"
 
 platform:
 - x86
@@ -54,7 +59,9 @@ build_script:
 
 test_script:
 - ps: >
-    npm run lint
+    if ($env:nodejs_version -ge 6 ) {
+      npm run lint;
+    }
     node ./
 
 # If we run npm test in powershell it'll have the wrong encoding so we have to do it like this

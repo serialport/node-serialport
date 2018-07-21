@@ -19,6 +19,8 @@ env:
   global:
   - secure: "H6kgK5KzVP34pId84/GsnLd6Qb2mwYJ3W4tWurK3QetqVh1kH0qC7LOc6gg9ZTIIu750hZDNofl1h7Ttm2jTzfCtAsPdX3wuuBpIi87ZBZY2fwm6zD1anqF0AdKK9IyKYJaSWFjgNzRvzob6VYWxvYFXaKNT948gseuW/f2uSxI="
   matrix:
+  - TRAVIS_NODE_VERSION="4" SKIP_LINT="true"
+  - TRAVIS_NODE_VERSION="4" SKIP_LINT="true" ARCH="x86"
   - TRAVIS_NODE_VERSION="6"
   - TRAVIS_NODE_VERSION="6" ARCH="x86"
   - TRAVIS_NODE_VERSION="8"
@@ -28,6 +30,8 @@ env:
   - TRAVIS_NODE_VERSION="10"
 matrix:
   exclude:
+  - os: osx
+    env: TRAVIS_NODE_VERSION="4" SKIP_LINT="true" ARCH="x86"
   - os: osx
     env: TRAVIS_NODE_VERSION="6" ARCH="x86"
   - os: osx
@@ -76,7 +80,7 @@ install:
 - npm install --build-from-source
 
 script:
-- npm run lint
+- if [[ -z "$SKIP_LINT" ]]; then npm run lint; fi
 - node ./
 - npm test
 
