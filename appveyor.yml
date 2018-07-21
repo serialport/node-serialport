@@ -1,13 +1,14 @@
 os: unstable
 environment:
-  PREBUILD_TOKEN:
+  prebuild_upload:
     secure: a/seaM+nUnQWhWUnbyz8fl9vPwuyqDTrFviptDykYp2c46vdTvlAxU6yqD/PpDiI
   COVERALLS_REPO_TOKEN:
     secure: iDcAJCYgJK4tffyzEHbMVR8DatJcIN8eY0h29p9JQkl43TcEcm6Z6JLOBpGDk1MJ
 
   matrix:
   - nodejs_version: "6"
-  - nodejs_version: "8"
+  - binary_builder: "true"
+    nodejs_version: "8"
   - nodejs_version: "9"
   - nodejs_version: "10"
 
@@ -37,7 +38,7 @@ install:
 # then we publish the binaries if tests pass.
 - ps: >
     if ($env:appveyor_repo_tag -match "true" -and ("$(git describe --tags --always HEAD)" -eq $env:appveyor_repo_tag_name)) {
-      $env:publish_binary = "true";
+      $env:publish_binary = $env:binary_builder;
     }
     if ($env:publish_binary -eq "true") {
       "We're publishing a binary!" | Write-Host
@@ -62,8 +63,7 @@ test_script:
 
 - ps: >
     if ($env:publish_binary -eq "true") {
-      "building and uploading binaries" | Write-Host;
-      npm run prebuild-ci;
+      npm run prebuild-upload
     }
     true;
 
