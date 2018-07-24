@@ -12,6 +12,7 @@
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "docs": "jsdoc -c ./.jsdoc.json ",
     "exec-test": "lerna exec node ./",
+    "generate": "plop",
     "lint": "eslint packages && lerna exec --scope serialport -- npm run lint",
     "postinstall": "lerna bootstrap",
     "prebuild-upload": "lerna exec --scope serialport -- npm run prebuild-upload",

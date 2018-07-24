@@ -1,3 +1,0 @@
---bail
---require ./test/chai
-packages/*/*.test.js
