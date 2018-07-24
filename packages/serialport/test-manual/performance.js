@@ -1,7 +1,7 @@
 'use strict';
 
 const Buffer = require('safe-buffer').Buffer;
-const SerialPort = require('../../');
+const SerialPort = require('../');
 const port = process.env.TEST_PORT;
 
 if (!port) {

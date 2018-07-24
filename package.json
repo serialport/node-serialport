@@ -1,132 +1,55 @@
 {
-  "name": "serialport",
-  "version": "6.2.2",
-  "description": "Node.js package to access serial ports. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!",
-  "main": "lib",
+  "name": "serialport-meta",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Node.js packages to access serial ports, process data from them and speak many protocols",
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build-from-source": "lerna exec --scope serialport -- npm i --build-from-source",
+    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "docs": "jsdoc -c ./.jsdoc.json ",
+    "exec-test": "lerna exec node ./",
+    "lint": "eslint packages && lerna exec --scope serialport -- npm run lint",
+    "postinstall": "lerna bootstrap",
+    "prebuild-upload": "lerna exec --scope serialport -- npm run prebuild-upload",
+    "prebuild": "lerna exec --scope serialport -- npm run prebuild",
+    "publish": "lerna publish",
+    "test:watch": "mocha -w",
+    "test": "nyc --reporter=html --reporter=text --reporter lcovonly mocha"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/node-serialport/node-serialport.git"
   },
-  "keywords": [
-    "ccTalk",
-    "com port",
-    "data logging",
-    "hardware",
-    "iot",
-    "johnny-five",
-    "modem",
-    "nodebots",
-    "RFID",
-    "robotics",
-    "sensor",
-    "serial port",
-    "serial",
-    "serialport",
-    "sms gateway",
-    "sms",
-    "stream",
-    "tty",
-    "UART"
-  ],
   "maintainers": [
     {
       "name": "Francis Gulotta",
       "email": "wizard@roborooter.com",
       "url": "https://www.roborooter.com"
-    },
-    {
-      "name": "Jacob Rosenthal",
-      "email": "jakerosenthal@gmail.com"
-    },
-    {
-      "name": "Chris Williams",
-      "email": "voodootikigod@gmail.com",
-      "url": "http://www.voodootikigod.com"
-    },
-    {
-      "name": "Joe Ferner",
-      "email": "joe.ferner@nearinfinity.com"
-    },
-    {
-      "name": "Jay Beavers",
-      "email": "jay@hikinghomeschoolers.org"
-    },
-    {
-      "name": "Rob Giseburt",
-      "email": "giseburt@gmail.com"
     }
   ],
-  "dependencies": {
-    "@serialport/parser-byte-length": "^1.0.5",
-    "@serialport/parser-cctalk": "^1.0.5",
-    "@serialport/parser-delimiter": "^1.0.5",
-    "@serialport/parser-readline": "^1.0.5",
-    "@serialport/parser-ready": "^1.0.5",
-    "@serialport/parser-regex": "^1.0.5",
-    "bindings": "1.3.0",
-    "commander": "^2.13.0",
-    "debug": "^3.1.0",
-    "nan": "^2.9.2",
-    "prebuild-install": "^4.0.0",
-    "promirepl": "^1.0.1",
-    "prompt-list": "^3.2.0",
-    "safe-buffer": "^5.1.2"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@reconbot/jsdoc-theme": "^1.0.3",
     "bluebird": "^3.5.0",
     "cc": "^1.0.1",
     "chai": "^4.0.2",
     "chai-subset": "^1.5.0",
-    "conventional-changelog-cli": "^2.0.0",
+    "codecov": "^3.0.4",
     "eslint": "^5.0.0",
     "eslint-plugin-import": "^2.13.0",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.8.0",
-    "istanbul": "^0.4.4",
     "jsdoc": "^3.5.5",
+    "lerna": "^2.11.0",
     "mocha": "^5.2.0",
-    "prebuild": "github:reconbot/prebuild#reconbot/build_v8_with_gn",
+    "nyc": "^13.0.0",
+    "plop": "^2.0.0",
+    "prebuild": "^7.6.1",
     "proxyquire": "^2.0.0",
     "sinon": "^6.0.1"
-  },
-  "engines": {
-    "node": ">=4.0.0"
-  },
-  "bin": {
-    "serialport-list": "./bin/list.js",
-    "serialport-repl": "./bin/repl.js",
-    "serialport-term": "./bin/terminal.js"
-  },
-  "license": "MIT",
-  "scripts": {
-    "arduino-test": "TEST_PORT=$(./bin/find-arduino.js) npm test",
-    "changelog": "conventional-changelog -i CHANGELOG.md -s",
-    "docs": "jsdoc -c ./.jsdoc.json ",
-    "lint": "eslint lib test bin examples && cc",
-    "rebuild-all": "npm rebuild && node-gyp rebuild",
-    "repl": "node bin/repl.js",
-    "terminal": "node bin/terminal.js",
-    "stress": "mocha --no-timeouts test/arduinoTest/stress.js",
-    "test": "istanbul cover ./node_modules/mocha/bin/_mocha",
-    "test:watch": "mocha -w",
-    "valgrind": "TEST_PORT=$(./bin/find-arduino.js) valgrind --leak-check=full node test/manual-testing/memory-binding.js",
-    "debugger": "TEST_PORT=$(./bin/find-arduino.js) node --inspect --debug-brk test/manual-testing/performance.js",
-    "install": "prebuild-install || node-gyp rebuild",
-    "rebuild": "prebuild --compile",
-    "prebuild": "prebuild --all --strip --verbose",
-    "prebuild-upload": "prebuild --all --strip --verbose"
-  },
-  "gypfile": true,
-  "cc": {
-    "filter": [
-      "legal/copyright",
-      "build/include"
-    ],
-    "files": [
-      "src/*.cpp",
-      "src/*.h"
-    ],
-    "linelength": "120"
   }
 }

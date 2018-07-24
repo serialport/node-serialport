@@ -1,5 +1,5 @@
-#ifndef SRC_POLLER_H_
-#define SRC_POLLER_H_
+#ifndef PACKAGES_SERIALPORT_SRC_POLLER_H_
+#define PACKAGES_SERIALPORT_SRC_POLLER_H_
 
 #include <nan.h>
 
@@ -30,4 +30,4 @@ class Poller : public Nan::ObjectWrap {
   static inline Nan::Persistent<v8::Function> & constructor();
 };
 
-#endif  // SRC_POLLER_H_
+#endif  // PACKAGES_SERIALPORT_SRC_POLLER_H_

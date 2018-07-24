@@ -72,12 +72,11 @@ before_install:
 - echo "Publishing native platform Binary Package? ->" $PUBLISH_BINARY
 
 install:
-# ensure source install works
-- npm install --build-from-source
+- npm install
+- npm run build-from-source
 
 script:
 - npm run lint
-- node ./
 - npm test
 
 # if publishing, do it
@@ -88,4 +87,5 @@ script:
   fi;
 
 after_success:
-- bash <(curl -s https://codecov.io/bash)
+- npm run coverage
+

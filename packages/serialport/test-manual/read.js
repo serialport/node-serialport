@@ -1,6 +1,6 @@
 /* eslint-disable node/no-missing-require */
 'use strict';
-const SerialPort = require('../../');
+const SerialPort = require('../');
 const ByteLength = SerialPort.parsers.ByteLength;
 const exec = require('child_process').exec;
 

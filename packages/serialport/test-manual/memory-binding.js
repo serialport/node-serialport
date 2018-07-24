@@ -8,7 +8,7 @@ if (!port) {
 
 // var Binding = require('../../lib/bindings/mock');
 // Binding.createPort(port);
-const Binding = require('../../').Binding;
+const Binding = require('../').Binding;
 
 const defaultOpenOptions = {
   baudRate: 9600,

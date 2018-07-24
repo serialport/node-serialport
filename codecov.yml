@@ -1,2 +1,5 @@
 comment:
   require_changes: yes
+parsers:
+  javascript:
+    enable_partials: yes
