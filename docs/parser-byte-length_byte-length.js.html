@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>DarwinBinding - SerialPort Documentation</title>
+    <title>parser-byte-length/byte-length.js - SerialPort Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -35,132 +35,77 @@
 
 <div id="main">
     
-    <h1 class="page-title">DarwinBinding</h1>
+    <h1 class="page-title">parser-byte-length/byte-length.js</h1>
     
 
     
 
 
 
-
-<section>
-
-<header>
     
-        <h2>
-        DarwinBinding
-        </h2>
-        
-            <div class="class-description"><p>The Darwin binding layer for OSX</p></div>
-        
-    
-</header>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict'
+const Buffer = require('safe-buffer').Buffer
+const Transform = require('stream').Transform
 
-<article>
-    <div class="container-overview">
-    
-        
+/**
+ * Emit data every number of bytes
+ * @extends Transform
+ * @param {Object} options parser options object
+ * @param {Number} options.length the number of bytes on each data event
+ * @summary A transform stream that emits data as a buffer after a specific number of bytes are received. Runs in O(n) time.
+ * @example
+const SerialPort = require('serialport')
+const ByteLength = require('@serialport/parser-byte-length')
+const port = new SerialPort('/dev/tty-usbserial1')
+const parser = port.pipe(new ByteLength({length: 8}))
+parser.on('data', console.log) // will have 8 bytes per data event
+ */
+class ByteLengthParser extends Transform {
+  constructor (options) {
+    super(options)
+    options = options || {}
 
-    
-    <h2>Constructor</h2>
-    
+    if (typeof options.length !== 'number') {
+      throw new TypeError('"length" is not a number')
+    }
 
-    <h4 class="name" id="DarwinBinding"><span class="type-signature"></span>new DarwinBinding<span class="signature">()</span><span class="type-signature"></span></h4>
+    if (options.length &lt; 1) {
+      throw new TypeError('"length" is not greater than 0')
+    }
 
-    
+    this.length = options.length
+    this.position = 0
+    this.buffer = Buffer.alloc(this.length)
+  }
 
+  _transform (chunk, encoding, cb) {
+    let cursor = 0
+    while (cursor &lt; chunk.length) {
+      this.buffer[this.position] = chunk[cursor]
+      cursor++
+      this.position++
+      if (this.position === this.length) {
+        this.push(this.buffer)
+        this.buffer = Buffer.alloc(this.length)
+        this.position = 0
+      }
+    }
+    cb()
+  }
 
+  _flush (cb) {
+    this.push(this.buffer.slice(0, this.position))
+    this.buffer = Buffer.alloc(this.length)
+    cb()
+  }
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="serialport_lib_bindings_darwin.js.html">serialport/lib/bindings/darwin.js</a>, <a href="serialport_lib_bindings_darwin.js.html#line17">line 17</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+module.exports = ByteLengthParser
+</code></pre>
+        </article>
+    </section>
 
 
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>DarwinBinding - SerialPort Documentation</title>
+    <title>ReadyParser - SerialPort Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -35,7 +35,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">DarwinBinding</h1>
+    <h1 class="page-title">ReadyParser</h1>
     
 
     
@@ -48,10 +48,10 @@
 <header>
     
         <h2>
-        DarwinBinding
+        ReadyParser
         </h2>
         
-            <div class="class-description"><p>The Darwin binding layer for OSX</p></div>
+            <div class="class-description"><p>A transform stream that waits for a sequence of &quot;ready&quot; bytes before emitting a ready event and emitting data events</p></div>
         
     
 </header>
@@ -65,8 +65,10 @@
     <h2>Constructor</h2>
     
 
-    <h4 class="name" id="DarwinBinding"><span class="type-signature"></span>new DarwinBinding<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="ReadyParser"><span class="type-signature"></span>new ReadyParser<span class="signature">(options)</span><span class="type-signature"></span></h4>
 
+    
+    <p class="summary"><p>To use the <code>Ready</code> parser provide a byte start sequence. After the bytes have been received a ready event is fired and data events are passed through.</p></p>
     
 
 
@@ -77,6 +79,110 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>options for the parser</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>delimiter</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+|
+
+<span class="param-type">Buffer</span>
+|
+
+<span class="param-type">array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>data to look for before emitted &quot;ready&quot;</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -112,7 +218,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="serialport_lib_bindings_darwin.js.html">serialport/lib/bindings/darwin.js</a>, <a href="serialport_lib_bindings_darwin.js.html#line17">line 17</a>
+        <a href="parser-ready_ready.js.html">parser-ready/ready.js</a>, <a href="parser-ready_ready.js.html#line17">line 17</a>
     </li></ul></dd>
     
 
@@ -137,9 +243,30 @@
 
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const SerialPort = require('serialport')
+const Ready = require('@serialport/parser-ready')
+const port = new SerialPort('/dev/tty-usbserial1')
+const parser = port.pipe(new Ready({ delimiter: 'READY' }))
+parser.on('ready', () => console.log('the ready byte sequence has been received'))
+parser.on('data', console.log) // all data after READY is received</code></pre>
+
+
 
     
     </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li>Transform</li>
+    </ul>
+
 
     
 

@@ -7,7 +7,16 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/u6xe3iao2crd7akn/branch/master?svg=true)](https://ci.appveyor.com/project/serialport/node-serialport/branch/master)
 [![Greenkeeper badge](https://badges.greenkeeper.io/node-serialport/node-serialport.svg)](https://greenkeeper.io/)
 
-A collection of packages to work with serialports and hardware.
+Working with serialports can be hard, this is a collection of projects that make it easier. We currently have the following projects.
+
+- [Serialport](docs)
+- [Parser Byte Length](docs)
+- [Parser cctalk](docs)
+- [Parser delimiter](docs)
+- [Parser readline](docs)
+- [Parser ready](docs)
+- [Parser regex](docs)
+- [Parser slip-encoder](docs)
 
 ## Quick Answers to Important Questions
 - [**API Docs**](https://node-serialport.github.io/node-serialport/)
@@ -16,7 +25,7 @@ A collection of packages to work with serialports and hardware.
 
 Imagine a world where you can write JavaScript to control blenders, lights, security systems, or even robots. That's right—robots! Thanks to Node Serialport, that world is here.
 
-Node-Serialport provides a stream interface for the low-level serial port code necessary to control [Arduino](http://www.arduino.cc/) chipsets, X10 interfaces, [Zigbee](http://www.zigbee.org/) radios, highway signs, lcd screens, cash drawers, motor controllers, sensor packages, fork lifts, modems, drones, CNC machines, plotters, vending machines, ccTalk coin accecptors, SMS Gateways, RFID scanners and much more. If you have a hardware device with a [UART](https://en.wikipedia.org/wiki/Universal_asynchronous_receiver/transmitter) we can speak to it. The physical world is your oyster with this goodie.
+Node-Serialport provides an interface for the low-level serial port code necessary to control [Arduino](http://www.arduino.cc/) chipsets, X10 interfaces, [Zigbee](http://www.zigbee.org/) radios, highway signs, lcd screens, cash drawers, motor controllers, sensor packages, fork lifts, modems, drones, CNC machines, plotters, vending machines, ccTalk coin accecptors, SMS Gateways, RFID scanners and much more. If you have a hardware device with a [UART](https://en.wikipedia.org/wiki/Universal_asynchronous_receiver/transmitter) we can speak to it. The physical world is your oyster with this goodie.
 
 For a full breakdown of why we made Node-Serialport, please read [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics). It explains why one would want to program robots in JS in the first place. It's not being against firmware but we can be better than it.
 
@@ -29,11 +38,6 @@ For a full breakdown of why we made Node-Serialport, please read [NodeBots - The
 ## API Documentation
 
 - [**API Docs**](https://node-serialport.github.io/node-serialport/)
-- [Parsers API Docs](https://node-serialport.github.io/utilities/)
-
-See our [changelog](CHANGELOG.md) for what's new, and our [upgrade guide](UPGRADE_GUIDE.md) for a walk-through on differences between major versions.
-
-Older versions are no longer supported but their docs can be found by looking through release tags.
 
 You can generate the docs by running
 
@@ -42,3 +46,6 @@ npm run docs
 ```
 
 And browsing to `./docs/index.html`.
+
+## License
+SerialPort Utilities are all [MIT licensed](LICENSE) and all it's dependencies are MIT or BSD licensed.

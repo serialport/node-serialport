@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>DarwinBinding - SerialPort Documentation</title>
+    <title>ByteLengthParser - SerialPort Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -35,7 +35,7 @@
 
 <div id="main">
     
-    <h1 class="page-title">DarwinBinding</h1>
+    <h1 class="page-title">ByteLengthParser</h1>
     
 
     
@@ -48,10 +48,10 @@
 <header>
     
         <h2>
-        DarwinBinding
+        ByteLengthParser
         </h2>
         
-            <div class="class-description"><p>The Darwin binding layer for OSX</p></div>
+            <div class="class-description"><p>Emit data every number of bytes</p></div>
         
     
 </header>
@@ -65,8 +65,10 @@
     <h2>Constructor</h2>
     
 
-    <h4 class="name" id="DarwinBinding"><span class="type-signature"></span>new DarwinBinding<span class="signature">()</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="ByteLengthParser"><span class="type-signature"></span>new ByteLengthParser<span class="signature">(options)</span><span class="type-signature"></span></h4>
 
+    
+    <p class="summary"><p>A transform stream that emits data as a buffer after a specific number of bytes are received. Runs in O(n) time.</p></p>
     
 
 
@@ -77,6 +79,104 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>parser options object</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>length</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>the number of bytes on each data event</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
 
 
@@ -112,7 +212,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="serialport_lib_bindings_darwin.js.html">serialport/lib/bindings/darwin.js</a>, <a href="serialport_lib_bindings_darwin.js.html#line17">line 17</a>
+        <a href="parser-byte-length_byte-length.js.html">parser-byte-length/byte-length.js</a>, <a href="parser-byte-length_byte-length.js.html#line18">line 18</a>
     </li></ul></dd>
     
 
@@ -137,9 +237,29 @@
 
 
 
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>const SerialPort = require('serialport')
+const ByteLength = require('@serialport/parser-byte-length')
+const port = new SerialPort('/dev/tty-usbserial1')
+const parser = port.pipe(new ByteLength({length: 8}))
+parser.on('data', console.log) // will have 8 bytes per data event</code></pre>
+
+
 
     
     </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li>Transform</li>
+    </ul>
+
 
     
 

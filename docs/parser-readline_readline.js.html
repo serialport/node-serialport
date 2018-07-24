@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>DarwinBinding - SerialPort Documentation</title>
+    <title>parser-readline/readline.js - SerialPort Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -35,132 +35,50 @@
 
 <div id="main">
     
-    <h1 class="page-title">DarwinBinding</h1>
+    <h1 class="page-title">parser-readline/readline.js</h1>
     
 
     
 
 
 
-
-<section>
-
-<header>
     
-        <h2>
-        DarwinBinding
-        </h2>
-        
-            <div class="class-description"><p>The Darwin binding layer for OSX</p></div>
-        
-    
-</header>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict'
+const Buffer = require('safe-buffer').Buffer
+const DelimiterParser = require('@serialport/parser-delimiter')
 
-<article>
-    <div class="container-overview">
-    
-        
+/**
+ *  A transform stream that emits data after a newline delimiter is received.
+ * @summary To use the `Readline` parser, provide a delimiter (defaults to `\n`). Data is emitted as string controllable by the `encoding` option (defaults to `utf8`).
+ * @extends DelimiterParser
+ * @example
+const SerialPort = require('serialport')
+const Readline = require('@serialport/parser-readline')
+const port = new SerialPort('/dev/tty-usbserial1')
+const parser = port.pipe(new Readline({ delimiter: '\r\n' }))
+parser.on('data', console.log)
+*/
+class ReadLineParser extends DelimiterParser {
+  constructor (options) {
+    const opts = Object.assign({
+      delimiter: Buffer.from('\n', 'utf8'),
+      encoding: 'utf8'
+    }, options)
 
-    
-    <h2>Constructor</h2>
-    
+    if (typeof opts.delimiter === 'string') {
+      opts.delimiter = Buffer.from(opts.delimiter, opts.encoding)
+    }
 
-    <h4 class="name" id="DarwinBinding"><span class="type-signature"></span>new DarwinBinding<span class="signature">()</span><span class="type-signature"></span></h4>
+    super(opts)
+  }
+}
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="serialport_lib_bindings_darwin.js.html">serialport/lib/bindings/darwin.js</a>, <a href="serialport_lib_bindings_darwin.js.html#line17">line 17</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+module.exports = ReadLineParser
+</code></pre>
+        </article>
+    </section>
 
 
 
