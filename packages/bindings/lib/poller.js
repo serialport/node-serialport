@@ -1,8 +1,8 @@
 'use strict';
 const debug = require('debug');
-const logger = debug('serialport:poller');
+const logger = debug('@serialport/bindings:poller');
 const EventEmitter = require('events');
-const FDPoller = require('bindings')('serialport.node').Poller;
+const FDPoller = require('bindings')('bindings.node').Poller;
 
 const EVENTS = {
   UV_READABLE: 1,

@@ -1,7 +1,7 @@
 'use strict';
 
-const SerialPort = require('./lib/serialport');
-const Binding = require('./lib/bindings/mock');
+const SerialPort = require('@serialport/stream');
+const Binding = require('@serialport/binding-mock');
 const parsers = require('./lib/parsers');
 
 SerialPort.Binding = Binding;

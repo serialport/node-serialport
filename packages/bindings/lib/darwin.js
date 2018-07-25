@@ -1,8 +1,8 @@
 'use strict';
-const binding = require('bindings')('serialport.node');
-const BaseBinding = require('./base');
+const binding = require('bindings')('bindings.node');
+const AbstractBinding = require('@serialport/binding-abstract');
 const Poller = require('./poller');
-const promisify = require('../util').promisify;
+const promisify = require('./util').promisify;
 const unixRead = require('./unix-read');
 const unixWrite = require('./unix-write');
 
@@ -14,7 +14,7 @@ const defaultBindingOptions = Object.freeze({
 /**
  * The Darwin binding layer for OSX
  */
-class DarwinBinding extends BaseBinding {
+class DarwinBinding extends AbstractBinding {
   static list() {
     return promisify(binding.list)();
   }

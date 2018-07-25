@@ -53,10 +53,6 @@ before_install:
 - if [[ $TRAVIS_OS_NAME == "linux" ]]; then export CXX=g++-4.8; fi
 - $CXX --version
 
-# Cleanup the output of npm
-- npm config set progress false
-- npm config set spin false
-
 # print versions
 - uname -a
 - which node; file `which node`
@@ -73,17 +69,18 @@ before_install:
 
 install:
 - npm install
-- npm run build-from-source
+- npm run rebuild
 
 script:
 - npm run lint
+- npm run test:require
 - npm test
 
 # if publishing, do it
 - >
   if [[ $PUBLISH_BINARY == true ]]; then
     echo "building and uploading binaries"
-    npm run prebuild-upload;
+    npm run prebuild;
   fi;
 
 after_success:

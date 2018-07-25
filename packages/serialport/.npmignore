@@ -1,15 +1,6 @@
-.DS_Store
-appveyor.yml
-AUTHORS.md
-bin/write-a-lot.js
-build/
-docs
 examples/
 node_modules
-npm-debug.log
 package-lock.json
-prebuilds
-PUBLISHING.md
 test-arduino
 test-config.json
 test-electron

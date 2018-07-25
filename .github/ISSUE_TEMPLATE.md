@@ -6,8 +6,4 @@
 
 ### Node version, Operating System and hardware
 
-### Summary of Problem
-
-### Steps and Code to Reproduce the Issue
-
 <!-- Make sure you check out the Electron docs and the __Installation Special Cases__ section! -->

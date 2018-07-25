@@ -7,16 +7,19 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/u6xe3iao2crd7akn/branch/master?svg=true)](https://ci.appveyor.com/project/serialport/node-serialport/branch/master)
 [![Greenkeeper badge](https://badges.greenkeeper.io/node-serialport/node-serialport.svg)](https://greenkeeper.io/)
 
-Working with serialports can be hard, this is a collection of projects that make it easier. We currently have the following projects.
+Working with serialports can be hard, this is a collection of projects that make it easier. We currently have the following packages.
 
-- [Serialport](docs)
-- [Parser Byte Length](docs)
-- [Parser cctalk](docs)
-- [Parser delimiter](docs)
-- [Parser readline](docs)
-- [Parser ready](docs)
-- [Parser regex](docs)
-- [Parser slip-encoder](docs)
+- Serialport `serialport` the only package you need to get started.
+- Serialport Stream `@serialport/stream` our traditional stream interface with nothing else
+- Parser Byte Length
+- Parser cctalk
+- Parser delimiter
+- Parser readline
+- Parser ready
+- Parser regex
+- Parser slip-encoder
+- Abstract Binding `@serialport/binding-abstract` as an abstract class for all bindings
+- Mock Binding `@serialport/binding-mock` for a mock binding package
 
 ## Quick Answers to Important Questions
 - [**API Docs**](https://node-serialport.github.io/node-serialport/)

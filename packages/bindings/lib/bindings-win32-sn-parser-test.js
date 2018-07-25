@@ -1,6 +1,6 @@
 'use strict';
 
-const serialNumParser = require('../lib/bindings/win32-sn-parser');
+const serialNumParser = require('./win32-sn-parser');
 
 const devices = {
   'FTDI Device': {

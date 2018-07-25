@@ -2,7 +2,7 @@
 const Buffer = require('safe-buffer').Buffer;
 const stream = require('stream');
 const util = require('util');
-const debug = require('debug')('serialport:main');
+const debug = require('debug')('@serialport/stream');
 
 //  VALIDATION
 const DATABITS = Object.freeze([5, 6, 7, 8]);

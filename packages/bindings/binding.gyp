@@ -1,6 +1,6 @@
 {
   'targets': [{
-    'target_name': 'serialport',
+    'target_name': 'bindings',
     'sources': [
       'src/serialport.cpp'
     ],

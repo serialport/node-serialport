@@ -1,10 +1,10 @@
 'use strict';
-const SerialPort = require('./serialport');
-const Binding = require('./bindings/auto-detect');
+const SerialPort = require('@serialport/stream');
+const Binding = require('@serialport/bindings');
 const parsers = require('./parsers');
 
 /**
- * @type {BaseBinding}
+ * @type {AbstractBinding}
  */
 SerialPort.Binding = Binding;
 
