@@ -45,7 +45,7 @@
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.8.0",
     "jsdoc": "^3.5.5",
-    "lerna": "^2.11.0",
+    "lerna": "^3.0.0",
     "mocha": "^5.2.0",
     "nyc": "^13.0.0",
     "plop": "^2.0.0",
