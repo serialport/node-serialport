@@ -49,7 +49,6 @@ build_script:
 
 test_script:
 - npm run lint
-- npm run test:require
 - npm test
 
 - ps: >
