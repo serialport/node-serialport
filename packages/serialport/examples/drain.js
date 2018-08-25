@@ -1,6 +1,6 @@
 /* eslint-disable node/no-missing-require */
-'use strict';
-const Buffer = require('safe-buffer').Buffer;
+
+
 const SerialPort = require('serialport');
 const port = new SerialPort('/dev/my-great-device');
 

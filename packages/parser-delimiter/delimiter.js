@@ -1,5 +1,3 @@
-'use strict';
-const Buffer = require('safe-buffer').Buffer;
 const Transform = require('stream').Transform;
 
 /**
@@ -14,8 +12,7 @@ const parser = port.pipe(new Delimiter({ delimiter: '\n' }))
 parser.on('data', console.log)
  */
 class DelimiterParser extends Transform {
-  constructor(options) {
-    options = options || {};
+  constructor(options = {}) {
     super(options);
 
     if (options.delimiter === undefined) {

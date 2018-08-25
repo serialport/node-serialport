@@ -1,4 +1,3 @@
-'use strict';
 const fs = require('fs');
 const debug = require('debug');
 const logger = debug('@serialport/bindings:unixRead');

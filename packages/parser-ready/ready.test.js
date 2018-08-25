@@ -1,7 +1,6 @@
-'use strict';
 /* eslint-disable no-new */
 
-const Buffer = require('safe-buffer').Buffer;
+
 const sinon = require('sinon');
 
 const ReadyParser = require('./ready');

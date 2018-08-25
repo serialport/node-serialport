@@ -6,7 +6,7 @@ serialDuplexTest.js
 Tests the functionality of the serial port library.
 To be used in conjunction with the Arduino sketch ArduinoEcho.ino
 */
-'use strict';
+
 const SerialPort = require('../');
 const args = require('commander');
 

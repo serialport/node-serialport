@@ -13,6 +13,9 @@
   "devDependencies": {
     "@serialport/binding-mock": "^1.0.0"
   },
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "scripts": {
     "install": "prebuild-install || node-gyp rebuild",
     "lint": "cc --verbose",

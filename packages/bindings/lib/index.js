@@ -1,5 +1,3 @@
-'use strict';
-
 const debug = require('debug')('@serialport/bindings');
 
 switch (process.platform) {

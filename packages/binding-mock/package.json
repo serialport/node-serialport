@@ -4,8 +4,10 @@
   "main": "binding-mock.js",
   "dependencies": {
     "@serialport/binding-abstract": "^1.0.0",
-    "debug": "^3.1.0",
-    "safe-buffer": "^5.1.2"
+    "debug": "^3.1.0"
+  },
+  "engines": {
+    "node": ">=6.0.0"
   },
   "publishConfig": {
     "access": "public"

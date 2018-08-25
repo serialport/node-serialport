@@ -1,5 +1,5 @@
 /* eslint-disable node/no-missing-require */
-'use strict';
+
 
 // Use a Readline parser
 

@@ -52,11 +52,10 @@
     "commander": "^2.13.0",
     "debug": "^3.1.0",
     "promirepl": "^1.0.1",
-    "prompt-list": "^3.2.0",
-    "safe-buffer": "^5.1.2"
+    "prompt-list": "^3.2.0"
   },
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=6.0.0"
   },
   "bin": {
     "serialport-list": "./bin/list.js",

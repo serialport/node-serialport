@@ -1,10 +1,10 @@
 {
-  "name": "serialport-meta",
+  "name": "serialport-monorepo",
   "private": true,
   "version": "0.0.0",
   "description": "Node.js packages to access serial ports, process data from them and speak many protocols",
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=6.0.0"
   },
   "license": "MIT",
   "scripts": {
@@ -14,7 +14,7 @@
     "format": "eslint packages --fix",
     "generate": "plop",
     "lint": "eslint packages && lerna exec --scope @serialport/bindings -- npm run lint",
-    "postinstall": "lerna bootstrap",
+    "postinstall": "lerna bootstrap --no-ci",
     "prebuild": "lerna exec --scope @serialport/bindings -- npm run prebuild",
     "publish": "lerna publish",
     "test": "nyc --reporter=html --reporter=text --reporter lcovonly mocha",
@@ -44,10 +44,10 @@
     "codecov": "^3.0.4",
     "eslint": "^5.0.0",
     "eslint-plugin-import": "^2.13.0",
-    "eslint-plugin-node": "^6.0.1",
-    "eslint-plugin-promise": "^3.8.0",
+    "eslint-plugin-node": "^7.0.1",
+    "eslint-plugin-promise": "^4.0.0",
     "jsdoc": "^3.5.5",
-    "lerna": "^2.11.0",
+    "lerna": "^3.1.2",
     "mocha": "^5.2.0",
     "nyc": "^13.0.0",
     "plop": "^2.0.0",

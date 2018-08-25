@@ -1,4 +1,3 @@
-'use strict';
 const port = process.env.TEST_PORT;
 
 if (!port) {

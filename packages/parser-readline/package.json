@@ -3,8 +3,10 @@
   "main": "readline.js",
   "version": "1.0.5",
   "dependencies": {
-    "@serialport/parser-delimiter": "^1.0.5",
-    "safe-buffer": "^5.1.1"
+    "@serialport/parser-delimiter": "^1.0.5"
+  },
+  "engines": {
+    "node": ">=6.0.0"
   },
   "publishConfig": {
     "access": "public"

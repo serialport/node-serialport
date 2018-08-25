@@ -1,5 +1,3 @@
-'use strict';
-
 const childProcess = require('child_process');
 const Readline = require('@serialport/parser-readline');
 

@@ -1,5 +1,3 @@
-'use strict';
-const Buffer = require('safe-buffer').Buffer;
 const Transform = require('stream').Transform;
 
 /**
@@ -20,8 +18,7 @@ class ReadyParser extends Transform {
    * @param {object} options options for the parser
    * @param {string|Buffer|array} options.delimiter data to look for before emitted "ready"
    */
-  constructor(options) {
-    options = options || {};
+  constructor(options = {}) {
     if (options.delimiter === undefined) {
       throw new TypeError('"delimiter" is not a bufferable object');
     }

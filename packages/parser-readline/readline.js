@@ -1,5 +1,3 @@
-'use strict';
-const Buffer = require('safe-buffer').Buffer;
 const DelimiterParser = require('@serialport/parser-delimiter');
 
 /**

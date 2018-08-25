@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-'use strict';
+
 
 // outputs the path to an Arduino to stdout or an error to stderror
 

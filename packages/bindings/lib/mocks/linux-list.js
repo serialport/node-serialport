@@ -1,6 +1,5 @@
 // Mocks fs.read for listLinux
 
-'use strict';
 
 const EventEmitter = require('events');
 const proxyquire = require('proxyquire');

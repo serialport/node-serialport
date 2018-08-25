@@ -1,5 +1,3 @@
-'use strict';
-
 const SerialPort = require('../');
 const port = process.env.TEST_PORT;
 

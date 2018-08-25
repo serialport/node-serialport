@@ -1,7 +1,3 @@
-'use strict';
-/* eslint-disable no-new */
-const Buffer = require('safe-buffer').Buffer;
-
 let platform;
 switch (process.platform) {
   case 'win32':

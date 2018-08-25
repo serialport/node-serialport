@@ -1,4 +1,3 @@
-'use strict';
 /* eslint-disable no-new */
 
 const BindingMock = require('./binding-mock');

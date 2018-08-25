@@ -1,4 +1,4 @@
-'use strict';
+
 const testConfig = require('../../test-config.json');
 
 global.makeTestFeature = function makeTestFeature(envName) {

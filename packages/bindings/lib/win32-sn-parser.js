@@ -1,5 +1,3 @@
-'use strict';
-
 const PARSERS = [
   /USB\\(?:.+)\\(.+)/,
   /FTDIBUS\\(?:.+)\+(.+?)A?\\.+/

@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-'use strict';
+
 
 const args = require('commander');
-const Buffer = require('safe-buffer').Buffer;
+
 const SerialPort = require('../');
 const version = require('../package.json').version;
 
