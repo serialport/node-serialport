@@ -5,21 +5,21 @@ const sinon = require('sinon');
 chai.use(require('chai-subset'));
 const assert = chai.assert;
 
-const SerialPort = require('../lib/serialport');
-const mockBinding = require('../lib/bindings/mock');
+const SerialPort = require('./stream');
+const MockBinding = require('@serialport/binding-mock');
 
 describe('SerialPort', () => {
   let sandbox;
 
   beforeEach(() => {
-    SerialPort.Binding = mockBinding;
+    SerialPort.Binding = MockBinding;
     sandbox = sinon.createSandbox();
-    mockBinding.createPort('/dev/exists', { echo: true, readyData: Buffer.from([]) });
+    MockBinding.createPort('/dev/exists', { echo: true, readyData: Buffer.from([]) });
   });
 
   afterEach(() => {
     sandbox.restore();
-    mockBinding.reset();
+    MockBinding.reset();
   });
 
   describe('constructor', () => {
@@ -169,7 +169,7 @@ describe('SerialPort', () => {
 
   describe('static methods', () => {
     it('calls to the bindings', (done) => {
-      const spy = sinon.spy(mockBinding, 'list');
+      const spy = sinon.spy(MockBinding, 'list');
       SerialPort.list((err, ports) => {
         assert.isNull(err);
         assert.isArray(ports);

@@ -1,18 +1,15 @@
 'use strict';
 const fs = require('fs');
 const debug = require('debug');
-const logger = debug('serialport:unixWrite');
+const logger = debug('@serialport/bindings:unixRead');
 
-module.exports = function unixWrite(buffer, offset) {
-  offset = offset || 0;
-  const bytesToWrite = buffer.length - offset;
-  logger('Starting write', buffer.length, 'bytes offset', offset, 'bytesToWrite', bytesToWrite);
+module.exports = function unixRead(buffer, offset, length) {
+  logger('Starting read');
   if (!this.isOpen) {
     return Promise.reject(new Error('Port is not open'));
   }
   return new Promise((resolve, reject) => {
-    fs.write(this.fd, buffer, offset, bytesToWrite, (err, bytesWritten) => {
-      logger('write returned', err, bytesWritten);
+    fs.read(this.fd, buffer, offset, length, null, (err, bytesRead) => {
       if (err && (
         err.code === 'EAGAIN' ||
         err.code === 'EWOULDBLOCK' ||
@@ -21,10 +18,10 @@ module.exports = function unixWrite(buffer, offset) {
         if (!this.isOpen) {
           return reject(new Error('Port is not open'));
         }
-        logger('waiting for writable because of code:', err.code);
-        this.poller.once('writable', (err) => {
+        logger('waiting for readable because of code:', err.code);
+        this.poller.once('readable', (err) => {
           if (err) { return reject(err) }
-          resolve(unixWrite.call(this, buffer, offset));
+          resolve(this.read(buffer, offset, length));
         });
         return;
       }
@@ -42,20 +39,16 @@ module.exports = function unixWrite(buffer, offset) {
       }
 
       if (err) {
-        logger('error', err);
         return reject(err);
       }
 
-      logger('wrote', bytesWritten, 'bytes');
-      if (bytesWritten + offset < buffer.length) {
-        if (!this.isOpen) {
-          return reject(new Error('Port is not open'));
-        }
-        return resolve(unixWrite.call(this, buffer, bytesWritten + offset));
+      if (bytesRead === 0) {
+        resolve(this.read(buffer, offset, length));
+        return;
       }
 
-      logger('Finished writing', bytesWritten + offset, 'bytes');
-      resolve();
+      logger('Finished read', bytesRead, 'bytes');
+      resolve(bytesRead);
     });
   });
 };

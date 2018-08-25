@@ -12,6 +12,6 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/node-serialport/parsers.git"
+    "url": "git://github.com/node-serialport/node-serialport.git"
   }
 }

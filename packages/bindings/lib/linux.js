@@ -1,31 +1,27 @@
 'use strict';
-const binding = require('bindings')('serialport.node');
-const BaseBinding = require('./base');
-const promisify = require('../util').promisify;
-const serialNumParser = require('./win32-sn-parser');
+const binding = require('bindings')('bindings.node');
+const AbstractBinding = require('@serialport/binding-abstract');
+const linuxList = require('./linux-list');
+const Poller = require('./poller');
+const promisify = require('./util').promisify;
+const unixRead = require('./unix-read');
+const unixWrite = require('./unix-write');
 
+const defaultBindingOptions = Object.freeze({
+  vmin: 1,
+  vtime: 0
+});
 /**
- * The Windows binding layer
+ * The linux binding layer
  */
-class WindowsBinding extends BaseBinding {
+class LinuxBinding extends AbstractBinding {
   static list() {
-    return promisify(binding.list)().then(ports => {
-      // Grab the serial number from the pnp id
-      ports.forEach(port => {
-        if (port.pnpId && !port.serialNumber) {
-          const serialNumber = serialNumParser(port.pnpId);
-          if (serialNumber) {
-            port.serialNumber = serialNumber;
-          }
-        }
-      });
-      return ports;
-    });
+    return linuxList();
   }
 
   constructor(opt) {
     super(opt);
-    this.bindingOptions = Object.assign({}, opt.bindingOptions || {});
+    this.bindingOptions = Object.assign({}, defaultBindingOptions, opt.bindingOptions || {});
     this.fd = null;
     this.writeOperation = null;
   }
@@ -42,6 +38,7 @@ class WindowsBinding extends BaseBinding {
       })
       .then((fd) => {
         this.fd = fd;
+        this.poller = new Poller(fd);
       });
   }
 
@@ -49,6 +46,10 @@ class WindowsBinding extends BaseBinding {
     return super.close()
       .then(() => {
         const fd = this.fd;
+        this.poller.stop();
+        this.poller.destroy();
+        this.poller = null;
+        this.openOptions = null;
         this.fd = null;
         return promisify(binding.close)(fd);
       });
@@ -56,18 +57,12 @@ class WindowsBinding extends BaseBinding {
 
   read(buffer, offset, length) {
     return super.read(buffer, offset, length)
-      .then(() => promisify(binding.read)(this.fd, buffer, offset, length))
-      .catch(err => {
-        if (!this.isOpen) {
-          err.canceled = true;
-        }
-        throw err;
-      });
+      .then(() => unixRead.call(this, buffer, offset, length));
   }
 
   write(buffer) {
     this.writeOperation = super.write(buffer)
-      .then(() => promisify(binding.write)(this.fd, buffer))
+      .then(() => unixWrite.call(this, buffer))
       .then(() => {
         this.writeOperation = null;
       });
@@ -90,7 +85,7 @@ class WindowsBinding extends BaseBinding {
   }
 
   getBaudRate() {
-    return super.get()
+    return super.getBaudRate()
       .then(() => promisify(binding.getBaudRate)(this.fd));
   }
 
@@ -106,4 +101,4 @@ class WindowsBinding extends BaseBinding {
   }
 }
 
-module.exports = WindowsBinding;
+module.exports = LinuxBinding;

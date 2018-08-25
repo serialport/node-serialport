@@ -1,27 +1,27 @@
 'use strict';
-const debug = require('debug')('serialport:bindings');
+const debug = require('debug')('@serialport/binding-abstract');
 
 /**
  * @name Binding
- * @type {BaseBinding}
+ * @type {AbstractBinding}
  * @since 5.0.0
  * @description The `Binding` is how Node-SerialPort talks to the underlying system. By default, we auto detect Windows, Linux and OS X, and load the appropriate module for your system. You can assign `SerialPort.Binding` to any binding you like. Find more by searching at [npm](https://npmjs.org/).
   Prevent auto loading the default bindings by requiring SerialPort with:
   ```js
-  var SerialPort = require('serialport/lib/serialport');
+  var SerialPort = require('@serialport/stream');
   SerialPort.Binding = MyBindingClass;
   ```
  */
 
 /**
  * You never have to use `Binding` objects directly. SerialPort uses them to access the underlying hardware. This documentation is geared towards people who are making bindings for different platforms. This class can be inherited from to get type checking for each method.
- * @class BaseBinding
+ * @class AbstractBinding
  * @param {object} options options for the biding
  * @property {boolean} isOpen Required property. `true` if the port is open, `false` otherwise. Should be read-only.
  * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
  * @since 5.0.0
  */
-class BaseBinding {
+class AbstractBinding {
   /**
    * Retrieves a list of available serial ports with metadata. The `comName` must be guaranteed, and all other fields should be undefined if unavailable. The `comName` is either the path or an identifier (eg `COM1`) used to open the serialport.
    * @returns {Promise} resolves to an array of port [info objects](#module_serialport--SerialPort.list).
@@ -228,4 +228,4 @@ The in progress writes must error when the port is closed with an error object t
   }
 }
 
-module.exports = BaseBinding;
+module.exports = AbstractBinding;

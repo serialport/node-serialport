@@ -1,6 +1,6 @@
 'use strict';
 
-const debug = require('debug')('serialport:binding:auto-detect');
+const debug = require('debug')('@serialport/bindings');
 
 switch (process.platform) {
   case 'win32':

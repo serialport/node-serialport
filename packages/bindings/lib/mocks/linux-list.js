@@ -8,7 +8,7 @@ const Readable = require('stream').Readable;
 let mockPorts;
 
 proxyquire.noPreserveCache();
-const listLinux = proxyquire('../../lib/bindings/linux-list', {
+const listLinux = proxyquire('../linux-list', {
   child_process: {
     spawn() {
       const event = new EventEmitter();

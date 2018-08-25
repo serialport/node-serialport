@@ -1,6 +1,6 @@
-# {{pascalCase name}}
+# @serialport/{{pascalCase name}}
 
-This stream does some neat stuff.
+This package does some neat stuff.
 
 This is why you'd use it.
 

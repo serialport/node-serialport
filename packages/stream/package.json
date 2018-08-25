@@ -1,0 +1,17 @@
+{
+  "name": "@serialport/stream",
+  "version": "1.0.0",
+  "main": "stream.js",
+  "dependencies": {
+    "debug": "^3.1.0",
+    "@serialport/binding-mock": "^1.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/node-serialport/node-serialport.git"
+  }
+}

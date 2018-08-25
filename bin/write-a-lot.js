@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 process.env.DEBUG = '*';
-const SerialPort = require('../');
+const SerialPort = require('serialport');
 
 // outputs the path to an arduino or nothing
 function findArduino() {

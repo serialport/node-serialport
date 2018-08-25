@@ -1,7 +1,7 @@
 'use strict';
-const debug = require('debug')('serialport:bindings:mock');
+const debug = require('debug')('@serialport/binding-mock');
 const Buffer = require('safe-buffer').Buffer;
-const BaseBinding = require('./base');
+const AbstractBinding = require('@serialport/binding-abstract');
 
 let ports = {};
 let serialNumber = 0;
@@ -13,7 +13,7 @@ function resolveNextTick(value) {
 /**
  * Mock bindings for pretend serialport access
  */
-class MockBinding extends BaseBinding {
+class MockBinding extends AbstractBinding {
   constructor(opt) {
     super(opt);
     this.pendingRead = null; // thunk for a promise or null
