@@ -1,4 +1,3 @@
-'use strict';
 const binding = require('bindings')('bindings.node');
 const AbstractBinding = require('@serialport/binding-abstract');
 const Poller = require('./poller');

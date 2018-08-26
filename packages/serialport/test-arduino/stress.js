@@ -1,9 +1,9 @@
 /* eslint-disable node/no-missing-require, node/no-extraneous-require */
-'use strict';
+
 
 // `npm run stress` to run these tests
 
-const Buffer = require('safe-buffer').Buffer;
+
 const util = require('util');
 const SerialPort = require('../');
 require('colors'); // this modifies String.prototype

@@ -1,5 +1,3 @@
-'use strict';
-const Buffer = require('safe-buffer').Buffer;
 const Transform = require('stream').Transform;
 
 /**
@@ -16,9 +14,8 @@ const parser = port.pipe(new ByteLength({length: 8}))
 parser.on('data', console.log) // will have 8 bytes per data event
  */
 class ByteLengthParser extends Transform {
-  constructor(options) {
+  constructor(options = {}) {
     super(options);
-    options = options || {};
 
     if (typeof options.length !== 'number') {
       throw new TypeError('"length" is not a number');

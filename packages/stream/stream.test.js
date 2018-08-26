@@ -1,5 +1,3 @@
-'use strict';
-const Buffer = require('safe-buffer').Buffer;
 const chai = require('chai');
 const sinon = require('sinon');
 chai.use(require('chai-subset'));

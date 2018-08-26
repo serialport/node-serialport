@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-'use strict';
+
 
 const serialport = require('../');
 const version = require('../package.json').version;

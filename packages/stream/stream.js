@@ -1,5 +1,3 @@
-'use strict';
-const Buffer = require('safe-buffer').Buffer;
 const stream = require('stream');
 const util = require('util');
 const debug = require('debug')('@serialport/stream');

@@ -1,4 +1,3 @@
-'use strict';
 /**
  * Parsers are collection of transform streams to processes incoming data
  * @summary The default `Parsers` are [Transform streams](https://nodejs.org/api/stream.html#stream_class_stream_transform) that process incoming data. To use the parsers, you must create them and then pipe the Serialport to the parser. Be careful to only write to the SerialPort object and not the parser.

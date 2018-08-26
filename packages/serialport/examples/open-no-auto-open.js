@@ -1,5 +1,5 @@
 /* eslint-disable node/no-missing-require */
-'use strict';
+
 
 // When disabling open immediately.
 const SerialPort = require('serialport');

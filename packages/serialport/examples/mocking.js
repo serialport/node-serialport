@@ -1,5 +1,5 @@
 /* eslint-disable node/no-missing-require */
-'use strict';
+
 
 // Load Serialport with mock bindings
 // const SerialPort = require('../test'); // from inside the serialport repo

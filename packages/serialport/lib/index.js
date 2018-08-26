@@ -1,4 +1,3 @@
-'use strict';
 const SerialPort = require('@serialport/stream');
 const Binding = require('@serialport/bindings');
 const parsers = require('./parsers');

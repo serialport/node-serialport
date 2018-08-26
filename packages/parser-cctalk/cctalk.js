@@ -1,6 +1,5 @@
-'use strict';
 const Transform = require('stream').Transform;
-const Buffer = require('safe-buffer').Buffer;
+
 
 /**
  * Parse the CCTalk protocol

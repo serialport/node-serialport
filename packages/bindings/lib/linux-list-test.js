@@ -1,5 +1,3 @@
-'use strict';
-
 const listLinux = require('./mocks/linux-list');
 
 const ports = String.raw`

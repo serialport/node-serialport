@@ -1,5 +1,5 @@
 /* eslint-disable node/no-missing-require */
-'use strict';
+
 
 // Constructor callback example
 const SerialPort = require('serialport');

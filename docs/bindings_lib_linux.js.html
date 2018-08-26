@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Home - SerialPort Documentation</title>
+    <title>bindings/lib/linux.js - SerialPort Documentation</title>
 
     <script src="scripts/prettify/prettify.js"></script>
     <script src="scripts/prettify/lang-css.js"></script>
@@ -35,61 +35,123 @@
 
 <div id="main">
     
+    <h1 class="page-title">bindings/lib/linux.js</h1>
+    
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>
+const binding = require('bindings')('bindings.node');
+const AbstractBinding = require('@serialport/binding-abstract');
+const linuxList = require('./linux-list');
+const Poller = require('./poller');
+const promisify = require('./util').promisify;
+const unixRead = require('./unix-read');
+const unixWrite = require('./unix-write');
 
+const defaultBindingOptions = Object.freeze({
+  vmin: 1,
+  vtime: 0
+});
+/**
+ * The linux binding layer
+ */
+class LinuxBinding extends AbstractBinding {
+  static list() {
+    return linuxList();
+  }
 
+  constructor(opt) {
+    super(opt);
+    this.bindingOptions = Object.assign({}, defaultBindingOptions, opt.bindingOptions || {});
+    this.fd = null;
+    this.writeOperation = null;
+  }
 
+  get isOpen() {
+    return this.fd !== null;
+  }
 
+  open(path, options) {
+    return super.open(path, options)
+      .then(() => {
+        this.openOptions = Object.assign({}, this.bindingOptions, options);
+        return promisify(binding.open)(path, this.openOptions);
+      })
+      .then((fd) => {
+        this.fd = fd;
+        this.poller = new Poller(fd);
+      });
+  }
 
+  close() {
+    return super.close()
+      .then(() => {
+        const fd = this.fd;
+        this.poller.stop();
+        this.poller.destroy();
+        this.poller = null;
+        this.openOptions = null;
+        this.fd = null;
+        return promisify(binding.close)(fd);
+      });
+  }
 
+  read(buffer, offset, length) {
+    return super.read(buffer, offset, length)
+      .then(() => unixRead.call(this, buffer, offset, length));
+  }
 
+  write(buffer) {
+    this.writeOperation = super.write(buffer)
+      .then(() => unixWrite.call(this, buffer))
+      .then(() => {
+        this.writeOperation = null;
+      });
+    return this.writeOperation;
+  }
 
+  update(options) {
+    return super.update(options)
+      .then(() => promisify(binding.update)(this.fd, options));
+  }
 
-    
+  set(options) {
+    return super.set(options)
+      .then(() => promisify(binding.set)(this.fd, options));
+  }
 
+  get() {
+    return super.get()
+      .then(() => promisify(binding.get)(this.fd));
+  }
 
-    <section class="readme">
-        <article><h1>Node Serialport</h1><p><a href="http://npmjs.com/package/serialport"><img src="https://img.shields.io/npm/dm/serialport.svg?maxAge=2592000" alt="npm"></a><br><a href="https://gitter.im/EmergingTechnologyAdvisors/node-serialport"><img src="https://badges.gitter.im/EmergingTechnologyAdvisors/node-serialport.svg" alt="Gitter chat"></a><br><a href="https://snyk.io/test/github/node-serialport/node-serialport"><img src="https://snyk.io/test/github/node-serialport/node-serialport/badge.svg" alt="Known Vulnerabilities"></a><br><a href="https://codecov.io/gh/node-serialport/node-serialport"><img src="https://codecov.io/gh/node-serialport/node-serialport/branch/master/graph/badge.svg" alt="codecov"></a><br><a href="https://travis-ci.org/node-serialport/node-serialport"><img src="https://travis-ci.org/node-serialport/node-serialport.svg?branch=master" alt="Build Status"></a><br><a href="https://ci.appveyor.com/project/serialport/node-serialport/branch/master"><img src="https://ci.appveyor.com/api/projects/status/u6xe3iao2crd7akn/branch/master?svg=true" alt="Build status"></a><br><a href="https://greenkeeper.io/"><img src="https://badges.greenkeeper.io/node-serialport/node-serialport.svg" alt="Greenkeeper badge"></a></p>
-<p>Working with serialports can be hard, this is a collection of projects that make it easier. We currently have the following packages.</p>
-<ul>
-<li>Serialport <code>serialport</code> the only package you need to get started.</li>
-<li>Serialport Stream <code>@serialport/stream</code> our traditional stream interface with nothing else</li>
-<li>Parser Byte Length</li>
-<li>Parser cctalk</li>
-<li>Parser delimiter</li>
-<li>Parser readline</li>
-<li>Parser ready</li>
-<li>Parser regex</li>
-<li>Parser slip-encoder</li>
-<li>Abstract Binding <code>@serialport/binding-abstract</code> as an abstract class for all bindings</li>
-<li>Mock Binding <code>@serialport/binding-mock</code> for a mock binding package</li>
-</ul>
-<h2>Quick Answers to Important Questions</h2><ul>
-<li><a href="https://node-serialport.github.io/node-serialport/"><strong>API Docs</strong></a></li>
-</ul>
-<h2>Intro to Node-Serialport</h2><p>Imagine a world where you can write JavaScript to control blenders, lights, security systems, or even robots. That's right—robots! Thanks to Node Serialport, that world is here.</p>
-<p>Node-Serialport provides an interface for the low-level serial port code necessary to control <a href="http://www.arduino.cc/">Arduino</a> chipsets, X10 interfaces, <a href="http://www.zigbee.org/">Zigbee</a> radios, highway signs, lcd screens, cash drawers, motor controllers, sensor packages, fork lifts, modems, drones, CNC machines, plotters, vending machines, ccTalk coin accecptors, SMS Gateways, RFID scanners and much more. If you have a hardware device with a <a href="https://en.wikipedia.org/wiki/Universal_asynchronous_receiver/transmitter">UART</a> we can speak to it. The physical world is your oyster with this goodie.</p>
-<p>For a full breakdown of why we made Node-Serialport, please read <a href="http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics">NodeBots - The Rise of JS Robotics</a>. It explains why one would want to program robots in JS in the first place. It's not being against firmware but we can be better than it.</p>
-<h3>Developing node serialport projects</h3><ol>
-<li>Clone this repo <code>git clone git@github.com:node-serialport/node-serialport.git</code></li>
-<li>Run <code>npx lerna bootstrap</code> to setup local package dependencies (run this any time you depend on a package local to this repo)</li>
-<li>Run <code>npm test</code> to ensure everything is working properly</li>
-<li>Run <code>npm run generate</code> to generate a new project</li>
-</ol>
-<h2>API Documentation</h2><ul>
-<li><a href="https://node-serialport.github.io/node-serialport/"><strong>API Docs</strong></a></li>
-</ul>
-<p>You can generate the docs by running</p>
-<pre class="prettyprint source lang-bash"><code>npm run docs</code></pre><p>And browsing to <code>./docs/index.html</code>.</p>
-<h2>License</h2><p>SerialPort Utilities are all <a href="LICENSE">MIT licensed</a> and all it's dependencies are MIT or BSD licensed.</p></article>
+  getBaudRate() {
+    return super.getBaudRate()
+      .then(() => promisify(binding.getBaudRate)(this.fd));
+  }
+
+  drain() {
+    return super.drain()
+      .then(() => Promise.resolve(this.writeOperation))
+      .then(() => promisify(binding.drain)(this.fd));
+  }
+
+  flush() {
+    return super.flush()
+      .then(() => promisify(binding.flush)(this.fd));
+  }
+}
+
+module.exports = LinuxBinding;
+</code></pre>
+        </article>
     </section>
-
-
 
 
 

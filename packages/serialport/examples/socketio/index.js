@@ -6,7 +6,6 @@
  * from the browser with socket.io.
  */
 
-'use strict';
 
 // Initialize application constants
 const app = require('express')();

@@ -1,5 +1,3 @@
-'use strict';
-const Buffer = require('safe-buffer').Buffer;
 const Transform = require('stream').Transform;
 
 const END = 0xC0;
@@ -27,8 +25,7 @@ const encoder = fileReader.pipe(new SlipEncoder({ bluetoothQuirk: false }));
 encoder.pipe(port);
 */
 class SlipEncoderParser extends Transform {
-	constructor(options) {
-		options = options || {};
+	constructor(options = {}) {
 		super(options);
 
 		if (options.bluetoothQuirk) {

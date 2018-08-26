@@ -1,5 +1,5 @@
 /* eslint-disable */
-'use strict';
+
 
 const SerialPort = require('../../');
 const Promise = require('bluebird');

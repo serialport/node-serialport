@@ -1,6 +1,4 @@
-'use strict';
 const debug = require('debug')('@serialport/binding-mock');
-const Buffer = require('safe-buffer').Buffer;
 const AbstractBinding = require('@serialport/binding-abstract');
 
 let ports = {};

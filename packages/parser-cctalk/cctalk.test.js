@@ -1,6 +1,3 @@
-'use strict';
-
-const Buffer = require('safe-buffer').Buffer;
 const sinon = require('sinon');
 const CCTalkParser = require('./cctalk');
 

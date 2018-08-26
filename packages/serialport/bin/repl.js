@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-'use strict';
+
 const repl = require('repl');
 const promirepl = require('promirepl').promirepl;
 

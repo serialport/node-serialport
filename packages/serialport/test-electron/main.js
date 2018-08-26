@@ -1,4 +1,3 @@
-'use strict';
 /* eslint-disable node/no-missing-require,no-unused-vars,node/no-unpublished-require,node/no-extraneous-require */
 
 const app = require('electron').app;
