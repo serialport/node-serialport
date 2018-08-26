@@ -3,6 +3,7 @@
     "plugin:node/recommended"
   ],
   "plugins": [
+    "prettier",
     "node"
   ],
   "env": {
@@ -19,23 +20,44 @@
   },
   "rules": {
     "no-process-exit": 0,
-    "no-unused-vars": [2, { "vars": "all", "args": "after-used" }],
+    "no-unused-vars": [
+      2,
+      {
+        "vars": "all",
+        "args": "after-used"
+      }
+    ],
     "no-var": 2,
     "node/no-extraneous-require": 0,
     "node/no-unpublished-require": 0,
-    "no-multiple-empty-lines": ["error", { "max": 2, "maxBOF": 0, "maxEOF": 1 }],
-    "node/no-unsupported-features/es-builtins": [2],
-    "node/no-unsupported-features/es-syntax": [2],
-    "node/no-unsupported-features/node-builtins": [2],
+    "node/no-unsupported-features/es-builtins": [
+      2
+    ],
+    "node/no-unsupported-features/es-syntax": [
+      2
+    ],
+    "node/no-unsupported-features/node-builtins": [
+      2
+    ],
     "node/shebang": 0,
-    "object-curly-spacing": [2, "always"],
     "object-shorthand": 2,
     "prefer-arrow-callback": 2,
     "prefer-const": 2,
     "prefer-template": 2,
-    "semi": [2, "always", {"omitLastInOneLineBlock": true}],
-    "space-before-function-paren": [2, "never"],
-    "strict": [2, "never"],
-    "valid-jsdoc": [0]
+    "prettier/prettier": [
+      2,
+      {
+        "singleQuote": true,
+        "trailingComma": "es5",
+        "semi": false
+      }
+    ],
+    "strict": [
+      2,
+      "never"
+    ],
+    "valid-jsdoc": [
+      0
+    ]
   }
 }

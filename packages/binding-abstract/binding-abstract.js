@@ -1,4 +1,4 @@
-const debug = require('debug')('@serialport/binding-abstract');
+const debug = require('debug')('@serialport/binding-abstract')
 
 /**
  * @name Binding
@@ -26,13 +26,13 @@ class AbstractBinding {
    * @returns {Promise} resolves to an array of port [info objects](#module_serialport--SerialPort.list).
    */
   static list() {
-    debug('list');
-    return Promise.resolve();
+    debug('list')
+    return Promise.resolve()
   }
 
   constructor(opt) {
     if (typeof opt !== 'object') {
-      throw new TypeError('"options" is not an object');
+      throw new TypeError('"options" is not an object')
     }
   }
 
@@ -45,18 +45,18 @@ class AbstractBinding {
    */
   open(path, options) {
     if (!path) {
-      throw new TypeError('"path" is not a valid port');
+      throw new TypeError('"path" is not a valid port')
     }
 
     if (typeof options !== 'object') {
-      throw new TypeError('"options" is not an object');
+      throw new TypeError('"options" is not an object')
     }
-    debug('open');
+    debug('open')
 
     if (this.isOpen) {
-      return Promise.reject(new Error('Already open'));
+      return Promise.reject(new Error('Already open'))
     }
-    return Promise.resolve();
+    return Promise.resolve()
   }
 
   /**
@@ -65,11 +65,11 @@ class AbstractBinding {
    * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
    */
   close() {
-    debug('close');
+    debug('close')
     if (!this.isOpen) {
-      return Promise.reject(new Error('Port is not open'));
+      return Promise.reject(new Error('Port is not open'))
     }
-    return Promise.resolve();
+    return Promise.resolve()
   }
 
   /**
@@ -85,26 +85,26 @@ The in progress reads must error when the port is closed with an error object th
    */
   read(buffer, offset, length) {
     if (!Buffer.isBuffer(buffer)) {
-      throw new TypeError('"buffer" is not a Buffer');
+      throw new TypeError('"buffer" is not a Buffer')
     }
 
     if (typeof offset !== 'number') {
-      throw new TypeError('"offset" is not an integer');
+      throw new TypeError('"offset" is not an integer')
     }
 
     if (typeof length !== 'number') {
-      throw new TypeError('"length" is not an integer');
+      throw new TypeError('"length" is not an integer')
     }
 
-    debug('read');
+    debug('read')
     if (buffer.length < offset + length) {
-      return Promise.reject(new Error('buffer is too small'));
+      return Promise.reject(new Error('buffer is too small'))
     }
 
     if (!this.isOpen) {
-      return Promise.reject(new Error('Port is not open'));
+      return Promise.reject(new Error('Port is not open'))
     }
-    return Promise.resolve();
+    return Promise.resolve()
   }
 
   /**
@@ -118,14 +118,14 @@ The in progress writes must error when the port is closed with an error object t
    */
   write(buffer) {
     if (!Buffer.isBuffer(buffer)) {
-      throw new TypeError('"buffer" is not a Buffer');
+      throw new TypeError('"buffer" is not a Buffer')
     }
 
-    debug('write', buffer.length, 'bytes');
+    debug('write', buffer.length, 'bytes')
     if (!this.isOpen) {
-      return Promise.reject(new Error('Port is not open'));
+      return Promise.reject(new Error('Port is not open'))
     }
-    return Promise.resolve();
+    return Promise.resolve()
   }
 
   /**
@@ -137,18 +137,18 @@ The in progress writes must error when the port is closed with an error object t
    */
   update(options) {
     if (typeof options !== 'object') {
-      throw TypeError('"options" is not an object');
+      throw TypeError('"options" is not an object')
     }
 
     if (typeof options.baudRate !== 'number') {
-      throw new TypeError('"options.baudRate" is not a number');
+      throw new TypeError('"options.baudRate" is not a number')
     }
 
-    debug('update');
+    debug('update')
     if (!this.isOpen) {
-      return Promise.reject(new Error('Port is not open'));
+      return Promise.reject(new Error('Port is not open'))
     }
-    return Promise.resolve();
+    return Promise.resolve()
   }
 
   /**
@@ -164,13 +164,13 @@ The in progress writes must error when the port is closed with an error object t
    */
   set(options) {
     if (typeof options !== 'object') {
-      throw new TypeError('"options" is not an object');
+      throw new TypeError('"options" is not an object')
     }
-    debug('set');
+    debug('set')
     if (!this.isOpen) {
-      return Promise.reject(new Error('Port is not open'));
+      return Promise.reject(new Error('Port is not open'))
     }
-    return Promise.resolve();
+    return Promise.resolve()
   }
 
   /**
@@ -179,25 +179,25 @@ The in progress writes must error when the port is closed with an error object t
    * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
    */
   get() {
-    debug('get');
+    debug('get')
     if (!this.isOpen) {
-      return Promise.reject(new Error('Port is not open'));
+      return Promise.reject(new Error('Port is not open'))
     }
-    return Promise.resolve();
+    return Promise.resolve()
   }
 
   /**
-     * Get the OS reported baud rate for the open port.
-     * Used mostly for debugging custom baud rates.
-     * @returns {Promise} Resolves with the current baud rate.
-     * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
-     */
+   * Get the OS reported baud rate for the open port.
+   * Used mostly for debugging custom baud rates.
+   * @returns {Promise} Resolves with the current baud rate.
+   * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
+   */
   getBaudRate() {
-    debug('getBuadRate');
+    debug('getBuadRate')
     if (!this.isOpen) {
-      return Promise.reject(new Error('Port is not open'));
+      return Promise.reject(new Error('Port is not open'))
     }
-    return Promise.resolve();
+    return Promise.resolve()
   }
 
   /**
@@ -206,11 +206,11 @@ The in progress writes must error when the port is closed with an error object t
    * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
    */
   flush() {
-    debug('flush');
+    debug('flush')
     if (!this.isOpen) {
-      return Promise.reject(new Error('Port is not open'));
+      return Promise.reject(new Error('Port is not open'))
     }
-    return Promise.resolve();
+    return Promise.resolve()
   }
 
   /**
@@ -219,12 +219,12 @@ The in progress writes must error when the port is closed with an error object t
    * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
    */
   drain() {
-    debug('drain');
+    debug('drain')
     if (!this.isOpen) {
-      return Promise.reject(new Error('Port is not open'));
+      return Promise.reject(new Error('Port is not open'))
     }
-    return Promise.resolve();
+    return Promise.resolve()
   }
 }
 
-module.exports = AbstractBinding;
+module.exports = AbstractBinding
