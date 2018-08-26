@@ -1,15 +1,15 @@
-const SerialPort = require('@serialport/stream');
-const Binding = require('@serialport/bindings');
-const parsers = require('./parsers');
+const SerialPort = require('@serialport/stream')
+const Binding = require('@serialport/bindings')
+const parsers = require('./parsers')
 
 /**
  * @type {AbstractBinding}
  */
-SerialPort.Binding = Binding;
+SerialPort.Binding = Binding
 
 /**
  * @type {Parsers}
  */
-SerialPort.parsers = parsers;
+SerialPort.parsers = parsers
 
-module.exports = SerialPort;
+module.exports = SerialPort

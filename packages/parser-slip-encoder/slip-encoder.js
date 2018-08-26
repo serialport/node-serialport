@@ -1,9 +1,9 @@
-const Transform = require('stream').Transform;
+const Transform = require('stream').Transform
 
-const END = 0xC0;
-const ESC = 0xDB;
-const ESC_END = 0xDC;
-const ESC_ESC = 0xDD;
+const END = 0xc0
+const ESC = 0xdb
+const ESC_END = 0xdc
+const ESC_ESC = 0xdd
 
 /**
 * A transform stream that emits SLIP-encoded data for each incoming packet.
@@ -25,49 +25,49 @@ const encoder = fileReader.pipe(new SlipEncoder({ bluetoothQuirk: false }));
 encoder.pipe(port);
 */
 class SlipEncoderParser extends Transform {
-	constructor(options = {}) {
-		super(options);
+  constructor(options = {}) {
+    super(options)
 
-		if (options.bluetoothQuirk) {
-			this._bluetoothQuirk = true;
-		}
-	}
+    if (options.bluetoothQuirk) {
+      this._bluetoothQuirk = true
+    }
+  }
 
-	_transform(chunk, encoding, cb) {
-		const chunkLength = chunk.length;
+  _transform(chunk, encoding, cb) {
+    const chunkLength = chunk.length
 
-		if (this._bluetoothQuirk && chunkLength === 0) {
-			// Edge case: push no data. Bluetooth-quirky SLIP parsers don't like
-			// lots of 0xC0s together.
-			return cb();
-		}
+    if (this._bluetoothQuirk && chunkLength === 0) {
+      // Edge case: push no data. Bluetooth-quirky SLIP parsers don't like
+      // lots of 0xC0s together.
+      return cb()
+    }
 
-		// Allocate memory for the worst-case scenario: all bytes are escaped,
-		// plus start and end separators.
-		const encoded = Buffer.alloc((chunkLength * 2) + 2);
-		let j = 0;
+    // Allocate memory for the worst-case scenario: all bytes are escaped,
+    // plus start and end separators.
+    const encoded = Buffer.alloc(chunkLength * 2 + 2)
+    let j = 0
 
-		if (this._bluetoothQuirk) {
-			encoded[j++] = END;
-		}
+    if (this._bluetoothQuirk) {
+      encoded[j++] = END
+    }
 
-		for (let i=0; i<chunkLength; i++) {
-			let byte = chunk[i];
-			if (byte === END) {
-				encoded[j++] = ESC;
-				byte = ESC_END;
-			} else if (byte === ESC) {
-				encoded[j++] = ESC;
-				byte = ESC_ESC;
-			}
+    for (let i = 0; i < chunkLength; i++) {
+      let byte = chunk[i]
+      if (byte === END) {
+        encoded[j++] = ESC
+        byte = ESC_END
+      } else if (byte === ESC) {
+        encoded[j++] = ESC
+        byte = ESC_ESC
+      }
 
-			encoded[j++] = byte;
-		}
+      encoded[j++] = byte
+    }
 
-		encoded[j++] = END;
+    encoded[j++] = END
 
-		cb(null, encoded.slice(0, j));
-	}
+    cb(null, encoded.slice(0, j))
+  }
 }
 
-module.exports = SlipEncoderParser;
+module.exports = SlipEncoderParser

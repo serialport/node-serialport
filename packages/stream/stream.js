@@ -1,12 +1,12 @@
-const stream = require('stream');
-const util = require('util');
-const debug = require('debug')('@serialport/stream');
+const stream = require('stream')
+const util = require('util')
+const debug = require('debug')('@serialport/stream')
 
 //  VALIDATION
-const DATABITS = Object.freeze([5, 6, 7, 8]);
-const STOPBITS = Object.freeze([1, 1.5, 2]);
-const PARITY = Object.freeze(['none', 'even', 'mark', 'odd', 'space']);
-const FLOWCONTROLS = Object.freeze(['xon', 'xoff', 'xany', 'rtscts']);
+const DATABITS = Object.freeze([5, 6, 7, 8])
+const STOPBITS = Object.freeze([1, 1.5, 2])
+const PARITY = Object.freeze(['none', 'even', 'mark', 'odd', 'space'])
+const FLOWCONTROLS = Object.freeze(['xon', 'xoff', 'xany', 'rtscts'])
 
 const defaultSettings = Object.freeze({
   autoOpen: true,
@@ -20,21 +20,21 @@ const defaultSettings = Object.freeze({
   xany: false,
   xoff: false,
   xon: false,
-  highWaterMark: 64 * 1024
-});
+  highWaterMark: 64 * 1024,
+})
 
 const defaultSetFlags = Object.freeze({
   brk: false,
   cts: false,
   dtr: true,
   dts: false,
-  rts: true
-});
+  rts: true,
+})
 
 function allocNewReadPool(poolSize) {
-  const pool = Buffer.allocUnsafe(poolSize);
-  pool.used = 0;
-  return pool;
+  const pool = Buffer.allocUnsafe(poolSize)
+  pool.used = 0
+  return pool
 }
 
 /**
@@ -91,101 +91,105 @@ function allocNewReadPool(poolSize) {
  */
 function SerialPort(path, options, openCallback) {
   if (!(this instanceof SerialPort)) {
-    return new SerialPort(path, options, openCallback);
+    return new SerialPort(path, options, openCallback)
   }
 
   if (options instanceof Function) {
-    openCallback = options;
-    options = {};
+    openCallback = options
+    options = {}
   }
 
-  const settings = Object.assign({}, defaultSettings, options);
+  const settings = Object.assign({}, defaultSettings, options)
 
   stream.Duplex.call(this, {
-    highWaterMark: settings.highWaterMark
-  });
+    highWaterMark: settings.highWaterMark,
+  })
 
-  const Binding = settings.binding || SerialPort.Binding;
+  const Binding = settings.binding || SerialPort.Binding
 
   if (!Binding) {
-    throw new TypeError('"Bindings" is invalid pass it as `options.binding` or set it on `SerialPort.Binding`');
+    throw new TypeError(
+      '"Bindings" is invalid pass it as `options.binding` or set it on `SerialPort.Binding`'
+    )
   }
 
   if (!path) {
-    throw new TypeError(`"path" is not defined: ${path}`);
+    throw new TypeError(`"path" is not defined: ${path}`)
   }
 
   if (settings.baudrate) {
-    throw new TypeError(`"baudrate" is an unknown option, did you mean "baudRate"?`);
+    throw new TypeError(
+      `"baudrate" is an unknown option, did you mean "baudRate"?`
+    )
   }
 
   if (typeof settings.baudRate !== 'number') {
-    throw new TypeError(`"baudRate" must be a number: ${settings.baudRate}`);
+    throw new TypeError(`"baudRate" must be a number: ${settings.baudRate}`)
   }
 
   if (DATABITS.indexOf(settings.dataBits) === -1) {
-    throw new TypeError(`"databits" is invalid: ${settings.dataBits}`);
+    throw new TypeError(`"databits" is invalid: ${settings.dataBits}`)
   }
 
   if (STOPBITS.indexOf(settings.stopBits) === -1) {
-    throw new TypeError(`"stopbits" is invalid: ${settings.stopbits}`);
+    throw new TypeError(`"stopbits" is invalid: ${settings.stopbits}`)
   }
 
   if (PARITY.indexOf(settings.parity) === -1) {
-    throw new TypeError(`"parity" is invalid: ${settings.parity}`);
+    throw new TypeError(`"parity" is invalid: ${settings.parity}`)
   }
 
-  FLOWCONTROLS.forEach((control) => {
+  FLOWCONTROLS.forEach(control => {
     if (typeof settings[control] !== 'boolean') {
-      throw new TypeError(`"${control}" is not boolean: ${settings[control]}`);
+      throw new TypeError(`"${control}" is not boolean: ${settings[control]}`)
     }
-  });
+  })
 
   const binding = new Binding({
-    bindingOptions: settings.bindingOptions
-  });
+    bindingOptions: settings.bindingOptions,
+  })
 
   Object.defineProperties(this, {
     binding: {
       enumerable: true,
-      value: binding
+      value: binding,
     },
     path: {
       enumerable: true,
-      value: path
+      value: path,
     },
     settings: {
       enumerable: true,
-      value: settings
-    }
-  });
+      value: settings,
+    },
+  })
 
-  this.opening = false;
-  this.closing = false;
-  this._pool = allocNewReadPool(this.settings.highWaterMark);
-  this._kMinPoolSpace = 128;
+  this.opening = false
+  this.closing = false
+  this._pool = allocNewReadPool(this.settings.highWaterMark)
+  this._kMinPoolSpace = 128
 
   if (this.settings.autoOpen) {
-    this.open(openCallback);
+    this.open(openCallback)
   }
 }
 
-util.inherits(SerialPort, stream.Duplex);
+util.inherits(SerialPort, stream.Duplex)
 
 Object.defineProperties(SerialPort.prototype, {
   isOpen: {
     enumerable: true,
     get() {
-      return this.binding.isOpen && !this.closing;
-    }
+      return this.binding.isOpen && !this.closing
+    },
   },
   baudRate: {
     enumerable: true,
     get() {
-      return this.settings.baudRate;
-    }
-  }
-});
+      return this.settings.baudRate
+    },
+  },
+})
 
 /**
  * The `error` event's callback is called with an error object whenever there is an error.
@@ -194,15 +198,15 @@ Object.defineProperties(SerialPort.prototype, {
 
 SerialPort.prototype._error = function(error, callback) {
   if (callback) {
-    callback.call(this, error);
+    callback.call(this, error)
   } else {
-    this.emit('error', error);
+    this.emit('error', error)
   }
-};
+}
 
 SerialPort.prototype._asyncError = function(error, callback) {
-  process.nextTick(() => this._error(error, callback));
-};
+  process.nextTick(() => this._error(error, callback))
+}
 
 /**
  * The `open` event's callback is called with no arguments when the port is opened and ready for writing. This happens if you have the constructor open immediately (which opens in the next tick) or if you open the port manually with `open()`. See [Useage/Opening a Port](#opening-a-port) for more information.
@@ -217,26 +221,31 @@ SerialPort.prototype._asyncError = function(error, callback) {
  */
 SerialPort.prototype.open = function(openCallback) {
   if (this.isOpen) {
-    return this._asyncError(new Error('Port is already open'), openCallback);
+    return this._asyncError(new Error('Port is already open'), openCallback)
   }
 
   if (this.opening) {
-    return this._asyncError(new Error('Port is opening'), openCallback);
+    return this._asyncError(new Error('Port is opening'), openCallback)
   }
 
-  this.opening = true;
-  debug('opening', `path: ${this.path}`);
-  this.binding.open(this.path, this.settings).then(() => {
-    debug('opened', `path: ${this.path}`);
-    this.opening = false;
-    this.emit('open');
-    if (openCallback) { openCallback.call(this, null) }
-  }, (err) => {
-    this.opening = false;
-    debug('Binding #open had an error', err);
-    this._error(err, openCallback);
-  });
-};
+  this.opening = true
+  debug('opening', `path: ${this.path}`)
+  this.binding.open(this.path, this.settings).then(
+    () => {
+      debug('opened', `path: ${this.path}`)
+      this.opening = false
+      this.emit('open')
+      if (openCallback) {
+        openCallback.call(this, null)
+      }
+    },
+    err => {
+      this.opening = false
+      debug('Binding #open had an error', err)
+      this._error(err, openCallback)
+    }
+  )
+}
 
 /**
  * Changes the baud rate for an open port. Throws if you provide a bad argument. Emits an error or calls the callback if the baud rate isn't supported.
@@ -247,26 +256,31 @@ SerialPort.prototype.open = function(openCallback) {
  */
 SerialPort.prototype.update = function(options, callback) {
   if (typeof options !== 'object') {
-    throw TypeError('"options" is not an object');
+    throw TypeError('"options" is not an object')
   }
 
   if (!this.isOpen) {
-    debug('update attempted, but port is not open');
-    return this._asyncError(new Error('Port is not open'), callback);
+    debug('update attempted, but port is not open')
+    return this._asyncError(new Error('Port is not open'), callback)
   }
 
-  const settings = Object.assign({}, defaultSettings, options);
-  this.settings.baudRate = settings.baudRate;
+  const settings = Object.assign({}, defaultSettings, options)
+  this.settings.baudRate = settings.baudRate
 
-  debug('update', `baudRate: ${settings.baudRate}`);
-  this.binding.update(this.settings).then(() => {
-    debug('binding.update', 'finished');
-    if (callback) { callback.call(this, null) }
-  }, (err) => {
-    debug('binding.update', 'error', err);
-    return this._error(err, callback);
-  });
-};
+  debug('update', `baudRate: ${settings.baudRate}`)
+  this.binding.update(this.settings).then(
+    () => {
+      debug('binding.update', 'finished')
+      if (callback) {
+        callback.call(this, null)
+      }
+    },
+    err => {
+      debug('binding.update', 'error', err)
+      return this._error(err, callback)
+    }
+  )
+}
 
 /**
  * Writes data to the given serial port. Buffers written data if the port is not open.
@@ -288,40 +302,41 @@ In addition to the usual `stream.write` arguments (`String` and `Buffer`), `writ
  * @returns {boolean} `false` if the stream wishes for the calling code to wait for the `'drain'` event to be emitted before continuing to write additional data; otherwise `true`.
  * @since 5.0.0
  */
-const superWrite = SerialPort.prototype.write;
+const superWrite = SerialPort.prototype.write
 SerialPort.prototype.write = function(data, encoding, callback) {
   if (Array.isArray(data)) {
-    data = Buffer.from(data);
+    data = Buffer.from(data)
   }
-  return superWrite.call(this, data, encoding, callback);
-};
+  return superWrite.call(this, data, encoding, callback)
+}
 
 SerialPort.prototype._write = function(data, encoding, callback) {
   if (!this.isOpen) {
     return this.once('open', function afterOpenWrite() {
-      this._write(data, encoding, callback);
-    });
+      this._write(data, encoding, callback)
+    })
   }
-  debug('_write', `${data.length} bytes of data`);
+  debug('_write', `${data.length} bytes of data`)
   this.binding.write(data).then(
     () => {
-      debug('binding.write', 'write finished');
-      callback(null);
+      debug('binding.write', 'write finished')
+      callback(null)
     },
-    (err) => {
-      debug('binding.write', 'error', err);
+    err => {
+      debug('binding.write', 'error', err)
       if (!err.canceled) {
-        this._disconnected(err);
+        this._disconnected(err)
       }
-      callback(err);
-    });
-};
+      callback(err)
+    }
+  )
+}
 
 SerialPort.prototype._writev = function(data, callback) {
-  debug('_writev', `${data.length} chunks of data`);
-  const dataV = data.map(write => write.chunk);
-  this._write(Buffer.concat(dataV), null, callback);
-};
+  debug('_writev', `${data.length} chunks of data`)
+  const dataV = data.map(write => write.chunk)
+  this._write(Buffer.concat(dataV), null, callback)
+}
 
 /**
  * Request a number of bytes from the SerialPort. The `read()` method pulls some data out of the internal buffer and returns it. If no data is available to be read, null is returned. By default, the data is returned as a `Buffer` object unless an encoding has been specified using the `.setEncoding()` method.
@@ -338,56 +353,62 @@ SerialPort.prototype._writev = function(data, callback) {
 
 SerialPort.prototype._read = function(bytesToRead) {
   if (!this.isOpen) {
-    debug('_read', 'queueing _read for after open');
+    debug('_read', 'queueing _read for after open')
     this.once('open', () => {
-      this._read(bytesToRead);
-    });
-    return;
+      this._read(bytesToRead)
+    })
+    return
   }
 
-  if (!this._pool || this._pool.length - this._pool.used < this._kMinPoolSpace) {
-    debug('_read', 'discarding the read buffer pool');
-    this._pool = allocNewReadPool(this.settings.highWaterMark);
+  if (
+    !this._pool ||
+    this._pool.length - this._pool.used < this._kMinPoolSpace
+  ) {
+    debug('_read', 'discarding the read buffer pool')
+    this._pool = allocNewReadPool(this.settings.highWaterMark)
   }
 
   // Grab another reference to the pool in the case that while we're
   // in the thread pool another read() finishes up the pool, and
   // allocates a new one.
-  const pool = this._pool;
+  const pool = this._pool
   // Read the smaller of rest of the pool or however many bytes we want
-  const toRead = Math.min(pool.length - pool.used, bytesToRead);
-  const start = pool.used;
+  const toRead = Math.min(pool.length - pool.used, bytesToRead)
+  const start = pool.used
 
   // the actual read.
-  debug('_read', `reading`);
-  this.binding.read(pool, start, toRead).then((bytesRead) => {
-    debug('binding.read', `finished`);
-    // zero bytes means read means we've hit EOF? Maybe this should be an error
-    if (bytesRead === 0) {
-      debug('binding.read', 'Zero bytes read closing readable stream');
-      this.push(null);
-      return;
+  debug('_read', `reading`)
+  this.binding.read(pool, start, toRead).then(
+    bytesRead => {
+      debug('binding.read', `finished`)
+      // zero bytes means read means we've hit EOF? Maybe this should be an error
+      if (bytesRead === 0) {
+        debug('binding.read', 'Zero bytes read closing readable stream')
+        this.push(null)
+        return
+      }
+      pool.used += bytesRead
+      this.push(pool.slice(start, start + bytesRead))
+    },
+    err => {
+      debug('binding.read', `error`, err)
+      if (!err.canceled) {
+        this._disconnected(err)
+      }
+      this._read(bytesToRead) // prime to read more once we're reconnected
     }
-    pool.used += bytesRead;
-    this.push(pool.slice(start, start + bytesRead));
-  }, (err) => {
-    debug('binding.read', `error`, err);
-    if (!err.canceled) {
-      this._disconnected(err);
-    }
-    this._read(bytesToRead); // prime to read more once we're reconnected
-  });
-};
+  )
+}
 
 SerialPort.prototype._disconnected = function(err) {
   if (!this.isOpen) {
-    debug('disconnected aborted because already closed', err);
-    return;
+    debug('disconnected aborted because already closed', err)
+    return
   }
-  debug('disconnected', err);
-  err.disconnected = true;
-  this.close(null, err);
-};
+  debug('disconnected', err)
+  err.disconnected = true
+  this.close(null, err)
+}
 
 /**
  * The `close` event's callback is called with no arguments when the port is closed. In the case of a disconnect it will be called with a Disconnect Error object (`err.disconnected == true`). In the event of a close error (unlikely), an error event is triggered.
@@ -404,26 +425,31 @@ SerialPort.prototype._disconnected = function(err) {
  * @returns {undefined}
  */
 SerialPort.prototype.close = function(callback, disconnectError) {
-  disconnectError = disconnectError || null;
+  disconnectError = disconnectError || null
 
   if (!this.isOpen) {
-    debug('close attempted, but port is not open');
-    return this._asyncError(new Error('Port is not open'), callback);
+    debug('close attempted, but port is not open')
+    return this._asyncError(new Error('Port is not open'), callback)
   }
 
-  this.closing = true;
-  debug('#close');
-  this.binding.close().then(() => {
-    this.closing = false;
-    debug('binding.close', 'finished');
-    this.emit('close', disconnectError);
-    if (callback) { callback.call(this, disconnectError) }
-  }, (err) => {
-    this.closing = false;
-    debug('binding.close', 'had an error', err);
-    return this._error(err, callback);
-  });
-};
+  this.closing = true
+  debug('#close')
+  this.binding.close().then(
+    () => {
+      this.closing = false
+      debug('binding.close', 'finished')
+      this.emit('close', disconnectError)
+      if (callback) {
+        callback.call(this, disconnectError)
+      }
+    },
+    err => {
+      this.closing = false
+      debug('binding.close', 'had an error', err)
+      return this._error(err, callback)
+    }
+  )
+}
 
 /**
  * Set control flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363257(v=vs.85).aspx) for Windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for OS X and Linux.
@@ -439,24 +465,29 @@ SerialPort.prototype.close = function(callback, disconnectError) {
  */
 SerialPort.prototype.set = function(options, callback) {
   if (typeof options !== 'object') {
-    throw TypeError('"options" is not an object');
+    throw TypeError('"options" is not an object')
   }
 
   if (!this.isOpen) {
-    debug('set attempted, but port is not open');
-    return this._asyncError(new Error('Port is not open'), callback);
+    debug('set attempted, but port is not open')
+    return this._asyncError(new Error('Port is not open'), callback)
   }
 
-  const settings = Object.assign({}, defaultSetFlags, options);
-  debug('#set', settings);
-  this.binding.set(settings).then(() => {
-    debug('binding.set', 'finished');
-    if (callback) { callback.call(this, null) }
-  }, (err) => {
-    debug('binding.set', 'had an error', err);
-    return this._error(err, callback);
-  });
-};
+  const settings = Object.assign({}, defaultSetFlags, options)
+  debug('#set', settings)
+  this.binding.set(settings).then(
+    () => {
+      debug('binding.set', 'finished')
+      if (callback) {
+        callback.call(this, null)
+      }
+    },
+    err => {
+      debug('binding.set', 'had an error', err)
+      return this._error(err, callback)
+    }
+  )
+}
 
 /**
  * Returns the control flags (CTS, DSR, DCD) on the open port.
@@ -466,19 +497,24 @@ SerialPort.prototype.set = function(options, callback) {
  */
 SerialPort.prototype.get = function(callback) {
   if (!this.isOpen) {
-    debug('get attempted, but port is not open');
-    return this._asyncError(new Error('Port is not open'), callback);
+    debug('get attempted, but port is not open')
+    return this._asyncError(new Error('Port is not open'), callback)
   }
 
-  debug('#get');
-  this.binding.get().then((status) => {
-    debug('binding.get', 'finished');
-    if (callback) { callback.call(this, null, status) }
-  }, (err) => {
-    debug('binding.get', 'had an error', err);
-    return this._error(err, callback);
-  });
-};
+  debug('#get')
+  this.binding.get().then(
+    status => {
+      debug('binding.get', 'finished')
+      if (callback) {
+        callback.call(this, null, status)
+      }
+    },
+    err => {
+      debug('binding.get', 'had an error', err)
+      return this._error(err, callback)
+    }
+  )
+}
 
 /**
  * Flush discards data received but not read, and written but not transmitted by the operating system. For more technical details, see [`tcflush(fd, TCIOFLUSH)`](http://linux.die.net/man/3/tcflush) for Mac/Linux and [`FlushFileBuffers`](http://msdn.microsoft.com/en-us/library/windows/desktop/aa364439) for Windows.
@@ -487,19 +523,24 @@ SerialPort.prototype.get = function(callback) {
  */
 SerialPort.prototype.flush = function(callback) {
   if (!this.isOpen) {
-    debug('flush attempted, but port is not open');
-    return this._asyncError(new Error('Port is not open'), callback);
+    debug('flush attempted, but port is not open')
+    return this._asyncError(new Error('Port is not open'), callback)
   }
 
-  debug('#flush');
-  this.binding.flush().then(() => {
-    debug('binding.flush', 'finished');
-    if (callback) { callback.call(this, null) }
-  }, (err) => {
-    debug('binding.flush', 'had an error', err);
-    return this._error(err, callback);
-  });
-};
+  debug('#flush')
+  this.binding.flush().then(
+    () => {
+      debug('binding.flush', 'finished')
+      if (callback) {
+        callback.call(this, null)
+      }
+    },
+    err => {
+      debug('binding.flush', 'had an error', err)
+      return this._error(err, callback)
+    }
+  )
+}
 
 /**
  * Waits until all output data is transmitted to the serial port. After any pending write has completed it calls [`tcdrain()`](http://linux.die.net/man/3/tcdrain) or [FlushFileBuffers()](https://msdn.microsoft.com/en-us/library/windows/desktop/aa364439(v=vs.85).aspx) to ensure it has been written to the device.
@@ -516,21 +557,26 @@ function writeAndDrain (data, callback) {
 ```
  */
 SerialPort.prototype.drain = function(callback) {
-  debug('drain');
+  debug('drain')
   if (!this.isOpen) {
-    debug('drain queuing on port open');
+    debug('drain queuing on port open')
     return this.once('open', () => {
-      this.drain(callback);
-    });
+      this.drain(callback)
+    })
   }
-  this.binding.drain().then(() => {
-    debug('binding.drain', 'finished');
-    if (callback) { callback.call(this, null) }
-  }, (err) => {
-    debug('binding.drain', 'had an error', err);
-    return this._error(err, callback);
-  });
-};
+  this.binding.drain().then(
+    () => {
+      debug('binding.drain', 'finished')
+      if (callback) {
+        callback.call(this, null)
+      }
+    },
+    err => {
+      debug('binding.drain', 'had an error', err)
+      return this._error(err, callback)
+    }
+  )
+}
 
 /**
  * The `pause()` method causes a stream in flowing mode to stop emitting 'data' events, switching out of flowing mode. Any data that becomes available remains in the internal buffer.
@@ -617,17 +663,14 @@ SerialPort.list()
  */
 SerialPort.list = function(callback) {
   if (!SerialPort.Binding) {
-    throw new TypeError('No Binding set on `SerialPort.Binding`');
+    throw new TypeError('No Binding set on `SerialPort.Binding`')
   }
-  debug('.list');
-  const promise = SerialPort.Binding.list();
+  debug('.list')
+  const promise = SerialPort.Binding.list()
   if (typeof callback === 'function') {
-    promise.then(
-      ports => callback(null, ports),
-      err => callback(err)
-    );
+    promise.then(ports => callback(null, ports), err => callback(err))
   }
-  return promise;
-};
+  return promise
+}
 
-module.exports = SerialPort;
+module.exports = SerialPort

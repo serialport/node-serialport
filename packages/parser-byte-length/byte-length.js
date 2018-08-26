@@ -1,4 +1,4 @@
-const Transform = require('stream').Transform;
+const Transform = require('stream').Transform
 
 /**
  * Emit data every number of bytes
@@ -15,41 +15,41 @@ parser.on('data', console.log) // will have 8 bytes per data event
  */
 class ByteLengthParser extends Transform {
   constructor(options = {}) {
-    super(options);
+    super(options)
 
     if (typeof options.length !== 'number') {
-      throw new TypeError('"length" is not a number');
+      throw new TypeError('"length" is not a number')
     }
 
     if (options.length < 1) {
-      throw new TypeError('"length" is not greater than 0');
+      throw new TypeError('"length" is not greater than 0')
     }
 
-    this.length = options.length;
-    this.position = 0;
-    this.buffer = Buffer.alloc(this.length);
+    this.length = options.length
+    this.position = 0
+    this.buffer = Buffer.alloc(this.length)
   }
 
   _transform(chunk, encoding, cb) {
-    let cursor = 0;
+    let cursor = 0
     while (cursor < chunk.length) {
-      this.buffer[this.position] = chunk[cursor];
-      cursor++;
-      this.position++;
+      this.buffer[this.position] = chunk[cursor]
+      cursor++
+      this.position++
       if (this.position === this.length) {
-        this.push(this.buffer);
-        this.buffer = Buffer.alloc(this.length);
-        this.position = 0;
+        this.push(this.buffer)
+        this.buffer = Buffer.alloc(this.length)
+        this.position = 0
       }
     }
-    cb();
+    cb()
   }
 
   _flush(cb) {
-    this.push(this.buffer.slice(0, this.position));
-    this.buffer = Buffer.alloc(this.length);
-    cb();
+    this.push(this.buffer.slice(0, this.position))
+    this.buffer = Buffer.alloc(this.length)
+    cb()
   }
 }
 
-module.exports = ByteLengthParser;
+module.exports = ByteLengthParser

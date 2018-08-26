@@ -1,4 +1,4 @@
-const Transform = require('stream').Transform;
+const Transform = require('stream').Transform
 
 /**
  * A transform stream that waits for a sequence of "ready" bytes before emitting a ready event and emitting data events
@@ -20,44 +20,44 @@ class ReadyParser extends Transform {
    */
   constructor(options = {}) {
     if (options.delimiter === undefined) {
-      throw new TypeError('"delimiter" is not a bufferable object');
+      throw new TypeError('"delimiter" is not a bufferable object')
     }
 
     if (options.delimiter.length === 0) {
-      throw new TypeError('"delimiter" has a 0 or undefined length');
+      throw new TypeError('"delimiter" has a 0 or undefined length')
     }
 
-    super(options);
-    this.delimiter = Buffer.from(options.delimiter);
-    this.readOffset = 0;
-    this.ready = false;
+    super(options)
+    this.delimiter = Buffer.from(options.delimiter)
+    this.readOffset = 0
+    this.ready = false
   }
 
   _transform(chunk, encoding, cb) {
     if (this.ready) {
-      this.push(chunk);
-      return cb();
+      this.push(chunk)
+      return cb()
     }
-    const delimiter = this.delimiter;
-    let chunkOffset = 0;
+    const delimiter = this.delimiter
+    let chunkOffset = 0
     while (this.readOffset < delimiter.length && chunkOffset < chunk.length) {
       if (delimiter[this.readOffset] === chunk[chunkOffset]) {
-        this.readOffset++;
+        this.readOffset++
       } else {
-        this.readOffset = 0;
+        this.readOffset = 0
       }
-      chunkOffset++;
+      chunkOffset++
     }
     if (this.readOffset === delimiter.length) {
-      this.ready = true;
-      this.emit('ready');
-      const chunkRest = chunk.slice(chunkOffset);
+      this.ready = true
+      this.emit('ready')
+      const chunkRest = chunk.slice(chunkOffset)
       if (chunkRest.length > 0) {
-        this.push(chunkRest);
+        this.push(chunkRest)
       }
     }
-    cb();
+    cb()
   }
 }
 
-module.exports = ReadyParser;
+module.exports = ReadyParser

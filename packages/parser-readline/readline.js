@@ -1,4 +1,4 @@
-const DelimiterParser = require('@serialport/parser-delimiter');
+const DelimiterParser = require('@serialport/parser-delimiter')
 
 /**
  *  A transform stream that emits data after a newline delimiter is received.
@@ -13,17 +13,20 @@ parser.on('data', console.log)
 */
 class ReadLineParser extends DelimiterParser {
   constructor(options) {
-    const opts = Object.assign({
-      delimiter: Buffer.from('\n', 'utf8'),
-      encoding: 'utf8'
-    }, options);
+    const opts = Object.assign(
+      {
+        delimiter: Buffer.from('\n', 'utf8'),
+        encoding: 'utf8',
+      },
+      options
+    )
 
     if (typeof opts.delimiter === 'string') {
-      opts.delimiter = Buffer.from(opts.delimiter, opts.encoding);
+      opts.delimiter = Buffer.from(opts.delimiter, opts.encoding)
     }
 
-    super(opts);
+    super(opts)
   }
 }
 
-module.exports = ReadLineParser;
+module.exports = ReadLineParser

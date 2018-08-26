@@ -1,4 +1,4 @@
-global.Promise = require('bluebird');
+global.Promise = require('bluebird')
 Promise.config({
-  longStackTraces: true
-});
+  longStackTraces: true,
+})

@@ -1,4 +1,4 @@
-const listLinux = require('./mocks/linux-list');
+const listLinux = require('./mocks/linux-list')
 
 const ports = String.raw`
 P: /devices/platform/serial8250/tty/ttyS0
@@ -71,14 +71,14 @@ E: DEVNAME=/dev/rfcomm4
 
 P: /devices/unknown
 N: ttyNOTASERIALPORT
-`;
+`
 
 const portOutput = [
   {
-    comName: '/dev/ttyS0'
+    comName: '/dev/ttyS0',
   },
   {
-    comName: '/dev/ttyS1'
+    comName: '/dev/ttyS1',
   },
   {
     comName: '/dev/ttyACM0',
@@ -86,31 +86,31 @@ const portOutput = [
     serialNumber: '752303138333518011C1',
     productId: '0043',
     vendorId: '2341',
-    pnpId: 'usb-Arduino__www.arduino.cc__0043_752303138333518011C1-if00'
+    pnpId: 'usb-Arduino__www.arduino.cc__0043_752303138333518011C1-if00',
   },
   {
     comName: '/dev/ttyAMA_im_a_programmer',
-    pnpId: 'pci-NATA_Siolynx2_C8T6VI1F-if00-port0'
+    pnpId: 'pci-NATA_Siolynx2_C8T6VI1F-if00-port0',
   },
   {
     comName: '/dev/ttyMFD0',
     vendorId: '2343',
-    productId: '0043'
+    productId: '0043',
   },
   {
-    comName: '/dev/rfcomm4'
-  }
-];
+    comName: '/dev/rfcomm4',
+  },
+]
 
 describe('listLinux', () => {
   beforeEach(() => {
-    listLinux.reset();
-  });
+    listLinux.reset()
+  })
 
   it('lists available serialports', () => {
-    listLinux.setPorts(ports);
-    return listLinux().then((ports) => {
-      assert.containSubset(ports, portOutput);
-    });
-  });
-});
+    listLinux.setPorts(ports)
+    return listLinux().then(ports => {
+      assert.containSubset(ports, portOutput)
+    })
+  })
+})
