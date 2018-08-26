@@ -1,9 +1,9 @@
 {
   "name": "@serialport/parser-readline",
   "main": "readline.js",
-  "version": "1.0.5",
+  "version": "2.0.0",
   "dependencies": {
-    "@serialport/parser-delimiter": "^1.0.5"
+    "@serialport/parser-delimiter": "^2.0.0"
   },
   "engines": {
     "node": ">=6.0.0"
