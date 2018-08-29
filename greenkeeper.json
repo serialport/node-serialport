@@ -1,0 +1,21 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "package.json",
+        "packages/parser-readline/package.json",
+        "packages/parser-byte-length/package.json",
+        "packages/stream/package.json",
+        "packages/parser-delimiter/package.json",
+        "packages/parser-slip-encoder/package.json",
+        "packages/parser-ready/package.json",
+        "packages/binding-abstract/package.json",
+        "packages/serialport/package.json",
+        "packages/bindings/package.json",
+        "packages/parser-cctalk/package.json",
+        "packages/parser-regex/package.json",
+        "packages/binding-mock/package.json"
+      ]
+    }
+  }
+}
