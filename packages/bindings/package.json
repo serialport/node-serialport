@@ -17,9 +17,9 @@
     "node": ">=6.0.0"
   },
   "scripts": {
-    "install": "prebuild-install || node-gyp rebuild",
+    "install": "prebuild-install --tag-prefix @serialport/bindings@ || node-gyp rebuild",
     "lint": "cc --verbose",
-    "prebuild": "prebuild --all --force --strip --verbose",
+    "prebuild": "prebuild --all --force --strip --verbose --tag-prefix @serialport/bindings@",
     "rebuild": "node-gyp rebuild"
   },
   "publishConfig": {
