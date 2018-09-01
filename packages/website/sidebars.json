@@ -1,0 +1,10 @@
+{
+  "guides": {
+    "Docusaurus": ["guides"],
+    "First Category": ["doc2"],
+    "Second Category": ["doc3"]
+  },
+  "api": {
+    "First Category": ["api", "doc5"]
+  }
+}

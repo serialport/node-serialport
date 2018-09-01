@@ -1,10 +1,17 @@
 {
+  "settings": {
+    "react": {
+      "version": "16"
+    }
+  },
   "extends": [
-    "plugin:node/recommended"
+    "plugin:node/recommended",
+    "plugin:react/recommended"
   ],
   "plugins": [
     "prettier",
-    "node"
+    "node",
+    "react"
   ],
   "env": {
     "node": true,
@@ -12,7 +19,10 @@
     "es6": true
   },
   "parserOptions": {
-    "ecmaVersion": 6
+    "ecmaVersion": 6,
+    "ecmaFeatures": {
+      "jsx": true
+    }
   },
   "globals": {
     "assert": false,
@@ -40,6 +50,7 @@
       2
     ],
     "node/shebang": 0,
+    "react/prop-types": 0,
     "object-shorthand": 2,
     "prefer-arrow-callback": 2,
     "prefer-const": 2,
