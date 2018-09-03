@@ -1,10 +1,11 @@
 {
   "guides": {
-    "Docusaurus": ["guides"],
-    "First Category": ["doc2"],
-    "Second Category": ["doc3"]
+    "Getting Started": ["guide-about", "guide-platform-support", "guide-installation"],
+    "Usage": ["guide-usage", "guide-cli", "guide-debugging", "guide-errors", "guide-testing"]
   },
   "api": {
-    "First Category": ["api", "doc5"]
+    "Core": ["api-overview", "api-serialport", "api-stream"],
+    "Bindings": ["api-bindings"],
+    "Parsers": ["api-parsers-overview", "api-parser-readline"]
   }
 }

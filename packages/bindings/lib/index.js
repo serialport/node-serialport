@@ -1,4 +1,4 @@
-const debug = require('debug')('@serialport/bindings')
+const debug = require('debug')('serialport/bindings')
 
 switch (process.platform) {
   case 'win32':

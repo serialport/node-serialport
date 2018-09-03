@@ -1,5 +1,5 @@
-const debug = require('debug')('@serialport/binding-mock')
 const AbstractBinding = require('@serialport/binding-abstract')
+const debug = require('debug')('serialport/binding-mock')
 
 let ports = {}
 let serialNumber = 0
