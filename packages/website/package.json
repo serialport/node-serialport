@@ -1,5 +1,6 @@
 {
   "name": "@serialport/website",
+  "main": "siteConfig.js",
   "private": true,
   "scripts": {
     "examples": "docusaurus-examples",
