@@ -6,11 +6,10 @@
     "tagline": "Node.js package to access serial ports for Linux, OSX and Windows.",
     "api-bindings": "Bindings",
     "api-overview": "Serialport Packages",
-    "Packages Overview": "Packages Overview",
-    "api-parser-readline": "Readline Parser",
-    "api-parsers-overview": "Bindings",
-    "api-serialport": "SerialPort",
-    "api-stream": "SerialPort",
+    "api-parser-readline": "api-parser-readline",
+    "api-parsers-overview": "api-parsers-overview",
+    "api-serialport": "SerialPort API",
+    "api-stream": "Stream Interface",
     "guide-about": "About SerialPort",
     "guide-cli": "Command Line Tools",
     "guide-debugging": "Debugging",
@@ -27,6 +26,7 @@
     "Usage": "Usage",
     "Core": "Core",
     "Bindings": "Bindings",
+    "Interfaces": "Interfaces",
     "Parsers": "Parsers"
   },
   "pages-strings": {

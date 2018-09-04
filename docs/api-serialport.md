@@ -1,13 +1,71 @@
 ---
 id: api-serialport
-title: SerialPort
+title: SerialPort API
 ---
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. In ac euismod odio, eu consequat dui. Nullam molestie consectetur risus id imperdiet. Proin sodales ornare turpis, non mollis massa ultricies id. Nam at nibh scelerisque, feugiat ante non, dapibus tortor. Vivamus volutpat diam quis tellus elementum bibendum. Praesent semper gravida velit quis aliquam. Etiam in cursus neque. Nam lectus ligula, malesuada et mauris a, bibendum faucibus mi. Phasellus ut interdum felis. Phasellus in odio pulvinar, porttitor urna eget, fringilla lectus. Aliquam sollicitudin est eros. Mauris consectetur quam vitae mauris interdum hendrerit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 
-Duis et egestas libero, imperdiet faucibus ipsum. Sed posuere eget urna vel feugiat. Vivamus a arcu sagittis, fermentum urna dapibus, congue lectus. Fusce vulputate porttitor nisl, ac cursus elit volutpat vitae. Nullam vitae ipsum egestas, convallis quam non, porta nibh. Morbi gravida erat nec neque bibendum, eu pellentesque velit posuere. Fusce aliquam erat eu massa eleifend tristique.
+```js
+const SerialPort = require('serialport')
+```
 
-Sed consequat sollicitudin ipsum eget tempus. Integer a aliquet velit. In justo nibh, pellentesque non suscipit eget, gravida vel lacus. Donec odio ante, malesuada in massa quis, pharetra tristique ligula. Donec eros est, tristique eget finibus quis, semper non nisl. Vivamus et elit nec enim ornare placerat. Sed posuere odio a elit cursus sagittis.
+This package provides everything you need to start talking over your serialport. It provides a high level [Stream Interface](api-stream.md), auto detecting [bindings](api-bindings.md), and a set of [parser streams](#serialportparsers).
 
-Phasellus feugiat purus eu tortor ultrices finibus. Ut libero nibh, lobortis et libero nec, dapibus posuere eros. Sed sagittis euismod justo at consectetur. Nulla finibus libero placerat, cursus sapien at, eleifend ligula. Vivamus elit nisl, hendrerit ac nibh eu, ultrices tempus dui. Nam tellus neque, commodo non rhoncus eu, gravida in risus. Nullam id iaculis tortor.
+Most of the api surface is covered in the [Stream Interface](api-stream.md) docs.
 
-Nullam at odio in sem varius tempor sit amet vel lorem. Etiam eu hendrerit nisl. Fusce nibh mauris, vulputate sit amet ex vitae, congue rhoncus nisl. Sed eget tellus purus. Nullam tempus commodo erat ut tristique. Cras accumsan massa sit amet justo consequat eleifend. Integer scelerisque vitae tellus id consectetur.
+Historically this was the only package involved and it contained everything. Since version 7 the internals have been split into their own modules and be required separately allowing a user to only install what they require.
+
+This allows for smaller installs and alternative interfaces, bindings and parsers.
+
+## `SerialPort`
+
+This is the [Stream Interface](api-stream.md) constructor. It comes pre-populated with `Binding` and `Parsers`
+
+```js
+const serialport = new SerialPort(path)
+serialport.write('ROBOT POWER ON')
+```
+
+
+## `SerialPort.Binding`
+
+This package includes the [`@serialport/bindings`](api-bindings.md) package already attached to the stream interface.
+
+```js
+SerialPort.Binding = require('@serialport/bindings)
+```
+
+## `SerialPort.parsers`
+
+Comes with the following parsers available for use.
+
+- [ByteLength](api-parser-byte-length.md)
+- [CCTalk](api-parser-cctalk.md)
+- [Delimiter](api-parser-delimiter.md)
+- [Readline](api-parser-readline.md)
+- [Ready](api-parser-ready.md)
+- [Regex](api-parser-regex.md)
+
+```js
+SerialPort.parsers = {
+  ByteLength: require('@serialport/parser-byte-length'),
+  CCTalk: require('@serialport/parser-cctalk'),
+  Delimiter: require('@serialport/parser-delimiter'),
+  Readline: require('@serialport/parser-readline'),
+  Ready: require('@serialport/parser-ready'),
+  Regex: require('@serialport/parser-regex'),
+}
+```
+These `Parsers` are all [Transform streams](https://nodejs.org/api/stream.html#stream_class_stream_transform) that process incoming data. To use the parsers, you must create them and then pipe the Serialport to the parser. Be careful to only write to the SerialPort object and not the parser.
+
+```js
+const SerialPort = require('serialport')
+const Readline = SerialPort.parsers.Readline
+const port = new SerialPort(path)
+const parser = new Readline()
+port.pipe(parser)
+parser.on('data', console.log)
+port.write('ROBOT PLEASE RESPOND\n')
+// ROBOT ONLINE
+
+// Creating the parser and piping can be shortened to
+const parser = port.pipe(new Readline())
+```
