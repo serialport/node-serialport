@@ -8,7 +8,8 @@
 const React = require('react')
 
 class Footer extends React.Component {
-  docUrl(doc, language) {
+  docUrl(doc) {
+    const language = false // until we have more than english
     const baseUrl = this.props.config.baseUrl
     return `${baseUrl}docs/${language ? `${language}/` : ''}${doc}`
   }
@@ -34,31 +35,32 @@ class Footer extends React.Component {
           </a>
           <div>
             <h5>Docs</h5>
-            <a href={this.docUrl('doc1.html', this.props.language)}>
-              Getting Started (or other categories)
+            <a href={this.docUrl('guide-usage', this.props.language)}>
+              Getting Started
             </a>
-            <a href={this.docUrl('doc2.html', this.props.language)}>
-              Guides (or other categories)
-            </a>
-            <a href={this.docUrl('doc3.html', this.props.language)}>
-              API Reference (or other categories)
+            <a href={this.docUrl('guide-about', this.props.language)}>Guides</a>
+            <a href={this.docUrl('api-overview', this.props.language)}>
+              API Reference
             </a>
           </div>
           <div>
             <h5>Community</h5>
-            <a href={this.pageUrl('users.html', this.props.language)}>
-              User Showcase
+            <a href="http://nodebots.io/" target="_blank">
+              NodeBots
             </a>
+            <a href="http://johnny-five.io/" target="_blank">
+              Johnny-Five
+            </a>
+
             <a
-              href="http://stackoverflow.com/questions/tagged/"
+              href="http://stackoverflow.com/questions/tagged/node-serialport"
               target="_blank"
               rel="noreferrer noopener"
             >
               Stack Overflow
             </a>
-            <a href="https://discordapp.com/">Project Chat</a>
             <a
-              href="https://twitter.com/"
+              href="https://twitter.com/nodebots"
               target="_blank"
               rel="noreferrer noopener"
             >
@@ -67,8 +69,8 @@ class Footer extends React.Component {
           </div>
           <div>
             <h5>More</h5>
-            <a href={`${this.props.config.baseUrl}blog`}>Blog</a>
-            <a href="https://github.com/">GitHub</a>
+            {/* <a href={`${this.props.config.baseUrl}blog`}>Blog</a> */}
+            <a href={this.props.config.repoUrl}>GitHub</a>
             <a
               className="github-button"
               href={this.props.config.repoUrl}
@@ -82,20 +84,6 @@ class Footer extends React.Component {
             </a>
           </div>
         </section>
-
-        <a
-          href="https://code.facebook.com/projects/"
-          target="_blank"
-          rel="noreferrer noopener"
-          className="fbOpenSource"
-        >
-          <img
-            src={`${this.props.config.baseUrl}img/oss_logo.png`}
-            alt="Facebook Open Source"
-            width="170"
-            height="45"
-          />
-        </a>
         <section className="copyright">{this.props.config.copyright}</section>
       </footer>
     )

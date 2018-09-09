@@ -13,7 +13,7 @@ const users = [
   {
     caption: 'NodeBots',
     // You will need to prepend the image path with your baseUrl
-    image: '/node-serialport/img/nodebots-logo.svg',
+    image: '/img/nodebots-logo.svg',
     infoLink: 'http://www.nodebots.io',
     pinned: true,
   },
@@ -22,8 +22,8 @@ const users = [
 const siteConfig = {
   title: 'Node SerialPort', // Title for your website.
   tagline: 'Node.js package to access serial ports for Linux, OSX and Windows.',
-  url: 'https://node-serialport.github.io/', // Your website URL
-  baseUrl: '/node-serialport/', // Base URL for your project */
+  url: 'https://serialport.io/', // Your website URL
+  baseUrl: '/', // Base URL for your project */
 
   // Used for publishing and more
   projectName: 'node-serialport',
@@ -34,21 +34,21 @@ const siteConfig = {
   headerLinks: [
     { doc: 'guide-about', label: 'Guides' },
     { doc: 'api-overview', label: 'API' },
-    { page: 'help', label: 'Help' },
-    { blog: true, label: 'Blog' },
+    // { page: 'help', label: 'Help' },
+    // { blog: true, label: 'Blog' },
   ],
 
   // If you have users set above, you add it here:
   users,
 
   /* path to images for header/footer */
-  headerIcon: 'img/node-serialport-logo-small.png',
-  footerIcon: 'img/node-serialport-logo.png',
-  favicon: 'img/node-serialport-logo-small.png',
+  headerIcon: 'img/serialport-logo-small.svg',
+  footerIcon: 'img/serialport-logo.svg',
+  favicon: 'img/serialport-logo-small.svg',
 
   /* Colors for website */
   colors: {
-    primaryColor: '#cc0096',
+    primaryColor: '#2e2e2e',
     secondaryColor: '#373737',
   },
 
@@ -74,8 +74,8 @@ const siteConfig = {
   cleanUrl: true,
 
   // Open Graph and Twitter card images.
-  ogImage: 'img/docusaurus.png',
-  twitterImage: 'img/docusaurus.png',
+  ogImage: 'img/serialport-logo-small.svg',
+  twitterImage: 'img/serialport-logo-small.svg',
 
   // You may provide arbitrary config keys to be used as needed by your
   // template. For example, if you need your repo's URL...
