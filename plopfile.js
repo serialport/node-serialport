@@ -1,19 +1,23 @@
 module.exports = function(plop) {
-	plop.setGenerator('package', {
-		description: 'Make a new parser',
+  plop.setGenerator('package', {
+    description: 'Make a new parser',
 
-		// inquirer prompts
-		prompts: [{
-			type: 'input',
-			name: 'name',
-			message: 'Project name: '
-		}],
+    // inquirer prompts
+    prompts: [
+      {
+        type: 'input',
+        name: 'name',
+        message: 'Project name: ',
+      },
+    ],
 
-		// actions to perform
-		actions: [{
-			type: 'addMany',
-			destination: 'packages/{{dashCase name}}/',
-			templateFiles: '.generators/*',
-		}]
-	})
+    // actions to perform
+    actions: [
+      {
+        type: 'addMany',
+        destination: 'packages/{{dashCase name}}/',
+        templateFiles: '.generators/*',
+      },
+    ],
+  })
 }

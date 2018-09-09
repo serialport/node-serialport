@@ -1,6 +1,6 @@
 const fs = require('fs')
 const debug = require('debug')
-const logger = debug('@serialport/bindings:unixWrite')
+const logger = debug('serialport/bindings/unixWrite')
 
 module.exports = function unixWrite(buffer, offset) {
   offset = offset || 0

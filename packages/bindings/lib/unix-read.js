@@ -1,6 +1,6 @@
 const fs = require('fs')
 const debug = require('debug')
-const logger = debug('@serialport/bindings:unixRead')
+const logger = debug('serialport/bindings/unixRead')
 
 module.exports = function unixRead(buffer, offset, length) {
   logger('Starting read')

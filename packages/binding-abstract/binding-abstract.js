@@ -1,4 +1,4 @@
-const debug = require('debug')('@serialport/binding-abstract')
+const debug = require('debug')('serialport/binding-abstract')
 
 /**
  * @name Binding
