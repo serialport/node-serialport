@@ -5,9 +5,13 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/u6xe3iao2crd7akn/branch/master?svg=true)](https://ci.appveyor.com/project/serialport/node-serialport/branch/master)
 [![Greenkeeper badge](https://badges.greenkeeper.io/node-serialport/node-serialport.svg)](https://greenkeeper.io/)
 
-Working with serialports can be hard, this is a collection of projects that make it easier. We currently have the following packages.
+Working with serialports can be hard, this is a collection of projects that make it easier.
 
-- [`serialport`](/packages/serialport) [![npm](https://img.shields.io/npm/dm/serialport.svg?maxAge=2592000)](http://npmjs.com/package/serialport) the only package you need to get started.
+Goto https://serialport.io/ to learn more.
+
+We currently have the following packages.
+
+- `serialport` [![npm](https://img.shields.io/npm/dm/serialport.svg?maxAge=2592000)](http://npmjs.com/package/serialport) the only package you need to get started.
 - `@serialport/stream` our traditional stream interface with nothing else
 - `@serialport/binding-abstract` as an abstract class for all bindings
 - `@serialport/binding-mock` for a mock binding package
@@ -20,7 +24,7 @@ Working with serialports can be hard, this is a collection of projects that make
 - Parser slip-encoder
 
 ## Quick Answers to Important Questions
-- [**API Docs**](https://node-serialport.github.io/node-serialport/)
+- [**API Docs**](https://serialport.io/docs/api-overview)
 
 ## Intro to Node-Serialport
 
@@ -32,7 +36,8 @@ For a full breakdown of why we made Node-Serialport, please read [NodeBots - The
 
 ## API Documentation
 
-- [**API Docs**](https://node-serialport.github.io/node-serialport/)
+- [**API Docs**](https://serialport.io/docs/api-overview)
+
 
 You can generate the docs by running
 

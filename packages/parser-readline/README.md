@@ -1,1 +1,1 @@
-See our api docs https://node-serialport.github.io/node-serialport/ReadLineParser.html
+See our api docs See our api docs https://serialport.io/docs/api-parser-readline

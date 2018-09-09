@@ -1,1 +1,1 @@
-See our api docs https://node-serialport.github.io/node-serialport/ByteLengthParser.html
+See our api docs https://serialport.io/docs/api-parser-byte-length
