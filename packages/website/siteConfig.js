@@ -11,11 +11,10 @@
 // List of projects/orgs using your project for the users page.
 const users = [
   {
-    caption: 'User1',
+    caption: 'NodeBots',
     // You will need to prepend the image path with your baseUrl
-    // if it is not '/', like: '/test-site/img/docusaurus.svg'.
-    image: '/img/docusaurus.svg',
-    infoLink: 'https://www.facebook.com',
+    image: '/node-serialport/img/nodebots-logo.svg',
+    infoLink: 'http://www.nodebots.io',
     pinned: true,
   },
 ]
@@ -43,9 +42,9 @@ const siteConfig = {
   users,
 
   /* path to images for header/footer */
-  headerIcon: 'img/docusaurus.svg',
-  footerIcon: 'img/docusaurus.svg',
-  favicon: 'img/favicon.png',
+  headerIcon: 'img/node-serialport-logo-small.png',
+  footerIcon: 'img/node-serialport-logo.png',
+  favicon: 'img/node-serialport-logo-small.png',
 
   /* Colors for website */
   colors: {
@@ -54,18 +53,9 @@ const siteConfig = {
   },
 
   /* Custom fonts for website */
-  /*
   fonts: {
-    myFont: [
-      "Times New Roman",
-      "Serif"
-    ],
-    myOtherFont: [
-      "-apple-system",
-      "system-ui"
-    ]
+    myFont: ['Helvetica', 'sans-serif'],
   },
-  */
 
   // This copyright info is used in /core/Footer.js and blog RSS/Atom feeds.
   copyright: `Copyright © ${new Date().getFullYear()} Node SerialPort`,

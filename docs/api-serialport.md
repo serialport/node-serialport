@@ -9,7 +9,7 @@ const SerialPort = require('serialport')
 
 This package provides everything you need to start talking over your serialport. It provides a high level [Stream Interface](api-stream.md), auto detecting [bindings](api-bindings.md), and a set of [parser streams](#serialportparsers).
 
-Most of the api surface is covered in the [Stream Interface](api-stream.md) docs.
+> Most of the api is covered in the [Stream Interface](api-stream.md) docs.
 
 Historically this was the only package involved and it contained everything. Since version 7 the internals have been split into their own modules and be required separately allowing a user to only install what they require.
 

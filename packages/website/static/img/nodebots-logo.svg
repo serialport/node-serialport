@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   width="100%"
+   height="100%"
+   viewBox="0 0 630 630"
+   id="svg3035">
+  <metadata
+     id="metadata3045">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs3043" />
+  <g
+     id="logo">
+    <rect
+       width="630"
+       height="630"
+       x="0"
+       y="0"
+       id="background"
+       style="fill:#f7df1e" />
+  </g>
+  <g
+     transform="matrix(3.0059144,0,0,3.0059144,284.98817,279.57389)"
+     id="Your_Icon"
+     style="fill:#2e2e2c;fill-opacity:1">
+    <g
+       id="g3453"
+       style="fill:#2e2e2c;fill-opacity:1">
+      <g
+         id="g3347"
+         style="fill:#2e2e2c;fill-opacity:1">
+        <g
+           id="g3349"
+           style="fill:#2e2e2c;fill-opacity:1">
+          <g
+             id="g3351"
+             style="fill:#2e2e2c;fill-opacity:1">
+            <path
+               d="M 85.405,30 H 15.065 C 7.849,30 2,36.191 2,43.556 V 81 H 98 V 43.556 C 98,36.191 92.622,30 85.405,30 z M 28.614,60.425 c -4.749,0 -8.598,-3.929 -8.598,-8.775 0,-4.846 3.849,-8.776 8.598,-8.776 4.749,0 8.597,3.93 8.597,8.776 0,4.846 -3.848,8.775 -8.597,8.775 z m 43.971,0 c -4.748,0 -8.598,-3.929 -8.598,-8.775 0,-4.846 3.85,-8.776 8.598,-8.776 4.747,0 8.597,3.93 8.597,8.776 0,4.846 -3.85,8.775 -8.597,8.775 z"
+               id="path3353"
+               style="fill:#2e2e2c;fill-opacity:1;fill-rule:evenodd" />
+          </g>
+        </g>
+      </g>
+      <g
+         id="g3355"
+         style="fill:#2e2e2c;fill-opacity:1">
+        <g
+           id="g3357"
+           style="fill:#2e2e2c;fill-opacity:1">
+          <g
+             id="g3359"
+             style="fill:#2e2e2c;fill-opacity:1">
+            <path
+               d="m 20.169,84.443 h 59.396 c 1.704,0 3.083,1.409 3.083,3.147 0,1.739 -1.379,3.148 -3.083,3.148 H 20.169 c -1.703,0 -3.084,-1.409 -3.084,-3.148 0,-1.737 1.381,-3.147 3.084,-3.147 z"
+               id="path3361"
+               style="fill:#2e2e2c;fill-opacity:1;fill-rule:evenodd" />
+          </g>
+        </g>
+      </g>
+      <g
+         id="g3363"
+         style="fill:#2e2e2c;fill-opacity:1">
+        <g
+           id="g3365"
+           style="fill:#2e2e2c;fill-opacity:1">
+          <g
+             id="g3367"
+             style="fill:#2e2e2c;fill-opacity:1">
+            <path
+               d="m 30.213,93.649 h 39.84 c 1.704,0 3.084,1.41 3.084,3.149 0,1.739 -1.38,3.147 -3.084,3.147 h -39.84 c -1.703,0 -3.084,-1.408 -3.084,-3.147 0,-1.739 1.381,-3.149 3.084,-3.149 z"
+               id="path3369"
+               style="fill:#2e2e2c;fill-opacity:1;fill-rule:evenodd" />
+          </g>
+        </g>
+      </g>
+      <g
+         id="g3371"
+         style="fill:#2e2e2c;fill-opacity:1">
+        <g
+           id="g3373"
+           style="fill:#2e2e2c;fill-opacity:1">
+          <g
+             id="g3375"
+             style="fill:#2e2e2c;fill-opacity:1">
+            <path
+               d="M 57.212,6.41 C 57.212,2.87 54.491,0 51.022,0 47.556,0 45.001,2.87 45.001,6.41 45.001,8.611 46,10.552 48,11.706 v 10.907 c 0,1.869 1.171,3.383 3,3.383 1.831,0 3,-1.514 3,-3.383 V 11.888 c 2,-1.124 3.212,-3.153 3.212,-5.478 z"
+               id="path3377"
+               style="fill:#2e2e2c;fill-opacity:1;fill-rule:evenodd" />
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

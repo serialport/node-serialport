@@ -56,6 +56,8 @@ port.write('main screen turn on', function(err) {
 
 ```
 
+## Auto Open
+
 When disabling the `autoOpen` option you'll need to open the port on your own.
 
 ```js
@@ -77,18 +79,23 @@ port.on('open', function() {
 })
 ```
 
+## Reading Data
+
 Get updates of new data from the serial port as follows:
 
 ```js
+// Read data that is available but keep the stream in "paused mode"
+port.on('readable', function () {
+  console.log('Data:', port.read())
+})
+
 // Switches the port into "flowing mode"
 port.on('data', function (data) {
   console.log('Data:', data)
 })
 
-// Read data that is available but keep the stream from entering "flowing mode"
-port.on('readable', function () {
-  console.log('Data:', port.read())
-})
+// Pipe the data into another stream (like a parser or standard out)
+const lineStream = port.pipe(new Readline())
 ```
 
 You can write to the serial port by sending a string or buffer to the write method:

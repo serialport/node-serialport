@@ -7,6 +7,14 @@
     "Core": ["api-overview", "api-serialport"],
     "Bindings": ["api-bindings"],
     "Interfaces": ["api-stream"],
-    "Parsers": ["api-parsers-overview", "api-parser-readline"]
+    "Parsers": [
+      "api-parsers-overview",
+      "api-parser-byte-length",
+      "api-parser-delimiter",
+      "api-parser-readline",
+      "api-parser-ready",
+      "api-parser-regex",
+      "api-parser-slip-encoder"
+    ]
   }
 }
