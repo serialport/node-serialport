@@ -5,47 +5,40 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/u6xe3iao2crd7akn/branch/master?svg=true)](https://ci.appveyor.com/project/serialport/node-serialport/branch/master)
 [![Greenkeeper badge](https://badges.greenkeeper.io/node-serialport/node-serialport.svg)](https://greenkeeper.io/)
 
-Working with serialports can be hard, this is a collection of projects that make it easier.
+Working with serial ports can be hard, this is a collection of projects that make it easier.
 
-Goto https://serialport.io/ to learn more.
-
-We currently have the following packages.
-
-- `serialport` [![npm](https://img.shields.io/npm/dm/serialport.svg?maxAge=2592000)](http://npmjs.com/package/serialport) the only package you need to get started.
-- `@serialport/stream` our traditional stream interface with nothing else
-- `@serialport/binding-abstract` as an abstract class for all bindings
-- `@serialport/binding-mock` for a mock binding package
-- Parser Byte Length
-- Parser cctalk
-- Parser delimiter
-- Parser readline
-- Parser ready
-- Parser regex
-- Parser slip-encoder
+> Go to https://serialport.io/ to learn more.
 
 ## Quick Answers to Important Questions
+- [**Guides**](https://serialport.io/docs/guide-about)
 - [**API Docs**](https://serialport.io/docs/api-overview)
 
-## Intro to Node-Serialport
+Chances are you're looking for the [`serialport`](https://serialport.io/docs/api-serialport.md) package which provides a good set of defaults for most projects. However it is quite easy to mix and match the parts of serialport you need.
 
-Imagine a world where you can write JavaScript to control blenders, lights, security systems, or even robots. That's right—robots! Thanks to Node Serialport, that world is here.
+## Bindings
+The Bindings provide a low level interface to work with your serialport. It is possible to use them alone but it's usually easier to use them with an interface.
+- [`@serialport/bindings`](https://serialport.io/docs/api-bindings.md) bindings for Linux, Mac and Windows
+- [`@serialport/binding-abstract`](https://serialport.io/docs/api-bindings-abstract.md) as an abstract class to use if you're making your own bindings
+- [`@serialport/binding-mock`](https://serialport.io/docs/api-bindings-mock.md) for a mock binding package for testing
 
-Node-Serialport provides an interface for the low-level serial port code necessary to control [Arduino](http://www.arduino.cc/) chipsets, X10 interfaces, [Zigbee](http://www.zigbee.org/) radios, highway signs, lcd screens, cash drawers, motor controllers, sensor packages, fork lifts, modems, drones, CNC machines, plotters, vending machines, ccTalk coin accecptors, SMS Gateways, RFID scanners and much more. If you have a hardware device with a [UART](https://en.wikipedia.org/wiki/Universal_asynchronous_receiver/transmitter) we can speak to it. The physical world is your oyster with this goodie.
+## Interfaces
+Interfaces take a binding object and provide a different API on top of it. Currently we only ship a Node Stream Interface.
 
-For a full breakdown of why we made Node-Serialport, please read [NodeBots - The Rise of JS Robotics](http://www.voodootikigod.com/nodebots-the-rise-of-js-robotics). It explains why one would want to program robots in JS in the first place. It's not being against firmware but we can be better than it.
+- [`@serialport/stream`](https://serialport.io/docs/api-stream) our traditional Node.js Stream interface
 
-## API Documentation
+## Parsers
 
-- [**API Docs**](https://serialport.io/docs/api-overview)
+Parsers are used to take raw binary data and transform them into usable messages. This may include tasks such as converting the data to text, emitting useful chunks of data when they have been fully received, or even validating protocols.
 
+Parsers are traditionally Transform streams, but Duplex streams and other non stream interfaces are acceptable.
 
-You can generate the docs by running
-
-```bash
-npm run docs
-```
-
-And browsing to `./docs/index.html`.
+- [@serialport/parser-byte-length](https://serialport.io/docs/api-parser-byte-length)
+- [@serialport/parser-cctalk](https://serialport.io/docs/api-parser-cctalk)
+- [@serialport/parser-delimiter](https://serialport.io/docs/api-parser-delimiter)
+- [@serialport/parser-readline](https://serialport.io/docs/api-parser-readline)
+- [@serialport/parser-ready](https://serialport.io/docs/api-parser-ready)
+- [@serialport/parser-regex](https://serialport.io/docs/api-parser-regex)
+- [@serialport/parser-slip-encoder](https://serialport.io/docs/api-parser-slip-encoder)
 
 ### Developing node serialport projects
 1. Clone this repo `git clone git@github.com:node-serialport/node-serialport.git`
@@ -54,5 +47,30 @@ And browsing to `./docs/index.html`.
 1. Run `npm run generate` to generate a new project
 1. Add dev dependencies to the root package.json and package dependencies to the package's one.
 
+### Developing Docs
+
+You can develop the docs by running
+
+```bash
+npm run docs:dev
+```
+
+And build them by running
+```bash
+npm run docs
+```
+
+Docs are automatically built with [netlify](https://www.netlify.com/pricing/) including previews on branches. The master branch is deployed to https://serialport.io
+
 ## License
 SerialPort packages are all [MIT licensed](LICENSE) and all it's dependencies are MIT or BSD licensed.
+
+## Code of Conduct
+SerialPort follows the [Nodebots Code of Conduct](http://nodebots.io/conduct.html).
+
+### TLDR
+- Be respectful.
+- Abusive behavior is never tolerated.
+- Data published to NodeBots is hosted at the discretion of the service administrators, and may be removed.
+- Don't build evil robots.
+- Violations of this code may result in swift and permanent expulsion from the NodeBots community.

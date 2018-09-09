@@ -1,6 +1,6 @@
 ---
 id: api-overview
-title: Serialport Packages
+title: Packages Overview
 ---
 
 Chances are you're looking for the [`serialport`](api-serialport.md) package which provides a good set of defaults for most projects. However it is quite easy to mix and match the parts of serialport you need.
@@ -22,9 +22,10 @@ Parsers are used to take raw binary data and transform them into usable messages
 
 Parsers are traditionally Transform streams, but Duplex streams and other non stream interfaces are acceptable.
 
-- [`@serialport/parser-byte-length`](api-parser-byte-length.md)
-- [`@serialport/parser-delimiter`](api-parser-delimiter.md)
-- [`@serialport/parser-readline`](api-parser-readline.md)
-- [`@serialport/parser-ready`](api-parser-ready.md)
-- [`@serialport/parser-regex`](api-parser-regex.md)
-- [`@serialport/parser-slip-encoder`](api-parser-slip-encoder.md)
+- [@serialport/parser-byte-length](api-parser-byte-length.md)
+- [@serialport/parser-cctalk](api-parser-cctalk.md)
+- [@serialport/parser-delimiter](api-parser-delimiter.md)
+- [@serialport/parser-readline](api-parser-readline.md)
+- [@serialport/parser-ready](api-parser-ready.md)
+- [@serialport/parser-regex](api-parser-regex.md)
+- [@serialport/parser-slip-encoder](api-parser-slip-encoder.md)

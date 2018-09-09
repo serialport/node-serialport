@@ -24,3 +24,7 @@
 .projectTitle {
   color: black;
 }
+
+a, a:hover {
+  text-decoration: underline;
+}

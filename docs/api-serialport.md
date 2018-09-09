@@ -1,6 +1,6 @@
 ---
 id: api-serialport
-title: SerialPort API
+title: SerialPort
 ---
 
 ```js
