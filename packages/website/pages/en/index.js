@@ -100,6 +100,7 @@ const Block = props => (
   </Container>
 )
 
+// eslint-disable-next-line no-unused-vars
 const Features = () => (
   <Block layout="fourColumn">
     {[
@@ -119,6 +120,7 @@ const Features = () => (
   </Block>
 )
 
+// eslint-disable-next-line no-unused-vars
 const FeatureCallout = () => (
   <div
     className="productShowcaseSection paddingBottom"
@@ -129,6 +131,7 @@ const FeatureCallout = () => (
   </div>
 )
 
+// eslint-disable-next-line no-unused-vars
 const LearnHow = () => (
   <Block background="light">
     {[
@@ -142,6 +145,7 @@ const LearnHow = () => (
   </Block>
 )
 
+// eslint-disable-next-line no-unused-vars
 const TryOut = () => (
   <Block id="try">
     {[
@@ -155,6 +159,7 @@ const TryOut = () => (
   </Block>
 )
 
+// eslint-disable-next-line no-unused-vars
 const Description = () => (
   <Block background="dark">
     {[
@@ -168,6 +173,7 @@ const Description = () => (
   </Block>
 )
 
+// eslint-disable-next-line no-unused-vars
 const Showcase = props => {
   if ((siteConfig.users || []).length === 0) {
     return null

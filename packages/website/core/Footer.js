@@ -45,10 +45,18 @@ class Footer extends React.Component {
           </div>
           <div>
             <h5>Community</h5>
-            <a href="http://nodebots.io/" target="_blank">
+            <a
+              href="http://nodebots.io/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               NodeBots
             </a>
-            <a href="http://johnny-five.io/" target="_blank">
+            <a
+              href="http://johnny-five.io/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Johnny-Five
             </a>
 
