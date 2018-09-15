@@ -5,7 +5,7 @@ title: About SerialPort
 
 ## Quick Answers to Important Questions
 - **For support**, open a [GitHub issue](https://github.com/node-serialport/node-serialport/issues/new).
-- **To contribute**, please review our [contribution guide](https://github.com/node-serialport/node-serialport/blob/master/CONTRIBUTING.md) and [Code of Conduct](https://github.com/node-serialport/node-serialport/blob/master/CODE_OF_CONDUCT.md). We also have issues tagged ["good first PR"](https://github.com/node-serialport/node-serialport/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+pr%22), if you'd like to start somewhere specific. We'll do our best to support you until we merge your PR.
+- **To contribute**, please review our [contribution guide](https://github.com/node-serialport/node-serialport/blob/master/CONTRIBUTING.md) and [Code of Conduct](code-of-conduct.md). We also have issues tagged ["good first PR"](https://github.com/node-serialport/node-serialport/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22), if you'd like to start somewhere specific. We'll do our best to support you until we merge your PR.
 
 ***
 ## Helpful Resources for Getting Started with Node-Serialport
@@ -16,5 +16,5 @@ In addition to reading the [article mentioned above](http://www.voodootikigod.co
 
 
 ## License
-SerialPort is [MIT licensed](LICENSE) and all it's dependencies are MIT or BSD licensed.
+SerialPort is [MIT licensed](https://github.com/node-serialport/node-serialport/blob/master/LICENSE) and all it's dependencies are MIT or BSD licensed.
 

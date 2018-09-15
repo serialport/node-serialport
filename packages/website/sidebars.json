@@ -1,7 +1,8 @@
 {
   "guides": {
     "Getting Started": ["guide-about", "guide-platform-support", "guide-installation"],
-    "Usage": ["guide-usage", "guide-cli", "guide-debugging", "guide-errors", "guide-testing"]
+    "Usage": ["guide-usage", "guide-cli", "guide-debugging", "guide-errors", "guide-testing"],
+    "Community": ["code-of-conduct"]
   },
   "api": {
     "Core": ["api-overview", "api-serialport"],
