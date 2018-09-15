@@ -3,7 +3,7 @@ id: guide-debugging
 title: Debugging
 ---
 
-## `DEBUG=`
+##  Debugging Output
 
 We use the [debug](https://www.npmjs.com/package/debug) package and log under the `serialport` namespace. Each package has it's own scope
 
@@ -13,11 +13,43 @@ We use the [debug](https://www.npmjs.com/package/debug) package and log under th
 
 You can enable logging through environment variables. Check the [debug](https://www.npmjs.com/package/debug) docs for info.
 
+### linux, osx
 ```bash
-DEBUG=serialport/main node myapp.js
+DEBUG=serialport/stream node myapp.js
 DEBUG=serialport/* node myapp.js
 DEBUG=* node myapp.js
 ```
+
+### Windows command prompt notes
+
+#### CMD
+
+On Windows the environment variable is set using the `set` command.
+
+```cmd
+set DEBUG=serialport/*
+```
+
+Example:
+
+```cmd
+set DEBUG=serialport/* & node myapp.js
+```
+
+#### PowerShell (VS Code default)
+
+PowerShell uses different syntax to set environment variables.
+
+```cmd
+$env:DEBUG = "serialport/*"
+```
+
+Example:
+
+```cmd
+$env:DEBUG='serialport/*'; node app.js
+```
+
 
 ## Core dumps
 
