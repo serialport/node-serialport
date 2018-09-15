@@ -1,7 +1,7 @@
 {
   "name": "@serialport/{{dashCase name}}",
   "version": "1.0.0",
-  "main": "{{dashCase name}}.js",
+  "main": "lib/{{dashCase name}}.js",
   "dependencies": {
     "debug": "^3.1.0"
   },

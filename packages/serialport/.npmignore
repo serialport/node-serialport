@@ -1,10 +1,10 @@
+*.test.js
+CHANGELOG.md
 examples/
 node_modules
-package-lock.json
 test-arduino
 test-config.json
 test-electron
 test-manual
 test/
-*.test.js
-CHANGELOG.md
+UPGRADE_GUIDE.md

@@ -16,7 +16,10 @@ module.exports = function(plop) {
       {
         type: 'addMany',
         destination: 'packages/{{dashCase name}}/',
-        templateFiles: '.generators/*',
+        templateFiles: '.generators/**/*',
+        data: {
+          year: new Date().getFullYear(),
+        },
       },
     ],
   })
