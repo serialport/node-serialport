@@ -23,8 +23,11 @@ If the issue has been reported before but you have new information to help troub
 ## Requesting Features
 To request a new feature be added take a look at the [current roadmap](https://github.com/node-serialport/node-serialport/issues/746) and create a [github issue](https://github.com/node-serialport/node-serialport/issues) and include:
 
-**What feature you'd like to see:**
-**Why this is important to you:** (this is here because it's interesting knowing what cool things people are working on and also could help community members make suggestions for work-arounds until the feature is built)
+### What feature you'd like to see
+
+### Why this is important to you
+
+This is here because it's interesting knowing what cool things people are working on and also could help community members make suggestions for work-arounds until the feature is built.
 
 <a name="pullrequests"></a>
 ## Submitting Pull Requests
@@ -48,7 +51,15 @@ Tests are written using [mocha](https://mochajs.org/), [chai](http://chaijs.com/
 
 We are always looking to improve our docs.  If you find that any are lacking information or have wrong information, fix and submit a PR.  If you're looking for areas to start writing docs for, see the [docs](https://github.com/node-serialport/node-serialport/labels/docs) label in issues.
 
-We use [jsdoc](http://usejsdoc.org/) to generate our docs. Make your changes to `.docs/README.hbs` or the documentation blocks in the JavaScript files and run `npm run docs` to update `README.md`.
+We use [Docusaurus](https://docusaurus.io/) to generate our docs. Make your changes to `/docs/` or in the `/packages/website/` folder.
+
+You can preview the docs by running
+
+```bash
+npm run docs:dev
+```
+
+Or clicking the netlify link in your PR.
 
 Docs should have tested and working sample code. Many people using SerialPort are learning how to work with hardware for the first time, so write for a beginner audience.
 
