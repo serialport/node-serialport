@@ -49,7 +49,7 @@
     "@serialport/parser-ready": "^2.0.1",
     "@serialport/parser-regex": "^2.0.1",
     "@serialport/stream": "^2.0.1",
-    "commander": "^2.13.0",
+    "commander": "^2.18.0",
     "debug": "^4.0.1",
     "promirepl": "^1.0.1",
     "prompt-list": "^3.2.0"
