@@ -47,6 +47,9 @@
       "api-stream": {
         "title": "Stream Interface"
       },
+      "code-of-conduct": {
+        "title": "NodeBots Code of Conduct"
+      },
       "guide-about": {
         "title": "About SerialPort"
       },
@@ -80,6 +83,7 @@
     "categories": {
       "Getting Started": "Getting Started",
       "Usage": "Usage",
+      "Community": "Community",
       "Core": "Core",
       "Bindings": "Bindings",
       "Interfaces": "Interfaces",
