@@ -9,12 +9,7 @@ module.exports = function unixRead(buffer, offset, length) {
   }
   return new Promise((resolve, reject) => {
     fs.read(this.fd, buffer, offset, length, null, (err, bytesRead) => {
-      if (
-        err &&
-        (err.code === 'EAGAIN' ||
-          err.code === 'EWOULDBLOCK' ||
-          err.code === 'EINTR')
-      ) {
+      if (err && (err.code === 'EAGAIN' || err.code === 'EWOULDBLOCK' || err.code === 'EINTR')) {
         if (!this.isOpen) {
           return reject(new Error('Port is not open'))
         }

@@ -89,11 +89,7 @@ describe('SerialPort', () => {
 
     it('throws an error when given bad options even with a callback', function(done) {
       try {
-        this.port = new SerialPort(
-          '/dev/exists',
-          { baudRate: 'whatever' },
-          () => {}
-        )
+        this.port = new SerialPort('/dev/exists', { baudRate: 'whatever' }, () => {})
       } catch (err) {
         assert.instanceOf(err, Error)
         done()
@@ -309,13 +305,11 @@ describe('SerialPort', () => {
           stopBits: 1,
         }
         const port = new SerialPort('/dev/exists', { autoOpen: false })
-        sandbox
-          .stub(SerialPort.Binding.prototype, 'open')
-          .callsFake((path, opt) => {
-            assert.equal(path, '/dev/exists')
-            assert.containSubset(opt, defaultOptions)
-            done()
-          })
+        sandbox.stub(SerialPort.Binding.prototype, 'open').callsFake((path, opt) => {
+          assert.equal(path, '/dev/exists')
+          assert.containSubset(opt, defaultOptions)
+          done()
+        })
         port.open()
       })
 
@@ -364,11 +358,9 @@ describe('SerialPort', () => {
 
       it('allows opening after an open error', done => {
         const port = new SerialPort('/dev/exists', { autoOpen: false })
-        const stub = sandbox
-          .stub(SerialPort.Binding.prototype, 'open')
-          .callsFake(() => {
-            return Promise.reject(new Error('Haha no'))
-          })
+        const stub = sandbox.stub(SerialPort.Binding.prototype, 'open').callsFake(() => {
+          return Promise.reject(new Error('Haha no'))
+        })
         port.open(err => {
           assert.instanceOf(err, Error)
           stub.restore()
@@ -536,9 +528,7 @@ describe('SerialPort', () => {
       it('handles errors in event', done => {
         const port = new SerialPort('/dev/exists')
         sinon.stub(port.binding, 'close').callsFake(() => {
-          return Promise.reject(
-            new Error('attack ships on fire off the shoulder of Orion')
-          )
+          return Promise.reject(new Error('attack ships on fire off the shoulder of Orion'))
         })
         port.on('open', () => {
           port.close()
@@ -606,9 +596,7 @@ describe('SerialPort', () => {
       it('handles errors in event', done => {
         const port = new SerialPort('/dev/exists')
         sinon.stub(port.binding, 'update').callsFake(() => {
-          return Promise.reject(
-            new Error('attack ships on fire off the shoulder of Orion')
-          )
+          return Promise.reject(new Error('attack ships on fire off the shoulder of Orion'))
         })
         port.on('open', () => {
           port.update({})
@@ -718,9 +706,7 @@ describe('SerialPort', () => {
       it('handles errors in event', done => {
         const port = new SerialPort('/dev/exists')
         sinon.stub(port.binding, 'set').callsFake(() => {
-          return Promise.reject(
-            new Error('attack ships on fire off the shoulder of Orion')
-          )
+          return Promise.reject(new Error('attack ships on fire off the shoulder of Orion'))
         })
         port.on('open', () => {
           port.set({})
@@ -769,9 +755,7 @@ describe('SerialPort', () => {
       it('handles errors in event', done => {
         const port = new SerialPort('/dev/exists')
         sinon.stub(port.binding, 'flush').callsFake(() => {
-          return Promise.reject(
-            new Error('attack ships on fire off the shoulder of Orion')
-          )
+          return Promise.reject(new Error('attack ships on fire off the shoulder of Orion'))
         })
         port.on('open', () => {
           port.flush()
@@ -821,9 +805,7 @@ describe('SerialPort', () => {
       it('handles errors in event', done => {
         const port = new SerialPort('/dev/exists')
         sinon.stub(port.binding, 'drain').callsFake(() => {
-          return Promise.reject(
-            new Error('attack ships on fire off the shoulder of Orion')
-          )
+          return Promise.reject(new Error('attack ships on fire off the shoulder of Orion'))
         })
         port.on('open', () => {
           port.drain()
@@ -889,9 +871,7 @@ describe('SerialPort', () => {
       it('handles errors in event', done => {
         const port = new SerialPort('/dev/exists')
         sinon.stub(port.binding, 'get').callsFake(() => {
-          return Promise.reject(
-            new Error('attack ships on fire off the shoulder of Orion')
-          )
+          return Promise.reject(new Error('attack ships on fire off the shoulder of Orion'))
         })
         port.on('open', () => {
           port.get()

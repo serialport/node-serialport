@@ -91,11 +91,7 @@ class HomeSplash extends React.Component {
 }
 
 const Block = props => (
-  <Container
-    padding={['bottom', 'top']}
-    id={props.id}
-    background={props.background}
-  >
+  <Container padding={['bottom', 'top']} id={props.id} background={props.background}>
     <GridBlock align="center" contents={props.children} layout={props.layout} />
   </Container>
 )
@@ -122,10 +118,7 @@ const Features = () => (
 
 // eslint-disable-next-line no-unused-vars
 const FeatureCallout = () => (
-  <div
-    className="productShowcaseSection paddingBottom"
-    style={{ textAlign: 'center' }}
-  >
+  <div className="productShowcaseSection paddingBottom" style={{ textAlign: 'center' }}>
     <h2>Feature Callout</h2>
     <MarkdownBlock>These are features of this project</MarkdownBlock>
   </div>

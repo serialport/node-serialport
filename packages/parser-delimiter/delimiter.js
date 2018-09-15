@@ -23,8 +23,7 @@ class DelimiterParser extends Transform {
       throw new TypeError('"delimiter" has a 0 or undefined length')
     }
 
-    this.includeDelimiter =
-      options.includeDelimiter !== undefined ? options.includeDelimiter : false
+    this.includeDelimiter = options.includeDelimiter !== undefined ? options.includeDelimiter : false
     this.delimiter = Buffer.from(options.delimiter)
     this.buffer = Buffer.alloc(0)
   }
@@ -33,12 +32,7 @@ class DelimiterParser extends Transform {
     let data = Buffer.concat([this.buffer, chunk])
     let position
     while ((position = data.indexOf(this.delimiter)) !== -1) {
-      this.push(
-        data.slice(
-          0,
-          position + (this.includeDelimiter ? this.delimiter.length : 0)
-        )
-      )
+      this.push(data.slice(0, position + (this.includeDelimiter ? this.delimiter.length : 0)))
       data = data.slice(position + this.delimiter.length)
     }
     this.buffer = data

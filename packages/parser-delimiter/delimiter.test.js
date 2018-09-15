@@ -34,10 +34,7 @@ describe('DelimiterParser', () => {
     parser.write(Buffer.from('even you!'))
 
     assert.deepEqual(spy.getCall(0).args[0], Buffer.from('I love robots\n'))
-    assert.deepEqual(
-      spy.getCall(1).args[0],
-      Buffer.from('Each and Every One\n')
-    )
+    assert.deepEqual(spy.getCall(1).args[0], Buffer.from('Each and Every One\n'))
     assert.deepEqual(spy.getCall(2).args[0], Buffer.from('\n'))
     assert.equal(spy.callCount, 3)
   })
@@ -95,9 +92,7 @@ describe('DelimiterParser', () => {
   })
 
   it('emits data events every time it meets 00x 00x', () => {
-    const data = Buffer.from(
-      'This could be\0\0binary data\0\0sent from a Moteino\0\0'
-    )
+    const data = Buffer.from('This could be\0\0binary data\0\0sent from a Moteino\0\0')
     const parser = new DelimiterParser({ delimiter: [0, 0] })
     const spy = sinon.spy()
     parser.on('data', spy)
@@ -109,9 +104,7 @@ describe('DelimiterParser', () => {
   })
 
   it('accepts single byte delimiter', () => {
-    const data = Buffer.from(
-      'This could be\0binary data\0sent from a Moteino\0'
-    )
+    const data = Buffer.from('This could be\0binary data\0sent from a Moteino\0')
     const parser = new DelimiterParser({ delimiter: [0] })
     const spy = sinon.spy()
     parser.on('data', spy)

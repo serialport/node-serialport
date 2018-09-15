@@ -13,10 +13,7 @@ const args = require('commander')
 args
   .usage('-p <port>')
   .description('Run printable characters through the serial port')
-  .option(
-    '-p, --port <port>',
-    'Path or Name of serial port. See serialportlist for available serial ports.'
-  )
+  .option('-p, --port <port>', 'Path or Name of serial port. See serialportlist for available serial ports.')
   .parse(process.argv)
 
 if (!args.port) {

@@ -100,14 +100,8 @@ describe('SlipEncoderParser', () => {
 
     assert.equal(spy.callCount, 6)
     assert.deepEqual(spy.getCall(0).args[0], Buffer.from([0xc0, 0x01, 0xc0]))
-    assert.deepEqual(
-      spy.getCall(1).args[0],
-      Buffer.from([0xc0, 0xdb, 0xdc, 0xc0])
-    )
-    assert.deepEqual(
-      spy.getCall(2).args[0],
-      Buffer.from([0xc0, 0xdb, 0xdd, 0xc0])
-    )
+    assert.deepEqual(spy.getCall(1).args[0], Buffer.from([0xc0, 0xdb, 0xdc, 0xc0]))
+    assert.deepEqual(spy.getCall(2).args[0], Buffer.from([0xc0, 0xdb, 0xdd, 0xc0]))
     assert.deepEqual(spy.getCall(3).args[0], Buffer.from([0xc0, 0xdc, 0xc0]))
     assert.deepEqual(spy.getCall(4).args[0], Buffer.from([0xc0, 0xdd, 0xc0]))
     assert.deepEqual(spy.getCall(5).args[0], Buffer.from([0xc0, 0xff, 0xc0]))

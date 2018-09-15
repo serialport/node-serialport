@@ -30,15 +30,7 @@ const defaultSetFlags = Object.freeze({
   rts: true,
 })
 
-const listFields = [
-  'comName',
-  'manufacturer',
-  'serialNumber',
-  'pnpId',
-  'locationId',
-  'vendorId',
-  'productId',
-]
+const listFields = ['comName', 'manufacturer', 'serialNumber', 'pnpId', 'locationId', 'vendorId', 'productId']
 
 const bindingsToTest = ['mock', platform]
 
@@ -54,10 +46,7 @@ const readyData = Buffer.from('READY')
 
 // Test our mock binding and the binding for the platform we're running on
 bindingsToTest.forEach(bindingName => {
-  const Binding =
-    bindingName === 'mock'
-      ? require('@serialport/binding-mock')
-      : require(`./${bindingName}`)
+  const Binding = bindingName === 'mock' ? require('@serialport/binding-mock') : require(`./${bindingName}`)
   let testPort = process.env.TEST_PORT
 
   if (bindingName === 'mock') {
@@ -96,11 +85,7 @@ function testBinding(bindingName, Binding, testPort) {
             ports.forEach(port => {
               assert.containSubset(Object.keys(port), listFields)
               Object.keys(port).forEach(key => {
-                assert.notEqual(
-                  port[key],
-                  '',
-                  'empty values should be undefined'
-                )
+                assert.notEqual(port[key], '', 'empty values should be undefined')
                 assert.isNotNull(port[key], 'empty values should be undefined')
               })
             })
@@ -130,9 +115,7 @@ function testBinding(bindingName, Binding, testPort) {
     describe('instance property', () => {
       describe('#isOpen', () => {
         if (!testPort) {
-          it(
-            'Cannot be tested. Set the TEST_PORT env var with an available serialport for more testing.'
-          )
+          it('Cannot be tested. Set the TEST_PORT env var with an available serialport for more testing.')
           return
         }
 
@@ -191,9 +174,7 @@ function testBinding(bindingName, Binding, testPort) {
         })
 
         if (!testPort) {
-          it(
-            'Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.'
-          )
+          it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.')
           return
         }
 
@@ -222,30 +203,22 @@ function testBinding(bindingName, Binding, testPort) {
               const customRates = Object.assign({}, defaultOpenOptions, {
                 baudRate: testBaud,
               })
-              testFeature(
-                `baudrate.${testBaud}`,
-                `opens at ${testBaud} baud`,
-                () => {
-                  return binding.open(testPort, customRates).then(() => {
-                    assert.equal(binding.isOpen, true)
+              testFeature(`baudrate.${testBaud}`, `opens at ${testBaud} baud`, () => {
+                return binding.open(testPort, customRates).then(() => {
+                  assert.equal(binding.isOpen, true)
+                  return binding.close()
+                })
+              })
+
+              testFeature(`baudrate.${testBaud}_check`, `sets ${testBaud} baud successfully`, () => {
+                return binding
+                  .open(testPort, customRates)
+                  .then(() => binding.getBaudRate())
+                  .then(res => {
+                    assert.equal(res.baudRate, customRates.baudRate)
                     return binding.close()
                   })
-                }
-              )
-
-              testFeature(
-                `baudrate.${testBaud}_check`,
-                `sets ${testBaud} baud successfully`,
-                () => {
-                  return binding
-                    .open(testPort, customRates)
-                    .then(() => binding.getBaudRate())
-                    .then(res => {
-                      assert.equal(res.baudRate, customRates.baudRate)
-                      return binding.close()
-                    })
-                }
-              )
+              })
             })
           })
         })
@@ -260,13 +233,11 @@ function testBinding(bindingName, Binding, testPort) {
                 assert.equal(binding.isOpen, true)
               })
               .then(() => {
-                return binding2
-                  .open(testPort, defaultOpenOptions)
-                  .catch(err => {
-                    assert.instanceOf(err, Error)
-                    assert.equal(binding2.isOpen, false)
-                    return binding.close()
-                  })
+                return binding2.open(testPort, defaultOpenOptions).catch(err => {
+                  assert.instanceOf(err, Error)
+                  assert.equal(binding2.isOpen, false)
+                  return binding.close()
+                })
               })
           })
 
@@ -299,9 +270,7 @@ function testBinding(bindingName, Binding, testPort) {
         })
 
         if (!testPort) {
-          it(
-            'Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.'
-          )
+          it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.')
           return
         }
 
@@ -339,9 +308,7 @@ function testBinding(bindingName, Binding, testPort) {
         })
 
         if (!testPort) {
-          it(
-            'Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.'
-          )
+          it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.')
           return
         }
 
@@ -444,9 +411,7 @@ function testBinding(bindingName, Binding, testPort) {
         })
 
         if (!testPort) {
-          it(
-            'Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.'
-          )
+          it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.')
           return
         }
 
@@ -496,9 +461,7 @@ function testBinding(bindingName, Binding, testPort) {
         })
 
         if (!testPort) {
-          it(
-            'Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.'
-          )
+          it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.')
           return
         }
 
@@ -544,9 +507,7 @@ function testBinding(bindingName, Binding, testPort) {
         })
 
         if (!testPort) {
-          it(
-            'Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.'
-          )
+          it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.')
           return
         }
 
@@ -581,9 +542,7 @@ function testBinding(bindingName, Binding, testPort) {
         })
 
         if (!testPort) {
-          it(
-            'Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.'
-          )
+          it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.')
           return
         }
 
@@ -622,9 +581,7 @@ function testBinding(bindingName, Binding, testPort) {
         })
 
         if (!testPort) {
-          it(
-            'Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.'
-          )
+          it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.')
           return
         }
 

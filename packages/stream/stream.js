@@ -108,9 +108,7 @@ function SerialPort(path, options, openCallback) {
   const Binding = settings.binding || SerialPort.Binding
 
   if (!Binding) {
-    throw new TypeError(
-      '"Bindings" is invalid pass it as `options.binding` or set it on `SerialPort.Binding`'
-    )
+    throw new TypeError('"Bindings" is invalid pass it as `options.binding` or set it on `SerialPort.Binding`')
   }
 
   if (!path) {
@@ -118,9 +116,7 @@ function SerialPort(path, options, openCallback) {
   }
 
   if (settings.baudrate) {
-    throw new TypeError(
-      `"baudrate" is an unknown option, did you mean "baudRate"?`
-    )
+    throw new TypeError(`"baudrate" is an unknown option, did you mean "baudRate"?`)
   }
 
   if (typeof settings.baudRate !== 'number') {
@@ -360,10 +356,7 @@ SerialPort.prototype._read = function(bytesToRead) {
     return
   }
 
-  if (
-    !this._pool ||
-    this._pool.length - this._pool.used < this._kMinPoolSpace
-  ) {
+  if (!this._pool || this._pool.length - this._pool.used < this._kMinPoolSpace) {
     debug('_read', 'discarding the read buffer pool')
     this._pool = allocNewReadPool(this.settings.highWaterMark)
   }

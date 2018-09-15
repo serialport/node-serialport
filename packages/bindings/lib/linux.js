@@ -20,11 +20,7 @@ class LinuxBinding extends AbstractBinding {
 
   constructor(opt) {
     super(opt)
-    this.bindingOptions = Object.assign(
-      {},
-      defaultBindingOptions,
-      opt.bindingOptions || {}
-    )
+    this.bindingOptions = Object.assign({}, defaultBindingOptions, opt.bindingOptions || {})
     this.fd = null
     this.writeOperation = null
   }
@@ -59,9 +55,7 @@ class LinuxBinding extends AbstractBinding {
   }
 
   read(buffer, offset, length) {
-    return super
-      .read(buffer, offset, length)
-      .then(() => unixRead.call(this, buffer, offset, length))
+    return super.read(buffer, offset, length).then(() => unixRead.call(this, buffer, offset, length))
   }
 
   write(buffer) {
@@ -75,15 +69,11 @@ class LinuxBinding extends AbstractBinding {
   }
 
   update(options) {
-    return super
-      .update(options)
-      .then(() => promisify(binding.update)(this.fd, options))
+    return super.update(options).then(() => promisify(binding.update)(this.fd, options))
   }
 
   set(options) {
-    return super
-      .set(options)
-      .then(() => promisify(binding.set)(this.fd, options))
+    return super.set(options).then(() => promisify(binding.set)(this.fd, options))
   }
 
   get() {
@@ -91,9 +81,7 @@ class LinuxBinding extends AbstractBinding {
   }
 
   getBaudRate() {
-    return super
-      .getBaudRate()
-      .then(() => promisify(binding.getBaudRate)(this.fd))
+    return super.getBaudRate().then(() => promisify(binding.getBaudRate)(this.fd))
   }
 
   drain() {

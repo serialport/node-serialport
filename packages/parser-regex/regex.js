@@ -22,9 +22,7 @@ class RegexParser extends Transform {
     )
 
     if (opts.regex === undefined) {
-      throw new TypeError(
-        '"options.regex" must be a regular expression pattern or object'
-      )
+      throw new TypeError('"options.regex" must be a regular expression pattern or object')
     }
 
     if (!(opts.regex instanceof RegExp)) {

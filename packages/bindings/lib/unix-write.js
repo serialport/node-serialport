@@ -5,26 +5,14 @@ const logger = debug('serialport/bindings/unixWrite')
 module.exports = function unixWrite(buffer, offset) {
   offset = offset || 0
   const bytesToWrite = buffer.length - offset
-  logger(
-    'Starting write',
-    buffer.length,
-    'bytes offset',
-    offset,
-    'bytesToWrite',
-    bytesToWrite
-  )
+  logger('Starting write', buffer.length, 'bytes offset', offset, 'bytesToWrite', bytesToWrite)
   if (!this.isOpen) {
     return Promise.reject(new Error('Port is not open'))
   }
   return new Promise((resolve, reject) => {
     fs.write(this.fd, buffer, offset, bytesToWrite, (err, bytesWritten) => {
       logger('write returned', err, bytesWritten)
-      if (
-        err &&
-        (err.code === 'EAGAIN' ||
-          err.code === 'EWOULDBLOCK' ||
-          err.code === 'EINTR')
-      ) {
+      if (err && (err.code === 'EAGAIN' || err.code === 'EWOULDBLOCK' || err.code === 'EINTR')) {
         if (!this.isOpen) {
           return reject(new Error('Port is not open'))
         }

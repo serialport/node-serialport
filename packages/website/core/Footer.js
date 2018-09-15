@@ -25,53 +25,28 @@ class Footer extends React.Component {
         <section className="sitemap">
           <a href={this.props.config.baseUrl} className="nav-home">
             {this.props.config.footerIcon && (
-              <img
-                src={this.props.config.baseUrl + this.props.config.footerIcon}
-                alt={this.props.config.title}
-                width="66"
-                height="58"
-              />
+              <img src={this.props.config.baseUrl + this.props.config.footerIcon} alt={this.props.config.title} width="66" height="58" />
             )}
           </a>
           <div>
             <h5>Docs</h5>
-            <a href={this.docUrl('guide-usage', this.props.language)}>
-              Getting Started
-            </a>
+            <a href={this.docUrl('guide-usage', this.props.language)}>Getting Started</a>
             <a href={this.docUrl('guide-about', this.props.language)}>Guides</a>
-            <a href={this.docUrl('api-overview', this.props.language)}>
-              API Reference
-            </a>
+            <a href={this.docUrl('api-overview', this.props.language)}>API Reference</a>
           </div>
           <div>
             <h5>Community</h5>
-            <a
-              href="http://nodebots.io/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="http://nodebots.io/" target="_blank" rel="noopener noreferrer">
               NodeBots
             </a>
-            <a
-              href="http://johnny-five.io/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="http://johnny-five.io/" target="_blank" rel="noopener noreferrer">
               Johnny-Five
             </a>
 
-            <a
-              href="http://stackoverflow.com/questions/tagged/node-serialport"
-              target="_blank"
-              rel="noreferrer noopener"
-            >
+            <a href="http://stackoverflow.com/questions/tagged/node-serialport" target="_blank" rel="noreferrer noopener">
               Stack Overflow
             </a>
-            <a
-              href="https://twitter.com/nodebots"
-              target="_blank"
-              rel="noreferrer noopener"
-            >
+            <a href="https://twitter.com/nodebots" target="_blank" rel="noreferrer noopener">
               Twitter
             </a>
           </div>

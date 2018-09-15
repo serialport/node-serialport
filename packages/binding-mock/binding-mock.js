@@ -72,11 +72,7 @@ class MockBinding extends AbstractBinding {
     if (!Buffer.isBuffer(data)) {
       data = Buffer.from(data)
     }
-    debug(
-      this.serialNumber,
-      'emitting data - pending read:',
-      Boolean(this.pendingRead)
-    )
+    debug(this.serialNumber, 'emitting data - pending read:', Boolean(this.pendingRead))
     this.port.data = Buffer.concat([this.port.data, data])
     if (this.pendingRead) {
       process.nextTick(this.pendingRead)
@@ -92,11 +88,7 @@ class MockBinding extends AbstractBinding {
       .then(resolveNextTick)
       .then(() => {
         if (!port) {
-          return Promise.reject(
-            new Error(
-              `Port does not exist - please call MockBinding.createPort('${path}') first`
-            )
-          )
+          return Promise.reject(new Error(`Port does not exist - please call MockBinding.createPort('${path}') first`))
         }
         this.serialNumber = port.info.serialNumber
 
@@ -173,9 +165,7 @@ class MockBinding extends AbstractBinding {
   write(buffer) {
     debug(this.serialNumber, 'writing')
     if (this.writeOperation) {
-      throw new Error(
-        'Overlapping writes are not supported and should be queued by the serialport object'
-      )
+      throw new Error('Overlapping writes are not supported and should be queued by the serialport object')
     }
     this.writeOperation = super
       .write(buffer)

@@ -76,15 +76,11 @@ class WindowsBinding extends AbstractBinding {
   }
 
   update(options) {
-    return super
-      .update(options)
-      .then(() => promisify(binding.update)(this.fd, options))
+    return super.update(options).then(() => promisify(binding.update)(this.fd, options))
   }
 
   set(options) {
-    return super
-      .set(options)
-      .then(() => promisify(binding.set)(this.fd, options))
+    return super.set(options).then(() => promisify(binding.set)(this.fd, options))
   }
 
   get() {

@@ -33,9 +33,7 @@ function integrationTest(platform, testPort, Binding) {
 
   describe(`${platform} SerialPort Integration Tests`, () => {
     if (!testPort) {
-      it(
-        `${platform} tests requires an Arduino loaded with the arduinoEcho program on a serialport set to the TEST_PORT env var`
-      )
+      it(`${platform} tests requires an Arduino loaded with the arduinoEcho program on a serialport set to the TEST_PORT env var`)
       return
     }
 
@@ -173,18 +171,14 @@ function integrationTest(platform, testPort, Binding) {
     })
 
     describe('#update', () => {
-      testFeature(
-        'port.update-baudrate',
-        'allows changing the baud rate of an open port',
-        done => {
-          const port = new SerialPort(testPort, () => {
-            port.update({ baudRate: 57600 }, err => {
-              assert.isNull(err)
-              port.close(done)
-            })
+      testFeature('port.update-baudrate', 'allows changing the baud rate of an open port', done => {
+        const port = new SerialPort(testPort, () => {
+          port.update({ baudRate: 57600 }, err => {
+            assert.isNull(err)
+            port.close(done)
           })
-        }
-      )
+        })
+      })
     })
 
     describe('#read and #write', () => {
@@ -194,9 +188,7 @@ function integrationTest(platform, testPort, Binding) {
         const input = crypto.randomBytes(1024 * 2)
         const port = new SerialPort(testPort)
         port.on('error', done)
-        const ready = port.pipe(
-          new SerialPort.parsers.Ready({ delimiter: readyData })
-        )
+        const ready = port.pipe(new SerialPort.parsers.Ready({ delimiter: readyData }))
 
         // this will trigger from the "READY" the arduino sends when it's... ready
         ready.on('ready', () => {
@@ -209,16 +201,8 @@ function integrationTest(platform, testPort, Binding) {
           bytesRead += data.copy(readData, bytesRead)
           if (bytesRead >= input.length) {
             try {
-              assert.equal(
-                readData.length,
-                input.length,
-                'write length matches'
-              )
-              assert.deepEqual(
-                readData,
-                input,
-                'read data matches expected readData'
-              )
+              assert.equal(readData.length, input.length, 'write length matches')
+              assert.deepEqual(readData, input, 'read data matches expected readData')
               port.close(done)
             } catch (e) {
               done(e)
@@ -256,9 +240,7 @@ function integrationTest(platform, testPort, Binding) {
       it('deals with flushing during a read', done => {
         const port = new SerialPort(testPort)
         port.on('error', done)
-        const ready = port.pipe(
-          new SerialPort.parsers.Ready({ delimiter: 'READY' })
-        )
+        const ready = port.pipe(new SerialPort.parsers.Ready({ delimiter: 'READY' }))
         ready.on('ready', () => {
           // we should have a pending read now since we're in flowing mode
           port.flush(err => {
