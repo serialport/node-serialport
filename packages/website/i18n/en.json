@@ -4,34 +4,80 @@
     "next": "Next",
     "previous": "Previous",
     "tagline": "Node.js package to access serial ports for Linux, OSX and Windows.",
-    "api-bindings": "Bindings",
-    "api-overview": "Packages Overview",
-    "api-parser-byte-length": "ByteLength Parser",
-    "api-parser-cctalk": "ccTalk Parser",
-    "api-parser-delimiter": "Delimiter Parser",
-    "api-parser-readline": "Readline Parser",
-    "api-parser-ready": "Ready Parser",
-    "api-parser-regex": "Regex Parser",
-    "api-parser-slip-encoder": "Slip Encoder Parser",
-    "api-parsers-overview": "What are Parsers?",
-    "api-serialport": "SerialPort",
-    "api-stream": "Stream Interface",
-    "guide-about": "About SerialPort",
-    "guide-cli": "Command Line Tools",
-    "guide-debugging": "Debugging",
-    "guide-errors": "Error Handling",
-    "guide-installation": "Installing SerialPort",
-    "guide-platform-support": "Support Environments",
-    "guide-testing": "Testing",
-    "guide-usage": "SerialPort Usage",
-    "Guides": "Guides",
-    "API": "API",
-    "Getting Started": "Getting Started",
-    "Usage": "Usage",
-    "Core": "Core",
-    "Bindings": "Bindings",
-    "Interfaces": "Interfaces",
-    "Parsers": "Parsers"
+    "docs": {
+      "api-bindings": {
+        "title": "Bindings"
+      },
+      "api-overview": {
+        "title": "Packages Overview"
+      },
+      "api-parser-byte-length": {
+        "title": "ByteLength Parser"
+      },
+      "api-parser-cctalk": {
+        "title": "ccTalk Parser"
+      },
+      "api-parser-delimiter": {
+        "title": "Delimiter Parser"
+      },
+      "api-parser-readline": {
+        "title": "Readline Parser"
+      },
+      "api-parser-ready": {
+        "title": "Ready Parser"
+      },
+      "api-parser-regex": {
+        "title": "Regex Parser"
+      },
+      "api-parser-slip-encoder": {
+        "title": "Slip Encoder Parser"
+      },
+      "api-parsers-overview": {
+        "title": "What are Parsers?"
+      },
+      "api-serialport": {
+        "title": "SerialPort"
+      },
+      "api-stream": {
+        "title": "Stream Interface"
+      },
+      "guide-about": {
+        "title": "About SerialPort"
+      },
+      "guide-cli": {
+        "title": "Command Line Tools"
+      },
+      "guide-debugging": {
+        "title": "Debugging"
+      },
+      "guide-errors": {
+        "title": "Error Handling"
+      },
+      "guide-installation": {
+        "title": "Installing SerialPort"
+      },
+      "guide-platform-support": {
+        "title": "Support Environments"
+      },
+      "guide-testing": {
+        "title": "Testing"
+      },
+      "guide-usage": {
+        "title": "SerialPort Usage"
+      }
+    },
+    "links": {
+      "Guides": "Guides",
+      "API": "API"
+    },
+    "categories": {
+      "Getting Started": "Getting Started",
+      "Usage": "Usage",
+      "Core": "Core",
+      "Bindings": "Bindings",
+      "Interfaces": "Interfaces",
+      "Parsers": "Parsers"
+    }
   },
   "pages-strings": {
     "Help Translate|recruit community translators for your project": "Help Translate",

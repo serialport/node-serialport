@@ -49,22 +49,13 @@
     "@serialport/parser-ready": "^2.0.1",
     "@serialport/parser-regex": "^2.0.1",
     "@serialport/stream": "^2.0.1",
-    "commander": "^2.18.0",
-    "debug": "^4.0.1",
-    "promirepl": "^1.0.1",
-    "prompt-list": "^3.2.0"
+    "debug": "^4.0.1"
   },
   "engines": {
     "node": ">=6.0.0"
   },
-  "bin": {
-    "serialport-list": "./bin/list.js",
-    "serialport-repl": "./bin/repl.js",
-    "serialport-term": "./bin/terminal.js"
-  },
   "license": "MIT",
   "scripts": {
-    "repl": "node bin/repl.js",
-    "terminal": "node bin/terminal.js"
+    "repl": "node bin/repl.js"
   }
 }
