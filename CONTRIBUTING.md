@@ -21,7 +21,7 @@ If the issue has been reported before but you have new information to help troub
 
 <a name="requesting-features"></a>
 ## Requesting Features
-To request a new feature be added take a look at the [current roadmap](https://github.com/node-serialport/node-serialport/issues/746) and create a [github issue](https://github.com/node-serialport/node-serialport/issues) and include:
+To request a new feature be added take a look at the [current roadmap](https://github.com/node-serialport/node-serialport/issues/1264) and create a [github issue](https://github.com/node-serialport/node-serialport/issues) and include:
 
 ### What feature you'd like to see
 
