@@ -2,6 +2,9 @@
   "name": "@serialport/binding-abstract",
   "version": "2.0.1",
   "main": "binding-abstract.js",
+  "keywords": [
+    "serialport-binding"
+  ],
   "dependencies": {
     "debug": "^4.0.1"
   },

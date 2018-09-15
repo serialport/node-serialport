@@ -3,7 +3,7 @@ id: api-parser-delimiter
 title: Delimiter Parser
 ---
 ```typescript
-new Delimiter(options)
+new Delimiter(options: { delimiter: string | Buffer | number[] })
 ```
 
 A transform stream that emits data each time a byte sequence is received. To use the `Delimiter` parser, provide a delimiter as a string, buffer, or array of bytes. Runs in O(n) time.

@@ -8,8 +8,8 @@ Chances are you're looking for the [`serialport`](api-serialport.md) package whi
 ## Bindings
 The Bindings provide a low level interface to work with your serialport. It is possible to use them alone but it's usually easier to use them with an interface.
 - [`@serialport/bindings`](api-bindings.md) bindings for Linux, Mac and Windows
-- [`@serialport/binding-abstract`](api-bindings-abstract.md) as an abstract class to use if you're making your own bindings
-- [`@serialport/binding-mock`](api-bindings-mock.md) for a mock binding package for testing
+- [`@serialport/binding-abstract`](api-binding-abstract.md) as an abstract class to use if you're making your own bindings
+- [`@serialport/binding-mock`](api-binding-mock.md) for a mock binding package for testing
 
 ## Interfaces
 Interfaces take a binding object and provide a different API on top of it. Currently we only ship a Node Stream Interface.
