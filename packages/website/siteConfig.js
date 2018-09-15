@@ -34,6 +34,7 @@ const siteConfig = {
   headerLinks: [
     { doc: 'guide-about', label: 'Guides' },
     { doc: 'api-overview', label: 'API' },
+    { href: 'https://github.com/node-serialport/node-serialport', label: 'GitHub' },
     // { page: 'help', label: 'Help' },
     // { blog: true, label: 'Blog' },
   ],

@@ -131,7 +131,7 @@ The in progress writes must error when the port is closed with an error object t
   /**
    * Changes connection settings on an open port. Only `baudRate` is supported.
    * @param {object=} options Only supports `baudRate`.
-   * @param {number=} [options.baudRate] If provided a baud rate that the bindings do not support, it should pass an error to the callback.
+   * @param {number=} [options.baudRate] If provided a baud rate that the bindings do not support, it should reject.
    * @returns {Promise} Resolves once the port's baud rate changes.
    * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
    */

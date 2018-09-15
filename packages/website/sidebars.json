@@ -5,7 +5,7 @@
   },
   "api": {
     "Core": ["api-overview", "api-serialport"],
-    "Bindings": ["api-bindings"],
+    "Bindings": ["api-bindings", "api-binding-mock", "api-binding-abstract"],
     "Interfaces": ["api-stream"],
     "Parsers": [
       "api-parsers-overview",

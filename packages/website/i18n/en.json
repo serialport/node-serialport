@@ -5,6 +5,12 @@
     "previous": "Previous",
     "tagline": "Node.js package to access serial ports for Linux, OSX and Windows.",
     "docs": {
+      "api-binding-abstract": {
+        "title": "Abstract Binding"
+      },
+      "api-binding-mock": {
+        "title": "Mock Bindings"
+      },
       "api-bindings": {
         "title": "Bindings"
       },
@@ -68,7 +74,8 @@
     },
     "links": {
       "Guides": "Guides",
-      "API": "API"
+      "API": "API",
+      "GitHub": "GitHub"
     },
     "categories": {
       "Getting Started": "Getting Started",
