@@ -22,10 +22,18 @@ Parsers are used to take raw binary data and transform them into usable messages
 
 Parsers are traditionally Transform streams, but Duplex streams and other non stream interfaces are acceptable.
 
-- [@serialport/parser-byte-length](api-parser-byte-length.md)
-- [@serialport/parser-cctalk](api-parser-cctalk.md)
-- [@serialport/parser-delimiter](api-parser-delimiter.md)
-- [@serialport/parser-readline](api-parser-readline.md)
-- [@serialport/parser-ready](api-parser-ready.md)
-- [@serialport/parser-regex](api-parser-regex.md)
-- [@serialport/parser-slip-encoder](api-parser-slip-encoder.md)
+- [`@serialport/parser-byte-length`](api-parser-byte-length.md)
+- [`@serialport/parser-cctalk`](api-parser-cctalk.md)
+- [`@serialport/parser-delimiter`](api-parser-delimiter.md)
+- [`@serialport/parser-readline`](api-parser-readline.md)
+- [`@serialport/parser-ready`](api-parser-ready.md)
+- [`@serialport/parser-regex`](api-parser-regex.md)
+- [`@serialport/parser-slip-encoder`](api-parser-slip-encoder.md)
+
+## Command Line Tools
+
+The [Command Line Tools](guide-cli.md) provide helpful utilities for working with serial ports.
+
+- [`@serialport/list`](guide-cli.md#serialport-list)
+- [`@serialport/repl`](guide-cli.md#serialport-repl)
+- [`@serialport/terminal`](guide-cli.md#serialport-terminal)

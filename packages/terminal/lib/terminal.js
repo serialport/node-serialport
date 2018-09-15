@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const SerialPort = require('../lib/')
-const version = require('../package.json').version
+const SerialPort = require('serialport')
+const { version } = require('../package.json')
 const args = require('commander')
-const List = require('prompt-list')
+const PromptList = require('prompt-list')
 
 function makeNumber(input) {
   return Number(input)
@@ -52,20 +52,20 @@ function askForPort() {
       process.exit(2)
     }
 
-    const portSelection = new List({
+    const portSelection = new PromptList({
       name: 'serial-port-selection',
       message: 'Select a serial port to open',
-      choices: ports.map(
-        (port, i) =>
-          `[${i + 1}]\t${port.comName}\t${port.pnpId ||
-            ''}\t${port.manufacturer || ''}`
-      ),
+      choices: ports.map((port, i) => ({
+        value: `[${i + 1}]\t${port.comName}\t${port.pnpId ||
+          ''}\t${port.manufacturer || ''}`,
+        name: port.comName,
+      })),
+      validate: Boolean, // ensure we picked something
     })
 
     return portSelection.run().then(answer => {
-      const choice = answer.split('\t')[1]
-      console.log(`Opening serial port: ${choice}`)
-      return choice
+      console.log(`Opening serial port: ${answer}`)
+      return answer
     })
   })
 }
@@ -104,6 +104,11 @@ function createPort(selectedPort) {
   port.on('error', err => {
     console.log('Error', err)
     process.exit(1)
+  })
+
+  port.on('close', err => {
+    console.log('Closed', err)
+    process.exit(err ? 1 : 0)
   })
 }
 

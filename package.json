@@ -20,7 +20,6 @@
     "publish": "lerna publish",
     "test": "nyc --reporter=html --reporter=text --reporter lcovonly mocha",
     "test:arduino": "TEST_PORT=$(./bin/find-arduino.js) npm test",
-    "test:require": "lerna exec \"node -e \\\"require('./')\\\"\"",
     "test:watch": "mocha -w"
   },
   "repository": {

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
+const { promirepl } = require('promirepl')
 const repl = require('repl')
-const promirepl = require('promirepl').promirepl
+const SerialPort = require('serialport')
 
 process.env.DEBUG = process.env.DEBUG || '*'
-const SerialPort = require('../')
 
 // outputs the path to an arduino or nothing
 function findArduino() {

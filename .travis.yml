@@ -73,7 +73,6 @@ install:
 
 script:
 - npm run lint
-- npm run test:require
 - npm test
 
 # if publishing, do it
