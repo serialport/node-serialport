@@ -16,5 +16,5 @@ In addition to reading the [article mentioned above](http://www.voodootikigod.co
 
 
 ## License
-SerialPort is [MIT licensed](https://github.com/node-serialport/node-serialport/blob/master/LICENSE) and all it's dependencies are MIT or BSD licensed.
+SerialPort is [MIT licensed](https://github.com/node-serialport/node-serialport/blob/master/LICENSE) and all it's dependencies are MIT licensed.
 

@@ -7,26 +7,29 @@
 
 Working with serial ports can be hard, this is a collection of projects that make it easier.
 
-> Go to https://serialport.io/ to learn more.
+> Go to https://serialport.io/ to learn more, find guides and api documentation.
 
-## Quick Answers to Important Questions
+## Quick Links
 - [**Guides**](https://serialport.io/docs/guide-about)
 - [**API Docs**](https://serialport.io/docs/api-overview)
+- [The `serialport` package api docs](https://serialport.io/docs/api-serialport)
 
-Chances are you're looking for the [`serialport`](https://serialport.io/docs/api-serialport.md) package which provides a good set of defaults for most projects. However it is quite easy to mix and match the parts of serialport you need.
 
-## Bindings
+### Serialport
+- [`serialport`](https://serialport.io/docs/api-serialport) Chances are you're looking for the `serialport` package which provides a good set of defaults for most projects. However it is quite easy to mix and match the parts of serialport you need.
+
+### Bindings
 The Bindings provide a low level interface to work with your serialport. It is possible to use them alone but it's usually easier to use them with an interface.
 - [`@serialport/bindings`](https://serialport.io/docs/api-bindings) bindings for Linux, Mac and Windows
 - [`@serialport/binding-abstract`](https://serialport.io/docs/api-bindings-abstract) as an abstract class to use if you're making your own bindings
 - [`@serialport/binding-mock`](https://serialport.io/docs/api-binding-mock) for a mock binding package for testing
 
-## Interfaces
+### Interfaces
 Interfaces take a binding object and provide a different API on top of it. Currently we only ship a Node Stream Interface.
 
 - [`@serialport/stream`](https://serialport.io/docs/api-stream) our traditional Node.js Stream interface
 
-## Parsers
+### Parsers
 
 Parsers are used to take raw binary data and transform them into usable messages. This may include tasks such as converting the data to text, emitting useful chunks of data when they have been fully received, or even validating protocols.
 
@@ -39,6 +42,8 @@ Parsers are traditionally Transform streams, but Duplex streams and other non st
 - [@serialport/parser-ready](https://serialport.io/docs/api-parser-ready)
 - [@serialport/parser-regex](https://serialport.io/docs/api-parser-regex)
 - [@serialport/parser-slip-encoder](https://serialport.io/docs/api-parser-slip-encoder)
+
+## Developing
 
 ### Developing node serialport projects
 1. Clone this repo `git clone git@github.com:node-serialport/node-serialport.git`
@@ -63,10 +68,10 @@ npm run docs
 Docs are automatically built with [netlify](https://www.netlify.com/pricing/) including previews on branches. The master branch is deployed to https://serialport.io
 
 ## License
-SerialPort packages are all [MIT licensed](LICENSE) and all it's dependencies are MIT or BSD licensed.
+SerialPort packages are all [MIT licensed](LICENSE) and all it's dependencies are MIT licensed.
 
 ## Code of Conduct
-SerialPort follows the [Nodebots Code of Conduct](http://nodebots.io/conduct.html).
+SerialPort follows the [Nodebots Code of Conduct](http://nodebots.io/conduct.html). While the code is MIT licensed participation in the community has some rules to make this a good place to work and learn.
 
 ### TLDR
 - Be respectful.
@@ -74,3 +79,13 @@ SerialPort follows the [Nodebots Code of Conduct](http://nodebots.io/conduct.htm
 - Data published to NodeBots is hosted at the discretion of the service administrators, and may be removed.
 - Don't build evil robots.
 - Violations of this code may result in swift and permanent expulsion from the NodeBots community.
+
+## Governance and Community
+
+SerialPort is currently employees a [governance](https://medium.com/the-node-js-collection/healthy-open-source-967fa8be7951) with a group of maintainers, committers and contributors, all fixing bugs and adding features and improving documentation. You need not apply to work on SerialPort, all are welcome to join, build, and maintain this project.
+
+- A Contributor is any individual creating or commenting on an issue or pull request. By participating, this is you.
+- Committers are contributors who have been given write access to the repository. They can review and merge pull requests.
+- Maintainers are committers representing the required technical expertise to resolve rare disputes.
+
+If you have a PR that improves the project people in any or all of the above people will help you land it.
