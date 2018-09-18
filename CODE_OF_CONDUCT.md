@@ -1,7 +1,4 @@
----
-id: code-of-conduct
-title: Code of Conduct
----
+# Code of Conduct
 
 SerialPort follows the Nodebots Code of Conduct. The full text can be found at http://nodebots.io/conduct.html
 
