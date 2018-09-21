@@ -89,3 +89,8 @@ SerialPort is currently employees a [governance](https://medium.com/the-node-js-
 - Maintainers are committers representing the required technical expertise to resolve rare disputes.
 
 If you have a PR that improves the project people in any or all of the above people will help you land it.
+
+**Maintainers**
+
+- [Francis Gulotta](https://twitter.com/reconbot) | [reconbot](https://github.com/reconbot)
+- [Nick Hehr](https://twitter.com/hipsterbrown) | [hipsterbrown](https://github.com/hipsterbrown)
