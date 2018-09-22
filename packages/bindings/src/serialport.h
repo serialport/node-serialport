@@ -24,17 +24,9 @@ NAN_METHOD(Flush);
 void EIO_Flush(uv_work_t* req);
 void EIO_AfterFlush(uv_work_t* req);
 
-NAN_METHOD(Set);
-void EIO_Set(uv_work_t* req);
-void EIO_AfterSet(uv_work_t* req);
-
 NAN_METHOD(Get);
 void EIO_Get(uv_work_t* req);
 void EIO_AfterGet(uv_work_t* req);
-
-NAN_METHOD(GetBaudRate);
-void EIO_GetBaudRate(uv_work_t* req);
-void EIO_AfterGetBaudRate(uv_work_t* req);
 
 NAN_METHOD(Drain);
 void EIO_Drain(uv_work_t* req);
@@ -62,7 +54,6 @@ struct OpenBaton {
   Nan::Callback callback;
   char path[1024];
   int fd;
-  int result;
   int baudRate;
   int dataBits;
   bool rtscts;
@@ -80,39 +71,26 @@ struct OpenBaton {
 #endif
 };
 
-struct ConnectionOptionsBaton {
-  char errorString[ERROR_STRING_SIZE];
-  Nan::Callback callback;
-  int fd;
-  int baudRate;
-};
 
-struct SetBaton {
+struct UpdateBaton {
   int fd;
   Nan::Callback callback;
-  int result;
   char errorString[ERROR_STRING_SIZE];
+  int baudRate;
   bool rts;
-  bool cts;
   bool dtr;
   bool dsr;
   bool brk;
 };
 
-struct GetBaton {
-  int fd;
-  Nan::Callback callback;
-  char errorString[ERROR_STRING_SIZE];
-  bool cts;
-  bool dsr;
-  bool dcd;
-};
-
-struct GetBaudRateBaton {
+struct StatusBaton {
   int fd;
   Nan::Callback callback;
   char errorString[ERROR_STRING_SIZE];
   int baudRate;
+  bool cts;
+  bool dsr;
+  bool dcd;
 };
 
 struct VoidBaton {

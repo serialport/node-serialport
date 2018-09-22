@@ -1,10 +1,27 @@
+import { AbstractBinding, UpdateOptions, LocalStatus } from '@serialport/binding-abstract';
 const binding = require('bindings')('bindings.node')
-const AbstractBinding = require('@serialport/binding-abstract')
 const linuxList = require('./linux-list')
 const Poller = require('./poller')
 const promisify = require('./util').promisify
 const unixRead = require('./unix-read')
 const unixWrite = require('./unix-write')
+
+interface LinuxLocalStatus extends LocalStatus {
+  // Linux only
+  hupcl: boolean // drop DTR (i.e. hangup) on close
+  xany: boolean
+  xoff: boolean
+  xon: boolean
+}
+
+interface LinuxUpdateStatus extends UpdateOptions {
+  // Linux only
+  hupcl: boolean // disable DTR (i.e. hangup) on close
+  xany: boolean // termios.h IXANY Enable any character to restart output
+  xoff: boolean // termios.h IXOFF Enable start/stop input control
+  xon: boolean // termios.h IXON Enable start/stop output control
+}
+
 
 const defaultBindingOptions = Object.freeze({
   vmin: 1,

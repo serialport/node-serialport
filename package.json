@@ -12,10 +12,11 @@
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "docs": "cd packages/website && npm run build",
     "docs:dev": "cd packages/website && npm run start",
-    "format": "eslint packages test --fix",
+    "format": "tslint packages test --fix && lerna run --stream format",
     "generate": "plop",
-    "lint": "eslint packages test && lerna run --stream lint",
+    "lint": "tslint packages test && lerna run --stream lint",
     "postinstall": "lerna bootstrap --no-ci",
+    "build": "lerna run --stream build",
     "prebuild": "lerna run --stream prebuild",
     "publish": "lerna publish",
     "test": "nyc --reporter=html --reporter=text --reporter lcovonly mocha",
@@ -35,6 +36,8 @@
   ],
   "dependencies": {},
   "devDependencies": {
+    "@types/debug": "0.0.30",
+    "@types/node": "^10.10.1",
     "bluebird": "^3.5.2",
     "cc": "^1.0.1",
     "chai": "^4.0.2",
@@ -54,6 +57,9 @@
     "prebuild": "^8.0.0",
     "prettier": "^1.14.2",
     "proxyquire": "^2.1.0",
-    "sinon": "^6.3.3"
+    "sinon": "^6.3.3",
+    "tslint": "^5.11.0",
+    "tslint-immutable": "^4.7.0",
+    "typescript": "^3.0.3"
   }
 }

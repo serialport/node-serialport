@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "lib": [
+      "es2017",
+      "esnext.asynciterable"
+    ],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "outDir": "dist",
+    "sourceMap": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "target": "es2017",
+    "esModuleInterop": true,
+    "paths": {
+      "@serialport/binding-abstract": [
+        "packages/binding-abstract/lib"
+      ]
+    }
+  },
+  "include": [
+    "*/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "*/**/*-test.ts",
+    "*/**/dist"
+  ]
+}

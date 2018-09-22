@@ -211,46 +211,45 @@ void EIO_Update(uv_work_t* req) {
 void EIO_Set(uv_work_t* req) {
   SetBaton* data = static_cast<SetBaton*>(req->data);
 
+  BOOL success = 0;
+
   if (data->rts) {
-    EscapeCommFunction((HANDLE)data->fd, SETRTS);
+    success = EscapeCommFunction((HANDLE)data->fd, SETRTS);
   } else {
-    EscapeCommFunction((HANDLE)data->fd, CLRRTS);
+    success = EscapeCommFunction((HANDLE)data->fd, CLRRTS);
+  }
+
+  if (!success) {
+    ErrorCodeToString("Setting options on COM port (EscapeCommFunction RTS)", GetLastError(), data->errorString);
+    return;
   }
 
   if (data->dtr) {
-    EscapeCommFunction((HANDLE)data->fd, SETDTR);
+    success = EscapeCommFunction((HANDLE)data->fd, SETDTR);
   } else {
-    EscapeCommFunction((HANDLE)data->fd, CLRDTR);
+    success = EscapeCommFunction((HANDLE)data->fd, CLRDTR);
   }
+
+  if (!success) {
+    ErrorCodeToString("Setting options on COM port (EscapeCommFunction DTR)", GetLastError(), data->errorString);
+    return;
+  }
+
 
   if (data->brk) {
-    EscapeCommFunction((HANDLE)data->fd, SETBREAK);
+    success = EscapeCommFunction((HANDLE)data->fd, SETBREAK);
   } else {
-    EscapeCommFunction((HANDLE)data->fd, CLRBREAK);
+    success = EscapeCommFunction((HANDLE)data->fd, CLRBREAK);
   }
 
-  DWORD bits = 0;
-
-  GetCommMask((HANDLE)data->fd, &bits);
-
-  bits &= ~(EV_CTS | EV_DSR);
-
-  if (data->cts) {
-    bits |= EV_CTS;
-  }
-
-  if (data->dsr) {
-    bits |= EV_DSR;
-  }
-
-  if (!SetCommMask((HANDLE)data->fd, bits)) {
-    ErrorCodeToString("Setting options on COM port (SetCommMask)", GetLastError(), data->errorString);
+  if (!success) {
+    ErrorCodeToString("Setting options on COM port (EscapeCommFunction BRK)", GetLastError(), data->errorString);
     return;
   }
 }
 
-void EIO_Get(uv_work_t* req) {
-  GetBaton* data = static_cast<GetBaton*>(req->data);
+void EIO_STATUS(uv_work_t* req) {
+  GetBaton* data = static_cast<StatusBaton*>(req->data);
 
   DWORD bits = 0;
   if (!GetCommModemStatus((HANDLE)data->fd, &bits)) {
@@ -261,10 +260,6 @@ void EIO_Get(uv_work_t* req) {
   data->cts = bits & MS_CTS_ON;
   data->dsr = bits & MS_DSR_ON;
   data->dcd = bits & MS_RLSD_ON;
-}
-
-void EIO_GetBaudRate(uv_work_t* req) {
-  GetBaudRateBaton* data = static_cast<GetBaudRateBaton*>(req->data);
 
   DCB dcb = { 0 };
   SecureZeroMemory(&dcb, sizeof(DCB));
