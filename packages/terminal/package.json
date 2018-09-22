@@ -1,9 +1,10 @@
 {
   "name": "@serialport/terminal",
   "version": "1.1.4",
-  "main": "lib/terminal.js",
+  "main": "dist/terminal.js",
+  "types": "dist/terminal.d.ts",
   "bin": {
-    "serialport-terminal": "./lib/terminal.js"
+    "serialport-terminal": "dist/terminal.js"
   },
   "dependencies": {
     "commander": "^2.13.0",

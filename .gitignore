@@ -1,6 +1,7 @@
 /.nyc_output
 /packages/**/build
 /packages/**/prebuilds
+/packages/**/dist
 /coverage
 lerna-debug.log
 node_modules

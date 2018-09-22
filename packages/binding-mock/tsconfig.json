@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "lib",
+    "outDir": "dist",
+    "composite": true
+  },
+  "references": [
+    { "path": "../binding-abstract" },
+  ],
+  "include": [
+    "lib"
+  ]
+}

@@ -1,0 +1,73 @@
+import { Transform, TransformOptions } from 'stream'
+
+export interface SlipEncoderParserOptions extends TransformOptions {
+  readonly bluetoothQuirk?: boolean
+}
+
+const END = 0xc0
+const ESC = 0xdb
+const ESC_END = 0xdc
+const ESC_ESC = 0xdd
+
+/**
+* A transform stream that emits SLIP-encoded data for each incoming packet.
+* @extends Transform
+* @summary Runs in O(n) time, adding a 0xC0 character at the end of each
+* received packet and escaping characters, according to RFC 1055. Adds another
+* 0xC0 character at the beginning if the `bluetoothQuirk` option is truthy (as
+* per the Bluetooth Core Specification 4.0, Volume 4, Part D, Chapter 3 "SLIP Layer").
+* Runs in O(n) time.
+* @example
+// Read lines from a text file, then SLIP-encode each and send them to a serial port
+const SerialPort = require('serialport')
+const SlipEncoder = require('@serialport/parser-slip-encoder')
+const Readline = require('parser-readline')
+const fileReader = require('fs').createReadStream('/tmp/some-file.txt');
+const port = new SerialPort('/dev/tty-usbserial1')
+const lineParser = fileReader.pipe(new Readline({ delimiter: '\r\n' }));
+const encoder = fileReader.pipe(new SlipEncoder({ bluetoothQuirk: false }));
+encoder.pipe(port);
+*/
+export class SlipEncoderParser extends Transform {
+  readonly bluetoothQuirk: boolean
+  constructor(options: SlipEncoderParserOptions = {}) {
+    super(options)
+    this.bluetoothQuirk = Boolean(options.bluetoothQuirk)
+  }
+
+  _transform(chunk: Buffer, _encoding: any, cb: any) {
+    const chunkLength = chunk.length
+
+    if (this.bluetoothQuirk && chunkLength === 0) {
+      // Edge case: push no data. Bluetooth-quirky SLIP parsers don't like
+      // lots of 0xC0s together.
+      return cb()
+    }
+
+    // Allocate memory for the worst-case scenario: all bytes are escaped,
+    // plus start and end separators.
+    const encoded = Buffer.alloc(chunkLength * 2 + 2)
+    let j = 0
+
+    if (this.bluetoothQuirk) {
+      encoded[j++] = END
+    }
+
+    for (let i = 0; i < chunkLength; i++) {
+      let byte = chunk[i]
+      if (byte === END) {
+        encoded[j++] = ESC
+        byte = ESC_END
+      } else if (byte === ESC) {
+        encoded[j++] = ESC
+        byte = ESC_ESC
+      }
+
+      encoded[j++] = byte
+    }
+
+    encoded[j++] = END
+
+    cb(null, encoded.slice(0, j))
+  }
+}

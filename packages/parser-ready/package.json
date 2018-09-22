@@ -1,7 +1,8 @@
 {
   "name": "@serialport/parser-ready",
-  "main": "ready.js",
   "version": "2.0.2",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "engines": {
     "node": ">=6.0.0"
   },

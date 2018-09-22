@@ -1,9 +1,10 @@
 {
   "name": "@serialport/repl",
   "version": "1.1.4",
-  "main": "lib/repl.js",
+  "main": "dist/repl.js",
+  "types": "dist/repl.d.ts",
   "bin": {
-    "serialport-repl": "./lib/repl.js"
+    "serialport-repl": "dist/repl.js"
   },
   "dependencies": {
     "promirepl": "^1.0.1",

@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "lib",
+    "composite": true
+  },
+  "include": [
+    "lib"
+  ],
+  "references": [
+    { "path": "../binding-mock" },
+    { "path": "../bindings" },
+    { "path": "../parser-byte-length" },
+    { "path": "../parser-cctalk" },
+    { "path": "../parser-delimiter" },
+    { "path": "../parser-readline" },
+    { "path": "../parser-ready" },
+    { "path": "../parser-regex" },
+    { "path": "../stream" }
+  ]
+}

@@ -1,7 +1,8 @@
 {
   "name": "@serialport/{{dashCase name}}",
   "version": "1.0.0",
-  "main": "lib/{{dashCase name}}.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "dependencies": {
     "debug": "^4.1.0"
   },

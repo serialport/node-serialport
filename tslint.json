@@ -1,0 +1,66 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended",
+    "tslint-immutable",
+    "tslint-config-prettier"
+  ],
+  "linterOptions": {
+    "exclude": ["dist", "**/*.js", "**/node_modules/**"]
+  },
+  "rules": {
+    "adjacent-overload-signatures": false,
+    "arrow-parens": [ true, "ban-single-arg-parens" ],
+    "class-name": true,
+    "curly": [ true, "all" ],
+    "interface-name": [ true, "never-prefix" ],
+    "max-classes-per-file": [true, 5, "exclude-class-expressions"],
+    "member-access": [ true, "no-public" ],
+    "member-ordering": [ true, { "order": [
+      "public-static-field",
+      "public-static-method",
+      "protected-static-field",
+      "protected-static-method",
+      "private-static-field",
+      "private-static-method",
+      "public-instance-field",
+      "protected-instance-field",
+      "private-instance-field",
+      "public-constructor",
+      "protected-constructor",
+      "private-constructor",
+      "public-instance-method",
+      "protected-instance-method",
+      "private-instance-method"
+    ], "alphabetize": false } ],
+    "no-console": true,
+    "no-delete": true,
+    "no-empty-interface": false,
+    "no-empty": false,
+    "no-method-signature": true,
+    "no-object-mutation": false,
+    "no-parameter-reassignment": true,
+    "no-return-await": true,
+    "no-var-keyword": true,
+    "no-shadowed-variable": [true, {"temporalDeadZone": false }],
+    "no-unused-variable": [true, {"ignore-pattern": "^_", "check-parameters": true}],
+    "object-literal-sort-keys": false,
+    "ordered-imports": false,
+    "quotemark": [ true, "single", "avoid-escape" ],
+    "radix": true,
+    "readonly-array": [false, "ignore-local"],
+    "readonly-keyword": [false, "ignore-local"],
+    "space-before-function-paren": false ,
+    "trailing-comma": [ true ],
+    "prettier": [true, {
+      "singleQuote": true,
+      "trailingComma": "es5",
+      "semi": false,
+      "printWidth": 150
+    }],
+    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"]
+  },
+  "rulesDirectory": [
+    "tslint-plugin-prettier"
+  ]
+}

@@ -1,29 +1,4 @@
-{
-  "settings": {
-    "react": {
-      "version": "16"
-    }
-  },
-  "extends": [
-    "plugin:node/recommended",
-    "plugin:react/recommended"
-  ],
-  "plugins": [
-    "prettier",
-    "node",
-    "react"
-  ],
-  "env": {
-    "node": true,
-    "mocha": true,
-    "es6": true
-  },
-  "parserOptions": {
-    "ecmaVersion": 6,
-    "ecmaFeatures": {
-      "jsx": true
-    }
-  },
+
   "globals": {
     "assert": false,
     "makeTestFeature": false
@@ -54,22 +29,6 @@
     "object-shorthand": 2,
     "prefer-arrow-callback": 2,
     "prefer-const": 2,
-    "prefer-template": 2,
-    "prettier/prettier": [
-      2,
-      {
-        "singleQuote": true,
-        "trailingComma": "es5",
-        "semi": false,
-        "printWidth": 150
-      }
-    ],
-    "strict": [
-      2,
-      "never"
-    ],
-    "valid-jsdoc": [
-      0
-    ]
+    "prefer-template": 2
   }
 }
