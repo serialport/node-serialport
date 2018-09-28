@@ -1,5 +1,5 @@
 const Transform = require('stream').Transform
-
+const Bl = require('bl')
 /**
  * A transform stream that emits data each time a byte sequence is received.
  * @extends Transform
@@ -25,23 +25,23 @@ class DelimiterParser extends Transform {
 
     this.includeDelimiter = options.includeDelimiter !== undefined ? options.includeDelimiter : false
     this.delimiter = Buffer.from(options.delimiter)
-    this.buffer = Buffer.alloc(0)
+    this.buffer = new Bl()
   }
 
   _transform(chunk, encoding, cb) {
-    let data = Buffer.concat([this.buffer, chunk])
+    let data = this.buffer.append(chunk)
     let position
     while ((position = data.indexOf(this.delimiter)) !== -1) {
       this.push(data.slice(0, position + (this.includeDelimiter ? this.delimiter.length : 0)))
-      data = data.slice(position + this.delimiter.length)
+      data = data.shallowSlice(position + this.delimiter.length)
     }
     this.buffer = data
     cb()
   }
 
   _flush(cb) {
-    this.push(this.buffer)
-    this.buffer = Buffer.alloc(0)
+    this.push(this.buffer.slice())
+    this.buffer = new Bl()
     cb()
   }
 }
