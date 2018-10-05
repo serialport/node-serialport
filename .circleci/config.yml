@@ -1,0 +1,101 @@
+# Javascript Node CircleCI 2.0 configuration file
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+version: 2
+jobs:
+  lint:
+    docker:
+      - image: circleci/node:10
+    steps:
+      - checkout
+      - run: npm install
+      - run: npm run lint
+  test6:
+    docker:
+      - image: circleci/node:6
+    steps:
+      - checkout
+      - run: echo -n "node " && node -v && echo -n "npm " && npm -v
+      - run: npm install
+      - run: npm run rebuild
+      - run: npm run test
+      - run: npm run coverage
+  test6-i386:
+    docker:
+      - image: i386/node:6
+    steps:
+      - checkout
+      - run: echo -n "node " && node -v && echo -n "npm " && npm -v
+      - run: npm install
+      - run: npm run postinstall
+      - run: npm run rebuild
+      - run: npm run test
+      - run: npm run coverage
+  test8:
+    docker:
+      - image: circleci/node:8
+    steps:
+      - checkout
+      - run: echo -n "node " && node -v && echo -n "npm " && npm -v
+      - run: npm install
+      - run: npm run rebuild
+      - run: npm run test
+      - run: npm run coverage
+
+  test8-i386:
+    docker:
+      - image: i386/node:8
+    steps:
+      - checkout
+      - run: echo -n "node " && node -v && echo -n "npm " && npm -v
+      - run: npm install
+      - run: npm run postinstall
+      - run: npm run rebuild
+      - run: npm run test
+      - run: npm run coverage
+
+  test9:
+    docker:
+      - image: circleci/node:9
+    steps:
+      - checkout
+      - run: echo -n "node " && node -v && echo -n "npm " && npm -v
+      - run: npm install
+      - run: npm run rebuild
+      - run: npm run test
+      - run: npm run coverage
+
+  test9-i386:
+    docker:
+      - image: i386/node:9
+    steps:
+      - checkout
+      - run: echo -n "node " && node -v && echo -n "npm " && npm -v
+      - run: npm install
+      - run: npm run postinstall
+      - run: npm run rebuild
+      - run: npm run test
+      - run: npm run coverage
+
+  test10:
+    docker:
+      - image: circleci/node:10
+    steps:
+      - checkout
+      - run: echo -n "node " && node -v && echo -n "npm " && npm -v
+      - run: npm install
+      - run: npm run rebuild
+      - run: npm run test
+      - run: npm run coverage
+workflows:
+  version: 2
+  build_lint:
+    jobs:
+      - lint
+      - test6
+      - test6-i386
+      - test8
+      - test8-i386
+      - test9
+      - test9-i386
+      - test10
