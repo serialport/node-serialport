@@ -16,8 +16,24 @@ describe('DelimiterParser', () => {
     parser.write(Buffer.from('\n'))
     parser.write(Buffer.from('even you!'))
 
-    assert.deepEqual(spy.getCall(0).args[0], Buffer.from('I love robots'))
-    assert.deepEqual(spy.getCall(1).args[0], Buffer.from('Each and Every One'))
+    assert.deepEqual(spy.getCall(0).args[0], Buffer.from('I love robots'), 'I love robots')
+    assert.deepEqual(spy.getCall(1).args[0], Buffer.from('Each and Every One'), 'Each and Every One')
+    assert(spy.calledTwice)
+  })
+
+  it('transforms data to strings split on a multi byte delimiter', () => {
+    const spy = sinon.spy()
+    const parser = new DelimiterParser({
+      delimiter: Buffer.from('\r\n'),
+    })
+    parser.on('data', spy)
+    parser.write(Buffer.from('I love robots\r\nEach '))
+    parser.write(Buffer.from('and Every One\r\n'))
+    parser.write(Buffer.from('\r\n'))
+    parser.write(Buffer.from('even you!'))
+
+    assert.deepEqual(spy.getCall(0).args[0], Buffer.from('I love robots'), 'I love robots')
+    assert.deepEqual(spy.getCall(1).args[0], Buffer.from('Each and Every One'), 'Each and Every One')
     assert(spy.calledTwice)
   })
 
