@@ -373,11 +373,8 @@ void EIO_GetBaudRate(uv_work_t* req) {
     snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get baud rate", strerror(errno));
     return;
   }
-  #endif
-
-  // TODO(Fumon) implement on mac
-  #if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
-  snprintf(data->errorString, sizeof(data->errorString), "Error: System baud rate check not implemented on darwin");
+  #else
+  snprintf(data->errorString, sizeof(data->errorString), "Error: System baud rate check not implemented on this platform");
   return;
   #endif
 
