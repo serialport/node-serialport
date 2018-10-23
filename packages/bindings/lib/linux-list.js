@@ -3,7 +3,7 @@ const Readline = require('@serialport/parser-readline')
 
 // get only serial port names
 function checkPathOfDevice(path) {
-  return /(tty(S|ACM|USB|AMA|MFD|O)|rfcomm)/.test(path) && path
+  return /(tty(S|WCH|ACM|USB|AMA|MFD|O)|rfcomm)/.test(path) && path
 }
 
 function propName(name) {
