@@ -394,6 +394,11 @@ function testBinding(bindingName, Binding, testPort) {
           const data = Buffer.alloc(1024 * 2)
           return binding.write(data)
         })
+
+        it('resolves after an empty write', () => {
+          const data = Buffer.from([])
+          return binding.write(data)
+        })
       })
 
       describe('#drain', () => {
