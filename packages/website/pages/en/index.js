@@ -172,11 +172,13 @@ const Showcase = props => {
     return null
   }
 
-  const showcase = siteConfig.users.filter(user => user.pinned).map(user => (
-    <a href={user.infoLink} key={user.infoLink}>
-      <img src={user.image} alt={user.caption} title={user.caption} />
-    </a>
-  ))
+  const showcase = siteConfig.users
+    .filter(user => user.pinned)
+    .map(user => (
+      <a href={user.infoLink} key={user.infoLink}>
+        <img src={user.image} alt={user.caption} title={user.caption} />
+      </a>
+    ))
 
   return (
     <div className="productShowcaseSection paddingBottom">

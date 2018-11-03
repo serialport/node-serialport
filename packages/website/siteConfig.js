@@ -85,6 +85,7 @@ const siteConfig = {
   repoUrl: 'https://github.com/node-serialport/node-serialport',
   editUrl: `https://github.com/node-serialport/node-serialport/edit/master/docs/`,
   scrollToTop: true,
+  translationRecruitingLink: 'https://crowdin.com/project/node-serialport',
 }
 
 module.exports = siteConfig
