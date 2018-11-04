@@ -66,13 +66,16 @@ class WindowsBinding extends AbstractBinding {
   }
 
   write(buffer) {
-    this.writeOperation = super
-      .write(buffer)
-      .then(() => promisify(binding.write)(this.fd, buffer))
-      .then(() => {
-        this.writeOperation = null
-      })
-    return this.writeOperation
+    if (buffer.length > 0) {
+      this.writeOperation = super
+        .write(buffer)
+        .then(() => promisify(binding.write)(this.fd, buffer))
+        .then(() => {
+          this.writeOperation = null
+        })
+      return this.writeOperation
+    }
+    return Promise.resolve()
   }
 
   update(options) {
