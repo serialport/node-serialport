@@ -121,7 +121,7 @@ We make an effort to identify the hardware attached and have consistent results 
 ```js
 var SerialPort = require('serialport')
 SerialPort.list().then(
-  ports => posts.forEach(console.log),
+  ports => ports.forEach(console.log),
   err => console.error(err)
 )
 ```

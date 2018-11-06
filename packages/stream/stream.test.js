@@ -396,7 +396,7 @@ describe('SerialPort', () => {
       it('converts strings with encodings to buffers', done => {
         const port = new SerialPort('/dev/exists')
         port.on('open', () => {
-          const data = 'COFFEE'
+          const data = 'C0FFEE'
           port.write(data, 'hex', () => {
             const lastWrite = port.binding.lastWrite
             assert.deepEqual(Buffer.from(data, 'hex'), lastWrite)

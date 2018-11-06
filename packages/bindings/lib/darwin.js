@@ -59,13 +59,16 @@ class DarwinBinding extends AbstractBinding {
   }
 
   write(buffer) {
-    this.writeOperation = super
-      .write(buffer)
-      .then(() => unixWrite.call(this, buffer))
-      .then(() => {
-        this.writeOperation = null
-      })
-    return this.writeOperation
+    if (buffer.length > 0) {
+      this.writeOperation = super
+        .write(buffer)
+        .then(() => unixWrite.call(this, buffer))
+        .then(() => {
+          this.writeOperation = null
+        })
+      return this.writeOperation
+    }
+    return Promise.resolve()
   }
 
   update(options) {

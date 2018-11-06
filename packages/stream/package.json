@@ -4,7 +4,7 @@
   "main": "stream.js",
   "dependencies": {
     "@serialport/binding-mock": "^2.0.1",
-    "debug": "^4.0.1"
+    "debug": "^4.1.0"
   },
   "engines": {
     "node": ">=6.0.0"
