@@ -4,93 +4,49 @@
     "next": "Next",
     "previous": "Previous",
     "tagline": "Node.js package to access serial ports for Linux, OSX and Windows.",
-    "docs": {
-      "api-binding-abstract": {
-        "title": "Abstract Binding"
-      },
-      "api-binding-mock": {
-        "title": "Mock Bindings"
-      },
-      "api-bindings": {
-        "title": "Bindings"
-      },
-      "api-overview": {
-        "title": "Packages Overview"
-      },
-      "api-parser-byte-length": {
-        "title": "ByteLength Parser"
-      },
-      "api-parser-cctalk": {
-        "title": "ccTalk Parser"
-      },
-      "api-parser-delimiter": {
-        "title": "Delimiter Parser"
-      },
-      "api-parser-readline": {
-        "title": "Readline Parser"
-      },
-      "api-parser-ready": {
-        "title": "Ready Parser"
-      },
-      "api-parser-regex": {
-        "title": "Regex Parser"
-      },
-      "api-parser-slip-encoder": {
-        "title": "Slip Encoder Parser"
-      },
-      "api-parsers-overview": {
-        "title": "What are Parsers?"
-      },
-      "api-serialport": {
-        "title": "SerialPort"
-      },
-      "api-stream": {
-        "title": "Stream Interface"
-      },
-      "code-of-conduct": {
-        "title": "NodeBots Code of Conduct"
-      },
-      "guide-about": {
-        "title": "About SerialPort"
-      },
-      "guide-cli": {
-        "title": "Command Line Tools"
-      },
-      "guide-debugging": {
-        "title": "Debugging"
-      },
-      "guide-errors": {
-        "title": "Error Handling"
-      },
-      "guide-installation": {
-        "title": "Installing SerialPort"
-      },
-      "guide-platform-support": {
-        "title": "Support Environments"
-      },
-      "guide-testing": {
-        "title": "Testing"
-      },
-      "guide-usage": {
-        "title": "SerialPort Usage"
-      }
-    },
-    "links": {
-      "Guides": "Guides",
-      "API": "API",
-      "GitHub": "GitHub"
-    },
-    "categories": {
-      "Getting Started": "Getting Started",
-      "Usage": "Usage",
-      "Community": "Community",
-      "Core": "Core",
-      "Bindings": "Bindings",
-      "Interfaces": "Interfaces",
-      "Parsers": "Parsers"
-    }
+    "api-binding-abstract": "Abstract Binding",
+    "api-binding-mock": "Mock Bindings",
+    "api-bindings": "Bindings",
+    "api-overview": "Packages Overview",
+    "api-parser-byte-length": "ByteLength Parser",
+    "api-parser-cctalk": "ccTalk Parser",
+    "api-parser-delimiter": "Delimiter Parser",
+    "api-parser-readline": "Readline Parser",
+    "api-parser-ready": "Ready Parser",
+    "api-parser-regex": "Regex Parser",
+    "api-parser-slip-encoder": "Slip Encoder Parser",
+    "api-parsers-overview": "What are Parsers?",
+    "api-serialport": "SerialPort",
+    "api-stream": "Stream Interface",
+    "code-of-conduct": "Code of Conduct",
+    "guide-about": "About SerialPort",
+    "guide-cli": "Command Line Tools",
+    "guide-debugging": "Debugging",
+    "guide-errors": "Error Handling",
+    "guide-installation": "Installing SerialPort",
+    "guide-platform-support": "Support Environments",
+    "guide-testing": "Testing",
+    "guide-usage": "SerialPort Usage",
+    "Guides": "Guides",
+    "API": "API",
+    "GitHub": "GitHub",
+    "Getting Started": "Getting Started",
+    "Usage": "Usage",
+    "Community": "Community",
+    "Core": "Core",
+    "Bindings": "Bindings",
+    "Interfaces": "Interfaces",
+    "Parsers": "Parsers"
   },
   "pages-strings": {
+    "Learn more using the [api on this site.](|no description given": "Learn more using the [api on this site.](",
+    "Browse Docs|no description given": "Browse Docs",
+    "Ask questions about the documentation and project|no description given": "Ask questions about the documentation and project",
+    "Join the community|no description given": "Join the community",
+    "Find out what's new with this project|no description given": "Find out what's new with this project",
+    "Stay up to date|no description given": "Stay up to date",
+    "Need help?|no description given": "Need help?",
+    "This project is maintained by a dedicated group of people.|statement made to reader": "This project is maintained by a dedicated group of people.",
     "Help Translate|recruit community translators for your project": "Help Translate",
     "Edit this Doc|recruitment message asking to edit the doc source": "Edit",
     "Translate this Doc|recruitment message asking to translate the docs": "Translate"
