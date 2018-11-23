@@ -59,6 +59,7 @@ function listLinux() {
           locationId: undefined,
           vendorId: undefined,
           productId: undefined,
+          symlinks: [],
         }
         skipPort = false
         return
@@ -76,6 +77,11 @@ function listLinux() {
           skipPort = true
         }
         return
+      }
+	  
+      // gather symlinks
+      if (lineType === 'S') {
+        port['symlinks'].push('/dev/' + data)
       }
 
       // parse data about each port
