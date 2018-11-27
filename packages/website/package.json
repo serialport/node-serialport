@@ -6,7 +6,7 @@
     "start": "docusaurus-start",
     "build": "docusaurus-build",
     "write-translations": "docusaurus-write-translations",
-    "version": "docusaurus-version",
+    "doc-version": "docusaurus-version",
     "rename-version": "docusaurus-rename-version",
     "crowdin-upload": "crowdin --config ../../crowdin.yaml upload sources --auto-update -b master",
     "crowdin-download": "crowdin --config ../../crowdin.yaml download -b master"
