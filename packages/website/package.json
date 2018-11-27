@@ -13,5 +13,6 @@
   },
   "devDependencies": {
     "docusaurus": "^1.4.0"
-  }
+  },
+  "version": null
 }

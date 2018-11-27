@@ -1,6 +1,6 @@
 {
   "name": "@serialport/terminal",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "lib/terminal.js",
   "bin": {
     "serialport-terminal": "./lib/terminal.js"
@@ -8,7 +8,7 @@
   "dependencies": {
     "commander": "^2.13.0",
     "prompt-list": "^3.2.0",
-    "serialport": "^7.0.2"
+    "serialport": "^7.1.0"
   },
   "engines": {
     "node": ">=6.0.0"

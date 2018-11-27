@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.1.0](https://github.com/node-serialport/node-serialport/compare/serialport@7.0.2...serialport@7.1.0) (2018-11-27)
+
+
+### Features
+
+* move cli tools to their own packages ([#1664](https://github.com/node-serialport/node-serialport/issues/1664)) ([103498e](https://github.com/node-serialport/node-serialport/commit/103498e)), closes [#1659](https://github.com/node-serialport/node-serialport/issues/1659)
+
+
+
+
+
 <a name="7.0.2"></a>
 ## [7.0.2](https://github.com/node-serialport/node-serialport/compare/serialport@7.0.1...serialport@7.0.2) (2018-08-29)
 
