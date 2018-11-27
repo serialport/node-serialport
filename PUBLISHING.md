@@ -8,8 +8,10 @@ Two factor auth is required for publishing.
 1. run `NPM_CONFIG_OTP=<2fa code> npm run publish`
 2. Let everyone know 🎉
 
-If publishing more than 3 packages at once and one of them is the bindings package, you'll need to figure out a way to get the ci's to build the binaries as github wont tell them about the new tags. You can do this by doing a minor version bump of the bindings package (only binary package as of this writing).
+If publishing more than 3 packages at once and one of them is the bindings package, you'll need to figure out a way to get the ci's to build the binaries as github wont tell them about the new tags. You can do this by deleting the tag and pushing it again for the bindings package (only binary package as of this writing).
 
+For example for version 2.0.3
 ```
-NPM_CONFIG_OTP=<2fa code> npx lerna publish --force-publish @serialport/bindings patch
+git push --delete origin @serialport/bindings@2.0.3
+git push origin @serialport/bindings@2.0.3
 ```
