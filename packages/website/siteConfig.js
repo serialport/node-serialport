@@ -32,8 +32,7 @@ const siteConfig = {
 
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
-    { doc: 'guide-about', label: 'Guides' },
-    { doc: 'api-overview', label: 'API' },
+    { doc: 'guide-about', label: 'Docs' },
     { href: 'https://github.com/node-serialport/node-serialport', label: 'GitHub' },
     // { page: 'help', label: 'Help' },
     // { blog: true, label: 'Blog' },

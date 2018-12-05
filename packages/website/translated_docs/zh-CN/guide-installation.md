@@ -2,25 +2,25 @@
 id: guide-installation
 title: Installing SerialPort
 ---
-## Installation Instructions
+## 安装说明
 
-For most "standard" use cases (a supported Node.js on Mac, Linux, or Windows on a x64 processor), Node SerialPort will install nice and easy with:
+对于大多数"标准"用例(mac、Linux或者Windows x86)，Node SerialPort的安装会很简单：
 
 ```bash
 npm install serialport
 ```
 
-## Compilation Problems
+## 编译方案
 
-We use [prebuild](https://github.com/prebuild/prebuild) to compile and post binaries of the library for most common use cases (Linux, Mac, Windows on standard processor platforms). If you have a special case, Node SerialPort will work, but it will compile the binary during the install. Compiling with nodejs is done via `node-gyp` which requires Python 2.x, so please ensure you have it installed and in your path for all operating systems. Python 3.x will not work.
+我们使用 [prebuild](https://github.com/prebuild/prebuild) 编译并提供二进制库文件, 适用于最常见的用例 (linux、mac、标准处理器平台上的 windows)。 如果您有特殊情况, node serialport 也可以工作, 不过要在安装过程中编译二进制文件。 编译是通过 `node-gyp` 这需要 python 2. x, 因此请确保您已安装它, 并且系统可以找到改路径。 不支持python 3.x ！
 
-This assumes you have everything on your system necessary to compile ANY native module for Node.js. If you don't, then please ensure the following are true for your system before filing a "Does not install" issue.
+我们假设您的系统已经拥有了任何编译node.js原生模块的依赖。 否则，在您提交“不能安装”的问题之前，请确保您拥有正确的编译环境
 
-## Installation Special Cases
+## 安装特殊情况
 
 ### Alpine Linux
 
-[Alpine](http://www.alpinelinux.org/) is a (very) small distro, but it uses the [musl](https://www.musl-libc.org/) standard library instead of [glibc](https://www.gnu.org/software/libc/) (used by most other Linux distros) so it requires compilation. It's commonly used with Docker. A user has confirmed that Node-Serialport works with [alpine-node](https://github.com/mhart/alpine-node).
+[Alpine](http://www.alpinelinux.org/) 是一个(非常)小的发行版本, 因为它使用了 [musl](https://www.musl-libc.org/) 标准库 取代 [glibc](https://www.gnu.org/software/libc/) (大多数Linux发行版使用的库)，所以需要编译。 它通常与 docker 一起使用。 用用户已经验证了Node-Serialport可以在[alpine-node](https://github.com/mhart/alpine-node)上工作。
 
 ```bash
 # If you don't have node/npm already, add that first
@@ -37,38 +37,38 @@ npm install serialport --build-from-source
 
 ### Electron
 
-[Electron](https://electron.atom.io/) is a framework for creating cross-platform desktop applications. It comes with its own version of the Node.js runtime.
+[Electron](https://electron.atom.io/) 是一个创建跨平台桌面应用框架 它带有自己版本的 node. js 运行时。
 
-If you require `serialport` as a dependency for an Electron project, you must compile it for the version of Electron your project's using.
+如果您需要`serialport`作为Electron项目的依赖，您必须根据您的Electron版本进行编译。
 
-When you first install `serialport` it will compile against the version of Node.js on your machine, not against the Node.js runtime bundled with Electron.
+默认安装 `serialport`是根据系统已安装的node.js版本进行编译的，不是Electron的node.js运行时版本。
 
-To recompile `serialport` (or any native Node.js module) for Electron, you can use `electron-rebuild`; more info at Electron's [README](https://github.com/electron/electron-rebuild/blob/master/README.md).
+要为Electron重新编译 `serialport` (或者任何node.js原生模块) ，可以使用`electron-rebuild`；更多信息参考Electron的[README](https://github.com/electron/electron-rebuild/blob/master/README.md).
 
 1. `npm install --save-dev electron-rebuild`
 2. Add `electron-rebuild` to your project's package.json's install hook
 3. Run `npm install`
 
-For an example project, check out [`electron-serialport`](https://github.com/johnny-five-io/electron-serialport).
+这里提供一个例子，[`electron-serialport`](https://github.com/johnny-five-io/electron-serialport).
 
 ### NW.js
 
-[NW.js](https://nwjs.io/) is an app runtime based on Chromium and node.js.
+[NW.js](https://nwjs.io/)是一个基于chromium和node.js的应用运行时。
 
-Like Electron, NW.js also requires compilation against its own specific headers.
+与Electron一样, nw. js 也需要针对其自身的特定标头进行编译。
 
-To instruct `prebuild` to build against the correct headers, place a file named `.prebuildrc` on your package root with the following content:
+为了指示 `prebuild` 可以根据正确的标头进行构建, 在项目的根目录创建一个名为`.prebuildrc`的文件，并包含以下内容：
 
     build_from_source=true
     runtime=node-webkit
     target=<target_version>
     
 
-Where `<target_version>` is the NW.js version you are building against (for example, `0.26.6`).
+`<target_version>`是您要编译的版本 (例如, `0.26.6`)。
 
 ### Illegal Instruction
 
-The pre-compiled binaries assume a fully capable chip. Intel's [Galileo 2](https://software.intel.com/en-us/iot/hardware/galileo), for example, lacks a few instruction sets from the `ia32` architecture. A few other platforms have similar issues. If you get `Illegal Instruction` when trying to run Node-Serialport, you'll need to ask npm to rebuild the Serialport binary.
+预编译的二进制文件假定一个功能完全的芯片。 例如，英特尔的[Galileo 2](https://software.intel.com/en-us/iot/hardware/galileo)缺少一些`ia32`架构的指令集。 少数其他平台也有类似的问题。 如果您在`Illegal Instruction`情况下运行Node-Serialport。您需要让npm重新编译。
 
 ```bash
 # Will ask npm to build serialport during install time
@@ -80,7 +80,7 @@ npm rebuild serialport --build-from-source
 
 ### Mac OS X
 
-Ensure that you have at a minimum the xCode Command Line Tools installed appropriate for your system configuration. If you recently upgraded the OS, it probably removed your installation of Command Line Tools, please verify before submitting a ticket. To compile `node-serialport` with Node.js 4.x+, you will need to use g++ v4.8 or higher.
+确保您系统安装了适合系统的最小配置的XCode命令行工具 如果您最近升级了操作系统, 它可能会删除您安装的命令行工具, 请在接下来的工作之前进行验证。 要在Node.js 4.x+版本上编译`node-serialport` 您需要使用g++ v4.8或者更高版本。
 
 ### Raspberry Pi Linux
 
@@ -96,13 +96,13 @@ Follow the instructions for [setting up a Raspberry pi for use with Johnny-Five 
 
 ### sudo / root
 
-If you're going to use `sudo` or root to install Node-Serialport, `npm` will require you to use the unsafe parameters flag.
+如果您将要使用 `sudo` or root安装 Node-Serialport，`npm` 将会要求您使用unsafe参数标志。
 
 ```bash
 sudo npm install serialport --unsafe-perm --build-from-source
 ```
 
-Failure to use the flag results in an error like this:
+如果不使用该标志, 将导致如下错误:
 
 ```bash
 root@rpi3:~# npm install -g serialport
@@ -128,9 +128,9 @@ gyp ERR! stack Error: `make` failed with exit code: 2
 
 ### Ubuntu/Debian Linux
 
-The best way to install any version of Node.js is to use the [NodeSource Node.js binary distributions](https://github.com/nodesource/distributions#installation-instructions). Older versions of Ubuntu install Node.js with the wrong version and binary name. If your Node binary is `nodejs` instead of `node`, or if your Node version is [`v0.10.29`](https://github.com/fivdi/onoff/wiki/Node.js-v0.10.29-and-native-addons-on-the-Raspberry-Pi), then you should follow these instructions.
+安装任何node.js版本的node-serialport最佳方法是使用[node.js 二进制发行版本](https://github.com/nodesource/distributions#installation-instructions)。 旧版本的 ubuntu 使用了错误的版本号和二进制名称安装 node. js。 如果您的Node二进制版本是 `nodejs`而不是`node`, 或者您的Node版本号是[`v0.10.29`](https://github.com/fivdi/onoff/wiki/Node.js-v0.10.29-and-native-addons-on-the-Raspberry-Pi)，那您需要遵循以下的指示。
 
-You'll need the package `build-essential` to compile `serialport`. If there's a binary for your platform, you won't need it. Keep rocking!
+您需要`build-essential`来编译`serialport`。 如果您的平台有二进制文件, 您将不需要它。 接下来。
 
     # Using Ubuntu and Node 6
     curl -sL https://deb.nodesource.com/setup_7.x | sudo -E bash -
@@ -143,12 +143,12 @@ You'll need the package `build-essential` to compile `serialport`. If there's a 
 
 ### Windows
 
-Node-Serialport supports Windows 7, 8.1, 10, and 10 IoT. Precompiled binaries are available, but if you want to build it from source you'll need to follow the [node-gyp installation](https://github.com/nodejs/node-gyp#installation) instructions. Once you've got things working, you can install Node-Serialport from source with:
+Node-Serialport支持 windows 7、8.1、10和 10 iot。 可以使用预编译的二进制文件。但是，如果您想要用源文件夹编译，请参考[node-gyp 安装说明](https://github.com/nodejs/node-gyp#installation)。 如果所有准备工作都完成了，您可以这样来安装：
 
 ```powershell
 npm install serialport --build-from-source
 ```
 
-Node-gyp's documentation doesn't mention it, but it sometimes helps to create a C++ project in [Visual Studio](https://www.visualstudio.com/) so that it will install any necessary components not already installed during the past two hours of setup. This will solve some instances of `Failed to locate: "CL.exe"`.
+虽然Node-gyp's文档没有提及。但是，有时在 [Visual Studio](https://www.visualstudio.com/)中创建一个c++项目会有帮助，这样它就可以安装在过去两个小时的安装过程中没有安装的任何必要组件。 这样能解决一些`Failed to locate: "CL.exe"`的情况
 
-An old issue that you may still run into. When working with multiple Serial Ports you can set the `UV_THREADPOOL_SIZE` environment variable to be set to 1 + the number of ports you wish to open at a time. (Defaults to `4` which supports 3 open ports).
+您可能仍然会遇到的一个老问题。 当要使用多个串口是，您可以设置`UV_THREADPOOL_SIZE`环境变量等于1+x。 (默认是`4`，用来支持同时打开3个串口)。

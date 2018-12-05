@@ -4,108 +4,87 @@
     "next": "Next",
     "previous": "Previous",
     "tagline": "Node.js package to access serial ports for Linux, OSX and Windows.",
-    "api-binding-abstract": "Abstract Binding",
-    "api-binding-mock": "Mock Bindings",
-    "api-bindings": "Bindings",
-    "api-overview": "Packages Overview",
-    "api-parser-byte-length": "ByteLength Parser",
-    "api-parser-cctalk": "ccTalk Parser",
-    "api-parser-delimiter": "Delimiter Parser",
-    "api-parser-readline": "Readline Parser",
-    "api-parser-ready": "Ready Parser",
-    "api-parser-regex": "Regex Parser",
-    "api-parser-slip-encoder": "Slip Encoder Parser",
-    "api-parsers-overview": "What are Parsers?",
-    "api-serialport": "SerialPort",
-    "api-stream": "Stream Interface",
-    "code-of-conduct": "Code of Conduct",
-    "es-ES/api-binding-abstract": "Abstract Binding",
-    "es-ES/api-binding-mock": "Mock Bindings",
-    "es-ES/api-bindings": "Bindings",
-    "es-ES/api-overview": "Packages Overview",
-    "es-ES/api-parser-byte-length": "ByteLength Parser",
-    "es-ES/api-parser-cctalk": "ccTalk Parser",
-    "es-ES/api-parser-delimiter": "Delimiter Parser",
-    "es-ES/api-parser-readline": "Readline Parser",
-    "es-ES/api-parser-ready": "Ready Parser",
-    "es-ES/api-parser-regex": "Regex Parser",
-    "es-ES/api-parser-slip-encoder": "Slip Encoder Parser",
-    "es-ES/api-parsers-overview": "What are Parsers?",
-    "es-ES/api-serialport": "SerialPort",
-    "es-ES/api-stream": "Stream Interface",
-    "es-ES/code-of-conduct": "Code of Conduct",
-    "es-ES/guide-about": "About SerialPort",
-    "es-ES/guide-cli": "Command Line Tools",
-    "es-ES/guide-debugging": "Debugging",
-    "es-ES/guide-errors": "Error Handling",
-    "es-ES/guide-installation": "Instalando o SerialPort",
-    "es-ES/guide-platform-support": "Support Environments",
-    "es-ES/guide-testing": "Testing",
-    "es-ES/guide-usage": "SerialPort Usage",
-    "guide-about": "About SerialPort",
-    "guide-cli": "Command Line Tools",
-    "guide-debugging": "Debugging",
-    "guide-errors": "Error Handling",
-    "guide-installation": "Instalando o SerialPort",
-    "guide-platform-support": "Support Environments",
-    "guide-testing": "Testing",
-    "guide-usage": "SerialPort Usage",
-    "pt-BR/api-binding-abstract": "Abstract Binding",
-    "pt-BR/api-binding-mock": "Mock Bindings",
-    "pt-BR/api-bindings": "Bindings",
-    "pt-BR/api-overview": "Packages Overview",
-    "pt-BR/api-parser-byte-length": "ByteLength Parser",
-    "pt-BR/api-parser-cctalk": "ccTalk Parser",
-    "pt-BR/api-parser-delimiter": "Delimiter Parser",
-    "pt-BR/api-parser-readline": "Readline Parser",
-    "pt-BR/api-parser-ready": "Ready Parser",
-    "pt-BR/api-parser-regex": "Regex Parser",
-    "pt-BR/api-parser-slip-encoder": "Slip Encoder Parser",
-    "pt-BR/api-parsers-overview": "What are Parsers?",
-    "pt-BR/api-serialport": "SerialPort",
-    "pt-BR/api-stream": "Stream Interface",
-    "pt-BR/code-of-conduct": "Code of Conduct",
-    "pt-BR/guide-about": "About SerialPort",
-    "pt-BR/guide-cli": "Command Line Tools",
-    "pt-BR/guide-debugging": "Debugging",
-    "pt-BR/guide-errors": "Error Handling",
-    "pt-BR/guide-installation": "Instalando o SerialPort",
-    "pt-BR/guide-platform-support": "Support Environments",
-    "pt-BR/guide-testing": "Testing",
-    "pt-BR/guide-usage": "SerialPort Usage",
-    "zh-CN/api-binding-abstract": "Abstract Binding",
-    "zh-CN/api-binding-mock": "Mock Bindings",
-    "zh-CN/api-bindings": "Bindings",
-    "zh-CN/api-overview": "Packages Overview",
-    "zh-CN/api-parser-byte-length": "ByteLength Parser",
-    "zh-CN/api-parser-cctalk": "ccTalk Parser",
-    "zh-CN/api-parser-delimiter": "Delimiter Parser",
-    "zh-CN/api-parser-readline": "Readline Parser",
-    "zh-CN/api-parser-ready": "Ready Parser",
-    "zh-CN/api-parser-regex": "Regex Parser",
-    "zh-CN/api-parser-slip-encoder": "Slip Encoder Parser",
-    "zh-CN/api-parsers-overview": "What are Parsers?",
-    "zh-CN/api-serialport": "SerialPort",
-    "zh-CN/api-stream": "Stream Interface",
-    "zh-CN/code-of-conduct": "Code of Conduct",
-    "zh-CN/guide-about": "About SerialPort",
-    "zh-CN/guide-cli": "Command Line Tools",
-    "zh-CN/guide-debugging": "Debugging",
-    "zh-CN/guide-errors": "Error Handling",
-    "zh-CN/guide-installation": "Instalando o SerialPort",
-    "zh-CN/guide-platform-support": "Support Environments",
-    "zh-CN/guide-testing": "Testing",
-    "zh-CN/guide-usage": "SerialPort Usage",
-    "Guides": "Guides",
-    "API": "API",
-    "GitHub": "GitHub",
-    "Getting Started": "Getting Started",
-    "Usage": "Usage",
-    "Community": "Community",
-    "Core": "Core",
-    "Bindings": "Bindings",
-    "Interfaces": "Interfaces",
-    "Parsers": "Parsers"
+    "docs": {
+      "api-binding-abstract": {
+        "title": "Abstract Binding"
+      },
+      "api-binding-mock": {
+        "title": "Mock Bindings"
+      },
+      "api-bindings": {
+        "title": "Bindings"
+      },
+      "api-parser-byte-length": {
+        "title": "ByteLength Parser"
+      },
+      "api-parser-cctalk": {
+        "title": "ccTalk Parser"
+      },
+      "api-parser-delimiter": {
+        "title": "Delimiter Parser"
+      },
+      "api-parser-readline": {
+        "title": "Readline Parser"
+      },
+      "api-parser-ready": {
+        "title": "Ready Parser"
+      },
+      "api-parser-regex": {
+        "title": "Regex Parser"
+      },
+      "api-parser-slip-encoder": {
+        "title": "Slip Encoder Parser"
+      },
+      "api-parsers-overview": {
+        "title": "What are Parsers?"
+      },
+      "api-serialport": {
+        "title": "SerialPort"
+      },
+      "api-stream": {
+        "title": "Stream Interface"
+      },
+      "code-of-conduct": {
+        "title": "Code of Conduct"
+      },
+      "guide-about": {
+        "title": "About SerialPort"
+      },
+      "guide-cli": {
+        "title": "Command Line Tools"
+      },
+      "guide-debugging": {
+        "title": "Debugging"
+      },
+      "guide-errors": {
+        "title": "Error Handling"
+      },
+      "guide-installation": {
+        "title": "Instalando o SerialPort"
+      },
+      "guide-platform-support": {
+        "title": "Support Environments"
+      },
+      "guide-testing": {
+        "title": "Testing"
+      },
+      "guide-usage": {
+        "title": "SerialPort Usage"
+      }
+    },
+    "links": {
+      "Docs": "Docs",
+      "GitHub": "GitHub"
+    },
+    "categories": {
+      "Getting Started": "Getting Started",
+      "Usage": "Usage",
+      "API Core": "API Core",
+      "API Bindings": "API Bindings",
+      "API Interfaces": "API Interfaces",
+      "API Parsers": "API Parsers",
+      "Community": "Community"
+    }
   },
   "pages-strings": {
     "Learn more using the [api on this site.](|no description given": "Learn more using the [api on this site.](",
