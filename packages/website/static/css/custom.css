@@ -36,3 +36,11 @@ a, a:hover {
 code {
   text-align: left;
 }
+
+.gridBlock {
+  align-items: flex-end;
+}
+
+.twoByGridBlock {
+  margin-bottom: 36px;
+}
