@@ -193,7 +193,7 @@ The in progress writes must error when the port is closed with an error object t
    * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
    */
   getBaudRate() {
-    debug('getBuadRate')
+    debug('getbaudRate')
     if (!this.isOpen) {
       return Promise.reject(new Error('Port is not open'))
     }

@@ -4,39 +4,87 @@
     "next": "Next",
     "previous": "Previous",
     "tagline": "Node.js package to access serial ports for Linux, OSX and Windows.",
-    "api-binding-abstract": "Abstract Binding",
-    "api-binding-mock": "Mock Bindings",
-    "api-bindings": "Bindings",
-    "api-overview": "Packages Overview",
-    "api-parser-byte-length": "ByteLength Parser",
-    "api-parser-cctalk": "ccTalk Parser",
-    "api-parser-delimiter": "Delimiter Parser",
-    "api-parser-readline": "Readline Parser",
-    "api-parser-ready": "Ready Parser",
-    "api-parser-regex": "Regex Parser",
-    "api-parser-slip-encoder": "Slip Encoder Parser",
-    "api-parsers-overview": "What are Parsers?",
-    "api-serialport": "SerialPort",
-    "api-stream": "Stream Interface",
-    "code-of-conduct": "Code of Conduct",
-    "guide-about": "About SerialPort",
-    "guide-cli": "Command Line Tools",
-    "guide-debugging": "Debugging",
-    "guide-errors": "Error Handling",
-    "guide-installation": "Installing SerialPort",
-    "guide-platform-support": "Support Environments",
-    "guide-testing": "Testing",
-    "guide-usage": "SerialPort Usage",
-    "Guides": "Guides",
-    "API": "API",
-    "GitHub": "GitHub",
-    "Getting Started": "Getting Started",
-    "Usage": "Usage",
-    "Community": "Community",
-    "Core": "Core",
-    "Bindings": "Bindings",
-    "Interfaces": "Interfaces",
-    "Parsers": "Parsers"
+    "docs": {
+      "api-binding-abstract": {
+        "title": "Abstract Binding"
+      },
+      "api-binding-mock": {
+        "title": "Mock Bindings"
+      },
+      "api-bindings": {
+        "title": "Bindings"
+      },
+      "api-parser-byte-length": {
+        "title": "ByteLength Parser"
+      },
+      "api-parser-cctalk": {
+        "title": "ccTalk Parser"
+      },
+      "api-parser-delimiter": {
+        "title": "Delimiter Parser"
+      },
+      "api-parser-readline": {
+        "title": "Readline Parser"
+      },
+      "api-parser-ready": {
+        "title": "Ready Parser"
+      },
+      "api-parser-regex": {
+        "title": "Regex Parser"
+      },
+      "api-parser-slip-encoder": {
+        "title": "Slip Encoder Parser"
+      },
+      "api-parsers-overview": {
+        "title": "What are Parsers?"
+      },
+      "api-serialport": {
+        "title": "SerialPort"
+      },
+      "api-stream": {
+        "title": "Stream Interface"
+      },
+      "code-of-conduct": {
+        "title": "Code of Conduct"
+      },
+      "guide-about": {
+        "title": "About SerialPort"
+      },
+      "guide-cli": {
+        "title": "Command Line Tools"
+      },
+      "guide-debugging": {
+        "title": "Debugging"
+      },
+      "guide-errors": {
+        "title": "Error Handling"
+      },
+      "guide-installation": {
+        "title": "Installing SerialPort"
+      },
+      "guide-platform-support": {
+        "title": "Support Environments"
+      },
+      "guide-testing": {
+        "title": "Testing"
+      },
+      "guide-usage": {
+        "title": "SerialPort Usage"
+      }
+    },
+    "links": {
+      "Docs": "Docs",
+      "GitHub": "GitHub"
+    },
+    "categories": {
+      "Getting Started": "Getting Started",
+      "Usage": "Usage",
+      "API Core": "API Core",
+      "API Bindings": "API Bindings",
+      "API Interfaces": "API Interfaces",
+      "API Parsers": "API Parsers",
+      "Community": "Community"
+    }
   },
   "pages-strings": {
     "Learn more using the [api on this site.](|no description given": "Learn more using the [api on this site.](",

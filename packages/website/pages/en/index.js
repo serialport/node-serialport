@@ -81,8 +81,7 @@ class HomeSplash extends React.Component {
         <div className="inner">
           <ProjectTitle />
           <PromoSection>
-            <Button href={docUrl('guide-about', language)}>Guides</Button>
-            <Button href={docUrl('api-overview', language)}>API</Button>
+            <Button href={docUrl('guide-about', language)}>Documentation</Button>
           </PromoSection>
         </div>
       </SplashContainer>
@@ -98,19 +97,37 @@ const Block = props => (
 
 // eslint-disable-next-line no-unused-vars
 const Features = () => (
-  <Block layout="fourColumn">
+  <Block layout="twoColumn">
     {[
       {
-        content: 'This is the content of my feature',
-        image: imgUrl('docusaurus.svg'),
+        content:
+          'The Internet of things is filled with hardware that talks over serial ports. From sensor networks to home hubs SerialPort can help you make it happen.',
+        image: imgUrl('tumisu-iot-300px.png'),
         imageAlign: 'top',
-        title: 'Feature One',
+        title: 'Internet of Things',
+        imageLink: 'https://iot.mozilla.org/about/',
       },
       {
-        content: 'The content of my second feature',
-        image: imgUrl('docusaurus.svg'),
+        content: 'Nodebots uses SerialPort as the bridge between your javascript and the firmware on thousands of devices from Arduinos to drones.',
+        image: imgUrl('nodebots-logo.svg'),
         imageAlign: 'top',
-        title: 'Feature Two',
+        title: 'Powers NodeBots',
+        imageLink: 'http://nodebots.io',
+      },
+      {
+        content:
+          'SerialPort is used in consumer devices from pancake printing robots to homebrew games. When used with Electron you have fast and easy path from prototype to production.',
+        image: imgUrl('pancake-bot-300px.jpg'),
+        imageAlign: 'top',
+        title: 'Consumer Devices',
+        imageLink: 'http://www.pancakebot.com/',
+      },
+      {
+        content:
+          'From underwater sensors, to drones, to ATMs, to fork lift diagnostics, to medical device communications. SerialPort has found its way into many industries. With an Open Source MIT license and the ability to submit fixes back to the project, SerialPort is an obvious choice for your next project.',
+        image: imgUrl('open-rov-300px.jpg'),
+        imageAlign: 'top',
+        title: 'Commercial Applications',
       },
     ]}
   </Block>
@@ -129,10 +146,21 @@ const LearnHow = () => (
   <Block background="light">
     {[
       {
-        content: 'Talk about learning how to use this',
-        image: imgUrl('docusaurus.svg'),
-        imageAlign: 'right',
-        title: 'Learn How',
+        title: 'Control your Creations',
+        content: `
+\`\`\`js
+const SerialPort = require('serialport')
+const Readline = require('@serialport/parser-readline')
+const port = new SerialPort(path, { baudRate: 256000 })
+
+const parser = new Readline()
+port.pipe(parser)
+
+parser.on('data', line => console.log(\`> \${line}\`))
+port.write('ROBOT POWER ON\\n')
+//> ROBOT ONLINE
+\`\`\`
+        `,
       },
     ]}
   </Block>
@@ -202,9 +230,9 @@ class Index extends React.Component {
       <div>
         <HomeSplash language={language} />
         <div className="mainContainer">
-          {/* <Features /> */}
+          <LearnHow />
+          <Features />
           {/* <FeatureCallout /> */}
-          {/* <LearnHow /> */}
           {/* <TryOut /> */}
           {/* <Description /> */}
           {/* <Showcase language={language} /> */}

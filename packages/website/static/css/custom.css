@@ -28,3 +28,19 @@
 a, a:hover {
   text-decoration: underline;
 }
+
+.imageAlignTop .blockImage {
+  max-width: 300px;
+}
+
+code {
+  text-align: left;
+}
+
+.gridBlock {
+  align-items: flex-end;
+}
+
+.twoByGridBlock {
+  margin-bottom: 36px;
+}
