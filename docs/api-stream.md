@@ -11,7 +11,7 @@ This is the Node.js Stream Interface for SerialPort. For more information on Nod
 
 You also get the stream interface by requiring the [`serialport`](api-serialport.md) package which comes with a default set of Bindings and Parsers.
 
-```
+```js
 // To get a default set of Bindings and Parsers
 const SerialPort = require('serialport')
 ```
