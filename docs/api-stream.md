@@ -235,7 +235,7 @@ Closes an open connection. If there are in progress writes when the port is clos
 Arguments:
 - `callback?: (error => {}: void) Called once a connection is closed.
 
-### `Serialport#set`
+### `SerialPort#set`
 ```typescript
 serialport.set(options: setOptions, callback?: error => {}): void
 ```
