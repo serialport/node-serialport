@@ -73,9 +73,9 @@ If you're using the `serialport` package this defaults to `require('@serialport/
 
 ## Static Methods
 
-### `Serialport.list()`
+### `SerialPort.list()`
 ```typescript
-Serialport.list(): Promise<PortInfo[]>
+SerialPort.list(): Promise<PortInfo[]>
 ```
 Retrieves a list of available serial ports with metadata. Only the `comName` is guaranteed. If unavailable the other fields will be undefined. The `comName` is either the path or an identifier (eg `COM1`) used to open the SerialPort.
 
