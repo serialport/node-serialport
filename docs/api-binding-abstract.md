@@ -5,7 +5,7 @@ title: Abstract Binding
 
 Typescript signature of Abstract Binding
 
-```ts
+```typescript
 
 class AbstractBinding {
   static list(): Promise<PortInfo[]>
