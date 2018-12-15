@@ -11,7 +11,7 @@ Working with serial ports can be hard, this is a collection of projects that mak
 
 ## Quick Links
 - [**Guides**](https://serialport.io/docs/guide-about)
-- [**API Docs**](https://serialport.io/docs/api-overview)
+- [**API Docs**](https://serialport.io/docs/en/api-serialport)
 - [The `serialport` package api docs](https://serialport.io/docs/api-serialport)
 
 
