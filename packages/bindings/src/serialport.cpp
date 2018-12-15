@@ -45,7 +45,7 @@ NAN_METHOD(Open) {
     Nan::ThrowTypeError("Second argument must be an object");
     return;
   }
-  v8::Local<v8::Object> options = info[1]->ToObject();
+  v8::Local<v8::Object> options = Nan::To<v8::Object>(info[1]).ToLocalChecked();
 
   // callback
   if (!info[2]->IsFunction()) {
@@ -110,7 +110,7 @@ NAN_METHOD(Update) {
     Nan::ThrowTypeError("Second argument must be an object");
     return;
   }
-  v8::Local<v8::Object> options = info[1]->ToObject();
+  v8::Local<v8::Object> options = Nan::To<v8::Object>(info[1]).ToLocalChecked();
 
   if (!Nan::Has(options, Nan::New<v8::String>("baudRate").ToLocalChecked()).FromMaybe(false)) {
     Nan::ThrowTypeError("\"baudRate\" must be set on options object");
@@ -247,7 +247,7 @@ NAN_METHOD(Set) {
     Nan::ThrowTypeError("Second argument must be an object");
     return;
   }
-  v8::Local<v8::Object> options = info[1]->ToObject();
+  v8::Local<v8::Object> options = Nan::To<v8::Object>(info[1]).ToLocalChecked();
 
   // callback
   if (!info[2]->IsFunction()) {

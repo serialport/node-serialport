@@ -301,7 +301,7 @@ NAN_METHOD(Write) {
     Nan::ThrowTypeError("Second argument must be a buffer");
     return;
   }
-  v8::Local<v8::Object> buffer = info[1]->ToObject();
+  v8::Local<v8::Object> buffer = Nan::To<v8::Object>(info[1]).ToLocalChecked();
   char* bufferData = node::Buffer::Data(buffer);
   size_t bufferLength = node::Buffer::Length(buffer);
 
@@ -405,7 +405,7 @@ NAN_METHOD(Read) {
     Nan::ThrowTypeError("Second argument must be a buffer");
     return;
   }
-  v8::Local<v8::Object> buffer = info[1]->ToObject();
+  v8::Local<v8::Object> buffer = Nan::To<v8::Object>(info[1]).ToLocalChecked();
   size_t bufferLength = node::Buffer::Length(buffer);
 
   // offset
