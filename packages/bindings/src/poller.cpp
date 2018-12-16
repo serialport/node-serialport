@@ -66,7 +66,7 @@ void Poller::onData(uv_poll_t* handle, int status, int events) {
   int newEvents = obj->events & ~events;
   obj->poll(newEvents);
 
-  obj->callback.Call(2, argv);
+  Nan::Call(obj->callback, Nan::GetCurrentContext()->Global(), 2, argv);
 }
 
 NAN_MODULE_INIT(Poller::Init) {

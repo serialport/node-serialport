@@ -301,7 +301,7 @@ NAN_METHOD(Write) {
     Nan::ThrowTypeError("Second argument must be a buffer");
     return;
   }
-  v8::Local<v8::Object> buffer = info[1]->ToObject();
+  v8::Local<v8::Object> buffer = Nan::To<v8::Object>(info[1]).ToLocalChecked();
   char* bufferData = node::Buffer::Data(buffer);
   size_t bufferLength = node::Buffer::Length(buffer);
 
@@ -387,7 +387,7 @@ void EIO_AfterWrite(uv_async_t* req) {
   } else {
     argv[0] = Nan::Null();
   }
-  baton->callback.Call(1, argv);
+  Nan::Call(baton->callback, Nan::GetCurrentContext()->Global(), 1, argv);
   baton->buffer.Reset();
   delete baton;
 }
@@ -405,7 +405,7 @@ NAN_METHOD(Read) {
     Nan::ThrowTypeError("Second argument must be a buffer");
     return;
   }
-  v8::Local<v8::Object> buffer = info[1]->ToObject();
+  v8::Local<v8::Object> buffer = Nan::To<v8::Object>(info[1]).ToLocalChecked();
   size_t bufferLength = node::Buffer::Length(buffer);
 
   // offset
@@ -571,7 +571,7 @@ void EIO_AfterRead(uv_async_t* req) {
     argv[1] = Nan::New<v8::Integer>(static_cast<int>(baton->bytesRead));
   }
 
-  baton->callback.Call(2, argv);
+  Nan::Call(baton->callback, Nan::GetCurrentContext()->Global(), 2, argv);
   delete baton;
 }
 
@@ -918,7 +918,7 @@ void EIO_AfterList(uv_work_t* req) {
     argv[0] = Nan::Null();
     argv[1] = results;
   }
-  data->callback.Call(2, argv);
+  Nan::Call(data->callback, Nan::GetCurrentContext()->Global(), 2, argv);
 
   for (std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it) {
     delete *it;
