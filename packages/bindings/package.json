@@ -2,15 +2,13 @@
   "name": "@serialport/bindings",
   "version": "2.0.3",
   "main": "lib",
-  "keywords": [
-    "serialport-binding"
-  ],
+  "keywords": ["serialport-binding"],
   "dependencies": {
     "@serialport/binding-abstract": "^2.0.2",
     "@serialport/parser-readline": "^2.0.2",
     "bindings": "^1.3.0",
     "debug": "^4.1.0",
-    "nan": "^2.11.0",
+    "nan": "^2.12.1",
     "prebuild-install": "^5.2.1"
   },
   "devDependencies": {
@@ -35,14 +33,8 @@
   },
   "gypfile": true,
   "cc": {
-    "filter": [
-      "legal/copyright",
-      "build/include"
-    ],
-    "files": [
-      "src/*.cpp",
-      "src/*.h"
-    ],
+    "filter": ["legal/copyright", "build/include"],
+    "files": ["src/*.cpp", "src/*.h"],
     "linelength": "120"
   }
 }
