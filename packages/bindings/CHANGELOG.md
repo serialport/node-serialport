@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.4](https://github.com/node-serialport/node-serialport/compare/@serialport/bindings@2.0.3...@serialport/bindings@2.0.4) (2018-12-19)
+
+
+### Bug Fixes
+
+* deprecated c++ functions for update to Node v12 ([#1743](https://github.com/node-serialport/node-serialport/issues/1743)) ([1eecd60](https://github.com/node-serialport/node-serialport/commit/1eecd60))
+
+
+
+
+
 ## [2.0.3](https://github.com/node-serialport/node-serialport/compare/@serialport/bindings@2.0.2...@serialport/bindings@2.0.3) (2018-11-27)
 
 
