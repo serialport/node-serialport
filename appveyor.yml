@@ -26,14 +26,14 @@ install:
       "node platform@arch" = $(node -p 'process.platform + process.arch')
       "npm version" = $(npm -v)
       "APPVEYOR_REPO_COMMIT_MESSAGE" = $env:APPVEYOR_REPO_COMMIT_MESSAGE
-      "git latest tag" = "$(git describe --tags --always HEAD)"
+      "git latest tags" = "$(git tag --points-at HEAD)"
       "appveyor_repo_tag" = $env:appveyor_repo_tag
     } | Out-String | Write-Host;
 
 # Check if we're building the latest tag, if so
 # then we publish the binaries if tests pass.
 - ps: >
-    if ($env:appveyor_repo_tag -match "true" -and ("$(git describe --tags --always HEAD)" -eq $env:appveyor_repo_tag_name)) {
+    if ($env:appveyor_repo_tag -match "true" -and ("$(git tag --points-at HEAD)" -match $env:appveyor_repo_tag_name)) {
       $env:publish_binary = $env:binary_builder;
     }
     if ($env:publish_binary -eq "true") {
