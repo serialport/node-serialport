@@ -29,6 +29,7 @@
             'src/darwin_list.cpp'
           ],
           'xcode_settings': {
+            'MACOSX_DEPLOYMENT_TARGET': '10.9',
             'OTHER_LDFLAGS': [
               '-framework CoreFoundation -framework IOKit'
             ]
