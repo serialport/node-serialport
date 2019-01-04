@@ -3,7 +3,7 @@
 
 #include <nan.h>
 
-class Poller : public Nan::ObjectWrap {
+class Poller : public Nan::ObjectWrap, public Nan::AsyncResource {
  public:
   static NAN_MODULE_INIT(Init);
   static void onData(uv_poll_t* handle, int status, int events);

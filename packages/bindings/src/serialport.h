@@ -57,66 +57,75 @@ enum SerialPortStopBits {
 SerialPortParity ToParityEnum(const v8::Local<v8::String>& str);
 SerialPortStopBits ToStopBitEnum(double stopBits);
 
-struct OpenBaton {
+struct OpenBaton : public Nan::AsyncResource {
+  OpenBaton() :
+    AsyncResource("node-serialport:OpenBaton"), errorString(), path() {}
   char errorString[ERROR_STRING_SIZE];
   Nan::Callback callback;
   char path[1024];
-  int fd;
-  int result;
-  int baudRate;
-  int dataBits;
-  bool rtscts;
-  bool xon;
-  bool xoff;
-  bool xany;
-  bool dsrdtr;
-  bool hupcl;
-  bool lock;
+  int fd = 0;
+  int result = 0;
+  int baudRate = 0;
+  int dataBits = 0;
+  bool rtscts = false;
+  bool xon = false;
+  bool xoff = false;
+  bool xany = false;
+  bool dsrdtr = false;
+  bool hupcl = false;
+  bool lock = false;
   SerialPortParity parity;
   SerialPortStopBits stopBits;
 #ifndef WIN32
-  uint8_t vmin;
-  uint8_t vtime;
+  uint8_t vmin = 0;
+  uint8_t vtime = 0;
 #endif
 };
 
-struct ConnectionOptionsBaton {
+struct ConnectionOptionsBaton : public Nan::AsyncResource {
+  ConnectionOptionsBaton() :
+    AsyncResource("node-serialport:ConnectionOptionsBaton"), errorString() {}
   char errorString[ERROR_STRING_SIZE];
   Nan::Callback callback;
-  int fd;
-  int baudRate;
+  int fd = 0;
+  int baudRate = 0;
 };
 
-struct SetBaton {
-  int fd;
+struct SetBaton : public Nan::AsyncResource {
+  SetBaton() : AsyncResource("node-serialport:SetBaton"), errorString() {}
+  int fd = 0;
   Nan::Callback callback;
-  int result;
+  int result = 0;
   char errorString[ERROR_STRING_SIZE];
-  bool rts;
-  bool cts;
-  bool dtr;
-  bool dsr;
-  bool brk;
+  bool rts = false;
+  bool cts = false;
+  bool dtr = false;
+  bool dsr = false;
+  bool brk = false;
 };
 
-struct GetBaton {
-  int fd;
-  Nan::Callback callback;
-  char errorString[ERROR_STRING_SIZE];
-  bool cts;
-  bool dsr;
-  bool dcd;
-};
-
-struct GetBaudRateBaton {
-  int fd;
+struct GetBaton : public Nan::AsyncResource {
+  GetBaton() : AsyncResource("node-serialport:GetBaton"), errorString() {}
+  int fd = 0;
   Nan::Callback callback;
   char errorString[ERROR_STRING_SIZE];
-  int baudRate;
+  bool cts = false;
+  bool dsr = false;
+  bool dcd = false;
 };
 
-struct VoidBaton {
-  int fd;
+struct GetBaudRateBaton : public Nan::AsyncResource {
+  GetBaudRateBaton() :
+    AsyncResource("node-serialport:GetBaudRateBaton"), errorString() {}
+  int fd = 0;
+  Nan::Callback callback;
+  char errorString[ERROR_STRING_SIZE];
+  int baudRate = 0;
+};
+
+struct VoidBaton : public Nan::AsyncResource {
+  VoidBaton() : AsyncResource("node-serialport:VoidBaton"), errorString() {}
+  int fd = 0;
   Nan::Callback callback;
   char errorString[ERROR_STRING_SIZE];
 };

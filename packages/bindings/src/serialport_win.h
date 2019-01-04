@@ -9,17 +9,18 @@
 
 #define ERROR_STRING_SIZE 1024
 
-struct WriteBaton {
-  int fd;
-  char* bufferData;
-  size_t bufferLength;
-  size_t offset;
-  size_t bytesWritten;
-  void* hThread;
-  bool complete;
+struct WriteBaton : public Nan::AsyncResource {
+  WriteBaton() : AsyncResource("node-serialport:WriteBaton"), bufferData(), errorString() {}
+  int fd = 0;
+  char* bufferData = nullptr;
+  size_t bufferLength = 0;
+  size_t offset = 0;
+  size_t bytesWritten = 0;
+  void* hThread = nullptr;
+  bool complete = false;
   Nan::Persistent<v8::Object> buffer;
   Nan::Callback callback;
-  int result;
+  int result = 0;
   char errorString[ERROR_STRING_SIZE];
 };
 
@@ -29,15 +30,16 @@ void EIO_AfterWrite(uv_async_t* req);
 DWORD __stdcall WriteThread(LPVOID param);
 
 
-struct ReadBaton {
-  int fd;
-  char* bufferData;
-  size_t bufferLength;
-  size_t bytesRead;
-  size_t bytesToRead;
-  size_t offset;
-  void* hThread;
-  bool complete;
+struct ReadBaton : public Nan::AsyncResource {
+  ReadBaton() : AsyncResource("node-serialport:ReadBaton"), errorString() {}
+  int fd = 0;
+  char* bufferData = nullptr;
+  size_t bufferLength = 0;
+  size_t bytesRead = 0;
+  size_t bytesToRead = 0;
+  size_t offset = 0;
+  void* hThread = nullptr;
+  bool complete = false;
   char errorString[ERROR_STRING_SIZE];
   Nan::Callback callback;
 };
@@ -62,10 +64,11 @@ struct ListResultItem {
   std::string productId;
 };
 
-struct ListBaton {
+struct ListBaton : public Nan::AsyncResource {
+  ListBaton() : AsyncResource("node-serialport:ListBaton") {}
   Nan::Callback callback;
   std::list<ListResultItem*> results;
-  char errorString[ERROR_STRING_SIZE];
+  char errorString[ERROR_STRING_SIZE] = "";
 };
 
 #endif  // PACKAGES_SERIALPORT_SRC_SERIALPORT_WIN_H_
