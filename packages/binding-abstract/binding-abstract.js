@@ -15,7 +15,7 @@ const debug = require('debug')('serialport/binding-abstract')
 /**
  * You never have to use `Binding` objects directly. SerialPort uses them to access the underlying hardware. This documentation is geared towards people who are making bindings for different platforms. This class can be inherited from to get type checking for each method.
  * @class AbstractBinding
- * @param {object} options options for the biding
+ * @param {object} options options for the binding
  * @property {boolean} isOpen Required property. `true` if the port is open, `false` otherwise. Should be read-only.
  * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
  * @since 5.0.0
