@@ -21,6 +21,10 @@
 // Declare type of pointer to CancelIoEx function
 typedef BOOL (WINAPI *CancelIoExType)(HANDLE hFile, LPOVERLAPPED lpOverlapped);
 
+static inline HANDLE int2handle(int ptr) {
+  return reinterpret_cast<HANDLE>(static_cast<uintptr_t>(ptr));
+}
+
 std::list<int> g_closingHandles;
 
 void ErrorCodeToString(const char* prefix, int errorCode, char *errorStr) {
@@ -185,7 +189,7 @@ void EIO_Open(uv_work_t* req) {
   PurgeComm(file, PURGE_RXCLEAR);
   PurgeComm(file, PURGE_TXCLEAR);
 
-  data->result = (int)file;  // NOLINT
+  data->result = static_cast<int>(reinterpret_cast<uintptr_t>(file));
 }
 
 void EIO_Update(uv_work_t* req) {
@@ -195,14 +199,14 @@ void EIO_Update(uv_work_t* req) {
   SecureZeroMemory(&dcb, sizeof(DCB));
   dcb.DCBlength = sizeof(DCB);
 
-  if (!GetCommState((HANDLE)data->fd, &dcb)) {
+  if (!GetCommState(int2handle(data->fd), &dcb)) {
     ErrorCodeToString("Update (GetCommState)", GetLastError(), data->errorString);
     return;
   }
 
   dcb.BaudRate = data->baudRate;
 
-  if (!SetCommState((HANDLE)data->fd, &dcb)) {
+  if (!SetCommState(int2handle(data->fd), &dcb)) {
     ErrorCodeToString("Update (SetCommState)", GetLastError(), data->errorString);
     return;
   }
@@ -212,26 +216,26 @@ void EIO_Set(uv_work_t* req) {
   SetBaton* data = static_cast<SetBaton*>(req->data);
 
   if (data->rts) {
-    EscapeCommFunction((HANDLE)data->fd, SETRTS);
+    EscapeCommFunction(int2handle(data->fd), SETRTS);
   } else {
-    EscapeCommFunction((HANDLE)data->fd, CLRRTS);
+    EscapeCommFunction(int2handle(data->fd), CLRRTS);
   }
 
   if (data->dtr) {
-    EscapeCommFunction((HANDLE)data->fd, SETDTR);
+    EscapeCommFunction(int2handle(data->fd), SETDTR);
   } else {
-    EscapeCommFunction((HANDLE)data->fd, CLRDTR);
+    EscapeCommFunction(int2handle(data->fd), CLRDTR);
   }
 
   if (data->brk) {
-    EscapeCommFunction((HANDLE)data->fd, SETBREAK);
+    EscapeCommFunction(int2handle(data->fd), SETBREAK);
   } else {
-    EscapeCommFunction((HANDLE)data->fd, CLRBREAK);
+    EscapeCommFunction(int2handle(data->fd), CLRBREAK);
   }
 
   DWORD bits = 0;
 
-  GetCommMask((HANDLE)data->fd, &bits);
+  GetCommMask(int2handle(data->fd), &bits);
 
   bits &= ~(EV_CTS | EV_DSR);
 
@@ -243,7 +247,7 @@ void EIO_Set(uv_work_t* req) {
     bits |= EV_DSR;
   }
 
-  if (!SetCommMask((HANDLE)data->fd, bits)) {
+  if (!SetCommMask(int2handle(data->fd), bits)) {
     ErrorCodeToString("Setting options on COM port (SetCommMask)", GetLastError(), data->errorString);
     return;
   }
@@ -253,7 +257,7 @@ void EIO_Get(uv_work_t* req) {
   GetBaton* data = static_cast<GetBaton*>(req->data);
 
   DWORD bits = 0;
-  if (!GetCommModemStatus((HANDLE)data->fd, &bits)) {
+  if (!GetCommModemStatus(int2handle(data->fd), &bits)) {
     ErrorCodeToString("Getting control settings on COM port (GetCommModemStatus)", GetLastError(), data->errorString);
     return;
   }
@@ -270,7 +274,7 @@ void EIO_GetBaudRate(uv_work_t* req) {
   SecureZeroMemory(&dcb, sizeof(DCB));
   dcb.DCBlength = sizeof(DCB);
 
-  if (!GetCommState((HANDLE)data->fd, &dcb)) {
+  if (!GetCommState(int2handle(data->fd), &dcb)) {
     ErrorCodeToString("Getting baud rate (GetCommState)", GetLastError(), data->errorString);
     return;
   }
@@ -331,7 +335,7 @@ NAN_METHOD(Write) {
 void __stdcall WriteIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAPPED* ov) {
   WriteBaton* baton = static_cast<WriteBaton*>(ov->hEvent);
   DWORD bytesWritten;
-  if (!GetOverlappedResult((HANDLE)baton->fd, ov, &bytesWritten, TRUE)) {
+  if (!GetOverlappedResult(int2handle(baton->fd), ov, &bytesWritten, TRUE)) {
     errorCode = GetLastError();
     ErrorCodeToString("Writing to COM port (GetOverlappedResult)", errorCode, baton->errorString);
     baton->complete = true;
@@ -357,7 +361,7 @@ DWORD __stdcall WriteThread(LPVOID param) {
     char* offsetPtr = baton->bufferData + baton->offset;
     // WriteFileEx requires calling GetLastError even upon success. Clear the error beforehand.
     SetLastError(0);
-    WriteFileEx((HANDLE)baton->fd, offsetPtr,
+    WriteFileEx(int2handle(baton->fd), offsetPtr,
                 static_cast<DWORD>(baton->bufferLength - baton->offset), ov, WriteIOCompletion);
     // Error codes when call is successful, such as ERROR_MORE_DATA.
     DWORD lastError = GetLastError();
@@ -460,7 +464,7 @@ void __stdcall ReadIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAP
   }
 
   DWORD lastError;
-  if (!GetOverlappedResult((HANDLE)baton->fd, ov, &bytesTransferred, TRUE)) {
+  if (!GetOverlappedResult(int2handle(baton->fd), ov, &bytesTransferred, TRUE)) {
     lastError = GetLastError();
     ErrorCodeToString("Reading from COM port (GetOverlappedResult)", lastError, baton->errorString);
     baton->complete = true;
@@ -477,7 +481,7 @@ void __stdcall ReadIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAP
   // return immediately no matter how much data is available.
   COMMTIMEOUTS commTimeouts = {};
   commTimeouts.ReadIntervalTimeout = MAXDWORD;
-  if (!SetCommTimeouts((HANDLE)baton->fd, &commTimeouts)) {
+  if (!SetCommTimeouts(int2handle(baton->fd), &commTimeouts)) {
     lastError = GetLastError();
     ErrorCodeToString("Setting COM timeout (SetCommTimeouts)", lastError, baton->errorString);
     baton->complete = true;
@@ -490,7 +494,7 @@ void __stdcall ReadIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAP
   // ReadFile, unlike ReadFileEx, needs an event in the overlapped structure.
   memset(ov, 0, sizeof(OVERLAPPED));
   ov->hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
-  if (!ReadFile((HANDLE)baton->fd, offsetPtr, baton->bytesToRead, &bytesTransferred, ov)) {
+  if (!ReadFile(int2handle(baton->fd), offsetPtr, baton->bytesToRead, &bytesTransferred, ov)) {
     errorCode = GetLastError();
 
     if (errorCode != ERROR_IO_PENDING) {
@@ -500,7 +504,7 @@ void __stdcall ReadIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAP
       return;
     }
 
-    if (!GetOverlappedResult((HANDLE)baton->fd, ov, &bytesTransferred, TRUE)) {
+    if (!GetOverlappedResult(int2handle(baton->fd), ov, &bytesTransferred, TRUE)) {
       lastError = GetLastError();
       ErrorCodeToString("Reading from COM port (GetOverlappedResult)", lastError, baton->errorString);
       baton->complete = true;
@@ -528,7 +532,7 @@ DWORD __stdcall ReadThread(LPVOID param) {
     // Reset the read timeout to 0, so that it will block until more data arrives.
     COMMTIMEOUTS commTimeouts = {};
     commTimeouts.ReadIntervalTimeout = 0;
-    if (!SetCommTimeouts((HANDLE)baton->fd, &commTimeouts)) {
+    if (!SetCommTimeouts(int2handle(baton->fd), &commTimeouts)) {
       lastError = GetLastError();
       ErrorCodeToString("Setting COM timeout (SetCommTimeouts)", lastError, baton->errorString);
       break;
@@ -539,7 +543,7 @@ DWORD __stdcall ReadThread(LPVOID param) {
     // ReadFileEx requires calling GetLastError even upon success. Clear the error beforehand.
     SetLastError(0);
     // Only read 1 byte, so that the callback will be triggered once any data arrives.
-    ReadFileEx((HANDLE)baton->fd, offsetPtr, 1, ov, ReadIOCompletion);
+    ReadFileEx(int2handle(baton->fd), offsetPtr, 1, ov, ReadIOCompletion);
     // Error codes when call is successful, such as ERROR_MORE_DATA.
     lastError = GetLastError();
     if (lastError != ERROR_SUCCESS) {
@@ -587,9 +591,9 @@ void EIO_Close(uv_work_t* req) {
   if (pCancelIoEx) {
     // Function exists so call it
     // Cancel all pending IO Requests for the current device
-    pCancelIoEx((HANDLE)data->fd, NULL);
+    pCancelIoEx(int2handle(data->fd), NULL);
   }
-  if (!CloseHandle((HANDLE)data->fd)) {
+  if (!CloseHandle(int2handle(data->fd))) {
     ErrorCodeToString("Closing connection (CloseHandle)", GetLastError(), data->errorString);
     return;
   }
@@ -932,7 +936,7 @@ void EIO_Flush(uv_work_t* req) {
   VoidBaton* data = static_cast<VoidBaton*>(req->data);
 
   DWORD purge_all = PURGE_RXABORT | PURGE_RXCLEAR | PURGE_TXABORT | PURGE_TXCLEAR;
-  if (!PurgeComm((HANDLE)data->fd, purge_all)) {
+  if (!PurgeComm(int2handle(data->fd), purge_all)) {
     ErrorCodeToString("Flushing connection (PurgeComm)", GetLastError(), data->errorString);
     return;
   }
@@ -941,7 +945,7 @@ void EIO_Flush(uv_work_t* req) {
 void EIO_Drain(uv_work_t* req) {
   VoidBaton* data = static_cast<VoidBaton*>(req->data);
 
-  if (!FlushFileBuffers((HANDLE)data->fd)) {
+  if (!FlushFileBuffers(int2handle(data->fd))) {
     ErrorCodeToString("Draining connection (FlushFileBuffers)", GetLastError(), data->errorString);
     return;
   }
