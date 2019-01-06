@@ -387,7 +387,7 @@ void EIO_AfterWrite(uv_async_t* req) {
   } else {
     argv[0] = Nan::Null();
   }
-  Nan::Call(baton->callback, Nan::GetCurrentContext()->Global(), 1, argv);
+  baton->callback.Call(1, argv, baton);
   baton->buffer.Reset();
   delete baton;
 }
@@ -571,7 +571,7 @@ void EIO_AfterRead(uv_async_t* req) {
     argv[1] = Nan::New<v8::Integer>(static_cast<int>(baton->bytesRead));
   }
 
-  Nan::Call(baton->callback, Nan::GetCurrentContext()->Global(), 2, argv);
+  baton->callback.Call(2, argv, baton);
   delete baton;
 }
 
@@ -918,7 +918,7 @@ void EIO_AfterList(uv_work_t* req) {
     argv[0] = Nan::Null();
     argv[1] = results;
   }
-  Nan::Call(data->callback, Nan::GetCurrentContext()->Global(), 2, argv);
+  data->callback.Call(2, argv, data);
 
   for (std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it) {
     delete *it;

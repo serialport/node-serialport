@@ -92,7 +92,7 @@ void EIO_AfterOpen(uv_work_t* req) {
     argv[1] = Nan::New<v8::Int32>(data->result);
   }
 
-  Nan::Call(data->callback, Nan::GetCurrentContext()->Global(), 2, argv);
+  data->callback.Call(2, argv, data);
   delete data;
   delete req;
 }
@@ -147,7 +147,7 @@ void EIO_AfterUpdate(uv_work_t* req) {
     argv[0] = Nan::Null();
   }
 
-  Nan::Call(data->callback, Nan::GetCurrentContext()->Global(), 1, argv);
+  data->callback.Call(1, argv, data);
 
   delete data;
   delete req;
@@ -185,7 +185,7 @@ void EIO_AfterClose(uv_work_t* req) {
   } else {
     argv[0] = Nan::Null();
   }
-  Nan::Call(data->callback, Nan::GetCurrentContext()->Global(), 1, argv);
+  data->callback.Call(1, argv, data);
 
   delete data;
   delete req;
@@ -228,7 +228,7 @@ void EIO_AfterFlush(uv_work_t* req) {
     argv[0] = Nan::Null();
   }
 
-  Nan::Call(data->callback, Nan::GetCurrentContext()->Global(), 1, argv);
+  data->callback.Call(1, argv, data);
 
   delete data;
   delete req;
@@ -282,7 +282,7 @@ void EIO_AfterSet(uv_work_t* req) {
   } else {
     argv[0] = Nan::Null();
   }
-  Nan::Call(data->callback, Nan::GetCurrentContext()->Global(), 1, argv);
+  data->callback.Call(1, argv, data);
 
   delete data;
   delete req;
@@ -333,7 +333,7 @@ void EIO_AfterGet(uv_work_t* req) {
     argv[0] = Nan::Null();
     argv[1] = results;
   }
-  Nan::Call(data->callback, Nan::GetCurrentContext()->Global(), 2, argv);
+  data->callback.Call(2, argv, data);
 
   delete data;
   delete req;
@@ -380,7 +380,7 @@ void EIO_AfterGetBaudRate(uv_work_t* req) {
     argv[0] = Nan::Null();
     argv[1] = results;
   }
-  Nan::Call(data->callback, Nan::GetCurrentContext()->Global(), 2, argv);
+  data->callback.Call(2, argv, data);
 
   delete data;
   delete req;
@@ -421,7 +421,7 @@ void EIO_AfterDrain(uv_work_t* req) {
   } else {
     argv[0] = Nan::Null();
   }
-  Nan::Call(data->callback, Nan::GetCurrentContext()->Global(), 1, argv);
+  data->callback.Call(1, argv, data);
 
   delete data;
   delete req;

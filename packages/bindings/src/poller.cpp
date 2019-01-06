@@ -1,7 +1,7 @@
 #include <nan.h>
 #include "./poller.h"
 
-Poller::Poller(int fd) {
+Poller::Poller(int fd) : AsyncResource("node-serialport:poller") {
   Nan::HandleScope scope;
   this->fd = fd;
   this->poll_handle = new uv_poll_t();
@@ -66,7 +66,7 @@ void Poller::onData(uv_poll_t* handle, int status, int events) {
   int newEvents = obj->events & ~events;
   obj->poll(newEvents);
 
-  Nan::Call(obj->callback, Nan::GetCurrentContext()->Global(), 2, argv);
+  obj->callback.Call(2, argv, obj);
 }
 
 NAN_MODULE_INIT(Poller::Init) {

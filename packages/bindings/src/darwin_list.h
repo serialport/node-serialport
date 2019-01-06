@@ -21,7 +21,8 @@ struct ListResultItem {
   std::string productId;
 };
 
-struct ListBaton {
+struct ListBaton : public Nan::AsyncResource {
+  ListBaton() : AsyncResource("node-serialport:ListBaton"), errorString() {}
   Nan::Callback callback;
   std::list<ListResultItem*> results;
   char errorString[ERROR_STRING_SIZE];
