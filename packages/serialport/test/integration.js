@@ -14,7 +14,7 @@ switch (process.platform) {
 
 const readyData = Buffer.from('READY')
 
-// test everything on our mock biding and natively
+// test everything on our mock binding and natively
 const DetectedBinding = SerialPort.Binding
 const MockBinding = require('@serialport/binding-mock')
 
