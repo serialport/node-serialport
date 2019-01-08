@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.5](https://github.com/node-serialport/node-serialport/compare/@serialport/bindings@2.0.4...@serialport/bindings@2.0.5) (2019-01-08)
+
+
+### Bug Fixes
+
+* prebuild on mojave ([#1759](https://github.com/node-serialport/node-serialport/issues/1759)) ([d4f5128](https://github.com/node-serialport/node-serialport/commit/d4f5128)), closes [/github.com/nodejs/node/pull/23685#issuecomment-430408541](https://github.com//github.com/nodejs/node/pull/23685/issues/issuecomment-430408541)
+* propagate async context in callbacks ([#1765](https://github.com/node-serialport/node-serialport/issues/1765)) ([9b5dbdb](https://github.com/node-serialport/node-serialport/commit/9b5dbdb)), closes [#1751](https://github.com/node-serialport/node-serialport/issues/1751)
+* use correct casts to/from HANDLE/int ([#1766](https://github.com/node-serialport/node-serialport/issues/1766)) ([ce503b3](https://github.com/node-serialport/node-serialport/commit/ce503b3))
+
+
+
+
+
 ## [2.0.4](https://github.com/node-serialport/node-serialport/compare/@serialport/bindings@2.0.3...@serialport/bindings@2.0.4) (2018-12-19)
 
 
