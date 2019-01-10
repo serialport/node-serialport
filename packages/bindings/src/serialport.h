@@ -82,13 +82,16 @@ struct OpenBaton : public Nan::AsyncResource {
 #endif
 };
 
-struct ConnectionOptionsBaton : public Nan::AsyncResource {
-  ConnectionOptionsBaton() :
-    AsyncResource("node-serialport:ConnectionOptionsBaton"), errorString() {}
+struct ConnectionOptions {
+  ConnectionOptions() : errorString() {}
   char errorString[ERROR_STRING_SIZE];
-  Nan::Callback callback;
   int fd = 0;
   int baudRate = 0;
+};
+struct ConnectionOptionsBaton : ConnectionOptions, Nan::AsyncResource {
+  ConnectionOptionsBaton() :
+    AsyncResource("node-serialport:ConnectionOptionsBaton") {}
+  Nan::Callback callback;
 };
 
 struct SetBaton : public Nan::AsyncResource {
@@ -131,5 +134,5 @@ struct VoidBaton : public Nan::AsyncResource {
 };
 
 int setup(int fd, OpenBaton *data);
-int setBaudRate(ConnectionOptionsBaton *data);
+int setBaudRate(ConnectionOptions *data);
 #endif  // PACKAGES_SERIALPORT_SRC_SERIALPORT_H_
