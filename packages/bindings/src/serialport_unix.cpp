@@ -95,31 +95,30 @@ void EIO_Open(uv_work_t* req) {
   data->result = fd;
 }
 
-int setBaudRate(ConnectionOptionsBaton *data) {
+int setBaudRate(int fd, int baudRate_in, char* errorString) {
   // lookup the standard baudrates from the table
-  int baudRate = ToBaudConstant(data->baudRate);
-  int fd = data->fd;
+  int baudRate = ToBaudConstant(baudRate_in);
 
   // get port options
   struct termios options;
   if (-1 == tcgetattr(fd, &options)) {
-    snprintf(data->errorString, sizeof(data->errorString),
-             "Error: %s setting custom baud rate of %d", strerror(errno), data->baudRate);
+    snprintf(errorString, ERROR_STRING_SIZE,
+             "Error: %s setting custom baud rate of %d", strerror(errno), baudRate_in);
     return -1;
   }
 
   // If there is a custom baud rate on linux you can do the following trick with B38400
   #if defined(__linux__) && defined(ASYNC_SPD_CUST)
     if (baudRate == -1) {
-      int err = linuxSetCustomBaudRate(fd, data->baudRate);
+      int err = linuxSetCustomBaudRate(fd, baudRate_in);
 
       if (err == -1) {
-        snprintf(data->errorString, sizeof(data->errorString),
+        snprintf(errorString, ERROR_STRING_SIZE,
                  "Error: %s || while retrieving termios2 info", strerror(errno));
         return -1;
       } else if (err == -2) {
-        snprintf(data->errorString, sizeof(data->errorString),
-                 "Error: %s || while setting custom baud rate of %d", strerror(errno), data->baudRate);
+        snprintf(errorString, ERROR_STRING_SIZE,
+                 "Error: %s || while setting custom baud rate of %d", strerror(errno), baudRate_in);
         return -1;
       }
 
@@ -130,9 +129,9 @@ int setBaudRate(ConnectionOptionsBaton *data) {
   // On OS X, starting with Tiger, we can set a custom baud rate with ioctl
   #if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
     if (-1 == baudRate) {
-      speed_t speed = data->baudRate;
+      speed_t speed = baudRate_in;
       if (-1 == ioctl(fd, IOSSIOSPEED, &speed)) {
-        snprintf(data->errorString, sizeof(data->errorString),
+        snprintf(errorString, ERROR_STRING_SIZE,
                  "Error: %s calling ioctl(.., IOSSIOSPEED, %ld )", strerror(errno), speed);
         return -1;
       } else {
@@ -143,8 +142,8 @@ int setBaudRate(ConnectionOptionsBaton *data) {
   #endif
 
   if (-1 == baudRate) {
-    snprintf(data->errorString, sizeof(data->errorString),
-             "Error baud rate of %d is not supported on your platform", data->baudRate);
+    snprintf(errorString, ERROR_STRING_SIZE,
+             "Error baud rate of %d is not supported on your platform", baudRate_in);
     return -1;
   }
 
@@ -160,7 +159,7 @@ int setBaudRate(ConnectionOptionsBaton *data) {
 
 void EIO_Update(uv_work_t* req) {
   ConnectionOptionsBaton* data = static_cast<ConnectionOptionsBaton*>(req->data);
-  setBaudRate(data);
+  setBaudRate(data->fd, data->baudRate, data->errorString);
 }
 
 int setup(int fd, OpenBaton *data) {
@@ -280,17 +279,9 @@ int setup(int fd, OpenBaton *data) {
     }
   }
 
-  // Copy the connection options into the ConnectionOptionsBaton to set the baud rate
-  ConnectionOptionsBaton* connectionOptions = new ConnectionOptionsBaton();
-  connectionOptions->fd = fd;
-  connectionOptions->baudRate = data->baudRate;
-
-  if (-1 == setBaudRate(connectionOptions)) {
-    strncpy(data->errorString, connectionOptions->errorString, sizeof(data->errorString));
-    delete(connectionOptions);
+  if (-1 == setBaudRate(fd, data->baudRate, data->errorString)) {
     return -1;
   }
-  delete(connectionOptions);
 
   // flush all unread and wrote data up to this point because it could have been received or sent with bad settings
   // Not needed since setBaudRate does this for us

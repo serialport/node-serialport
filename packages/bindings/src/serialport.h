@@ -131,5 +131,4 @@ struct VoidBaton : public Nan::AsyncResource {
 };
 
 int setup(int fd, OpenBaton *data);
-int setBaudRate(ConnectionOptionsBaton *data);
 #endif  // PACKAGES_SERIALPORT_SRC_SERIALPORT_H_
