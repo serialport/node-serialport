@@ -95,7 +95,7 @@ void EIO_Open(uv_work_t* req) {
   data->result = fd;
 }
 
-int setBaudRate(ConnectionOptionsBaton *data) {
+int setBaudRate(ConnectionOptions *data) {
   // lookup the standard baudrates from the table
   int baudRate = ToBaudConstant(data->baudRate);
   int fd = data->fd;
@@ -281,7 +281,7 @@ int setup(int fd, OpenBaton *data) {
   }
 
   // Copy the connection options into the ConnectionOptionsBaton to set the baud rate
-  ConnectionOptionsBaton* connectionOptions = new ConnectionOptionsBaton();
+  ConnectionOptions* connectionOptions = new ConnectionOptions();
   connectionOptions->fd = fd;
   connectionOptions->baudRate = data->baudRate;
 
