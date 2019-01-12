@@ -14,7 +14,7 @@ const parser = port.pipe(new InterByteTimeout({interval: 30}))
 parser.on('data', console.log) // will emit data if there is a pause between packets graeter than 30ms
  */
 class InterByteTimeoutParser extends Transform {
-  constructor(options = { interval: 15 }) {
+  constructor (options = { interval: 15 }) {
     super()
 
     if (Number.isNaN(options.interval)) {
@@ -22,7 +22,6 @@ class InterByteTimeoutParser extends Transform {
     }
 
     if (options.interval < 1) {
-      console.log(options)
       throw new TypeError('"interval" is not greater than 0')
     }
 
@@ -30,7 +29,7 @@ class InterByteTimeoutParser extends Transform {
     this.interval = options.interval
     this.intervalID = -1
   }
-  _transform(chunk, encoding, cb) {
+  _transform (chunk, encoding, cb) {
     clearTimeout(this.intervalID)
     this.intervalID = setTimeout(this.emitPacket.bind(this), this.interval)
     for (let offset = 0; offset < chunk.length; offset++) {
@@ -38,7 +37,7 @@ class InterByteTimeoutParser extends Transform {
     }
     cb()
   }
-  emitPacket() {
+  emitPacket () {
     this.push(Buffer.from(this.currentPacket))
     this.currentPacket = []
   }
