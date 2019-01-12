@@ -10,6 +10,7 @@
       "api-parser-byte-length",
       "api-parser-cctalk",
       "api-parser-delimiter",
+      "api-parser-inter-byte-timeout",
       "api-parser-readline",
       "api-parser-ready",
       "api-parser-regex",
