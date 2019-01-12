@@ -1,0 +1,16 @@
+{
+  "name": "@serialport/parser-inter-byte-timeout",
+  "version": "1.0.0",
+  "main": "inter-byte-timeout.js",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/node-serialport/node-serialport.git"
+  }
+}
