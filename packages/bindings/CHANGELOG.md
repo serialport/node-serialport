@@ -5,10 +5,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [2.0.6](https://github.com/node-serialport/node-serialport/compare/@serialport/bindings@2.0.5...@serialport/bindings@2.0.6) (2019-01-12)
 
-**Note:** Version bump only for package @serialport/bindings
+### Bug Fixes
 
-
-
+* fix crash at port open ([#1772](https://github.com/node-serialport/node-serialport/issues/1772)) ([415891c](https://github.com/node-serialport/node-serialport/commit/415891c))
 
 
 ## [2.0.5](https://github.com/node-serialport/node-serialport/compare/@serialport/bindings@2.0.4...@serialport/bindings@2.0.5) (2019-01-08)
