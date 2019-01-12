@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.1.3](https://github.com/node-serialport/node-serialport/compare/serialport@7.1.2...serialport@7.1.3) (2019-01-12)
+
+**Note:** Version bump only for package serialport
+
+
+
+
+
 ## [7.1.2](https://github.com/node-serialport/node-serialport/compare/serialport@7.1.1...serialport@7.1.2) (2019-01-08)
 
 **Note:** Version bump only for package serialport
