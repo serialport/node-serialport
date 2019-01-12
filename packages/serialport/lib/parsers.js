@@ -4,5 +4,5 @@ module.exports = {
   Delimiter: require('@serialport/parser-delimiter'),
   Readline: require('@serialport/parser-readline'),
   Ready: require('@serialport/parser-ready'),
-  Regex: require('@serialport/parser-regex')
+  Regex: require('@serialport/parser-regex'),
 }
