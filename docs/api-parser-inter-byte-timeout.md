@@ -18,4 +18,4 @@ const SerialPort = require('serialport')
 const InterByteTimeout = require('@serialport/parser-inter-byte-timeout')
 const port = new SerialPort('/dev/tty-usbserial1')
 const parser = port.pipe(new InterByteTimeout({interval: 30}))
-parser.on('data', console.log) // will emit data if there is a pause between packets graeter than 30ms
+parser.on('data', console.log) // will emit data if there is a pause between packets of at least 30ms
