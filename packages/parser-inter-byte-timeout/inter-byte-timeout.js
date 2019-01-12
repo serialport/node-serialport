@@ -5,7 +5,7 @@ const Transform = require('stream').Transform
  * @extends Transform
  * @param {Object} options parser options object
  * @param {Number} options.interval the period of silence in milliseconds after which data is emited
- * @summary A transform stream that emits data as a buffer after a not recieving any bytes for the specified amount of time.
+ * @summary A transform stream that emits data as a buffer after not recieving any bytes for the specified amount of time.
  * @example
 const SerialPort = require('serialport')
 const InterByteTimeout = require('@serialport/parser-inter-byte-timeout')
