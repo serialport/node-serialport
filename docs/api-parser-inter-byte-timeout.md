@@ -5,7 +5,7 @@ title: InterByteTimeout Parser
 ```typescript
 new InterByteTimeout(options)
 ```
-Emit data if there is no data for a specified amount of time.
+Emits data if there is a pause between packets for the specified amount of time.
 
 A transform stream that emits data as a buffer after not recieving any bytes for the specified amount of time.
 

@@ -1,7 +1,7 @@
 const Transform = require('stream').Transform
 
 /**
- * Emit data if there is no data for a specified amount of time
+ * Emits data if there is a pause between packets for the specified amount of time.
  * @extends Transform
  * @param {Object} options parser options object
  * @param {Number} options.interval the period of silence in milliseconds after which data is emited
