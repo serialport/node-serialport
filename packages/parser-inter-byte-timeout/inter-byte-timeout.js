@@ -11,20 +11,20 @@ const SerialPort = require('serialport')
 const InterByteTimeout = require('@serialport/parser-inter-byte-timeout')
 const port = new SerialPort('/dev/tty-usbserial1')
 const parser = port.pipe(new InterByteTimeout({interval: 30}))
-parser.on('data', console.log) // will emit data if there is a pause between packets graeter than 30ms
+parser.on('data', console.log) // will emit data if there is a pause between packets greater than 30ms
  */
 class InterByteTimeoutParser extends Transform {
-  constructor (options = { interval: 15 }) {
+  constructor (options = { maxBufferSize: 65536, interval: 15}) {
     super()
 
-    if (Number.isNaN(options.interval)) {
+    if (typeof options.interval === 'number' && !Number.isNaN(options.interval)) {
       throw new TypeError('"interval" is not a number')
     }
 
     if (options.interval < 1) {
       throw new TypeError('"interval" is not greater than 0')
     }
-
+    this.maxBufferSize = options.maxBufferSize
     this.currentPacket = []
     this.interval = options.interval
     this.intervalID = -1
@@ -34,6 +34,9 @@ class InterByteTimeoutParser extends Transform {
     this.intervalID = setTimeout(this.emitPacket.bind(this), this.interval)
     for (let offset = 0; offset < chunk.length; offset++) {
       this.currentPacket.push(chunk[offset])
+      if (this.currentPacket.length >= this.maxBufferSize) {
+        emitPacket()
+      }
     }
     cb()
   }
