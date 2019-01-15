@@ -17,7 +17,11 @@ class InterByteTimeoutParser extends Transform {
   constructor (options = { maxBufferSize: 65536 }) {
     super()
 
-    if (typeof options.interval === 'number' && !Number.isNaN(options.interval)) {
+    if (!options.interval) {
+      throw new TypeError('"interval" is required')
+    }
+
+    if (typeof options.interval !== 'number' || Number.isNaN(options.interval)) {
       throw new TypeError('"interval" is not a number')
     }
 
@@ -35,7 +39,7 @@ class InterByteTimeoutParser extends Transform {
     for (let offset = 0; offset < chunk.length; offset++) {
       this.currentPacket.push(chunk[offset])
       if (this.currentPacket.length >= this.maxBufferSize) {
-        emitPacket()
+        this.emitPacket()
       }
     }
     cb()
