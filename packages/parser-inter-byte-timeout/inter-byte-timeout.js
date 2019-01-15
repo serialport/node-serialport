@@ -14,7 +14,7 @@ const parser = port.pipe(new InterByteTimeout({interval: 30}))
 parser.on('data', console.log) // will emit data if there is a pause between packets greater than 30ms
  */
 class InterByteTimeoutParser extends Transform {
-  constructor (options = { maxBufferSize: 65536, interval: 15}) {
+  constructor (options = { maxBufferSize: 65536 }) {
     super()
 
     if (typeof options.interval === 'number' && !Number.isNaN(options.interval)) {
