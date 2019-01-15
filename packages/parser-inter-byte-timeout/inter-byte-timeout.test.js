@@ -3,7 +3,7 @@
 const sinon = require('sinon')
 const InterByteTimeoutParser = require('./inter-byte-timeout')
 
-function wait(interval) {
+function wait (interval) {
   return new Promise((resolve, reject) => {
     setTimeout(resolve, interval)
     if (interval < 1) reject()
@@ -11,7 +11,7 @@ function wait(interval) {
 }
 
 describe('InterByteTimeoutParser', () => {
-  it('emits data events after a pause of 15ms', () => {
+  it('emits data events after a pause of 30ms', () => {
     const spy = sinon.spy()
     const parser = new InterByteTimeoutParser({ interval: 30 })
     parser.on('data', spy)
@@ -33,16 +33,18 @@ describe('InterByteTimeoutParser', () => {
     assert.throws(() => {
       new InterByteTimeoutParser({ interval: NaN })
     })
+    assert.throws(() => {
+      new InterByteTimeoutParser({ interval: 'hello' })
+    })
   })
 
-  it('interval should default to 15ms', () => {
+  it('emits data events when buffer is full', () => {
     const spy = sinon.spy()
-    const parser = new InterByteTimeoutParser()
+    const parser = new InterByteTimeoutParser({maxBufferSize: 2, interval: 15})
     parser.on('data', spy)
-    parser.write(Buffer.from('I love robots Each'))
-    parser.write(Buffer.from('and Every One'))
+    parser.write(Buffer.from([1, 2, 3, 4, 5, 6]))
     wait(15).then(() => {
-      assert(spy.calledOnce, 'expecting 1 data events')
+      assert(spy.calledThrice, 'expecting 3 data events')
     })
   })
 })
