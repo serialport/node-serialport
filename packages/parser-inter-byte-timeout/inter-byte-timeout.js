@@ -14,10 +14,11 @@ const port = new SerialPort('/dev/tty-usbserial1')
 const parser = port.pipe(new InterByteTimeout({interval: 30}))
 parser.on('data', console.log) // will emit data if there is a pause between packets greater than 30ms
  */
+
 class InterByteTimeoutParser extends Transform {
-  constructor(options) {
+  constructor (options) {
     super()
-    options = Object.assign({ maxBufferSize: 65536 }, options)
+    options = Object.assign({maxBufferSize: 65536}, options)
     if (!options.interval) {
       throw new TypeError('"interval" is required')
     }
@@ -43,7 +44,7 @@ class InterByteTimeoutParser extends Transform {
     this.interval = options.interval
     this.intervalID = -1
   }
-  _transform(chunk, encoding, cb) {
+  _transform (chunk, encoding, cb) {
     clearTimeout(this.intervalID)
     this.intervalID = setTimeout(this.emitPacket.bind(this), this.interval)
     for (let offset = 0; offset < chunk.length; offset++) {
@@ -54,7 +55,7 @@ class InterByteTimeoutParser extends Transform {
     }
     cb()
   }
-  emitPacket() {
+  emitPacket () {
     this.push(Buffer.from(this.currentPacket))
     this.currentPacket = []
   }
