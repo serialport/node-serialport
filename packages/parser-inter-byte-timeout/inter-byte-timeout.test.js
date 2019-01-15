@@ -36,6 +36,9 @@ describe('InterByteTimeoutParser', () => {
     assert.throws(() => {
       new InterByteTimeoutParser({ interval: 'hello' })
     })
+    assert.throws(() => {
+      new InterByteTimeoutParser()
+    })
   })
 
   it('emits data events when buffer is full', () => {
