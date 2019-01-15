@@ -3,7 +3,7 @@
 const sinon = require('sinon')
 const InterByteTimeoutParser = require('./inter-byte-timeout')
 
-function wait (interval) {
+function wait(interval) {
   return new Promise((resolve, reject) => {
     setTimeout(resolve, interval)
     if (interval < 1) reject()
@@ -43,7 +43,7 @@ describe('InterByteTimeoutParser', () => {
 
   it('emits data events when buffer is full', () => {
     const spy = sinon.spy()
-    const parser = new InterByteTimeoutParser({maxBufferSize: 2, interval: 15})
+    const parser = new InterByteTimeoutParser({ maxBufferSize: 2, interval: 15 })
     parser.on('data', spy)
     parser.write(Buffer.from([1, 2, 3, 4, 5, 6]))
     wait(15).then(() => {
