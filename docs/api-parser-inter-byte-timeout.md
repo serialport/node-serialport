@@ -11,6 +11,7 @@ A transform stream that emits data as a buffer after not recieving any bytes for
 
 Arguments
 - `options.interval: number` the period of silence in milliseconds after which data is emited
+- `options.maxBufferSize: number` the maximum number of bytes after which data will be emited. Defaults to 65536.
 
 ## Example
 ```js

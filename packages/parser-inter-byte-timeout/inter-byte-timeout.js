@@ -5,6 +5,7 @@ const Transform = require('stream').Transform
  * @extends Transform
  * @param {Object} options parser options object
  * @param {Number} options.interval the period of silence in milliseconds after which data is emited
+ * @param {Number} options.maxBufferSize the maximum number of bytes after which data will be emited. Defaults to 65536.
  * @summary A transform stream that emits data as a buffer after not receiving any bytes for the specified amount of time.
  * @example
 const SerialPort = require('serialport')
