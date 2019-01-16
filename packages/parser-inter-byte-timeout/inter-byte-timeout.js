@@ -45,19 +45,21 @@ class InterByteTimeoutParser extends Transform {
     this.intervalID = -1
   }
   _transform(chunk, encoding, cb) {
+    clearTimeout(this.intervalID)
     for (let offset = 0; offset < chunk.length; offset++) {
-      clearTimeout(this.intervalID)
-      this.intervalID = setTimeout(this.emitPacket.bind(this), this.interval)
       this.currentPacket.push(chunk[offset])
       if (this.currentPacket.length >= this.maxBufferSize) {
         this.emitPacket()
       }
     }
+    this.intervalID = setTimeout(this.emitPacket.bind(this), this.interval)
     cb()
   }
   emitPacket() {
     clearTimeout(this.intervalID)
-    if (this.currentPacket.length > 0) this.push(Buffer.from(this.currentPacket))
+    if (this.currentPacket.length > 0) {
+      this.push(Buffer.from(this.currentPacket))
+    }
     this.currentPacket = []
   }
   _flush(cb) {
