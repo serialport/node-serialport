@@ -59,6 +59,11 @@ class InterByteTimeoutParser extends Transform {
     this.push(Buffer.from(this.currentPacket))
     this.currentPacket = []
   }
+  _flush(cb) {
+    clearTimeout(this.intervalID)
+    this.emitPacket()
+    cb()
+  }
 }
 
 module.exports = InterByteTimeoutParser

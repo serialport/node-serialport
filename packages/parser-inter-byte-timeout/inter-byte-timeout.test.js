@@ -62,4 +62,13 @@ describe('InterByteTimeoutParser', () => {
       assert(spy.calledThrice, 'expecting 3 data events')
     })
   })
+
+  it('emits all buffered data when stream ends', () => {
+    const spy = sinon.spy()
+    const parser = new InterByteTimeoutParser({ interval: 15 })
+    parser.on('data', spy)
+    parser.write('Oh wow.')
+    parser.end()
+    assert(spy.calledOnce, 'expecting 1 data events')
+  })
 })
