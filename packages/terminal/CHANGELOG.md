@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.4](https://github.com/node-serialport/node-serialport/compare/@serialport/terminal@1.1.3...@serialport/terminal@1.1.4) (2019-01-24)
+
+**Note:** Version bump only for package @serialport/terminal
+
+
+
+
+
 ## [1.1.3](https://github.com/node-serialport/node-serialport/compare/@serialport/terminal@1.1.2...@serialport/terminal@1.1.3) (2019-01-12)
 
 **Note:** Version bump only for package @serialport/terminal
