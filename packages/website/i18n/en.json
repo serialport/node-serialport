@@ -23,6 +23,9 @@
       "api-parser-delimiter": {
         "title": "Delimiter Parser"
       },
+      "api-parser-inter-byte-timeout": {
+        "title": "InterByteTimeout Parser"
+      },
       "api-parser-readline": {
         "title": "Readline Parser"
       },
