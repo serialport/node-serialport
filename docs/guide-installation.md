@@ -96,6 +96,15 @@ Follow the instructions for [setting up a Raspberry pi for use with Johnny-Five 
 | B2             | 32-bit ARM Cortex-A7  |    ARMv7    |
 | B3             | 32-bit ARM Cortex-A53 |    ARMv8    |
 
+To enable the serial port on *Raspbian*, you launch `raspi-config`, then select `Interfacing Options`, then `Serial`.  You will then be asked two questions:
+
+1. Would you like a login shell to be accessible over serial?
+2. Would you like the serial port hardware to be enabled?
+
+You must answer *No* to question 1 and *Yes* to question 2.  If the login shell is left active, you will experience hangs and or disconnects.
+
+*DietPi* also has the ability to enable the serial port in `dietpi-config`; however, it doens't have a way to disable the login shell that we know of.
+
 ### sudo / root
 If you're going to use `sudo` or root to install Node-Serialport, `npm` will require you to use the unsafe parameters flag.
 
