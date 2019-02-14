@@ -61,10 +61,10 @@ void Poller::onData(uv_poll_t* handle, int status, int events) {
     // fprintf(stdout, "OnData status=%d events=%d\n", status, events);
     argv[0] = Nan::Null();
     argv[1] = Nan::New<v8::Integer>(events);
+    // remove triggered events from the poll
+    int newEvents = obj->events & ~events;
+    obj->poll(newEvents);
   }
-  // remove triggered events from the poll
-  int newEvents = obj->events & ~events;
-  obj->poll(newEvents);
 
   obj->callback.Call(2, argv, obj);
 }
