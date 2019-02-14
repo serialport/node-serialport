@@ -305,7 +305,9 @@ export class MockBinding implements AbstractBinding {
     const mock = getMockPort(this.path)
     let readOperation
 
-    if (this.isClosed) { // cancel reads
+    if (this.isClosed) {
+      // cancel reads
+      // tslint:disable-next-line:no-conditional-assignment
       while ((readOperation = this.queuedReads.pop())) {
         const { resolve } = readOperation
         resolve(0)
@@ -372,7 +374,7 @@ export class MockBinding implements AbstractBinding {
         await this.ensureOpenLater()
         this.lastWrite = data
         if (mock.record) {
-          mock.recording = mock.recording ? Buffer.concat([mock.recording, data]): Buffer.from(data)
+          mock.recording = mock.recording ? Buffer.concat([mock.recording, data]) : Buffer.from(data)
         }
         if (mock.echo) {
           this.emitData(data)
@@ -419,6 +421,7 @@ export class MockBinding implements AbstractBinding {
     }
 
     return {
+      path: this.path,
       baudRate: this.baudRate,
       brk: this.brk,
       dataBits: this.dataBits,

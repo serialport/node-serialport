@@ -9,6 +9,7 @@ export interface PortInfo {
 }
 
 export interface LocalState {
+  readonly path: string
   /* The system reported baud rate */
   readonly baudRate: number
   /* Break Suspends character transmission local status */
@@ -42,6 +43,8 @@ export interface RemoteState {
   /* Data Set Ready remote status (local DSR => remote DTR) */
   readonly dsr: boolean
 }
+
+export type SetOptions = Pick<Partial<LocalState>, 'brk' | 'dataBits' | 'dtr' | 'lock' | 'parity' | 'rts' | 'rtscts' | 'stopBits'>
 
 /**
  * You never have to use `Binding` objects directly. SerialPort uses them to access the underlying hardware.
@@ -122,7 +125,7 @@ export class AbstractBinding implements PortInfo, LocalState {
   /**
    * Set local state on an open port including updating baudRate and control flags. The state is represented on the object as well as resolved in the promise.
    */
-  async setLocalState(options: Partial<LocalState>): Promise<LocalState> {
+  async setLocalState(options: SetOptions): Promise<LocalState> {
     throw new Error('.setLocalState is not implemented')
   }
 
