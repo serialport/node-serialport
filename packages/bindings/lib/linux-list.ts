@@ -10,7 +10,7 @@ function checkPathOfDevice(path: string) {
 function propName(name: string): string | null {
   switch (name) {
     case 'DEVNAME':
-      return 'comName'
+      return 'path'
     case 'ID_VENDOR_ENC':
       return 'manufacturer'
     case 'ID_SERIAL_SHORT':
@@ -27,7 +27,7 @@ function propName(name: string): string | null {
 }
 
 function decodeHexEscape(str: string) {
-  return str.replace(/\\x([a-fA-F0-9]{2})/g, (a, b) => {
+  return str.replace(/\\x([a-fA-F0-9]{2})/g, (_a, b) => {
     return String.fromCharCode(parseInt(b, 16))
   })
 }
@@ -59,7 +59,7 @@ export async function linuxList(): Promise<ReadonlyArray<PortInfo>> {
     // new port entry
     if (lineType === 'P') {
       port = {
-        comName: '',
+        path: '',
         manufacturer: undefined,
         serialNumber: undefined,
         pnpId: undefined,
