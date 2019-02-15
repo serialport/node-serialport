@@ -1,7 +1,7 @@
 // tslint:disable:readonly-keyword
 import bindings from 'bindings'
 import debug from 'debug'
-import { AbstractBinding, PortInfo, GetFlags, UpdateOptions, OpenOptions, SetOptions, BindingOptions } from '@serialport/binding-abstract'
+import { AbstractBinding, PortInfo, OpenOptions, SetOptions, LocalState, ConstructorOptions, RemoteState } from '@serialport/binding-abstract'
 import { Poller } from './poller'
 import { promisify } from './util'
 import { unixRead } from './unix-read'
@@ -9,109 +9,176 @@ import { unixWrite } from './unix-write'
 
 const logger = debug('serialport/bindings/DarwinBinding')
 
-const defaultBindingOptions = Object.freeze({
-  vmin: 1,
-  vtime: 0,
-})
-
-export interface DarwinBindingOptions extends BindingOptions {
-  bindingOptions: DarwinBindingOptions
+interface DarwinConstructorOptions extends ConstructorOptions {
+  vmin: number
+  vtime: number
 }
 
-const darwinBinding = bindings('bindings.node')
-const closeAsync = promisify(darwinBinding.close) as (fd: number) => Promise<void>
-const drainAsync = promisify(darwinBinding.drain) as (fd: number) => Promise<void>
-const flushAsync = promisify(darwinBinding.flush) as (fd: number) => Promise<void>
-const getAsync = promisify(darwinBinding.get) as (fd: number) => Promise<GetFlags>
-const getBaudRateAsync = promisify(darwinBinding.getBaudRate) as (fd: number) => Promise<number>
-const openAsync = promisify(darwinBinding.open) as (path: string, opt: OpenOptions) => Promise<number>
-const setAsync = promisify(darwinBinding.set) as (fd: number, opts: SetOptions) => Promise<void>
-const listAsync = promisify(darwinBinding.list) as () => Promise<ReadonlyArray<PortInfo>>
-const updateAsync = promisify(darwinBinding.update) as (fd: number, opts: UpdateOptions) => Promise<void>
+interface DarwinOpenOptions extends OpenOptions {
+  vmin?: number
+  vtime?: number
+}
+
+const darwinBindings = bindings('bindings.node')
+const closeAsync = promisify(darwinBindings.close) as (fd: number) => Promise<void>
+const drainAsync = promisify(darwinBindings.drain) as (fd: number) => Promise<void>
+const flushAsync = promisify(darwinBindings.flush) as (fd: number) => Promise<void>
+const getRemoteStateAsync = promisify(darwinBindings.getRemoteState) as (descriptor: number) => Promise<RemoteState>
+const openAsync = promisify(darwinBindings.open) as (opt: LocalState) => Promise<number>
+const setLocalStateAsync = promisify(darwinBindings.setLocalState) as (descriptor: number, opts: SetOptions) => Promise<LocalState>
+const listAsync = promisify(darwinBindings.list) as () => Promise<ReadonlyArray<PortInfo>>
 
 /**
  * The Darwin binding layer for OSX
  */
-export class DarwinBinding extends AbstractBinding {
-  get isOpen() {
-    return this.fd !== null
+export class DarwinBinding implements AbstractBinding {
+  static list() {
+    return listAsync()
   }
 
-  readonly bindingOptions: DarwinBindingOptions
-  fd: null | number
-  openOptions: any
-  poller: Poller | null
+  static async open(options: DarwinOpenOptions) {
+    logger('open', options)
+    if (typeof options !== 'object') {
+      throw new TypeError('"options" is not an object')
+    }
+
+    const {
+      baudRate,
+      path,
+      brk = false,
+      dataBits = 8,
+      dtr = true, // need to check if this is possible on windows
+      parity = 'none',
+      rts = true, // ???
+      rtscts = true, // ???
+      stopBits = 1,
+      lock = true,
+      vmin = 1,
+      vtime = 0,
+    } = options
+
+    if (!path) {
+      throw new TypeError('"path" is not a valid port')
+    }
+    const { locationId, manufacturer, pnpId, productId, serialNumber, vendorId } = {} as any // todo find this info out
+
+    const descriptor = await openAsync({ baudRate, path, brk, dataBits, dtr, parity, rts, rtscts, stopBits, lock })
+
+    return new DarwinBinding({
+      descriptor,
+      locationId,
+      manufacturer,
+      path,
+      pnpId,
+      productId,
+      serialNumber,
+      vendorId,
+      baudRate,
+      brk,
+      dataBits,
+      dtr,
+      lock,
+      parity,
+      rts,
+      rtscts,
+      stopBits,
+      vmin,
+      vtime,
+    })
+  }
+
+  locationId?: string
+  manufacturer?: string
+  path: string
+  pnpId?: string
+  productId?: string
+  serialNumber?: string
+  vendorId?: string
+  baudRate: number
+  brk: boolean
+  dataBits: 5 | 6 | 7 | 8
+  dtr: boolean
+  lock: boolean
+  parity: 'none' | 'even' | 'mark' | 'odd' | 'space'
+  rts: boolean
+  rtscts: boolean
+  stopBits: 1 | 1.5 | 2
+  descriptor: number
+  isClosed: boolean
+
+  poller: Poller
   writeOperation: any
 
-  constructor(opt: DarwinBindingOptions) {
-    super(opt)
-    this.bindingOptions = Object.assign({}, defaultBindingOptions, opt.bindingOptions || {})
-    this.fd = null
+  constructor(opts: DarwinConstructorOptions) {
+    const {
+      descriptor,
+      locationId,
+      manufacturer,
+      path,
+      pnpId,
+      productId,
+      serialNumber,
+      vendorId,
+      baudRate,
+      brk,
+      dataBits,
+      dtr,
+      lock,
+      parity,
+      rts,
+      rtscts,
+      stopBits,
+    } = opts
+    this.descriptor = descriptor
+    this.locationId = locationId
+    this.manufacturer = manufacturer
+    this.path = path
+    this.pnpId = pnpId
+    this.productId = productId
+    this.serialNumber = serialNumber
+    this.vendorId = vendorId
+    this.baudRate = baudRate
+    this.brk = brk
+    this.dataBits = dataBits
+    this.dtr = dtr
+    this.lock = lock
+    this.parity = parity
+    this.rts = rts
+    this.rtscts = rtscts
+    this.stopBits = stopBits
+    this.isClosed = false
+
     this.writeOperation = null
-    this.poller = null
+    this.poller = new Poller(descriptor)
   }
 
   async close() {
     logger('close')
-    if (this.fd === null) {
-      throw new Error('Port is not open')
-    }
-    const fd = this.fd
-    if (this.poller) {
-      this.poller.stop()
-      this.poller.destroy()
-    }
-    this.poller = null
-    this.openOptions = null
-    this.fd = null
-    return closeAsync(fd)
+    this.ensureOpen()
+    this.poller.stop()
+    this.poller.destroy()
+    this.isClosed = true
+    return closeAsync(this.descriptor)
   }
 
   async drain() {
     logger('drain')
-    if (this.fd === null) {
-      throw new Error('Port is not open')
-    }
+    this.ensureOpen()
     await this.writeOperation
-    return drainAsync(this.fd)
+    return drainAsync(this.descriptor)
   }
 
   async flush() {
     logger('flush')
-    if (this.fd === null) {
-      throw new Error('Port is not open')
-    }
+    this.ensureOpen()
 
-    return flushAsync(this.fd)
+    return flushAsync(this.descriptor)
   }
 
-  async get() {
-    logger('get')
-    if (this.fd === null) {
-      throw new Error('Port is not open')
-    }
-    return getAsync(this.fd)
-  }
-
-  async getBaudRate() {
-    logger('getBaudRate')
-    if (this.fd === null) {
-      throw new Error('Port is not open')
-    }
-    return getBaudRateAsync(this.fd)
-  }
-
-  async open(path: string, options: OpenOptions) {
-    logger('open', path, options)
-    if (!path) {
-      throw new TypeError('"path" is not a valid port')
-    }
-    if (typeof options !== 'object') {
-      throw new TypeError('"options" is not an object')
-    }
-    this.openOptions = { ...this.bindingOptions, ...options }
-    this.fd = await openAsync(path, this.openOptions)
-    this.poller = new Poller(this.fd)
+  async getRemoteState() {
+    logger('getRemoteState')
+    this.ensureOpen()
+    return getRemoteStateAsync(this.descriptor)
   }
 
   async read(buffer: Buffer, offset: number, length: number): Promise<number> {
@@ -128,36 +195,15 @@ export class DarwinBinding extends AbstractBinding {
     if (buffer.length < offset + length) {
       throw new Error('"buffer" length is smaller than the "offset" + "length"')
     }
-    if (this.fd === null) {
-      throw new Error('Port is not open')
-    }
+    this.ensureOpen()
 
     return unixRead(this, buffer, offset, length)
   }
 
-  async set(options: SetOptions) {
-    logger('set', options)
-    if (this.fd === null) {
-      throw new Error('Port is not open')
-    }
-    return setAsync(this.fd, options)
-  }
-
-  async update(options: UpdateOptions) {
-    logger('update', options)
-    if (typeof options !== 'object') {
-      throw TypeError('"options" is not an object')
-    }
-
-    if (typeof options.baudRate !== 'number') {
-      throw new TypeError('"options.baudRate" is not a number')
-    }
-
-    if (this.fd === null) {
-      throw new Error('Port is not open')
-    }
-
-    return updateAsync(this.fd, options)
+  async setLocalState(options: SetOptions) {
+    logger('setLocalState', options)
+    this.ensureOpen()
+    return setLocalStateAsync(this.descriptor, options)
   }
 
   async write(buffer: Buffer) {
@@ -166,9 +212,7 @@ export class DarwinBinding extends AbstractBinding {
       throw new TypeError('"buffer" is not a Buffer')
     }
     logger('write', buffer.length, 'bytes')
-    if (this.fd === null) {
-      throw new Error('Port is not open')
-    }
+    this.ensureOpen()
 
     this.writeOperation = unixWrite(this, buffer).then(() => {
       this.writeOperation = null
@@ -176,7 +220,9 @@ export class DarwinBinding extends AbstractBinding {
     return this.writeOperation
   }
 
-  static list() {
-    return listAsync()
+  private ensureOpen() {
+    if (this.isClosed === true) {
+      throw new Error('Port is not open')
+    }
   }
 }

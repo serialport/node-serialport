@@ -1,6 +1,6 @@
 // tslint:disable:readonly-keyword
 import bindings from 'bindings'
-import { AbstractBinding, GetFlags, UpdateOptions, OpenOptions, SetFlags, BindingOptions } from '@serialport/binding-abstract'
+import { AbstractBinding, OpenOptions, ConstructorOptions, RemoteState, LocalState, SetOptions } from '@serialport/binding-abstract'
 import debug from 'debug'
 import { linuxList } from './linux-list'
 import { Poller } from './poller'
@@ -10,17 +10,12 @@ import { unixWrite } from './unix-write'
 
 const logger = debug('serialport/bindings/LinuxBinding')
 
-const defaultBindingOptions = Object.freeze({
-  vmin: 1,
-  vtime: 0,
-})
-
-export interface LinuxBindingOptions extends BindingOptions {
-  vmin?: number
-  vtime?: number
+interface LinuxConstructorOptions extends ConstructorOptions {
+  vmin: number
+  vtime: number
 }
 
-export interface LinuxOpenOptions extends OpenOptions {
+interface LinuxOpenOptions extends OpenOptions {
   vmin?: number
   vtime?: number
 }
@@ -29,95 +24,161 @@ const linuxBindings = bindings('bindings.node')
 const closeAsync = promisify(linuxBindings.close) as (fd: number) => Promise<void>
 const drainAsync = promisify(linuxBindings.drain) as (fd: number) => Promise<void>
 const flushAsync = promisify(linuxBindings.flush) as (fd: number) => Promise<void>
-const getAsync = promisify(linuxBindings.get) as (fd: number) => Promise<GetFlags>
-const getBaudRateAsync = promisify(linuxBindings.getBaudRate) as (fd: number) => Promise<number>
-const openAsync = promisify(linuxBindings.open) as (path: string, opt: LinuxOpenOptions) => Promise<number>
-const setAsync = promisify(linuxBindings.set) as (fd: number, opts: SetFlags) => Promise<void>
-const updateAsync = promisify(linuxBindings.update) as (fd: number, opts: UpdateOptions) => Promise<void>
+const getRemoteStateAsync = promisify(linuxBindings.getRemoteState) as (descriptor: number) => Promise<RemoteState>
+const openAsync = promisify(linuxBindings.open) as (opt: LocalState) => Promise<number>
+const setLocalStateAsync = promisify(linuxBindings.setLocalState) as (descriptor: number, opts: SetOptions) => Promise<LocalState>
+
 /**
  * The linux binding layer
  */
-export class LinuxBinding extends AbstractBinding {
-  get isOpen() {
-    return this.fd !== null
-  }
-
+export class LinuxBinding implements AbstractBinding {
   static list() {
     return linuxList()
   }
 
-  readonly bindingOptions: LinuxBindingOptions
-  fd: number
-  openOptions: any
-  poller: any
+  static async open(options: LinuxOpenOptions) {
+    logger('open', options)
+    if (typeof options !== 'object') {
+      throw new TypeError('"options" is not an object')
+    }
+
+    const {
+      baudRate,
+      path,
+      brk = false,
+      dataBits = 8,
+      dtr = true, // need to check if this is possible on windows
+      parity = 'none',
+      rts = true, // ???
+      rtscts = true, // ???
+      stopBits = 1,
+      lock = true,
+      vmin = 1,
+      vtime = 0,
+    } = options
+
+    if (!path) {
+      throw new TypeError('"path" is not a valid port')
+    }
+    const { locationId, manufacturer, pnpId, productId, serialNumber, vendorId } = {} as any // todo find this info out
+
+    const descriptor = await openAsync({ baudRate, path, brk, dataBits, dtr, parity, rts, rtscts, stopBits, lock })
+
+    return new LinuxBinding({
+      descriptor,
+      locationId,
+      manufacturer,
+      path,
+      pnpId,
+      productId,
+      serialNumber,
+      vendorId,
+      baudRate,
+      brk,
+      dataBits,
+      dtr,
+      lock,
+      parity,
+      rts,
+      rtscts,
+      stopBits,
+      vmin,
+      vtime,
+    })
+  }
+
+  locationId?: string
+  manufacturer?: string
+  path: string
+  pnpId?: string
+  productId?: string
+  serialNumber?: string
+  vendorId?: string
+  baudRate: number
+  brk: boolean
+  dataBits: 5 | 6 | 7 | 8
+  dtr: boolean
+  lock: boolean
+  parity: 'none' | 'even' | 'mark' | 'odd' | 'space'
+  rts: boolean
+  rtscts: boolean
+  stopBits: 1 | 1.5 | 2
+  descriptor: number
+  isClosed: boolean
+
+  poller: Poller
   writeOperation: any
 
-  constructor(opt: any) {
-    super(opt)
-    this.bindingOptions = Object.assign({}, defaultBindingOptions, opt.bindingOptions || {})
-    this.fd = null
+  constructor(opts: LinuxConstructorOptions) {
+    const {
+      descriptor,
+      locationId,
+      manufacturer,
+      path,
+      pnpId,
+      productId,
+      serialNumber,
+      vendorId,
+      baudRate,
+      brk,
+      dataBits,
+      dtr,
+      lock,
+      parity,
+      rts,
+      rtscts,
+      stopBits,
+    } = opts
+    this.descriptor = descriptor
+    this.locationId = locationId
+    this.manufacturer = manufacturer
+    this.path = path
+    this.pnpId = pnpId
+    this.productId = productId
+    this.serialNumber = serialNumber
+    this.vendorId = vendorId
+    this.baudRate = baudRate
+    this.brk = brk
+    this.dataBits = dataBits
+    this.dtr = dtr
+    this.lock = lock
+    this.parity = parity
+    this.rts = rts
+    this.rtscts = rtscts
+    this.stopBits = stopBits
+    this.isClosed = false
+
     this.writeOperation = null
+    this.poller = new Poller(descriptor)
   }
 
   async close() {
     logger('close')
-    if (this.fd === null) {
-      throw new Error('Port is not open')
-    }
-    const fd = this.fd
+    this.ensureOpen()
     this.poller.stop()
     this.poller.destroy()
-    this.poller = null
-    this.openOptions = null
-    this.fd = null
-    return closeAsync(fd)
+    this.isClosed = true
+    return closeAsync(this.descriptor)
   }
 
   async drain() {
     logger('drain')
-    if (this.fd === null) {
-      throw new Error('Port is not open')
-    }
+    this.ensureOpen()
     await this.writeOperation
-    return drainAsync(this.fd)
+    return drainAsync(this.descriptor)
   }
 
   async flush() {
     logger('flush')
-    if (this.fd === null) {
-      throw new Error('Port is not open')
-    }
+    this.ensureOpen()
 
-    return flushAsync(this.fd)
+    return flushAsync(this.descriptor)
   }
 
-  async get() {
-    logger('get')
-    if (this.fd === null) {
-      throw new Error('Port is not open')
-    }
-    return getAsync(this.fd)
-  }
-
-  async getBaudRate() {
-    logger('getBaudRate')
-    if (this.fd === null) {
-      throw new Error('Port is not open')
-    }
-    return getBaudRateAsync(this.fd)
-  }
-
-  async open(path: string, options: LinuxOpenOptions) {
-    logger('open', path, options)
-    if (!path) {
-      throw new TypeError('"path" is not a valid port')
-    }
-    if (typeof options !== 'object') {
-      throw new TypeError('"options" is not an object')
-    }
-    this.openOptions = { ...this.bindingOptions, ...options }
-    this.fd = await openAsync(path, this.openOptions)
-    this.poller = new Poller(this.fd)
+  async getRemoteState() {
+    logger('getRemoteState')
+    this.ensureOpen()
+    return getRemoteStateAsync(this.descriptor)
   }
 
   async read(buffer: Buffer, offset: number, length: number): Promise<number> {
@@ -134,36 +195,15 @@ export class LinuxBinding extends AbstractBinding {
     if (buffer.length < offset + length) {
       throw new Error('"buffer" length is smaller than the "offset" + "length"')
     }
-    if (!this.fd) {
-      throw new Error('Port is not open')
-    }
+    this.ensureOpen()
 
     return unixRead(this, buffer, offset, length)
   }
 
-  async set(options: SetFlags) {
-    logger('set', options)
-    if (!this.fd) {
-      throw new Error('Port is not open')
-    }
-    return setAsync(this.fd, options)
-  }
-
-  async update(options: UpdateOptions) {
-    logger('update', options)
-    if (typeof options !== 'object') {
-      throw TypeError('"options" is not an object')
-    }
-
-    if (typeof options.baudRate !== 'number') {
-      throw new TypeError('"options.baudRate" is not a number')
-    }
-
-    if (!this.fd) {
-      throw new Error('Port is not open')
-    }
-
-    return updateAsync(this.fd, options)
+  async setLocalState(options: SetOptions) {
+    logger('setLocalState', options)
+    this.ensureOpen()
+    return setLocalStateAsync(this.descriptor, options)
   }
 
   async write(buffer: Buffer) {
@@ -172,13 +212,17 @@ export class LinuxBinding extends AbstractBinding {
       throw new TypeError('"buffer" is not a Buffer')
     }
     logger('write', buffer.length, 'bytes')
-    if (!this.isOpen) {
-      throw new Error('Port is not open')
-    }
+    this.ensureOpen()
 
     this.writeOperation = unixWrite(this, buffer).then(() => {
       this.writeOperation = null
     })
     return this.writeOperation
+  }
+
+  private ensureOpen() {
+    if (this.isClosed === true) {
+      throw new Error('Port is not open')
+    }
   }
 }

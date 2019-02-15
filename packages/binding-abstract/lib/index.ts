@@ -60,7 +60,7 @@ export class AbstractBinding implements PortInfo, LocalState {
   /**
    * Opens a connection to the serial port referenced by the path.
    */
-  static async open<T>(this: T, options: OpenOptions): Promise<T> {
+  static async open(options: OpenOptions): Promise<AbstractBinding> {
     throw new Error('#open is not implemented')
   }
 

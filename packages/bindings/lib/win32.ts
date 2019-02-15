@@ -167,7 +167,7 @@ export class WindowsBinding implements AbstractBinding {
   }
 
   async getRemoteState() {
-    logger('get')
+    logger('getRemoteState')
     this.ensureOpen()
     return getRemoteStateAsync(this.descriptor)
   }

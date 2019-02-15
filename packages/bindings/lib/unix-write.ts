@@ -7,15 +7,15 @@ const logger = debug('serialport/bindings/unixWrite')
 export async function unixWrite(binding: DarwinBinding | LinuxBinding, buffer: Buffer, offset = 0): Promise<void> {
   const bytesToWrite = buffer.length - offset
   logger('Starting write', buffer.length, 'bytes offset', offset, 'bytesToWrite', bytesToWrite)
-  if (!binding.fd) {
+  if (!binding.descriptor) {
     return Promise.reject(new Error('Port is not open'))
   }
-  const fd = binding.fd
+  const fd = binding.descriptor
   return new Promise((resolve, reject) => {
     fs.write(fd, buffer, offset, bytesToWrite, (err, bytesWritten) => {
       logger('write returned', err, bytesWritten)
       if (err && (err.code === 'EAGAIN' || err.code === 'EWOULDBLOCK' || err.code === 'EINTR')) {
-        if (!binding.isOpen) {
+        if (binding.isClosed) {
           return reject(new Error('Port is not open'))
         }
         logger('waiting for writable because of code:', err.code)
@@ -23,7 +23,7 @@ export async function unixWrite(binding: DarwinBinding | LinuxBinding, buffer: B
           if (pollerError) {
             return reject(pollerError)
           }
-          resolve(unixWrite.call(binding, buffer, offset))
+          resolve(unixWrite(binding, buffer, offset))
         })
         return
       }
@@ -47,10 +47,10 @@ export async function unixWrite(binding: DarwinBinding | LinuxBinding, buffer: B
 
       logger('wrote', bytesWritten, 'bytes')
       if (bytesWritten + offset < buffer.length) {
-        if (!binding.isOpen) {
+        if (binding.isClosed) {
           return reject(new Error('Port is not open'))
         }
-        return resolve(unixWrite.call(binding, buffer, bytesWritten + offset))
+        return resolve(unixWrite(binding, buffer, bytesWritten + offset))
       }
 
       logger('Finished writing', bytesWritten + offset, 'bytes')

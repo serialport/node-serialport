@@ -3,6 +3,7 @@ import debug from 'debug'
 import { EventEmitter } from 'events'
 import Bindings from 'bindings'
 const logger = debug('serialport/bindings/poller')
+// tslint:disable-next-line:variable-name
 const FDPoller = Bindings('bindings.node').Poller
 
 interface Events {
@@ -16,6 +17,8 @@ const EVENTS: Events = {
   UV_WRITABLE: 2,
   UV_DISCONNECT: 4,
 }
+
+type EventsNames = 'readable' | 'writable' | 'disconnect'
 
 const makeHandleEvent = (poller: Poller) => {
   return (error: Error, eventFlag: number) => {
@@ -68,10 +71,16 @@ export class Poller extends EventEmitter {
     this.emit('disconnect', err)
   }
 
+  onceAsync(event: EventsNames): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.once(event, (error: Error) => (error ? reject(error) : resolve()))
+    })
+  }
+
   /**
    * Wait for the next event to occur
    */
-  once(event: 'readable' | 'writable' | 'disconnect') {
+  once(event: EventsNames, cb: any) {
     switch (event) {
       case 'readable':
         this.poll(EVENTS.UV_READABLE)
@@ -83,7 +92,7 @@ export class Poller extends EventEmitter {
         this.poll(EVENTS.UV_DISCONNECT)
         break
     }
-    return EventEmitter.prototype.once.apply(this, arguments) as this
+    return super.once(event, cb)
   }
 
   /**
