@@ -6,9 +6,15 @@
     "composite": true
   },
   "references": [
-    { "path": "../binding-abstract" },
-    { "path": "../parser-readline" },
-    { "path": "../parser-delimiter" }
+    {
+      "path": "../binding-abstract"
+    },
+    {
+      "path": "../parser-readline"
+    },
+    {
+      "path": "../parser-delimiter"
+    }
   ],
   "include": [
     "lib"

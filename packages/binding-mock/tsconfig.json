@@ -6,7 +6,9 @@
     "composite": true
   },
   "references": [
-    { "path": "../binding-abstract" },
+    {
+      "path": "../binding-abstract"
+    },
   ],
   "include": [
     "lib"

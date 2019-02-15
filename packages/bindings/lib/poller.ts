@@ -1,10 +1,10 @@
 // tslint:disable:no-bitwise
 import debug from 'debug'
 import { EventEmitter } from 'events'
-import Bindings from 'bindings'
+import bindings from 'bindings'
 const logger = debug('serialport/bindings/poller')
 // tslint:disable-next-line:variable-name
-const FDPoller = Bindings('bindings.node').Poller
+const FDPoller = bindings('bindings.node').Poller
 
 interface Events {
   readonly UV_DISCONNECT: number

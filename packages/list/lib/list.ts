@@ -25,7 +25,7 @@ function jsonl(ports: ReadonlyArray<PortInfo>) {
 const formatters = {
   text(ports: ReadonlyArray<PortInfo>) {
     ports.forEach(port => {
-      console.log(`${port.comName}\t${port.pnpId || ''}\t${port.manufacturer || ''}`)
+      console.log(`${port.path}\t${port.pnpId || ''}\t${port.manufacturer || ''}`)
     })
   },
   json(ports: ReadonlyArray<PortInfo>) {

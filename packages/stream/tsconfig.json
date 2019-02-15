@@ -9,7 +9,11 @@
     "lib"
   ],
   "references": [
-    { "path": "../binding-mock" },
-    { "path": "../bindings-abstract"}
+    {
+      "path": "../binding-mock"
+    },
+    {
+      "path": "../binding-abstract"
+    }
   ]
 }
