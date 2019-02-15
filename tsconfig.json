@@ -20,13 +20,17 @@
     "esModuleInterop": true,
     "baseUrl": "./packages",
     "paths": {
-      "serialport": ["./serialport/lib"],
-      "@serialport/*": ["./*/lib"]
+      "serialport": [
+        "./serialport/lib"
+      ],
+      "@serialport/*": [
+        "./*/lib"
+      ]
     }
   },
   "exclude": [
     "node_modules",
     "*/**/*-test.ts",
-    "*/**/dist"
+    "*/**/dist/*.*"
   ]
 }
