@@ -256,6 +256,8 @@ int setup(int fd, OpenBaton *data) {
   options.c_cflag |= CREAD;   // enable receiver
   if (data->hupcl) {
     options.c_cflag |= HUPCL;  // drop DTR (i.e. hangup) on close
+  } else {
+    options.c_cflag &= ~HUPCL;
   }
 
   // Raw output
