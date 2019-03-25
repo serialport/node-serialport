@@ -35,6 +35,9 @@ class MockBinding extends AbstractBinding {
         echo: false,
         record: false,
         readyData: Buffer.from('READY'),
+        manufacturer: 'The J5 Robotics Company',
+        vendorId: undefined,
+        productId: undefined,
       },
       opt
     )
@@ -46,12 +49,12 @@ class MockBinding extends AbstractBinding {
       readyData: Buffer.from(opt.readyData),
       info: {
         comName: path,
-        manufacturer: 'The J5 Robotics Company',
+        manufacturer: opt.manufacturer,
         serialNumber,
         pnpId: undefined,
         locationId: undefined,
-        vendorId: undefined,
-        productId: undefined,
+        vendorId: opt.vendorId,
+        productId: opt.productId,
       },
     }
     debug(serialNumber, 'created port', JSON.stringify({ path, opt }))
