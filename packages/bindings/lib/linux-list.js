@@ -78,10 +78,10 @@ function listLinux() {
         }
         return
       }
-	  
+
       // gather symlinks
       if (lineType === 'S') {
-        port['symlinks'].push('/dev/' + data)
+        port['symlinks'].push(`/dev/${data}`)
       }
 
       // parse data about each port
