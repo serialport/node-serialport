@@ -38,7 +38,7 @@ NAN_METHOD(Open) {
     Nan::ThrowTypeError("First argument must be a string");
     return;
   }
-  v8::String::Utf8Value path(Nan::To<v8::String>(info[0]).ToLocalChecked());
+  Nan::Utf8String path(info[0]);
 
   // options
   if (!info[1]->IsObject()) {
