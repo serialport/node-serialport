@@ -2,7 +2,6 @@
 
 
 const SerialPort = require('../../');
-const Promise = require('bluebird');
 const fs = require('fs');
 const Path = require('path');
 
@@ -101,7 +100,7 @@ findArduino()
   })
   .then((port) => {
     console.log('delaying 3 seconds');
-    return Promise.delay(3000, port);
+    return new Promise(resolve => setTimeout(() => resolve(port), 3000));
   })
   .then(writeAllCommands) // broken?
   // .then(writeOneCommandAtATime)

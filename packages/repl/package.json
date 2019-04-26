@@ -6,7 +6,7 @@
     "serialport-repl": "./lib/repl.js"
   },
   "dependencies": {
-    "promirepl": "^1.0.1",
+    "promirepl": "^2.0.1",
     "serialport": "^7.1.4"
   },
   "engines": {

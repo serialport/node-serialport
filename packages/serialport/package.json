@@ -49,7 +49,7 @@
     "@serialport/parser-ready": "^2.0.2",
     "@serialport/parser-regex": "^2.0.2",
     "@serialport/stream": "^2.0.4",
-    "debug": "^4.1.0"
+    "debug": "^4.1.1"
   },
   "engines": {
     "node": ">=6.0.0"
