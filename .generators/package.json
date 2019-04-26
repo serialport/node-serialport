@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "lib/{{dashCase name}}.js",
   "dependencies": {
-    "debug": "^4.1.0"
+    "debug": "^4.1.1"
   },
   "engines": {
     "node": ">=6.0.0"

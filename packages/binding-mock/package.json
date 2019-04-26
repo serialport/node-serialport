@@ -7,7 +7,7 @@
   ],
   "dependencies": {
     "@serialport/binding-abstract": "^2.0.4",
-    "debug": "^4.1.0"
+    "debug": "^4.1.1"
   },
   "engines": {
     "node": ">=6.0.0"
