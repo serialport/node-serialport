@@ -28,7 +28,7 @@ The platforms, architectures that `serialport` supports are the following;
 - ¹ NodeJS has dropped prebuilt binaries for NodeJS 10 and above for 32bit linux. As a result it's too difficult to maintain support. However if you build nodejs and serialport yourself it will probably work.
 - ² Windows 7, 8, 10, and 10 IoT are supported, but our CI tests only Windows Server 2012 R2.
 - ³ OSX 10.4 Tiger and above are supported, but our CI tests only 10.9.5 Mavericks with Xcode 6.1.
-- ⁴ ARM, MIPSel and PPC64¹ platforms are not currently part of our testing or build matrix, but will probably work.
+- ⁴ ARM, MIPSel and PPC64¹ platforms are not currently part of our testing or build matrix, but will probably work. Since node 12 MIPSel⁴ and ARM v6⁴ support has been dropped by the official nodejs builds.
 
 ## Last known versions for unsupported versions of Node.js
 
