@@ -15,6 +15,7 @@
     "format": "eslint packages test --fix",
     "generate": "plop",
     "lint": "eslint packages test && lerna run --stream lint",
+    "outdated": "lerna exec --no-bail npm outdated && npm outdated",
     "postinstall": "lerna bootstrap --no-ci",
     "prebuild": "lerna run --stream prebuild",
     "publish": "lerna publish",
