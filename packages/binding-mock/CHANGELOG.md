@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.5](https://github.com/node-serialport/node-serialport/compare/@serialport/binding-mock@2.0.4...@serialport/binding-mock@2.0.5) (2019-04-27)
+
+**Note:** Version bump only for package @serialport/binding-mock
+
+
+
+
+
 ## [2.0.4](https://github.com/node-serialport/node-serialport/compare/@serialport/binding-mock@2.0.3...@serialport/binding-mock@2.0.4) (2019-01-08)
 
 **Note:** Version bump only for package @serialport/binding-mock

@@ -1,12 +1,12 @@
 {
   "name": "@serialport/binding-mock",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "main": "binding-mock.js",
   "keywords": [
     "serialport-binding"
   ],
   "dependencies": {
-    "@serialport/binding-abstract": "^2.0.4",
+    "@serialport/binding-abstract": "^2.0.5",
     "debug": "^4.1.1"
   },
   "engines": {

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.8](https://github.com/node-serialport/node-serialport/compare/@serialport/bindings@2.0.7...@serialport/bindings@2.0.8) (2019-04-27)
+
+
+### Bug Fixes
+
+* make node 12 work! ([00dc272](https://github.com/node-serialport/node-serialport/commit/00dc272))
+
+
+
+
+
 ## [2.0.7](https://github.com/node-serialport/node-serialport/compare/@serialport/bindings@2.0.6...@serialport/bindings@2.0.7) (2019-01-24)
 
 **Note:** Version bump only for package @serialport/bindings
