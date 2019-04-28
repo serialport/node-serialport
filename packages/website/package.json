@@ -12,7 +12,7 @@
     "crowdin-download": "crowdin --config ../../crowdin.yaml download -b master"
   },
   "devDependencies": {
-    "docusaurus": "^1.6.0"
+    "docusaurus": "^1.8.3"
   },
-  "version": null
+  "version": "0.0.0"
 }
