@@ -1,0 +1,4 @@
+.DS_Store
+*.test.js
+*.node-10-test.js
+CHANGELOG.md

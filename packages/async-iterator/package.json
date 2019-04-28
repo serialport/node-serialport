@@ -1,0 +1,22 @@
+{
+  "name": "@serialport/async-iterator",
+  "version": "8.0.5",
+  "main": "lib/async-iterator.js",
+  "dependencies": {
+    "debug": "^4.1.1"
+  },
+  "devDependencies": {
+    "@serialport/binding-mock": "^8.0.4"
+  },
+  "engines": {
+    "node": ">=10.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/node-serialport/node-serialport.git"
+  }
+}

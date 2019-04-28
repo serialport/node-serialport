@@ -3,6 +3,7 @@
     "default": {
       "packages": [
         "package.json",
+        "packages/async-iterator/package.json",
         "packages/binding-abstract/package.json",
         "packages/binding-mock/package.json",
         "packages/bindings/package.json",
