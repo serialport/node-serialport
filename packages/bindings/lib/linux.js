@@ -1,8 +1,8 @@
+const { promisify } = require('util')
 const binding = require('bindings')('bindings.node')
 const AbstractBinding = require('@serialport/binding-abstract')
 const linuxList = require('./linux-list')
 const Poller = require('./poller')
-const promisify = require('./util').promisify
 const unixRead = require('./unix-read')
 const unixWrite = require('./unix-write')
 
@@ -10,6 +10,16 @@ const defaultBindingOptions = Object.freeze({
   vmin: 1,
   vtime: 0,
 })
+
+const asyncOpen = promisify(binding.open)
+const asyncClose = promisify(binding.close)
+const asyncUpdate = promisify(binding.update)
+const asyncSet = promisify(binding.set)
+const asyncGet = promisify(binding.get)
+const asyncGetBaudRate = promisify(binding.getBaudRate)
+const asyncDrain = promisify(binding.drain)
+const asyncFlush = promisify(binding.flush)
+
 /**
  * The linux binding layer
  */
@@ -20,7 +30,7 @@ class LinuxBinding extends AbstractBinding {
 
   constructor(opt) {
     super(opt)
-    this.bindingOptions = Object.assign({}, defaultBindingOptions, opt.bindingOptions || {})
+    this.bindingOptions = { ...defaultBindingOptions, ...opt.bindingOptions }
     this.fd = null
     this.writeOperation = null
   }
@@ -29,73 +39,72 @@ class LinuxBinding extends AbstractBinding {
     return this.fd !== null
   }
 
-  open(path, options) {
-    return super
-      .open(path, options)
-      .then(() => {
-        this.openOptions = Object.assign({}, this.bindingOptions, options)
-        return promisify(binding.open)(path, this.openOptions)
-      })
-      .then(fd => {
-        this.fd = fd
-        this.poller = new Poller(fd)
-      })
+  async open(path, options) {
+    await super.open(path, options)
+    this.openOptions = { ...this.bindingOptions, ...options }
+    const fd = await asyncOpen(path, this.openOptions)
+    this.fd = fd
+    this.poller = new Poller(fd)
   }
 
-  close() {
-    return super.close().then(() => {
-      const fd = this.fd
-      this.poller.stop()
-      this.poller.destroy()
-      this.poller = null
-      this.openOptions = null
-      this.fd = null
-      return promisify(binding.close)(fd)
-    })
+  async close() {
+    await super.close()
+    const fd = this.fd
+    this.poller.stop()
+    this.poller.destroy()
+    this.poller = null
+    this.openOptions = null
+    this.fd = null
+    return asyncClose(fd)
   }
 
-  read(buffer, offset, length) {
-    return super.read(buffer, offset, length).then(() => unixRead.call(this, buffer, offset, length))
+  async read(buffer, offset, length) {
+    await super.read(buffer, offset, length)
+    return unixRead.call(this, buffer, offset, length)
   }
 
-  write(buffer) {
-    if (buffer.length > 0) {
-      this.writeOperation = super
-        .write(buffer)
-        .then(() => unixWrite.call(this, buffer))
-        .then(() => {
-          this.writeOperation = null
-        })
-      return this.writeOperation
+  async write(buffer) {
+    if (buffer.length === 0) {
+      return
     }
-    return Promise.resolve()
+    this.writeOperation = super
+      .write(buffer)
+      .then(() => unixWrite.call(this, buffer))
+      .then(() => {
+        this.writeOperation = null
+      })
+    return this.writeOperation
   }
 
-  update(options) {
-    return super.update(options).then(() => promisify(binding.update)(this.fd, options))
+  async update(options) {
+    await super.update(options)
+    return asyncUpdate(this.fd, options)
   }
 
-  set(options) {
-    return super.set(options).then(() => promisify(binding.set)(this.fd, options))
+  async set(options) {
+    await super.set(options)
+    return asyncSet(this.fd, options)
   }
 
-  get() {
-    return super.get().then(() => promisify(binding.get)(this.fd))
+  async get() {
+    await super.get()
+    return asyncGet(this.fd)
   }
 
-  getBaudRate() {
-    return super.getBaudRate().then(() => promisify(binding.getBaudRate)(this.fd))
+  async getBaudRate() {
+    await super.get()
+    return asyncGetBaudRate(this.fd)
   }
 
-  drain() {
-    return super
-      .drain()
-      .then(() => Promise.resolve(this.writeOperation))
-      .then(() => promisify(binding.drain)(this.fd))
+  async drain() {
+    await super.drain()
+    await this.writeOperation
+    return asyncDrain(this.fd)
   }
 
-  flush() {
-    return super.flush().then(() => promisify(binding.flush)(this.fd))
+  async flush() {
+    await super.flush()
+    return asyncFlush(this.fd)
   }
 }
 

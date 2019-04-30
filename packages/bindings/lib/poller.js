@@ -45,7 +45,7 @@ class Poller extends EventEmitter {
    * @param {string} event ('readable'|'writable'|'disconnect')
    * @returns {Poller} returns itself
    */
-  once(event) {
+  once(event, callback) {
     switch (event) {
       case 'readable':
         this.poll(EVENTS.UV_READABLE)
@@ -57,7 +57,7 @@ class Poller extends EventEmitter {
         this.poll(EVENTS.UV_DISCONNECT)
         break
     }
-    return EventEmitter.prototype.once.apply(this, arguments)
+    return super.once(event, callback)
   }
 
   /**

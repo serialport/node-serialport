@@ -1,4 +1,4 @@
-const Transform = require('stream').Transform
+const { Transform } = require('stream')
 
 /**
  * A transform stream that uses a regular expression to split the incoming text upon.
@@ -14,12 +14,10 @@ parser.on('data', console.log)
  */
 class RegexParser extends Transform {
   constructor(options) {
-    const opts = Object.assign(
-      {
-        encoding: 'utf8',
-      },
-      options
-    )
+    const opts = {
+      encoding: 'utf8',
+      ...options,
+    }
 
     if (opts.regex === undefined) {
       throw new TypeError('"options.regex" must be a regular expression pattern or object')

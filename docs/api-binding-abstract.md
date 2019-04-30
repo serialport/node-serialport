@@ -85,7 +85,6 @@ The in progress writes must error when the port is closed with an error object t
   /**
    * Drain waits until all output data is transmitted to the serial port. An in progress write should be completed before this returns.
    * @returns {Promise} Resolves once the drain operation finishes.
-   * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
    */
   drain(): Promise<void>
 }

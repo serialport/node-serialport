@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "description": "Node.js packages to access serial ports, process data from them and speak many protocols",
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=8.6.0"
   },
   "license": "MIT",
   "scripts": {

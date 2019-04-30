@@ -63,10 +63,10 @@ function writeOneCommandAtATime(port) {
   });
 }
 
-function writeAndDrain(port) {
-  const command = commands.pop();
+async function writeAndDrain(port) {
+  const command = commands.pop()
   if (!command) {
-    return Promise.resolve(port);
+    port
   }
   const commandNumber = commandCount - commands.length;
   return new Promise((resolve, reject) => {

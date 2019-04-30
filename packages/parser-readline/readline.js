@@ -13,13 +13,11 @@ parser.on('data', console.log)
 */
 class ReadLineParser extends DelimiterParser {
   constructor(options) {
-    const opts = Object.assign(
-      {
-        delimiter: Buffer.from('\n', 'utf8'),
-        encoding: 'utf8',
-      },
-      options
-    )
+    const opts = {
+      delimiter: Buffer.from('\n', 'utf8'),
+      encoding: 'utf8',
+      ...options,
+    }
 
     if (typeof opts.delimiter === 'string') {
       opts.delimiter = Buffer.from(opts.delimiter, opts.encoding)

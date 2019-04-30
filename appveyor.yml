@@ -6,10 +6,8 @@ environment:
     secure: iDcAJCYgJK4tffyzEHbMVR8DatJcIN8eY0h29p9JQkl43TcEcm6Z6JLOBpGDk1MJ
 
   matrix:
-  - nodejs_version: "6"
   - nodejs_version: "8"
     binary_builder: "true"
-  - nodejs_version: "9"
   - nodejs_version: "10"
   - nodejs_version: "12"
 

@@ -30,17 +30,15 @@ class MockBinding extends AbstractBinding {
   // Create a mock port
   static createPort(path, opt) {
     serialNumber++
-    opt = Object.assign(
-      {
-        echo: false,
-        record: false,
-        readyData: Buffer.from('READY'),
-        manufacturer: 'The J5 Robotics Company',
-        vendorId: undefined,
-        productId: undefined,
-      },
-      opt
-    )
+    opt = {
+      echo: false,
+      record: false,
+      readyData: Buffer.from('READY'),
+      manufacturer: 'The J5 Robotics Company',
+      vendorId: undefined,
+      productId: undefined,
+      ...opt,
+    }
 
     ports[path] = {
       data: Buffer.alloc(0),
@@ -60,11 +58,8 @@ class MockBinding extends AbstractBinding {
     debug(serialNumber, 'created port', JSON.stringify({ path, opt }))
   }
 
-  static list() {
-    const info = Object.keys(ports).map(path => {
-      return ports[path].info
-    })
-    return Promise.resolve(info)
+  static async list() {
+    return Object.values(ports).map(port => port.info)
   }
 
   // Emit data on a mock port
@@ -83,89 +78,82 @@ class MockBinding extends AbstractBinding {
     }
   }
 
-  open(path, opt) {
+  async open(path, opt) {
     debug(null, `opening path ${path}`)
     const port = (this.port = ports[path])
-    return super
-      .open(path, opt)
-      .then(resolveNextTick)
-      .then(() => {
-        if (!port) {
-          return Promise.reject(new Error(`Port does not exist - please call MockBinding.createPort('${path}') first`))
-        }
-        this.serialNumber = port.info.serialNumber
+    await super.open(path, opt)
+    await resolveNextTick()
+    if (!port) {
+      throw new Error(`Port does not exist - please call MockBinding.createPort('${path}') first`)
+    }
+    this.serialNumber = port.info.serialNumber
 
-        if (port.openOpt && port.openOpt.lock) {
-          return Promise.reject(new Error('Port is locked cannot open'))
-        }
+    if (port.openOpt && port.openOpt.lock) {
+      throw new Error('Port is locked cannot open')
+    }
 
+    if (this.isOpen) {
+      throw new Error('Open: binding is already open')
+    }
+
+    port.openOpt = { ...opt }
+    this.isOpen = true
+    debug(this.serialNumber, 'port is open')
+    if (port.echo) {
+      process.nextTick(() => {
         if (this.isOpen) {
-          return Promise.reject(new Error('Open: binding is already open'))
-        }
-
-        port.openOpt = Object.assign({}, opt)
-        this.isOpen = true
-        debug(this.serialNumber, 'port is open')
-        if (port.echo) {
-          process.nextTick(() => {
-            if (this.isOpen) {
-              debug(this.serialNumber, 'emitting ready data')
-              this.emitData(port.readyData)
-            }
-          })
+          debug(this.serialNumber, 'emitting ready data')
+          this.emitData(port.readyData)
         }
       })
+    }
   }
 
-  close() {
+  async close() {
     const port = this.port
     debug(this.serialNumber, 'closing port')
     if (!port) {
-      return Promise.reject(new Error('already closed'))
+      throw new Error('already closed')
     }
 
-    return super.close().then(() => {
-      delete port.openOpt
-      // reset data on close
-      port.data = Buffer.alloc(0)
-      debug(this.serialNumber, 'port is closed')
-      delete this.port
-      delete this.serialNumber
-      this.isOpen = false
-      if (this.pendingRead) {
-        this.pendingRead(new Error('port is closed'))
-      }
-    })
+    await super.close()
+    delete port.openOpt
+    // reset data on close
+    port.data = Buffer.alloc(0)
+    debug(this.serialNumber, 'port is closed')
+    delete this.port
+    delete this.serialNumber
+    this.isOpen = false
+    if (this.pendingRead) {
+      this.pendingRead(new Error('port is closed'))
+    }
   }
 
-  read(buffer, offset, length) {
+  async read(buffer, offset, length) {
     debug(this.serialNumber, 'reading', length, 'bytes')
-    return super
-      .read(buffer, offset, length)
-      .then(resolveNextTick)
-      .then(() => {
-        if (!this.isOpen) {
-          throw new Error('Read canceled')
+    await super.read(buffer, offset, length)
+    await resolveNextTick()
+    if (!this.isOpen) {
+      throw new Error('Read canceled')
+    }
+    if (this.port.data.length <= 0) {
+      return new Promise((resolve, reject) => {
+        this.pendingRead = err => {
+          if (err) {
+            return reject(err)
+          }
+          this.read(buffer, offset, length).then(resolve, reject)
         }
-        if (this.port.data.length <= 0) {
-          return new Promise((resolve, reject) => {
-            this.pendingRead = err => {
-              if (err) {
-                return reject(err)
-              }
-              this.read(buffer, offset, length).then(resolve, reject)
-            }
-          })
-        }
-        const data = this.port.data.slice(0, length)
-        const readLength = data.copy(buffer, offset)
-        this.port.data = this.port.data.slice(length)
-        debug(this.serialNumber, 'read', readLength, 'bytes')
-        return readLength
       })
+    }
+    const data = this.port.data.slice(0, length)
+    const readLength = data.copy(buffer, offset)
+    this.port.data = this.port.data.slice(length)
+    debug(this.serialNumber, 'read', readLength, 'bytes')
+    return readLength
   }
 
-  write(buffer) {
+  async write(buffer) {
     debug(this.serialNumber, 'writing')
     if (this.writeOperation) {
       throw new Error('Overlapping writes are not supported and should be queued by the serialport object')
@@ -173,7 +161,7 @@ class MockBinding extends AbstractBinding {
     this.writeOperation = super
       .write(buffer)
       .then(resolveNextTick)
-      .then(() => {
+      .then(async () => {
         if (!this.isOpen) {
           throw new Error('Write canceled')
         }
@@ -194,57 +182,45 @@ class MockBinding extends AbstractBinding {
     return this.writeOperation
   }
 
-  update(opt) {
-    return super
-      .update(opt)
-      .then(resolveNextTick)
-      .then(() => {
-        this.port.openOpt.baudRate = opt.baudRate
-      })
+  async update(opt) {
+    await super.update(opt)
+    await resolveNextTick()
+    this.port.openOpt.baudRate = opt.baudRate
   }
 
-  set(opt) {
-    return super.set(opt).then(resolveNextTick)
+  async set(opt) {
+    await super.set(opt)
+    await resolveNextTick()
   }
 
-  get() {
-    return super
-      .get()
-      .then(resolveNextTick)
-      .then(() => {
-        return {
-          cts: true,
-          dsr: false,
-          dcd: false,
-        }
-      })
+  async get() {
+    await super.get()
+    await resolveNextTick()
+    return {
+      cts: true,
+      dsr: false,
+      dcd: false,
+    }
   }
 
-  getBaudRate() {
-    return super
-      .getBaudRate()
-      .then(resolveNextTick)
-      .then(() => {
-        return {
-          baudRate: this.port.openOpt.baudRate,
-        }
-      })
+  async getBaudRate() {
+    await super.getBaudRate()
+    await resolveNextTick()
+    return {
+      baudRate: this.port.openOpt.baudRate,
+    }
   }
 
-  flush() {
-    return super
-      .flush()
-      .then(resolveNextTick)
-      .then(() => {
-        this.port.data = Buffer.alloc(0)
-      })
+  async flush() {
+    await super.flush()
+    await resolveNextTick()
+    this.port.data = Buffer.alloc(0)
   }
 
-  drain() {
-    return super
-      .drain()
-      .then(() => this.writeOperation)
-      .then(() => resolveNextTick())
+  async drain() {
+    await super.drain()
+    await this.writeOperation
+    await resolveNextTick()
   }
 }
 

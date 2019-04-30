@@ -1,4 +1,4 @@
-const Transform = require('stream').Transform
+const { Transform } = require('stream')
 
 const END = 0xc0
 const ESC = 0xdb

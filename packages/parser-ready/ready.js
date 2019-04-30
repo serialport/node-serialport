@@ -1,4 +1,4 @@
-const Transform = require('stream').Transform
+const { Transform } = require('stream')
 
 /**
  * A transform stream that waits for a sequence of "ready" bytes before emitting a ready event and emitting data events

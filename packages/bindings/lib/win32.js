@@ -1,30 +1,43 @@
 const binding = require('bindings')('bindings.node')
 const AbstractBinding = require('@serialport/binding-abstract')
-const promisify = require('./util').promisify
+const { promisify } = require('util')
 const serialNumParser = require('./win32-sn-parser')
+
+const asyncList = promisify(binding.list)
+const asyncOpen = promisify(binding.open)
+const asyncRead = promisify(binding.read)
+const asyncWrite = promisify(binding.write)
+const asyncUpdate = promisify(binding.update)
+const asyncSet = promisify(binding.set)
+const asyncGet = promisify(binding.get)
+const asyncGetBaudRate = promisify(binding.getBaudRate)
+const asyncDrain = promisify(binding.drain)
+const asyncFlush = promisify(binding.flush)
 
 /**
  * The Windows binding layer
  */
 class WindowsBinding extends AbstractBinding {
-  static list() {
-    return promisify(binding.list)().then(ports => {
-      // Grab the serial number from the pnp id
-      ports.forEach(port => {
-        if (port.pnpId && !port.serialNumber) {
-          const serialNumber = serialNumParser(port.pnpId)
-          if (serialNumber) {
-            port.serialNumber = serialNumber
+  static async list() {
+    const ports = await asyncList()
+    // Grab the serial number from the pnp id
+    return ports.map(port => {
+      if (port.pnpId && !port.serialNumber) {
+        const serialNumber = serialNumParser(port.pnpId)
+        if (serialNumber) {
+          return {
+            ...port,
+            serialNumber,
           }
         }
-      })
-      return ports
+      }
+      return port
     })
   }
 
   constructor(opt) {
     super(opt)
-    this.bindingOptions = Object.assign({}, opt.bindingOptions || {})
+    this.bindingOptions = { ...opt.bindingOptions }
     this.fd = null
     this.writeOperation = null
   }
@@ -33,76 +46,72 @@ class WindowsBinding extends AbstractBinding {
     return this.fd !== null
   }
 
-  open(path, options) {
-    return super
-      .open(path, options)
-      .then(() => {
-        this.openOptions = Object.assign({}, this.bindingOptions, options)
-        return promisify(binding.open)(path, this.openOptions)
-      })
-      .then(fd => {
-        this.fd = fd
-      })
+  async open(path, options) {
+    await super.open(path, options)
+    this.openOptions = { ...this.bindingOptions, ...options }
+    const fd = await asyncOpen(path, this.openOptions)
+    this.fd = fd
   }
 
-  close() {
-    return super.close().then(() => {
-      const fd = this.fd
-      this.fd = null
-      return promisify(binding.close)(fd)
+  async close() {
+    await super.close()
+    const fd = this.fd
+    this.fd = null
+    return asyncClose(fd)
+  }
+
+  async read(buffer, offset, length) {
+    await super.read(buffer, offset, length)
+    return asyncRead(this.fd, buffer, offset, length).catch(err => {
+      if (!this.isOpen) {
+        err.canceled = true
+      }
+      throw err
     })
   }
 
-  read(buffer, offset, length) {
-    return super
-      .read(buffer, offset, length)
-      .then(() => promisify(binding.read)(this.fd, buffer, offset, length))
-      .catch(err => {
-        if (!this.isOpen) {
-          err.canceled = true
-        }
-        throw err
-      })
-  }
-
-  write(buffer) {
-    if (buffer.length > 0) {
-      this.writeOperation = super
-        .write(buffer)
-        .then(() => promisify(binding.write)(this.fd, buffer))
-        .then(() => {
-          this.writeOperation = null
-        })
-      return this.writeOperation
+  async write(buffer) {
+    if (buffer.length === 0) {
+      return
     }
-    return Promise.resolve()
+    this.writeOperation = super
+      .write(buffer)
+      .then(() => asyncWrite(this.fd, buffer))
+      .then(() => {
+        this.writeOperation = null
+      })
+    return this.writeOperation
   }
 
-  update(options) {
-    return super.update(options).then(() => promisify(binding.update)(this.fd, options))
+  async update(options) {
+    await super.update(options)
+    return asyncUpdate(this.fd, options)
   }
 
-  set(options) {
-    return super.set(options).then(() => promisify(binding.set)(this.fd, options))
+  async set(options) {
+    await super.set(options)
+    return asyncSet(this.fd, options)
   }
 
-  get() {
-    return super.get().then(() => promisify(binding.get)(this.fd))
+  async get() {
+    await super.get()
+    return asyncGet(this.fd)
   }
 
-  getBaudRate() {
-    return super.get().then(() => promisify(binding.getBaudRate)(this.fd))
+  async getBaudRate() {
+    await super.get()
+    return asyncGetBaudRate(this.fd)
   }
 
-  drain() {
-    return super
-      .drain()
-      .then(() => Promise.resolve(this.writeOperation))
-      .then(() => promisify(binding.drain)(this.fd))
+  async drain() {
+    await super.drain()
+    await this.writeOperation
+    return asyncDrain(this.fd)
   }
 
-  flush() {
-    return super.flush().then(() => promisify(binding.flush)(this.fd))
+  async flush() {
+    await super.flush()
+    return asyncFlush(this.fd)
   }
 }
 

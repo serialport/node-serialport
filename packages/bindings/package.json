@@ -17,7 +17,7 @@
     "@serialport/binding-mock": "^2.0.5"
   },
   "engines": {
-    "node": ">=6.0.0"
+    "node": ">=8.6.0"
   },
   "scripts": {
     "install": "prebuild-install --tag-prefix @serialport/bindings@ || node-gyp rebuild",

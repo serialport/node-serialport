@@ -1,4 +1,4 @@
-const Transform = require('stream').Transform
+const { Transform } = require('stream')
 
 /**
  * Emit data every number of bytes

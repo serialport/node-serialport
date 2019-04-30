@@ -1,4 +1,4 @@
-const Transform = require('stream').Transform
+const { Transform } = require('stream')
 const debug = require('debug')('serialport/{{dashCase name}}')
 
 /**

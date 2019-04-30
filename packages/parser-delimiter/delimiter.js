@@ -1,4 +1,4 @@
-const Transform = require('stream').Transform
+const { Transform } = require('stream')
 
 /**
  * A transform stream that emits data each time a byte sequence is received.
