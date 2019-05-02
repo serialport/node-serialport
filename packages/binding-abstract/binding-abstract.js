@@ -25,9 +25,8 @@ class AbstractBinding {
    * Retrieves a list of available serial ports with metadata. The `comName` must be guaranteed, and all other fields should be undefined if unavailable. The `comName` is either the path or an identifier (eg `COM1`) used to open the serialport.
    * @returns {Promise} resolves to an array of port [info objects](#module_serialport--SerialPort.list).
    */
-  static list() {
+  static async list() {
     debug('list')
-    return Promise.resolve()
   }
 
   constructor(opt) {
@@ -41,9 +40,9 @@ class AbstractBinding {
    * @param {string} path the path or com port to open
    * @param {openOptions} options openOptions for the serialport
    * @returns {Promise} Resolves after the port is opened and configured.
-   * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
+   * @rejects {TypeError} When given invalid arguments, a `TypeError` is rejected.
    */
-  open(path, options) {
+  async open(path, options) {
     if (!path) {
       throw new TypeError('"path" is not a valid port')
     }
@@ -54,22 +53,20 @@ class AbstractBinding {
     debug('open')
 
     if (this.isOpen) {
-      return Promise.reject(new Error('Already open'))
+      throw new Error('Already open')
     }
-    return Promise.resolve()
   }
 
   /**
    * Closes an open connection
    * @returns {Promise} Resolves once the connection is closed.
-   * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
+   * @rejects {TypeError} When given invalid arguments, a `TypeError` is rejected.
    */
-  close() {
+  async close() {
     debug('close')
     if (!this.isOpen) {
-      return Promise.reject(new Error('Port is not open'))
+      throw new Error('Port is not open')
     }
-    return Promise.resolve()
   }
 
   /**
@@ -81,9 +78,9 @@ The in progress reads must error when the port is closed with an error object th
    * @param {integer} offset The offset in the buffer to start writing at.
    * @param {integer} length Specifies the maximum number of bytes to read.
    * @returns {Promise} Resolves with the number of bytes read after a read operation.
-   * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
+   * @rejects {TypeError} When given invalid arguments, a `TypeError` is rejected.
    */
-  read(buffer, offset, length) {
+  async read(buffer, offset, length) {
     if (!Buffer.isBuffer(buffer)) {
       throw new TypeError('"buffer" is not a Buffer')
     }
@@ -98,13 +95,12 @@ The in progress reads must error when the port is closed with an error object th
 
     debug('read')
     if (buffer.length < offset + length) {
-      return Promise.reject(new Error('buffer is too small'))
+      throw new Error('buffer is too small')
     }
 
     if (!this.isOpen) {
-      return Promise.reject(new Error('Port is not open'))
+      throw new Error('Port is not open')
     }
-    return Promise.resolve()
   }
 
   /**
@@ -114,18 +110,17 @@ The in progress writes must error when the port is closed with an error object t
 
    * @param {buffer} buffer - Accepts a [`Buffer`](http://nodejs.org/api/buffer.html) object.
    * @returns {Promise} Resolves after the data is passed to the operating system for writing.
-   * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
+   * @rejects {TypeError} When given invalid arguments, a `TypeError` is rejected.
    */
-  write(buffer) {
+  async write(buffer) {
     if (!Buffer.isBuffer(buffer)) {
       throw new TypeError('"buffer" is not a Buffer')
     }
 
     debug('write', buffer.length, 'bytes')
     if (!this.isOpen) {
-      return Promise.reject(new Error('Port is not open'))
+      throw new Error('Port is not open')
     }
-    return Promise.resolve()
   }
 
   /**
@@ -133,9 +128,9 @@ The in progress writes must error when the port is closed with an error object t
    * @param {object=} options Only supports `baudRate`.
    * @param {number=} [options.baudRate] If provided a baud rate that the bindings do not support, it should reject.
    * @returns {Promise} Resolves once the port's baud rate changes.
-   * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
+   * @rejects {TypeError} When given invalid arguments, a `TypeError` is rejected.
    */
-  update(options) {
+  async update(options) {
     if (typeof options !== 'object') {
       throw TypeError('"options" is not an object')
     }
@@ -146,9 +141,8 @@ The in progress writes must error when the port is closed with an error object t
 
     debug('update')
     if (!this.isOpen) {
-      return Promise.reject(new Error('Port is not open'))
+      throw new Error('Port is not open')
     }
-    return Promise.resolve()
   }
 
   /**
@@ -160,70 +154,65 @@ The in progress writes must error when the port is closed with an error object t
    * @param {Boolean} [options.dtr=true] flag for dtr
    * @param {Boolean} [options.rts=true] flag for rts
    * @returns {Promise} Resolves once the port's flags are set.
-   * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
+   * @rejects {TypeError} When given invalid arguments, a `TypeError` is rejected.
    */
-  set(options) {
+  async set(options) {
     if (typeof options !== 'object') {
       throw new TypeError('"options" is not an object')
     }
     debug('set')
     if (!this.isOpen) {
-      return Promise.reject(new Error('Port is not open'))
+      throw new Error('Port is not open')
     }
-    return Promise.resolve()
   }
 
   /**
    * Get the control flags (CTS, DSR, DCD) on the open port.
    * @returns {Promise} Resolves with the retrieved flags.
-   * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
+   * @rejects {TypeError} When given invalid arguments, a `TypeError` is rejected.
    */
-  get() {
+  async get() {
     debug('get')
     if (!this.isOpen) {
-      return Promise.reject(new Error('Port is not open'))
+      throw new Error('Port is not open')
     }
-    return Promise.resolve()
   }
 
   /**
    * Get the OS reported baud rate for the open port.
    * Used mostly for debugging custom baud rates.
    * @returns {Promise} Resolves with the current baud rate.
-   * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
+   * @rejects {TypeError} When given invalid arguments, a `TypeError` is rejected.
    */
-  getBaudRate() {
+  async getBaudRate() {
     debug('getbaudRate')
     if (!this.isOpen) {
-      return Promise.reject(new Error('Port is not open'))
+      throw new Error('Port is not open')
     }
-    return Promise.resolve()
   }
 
   /**
    * Flush (discard) data received but not read, and written but not transmitted.
    * @returns {Promise} Resolves once the flush operation finishes.
-   * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
+   * @rejects {TypeError} When given invalid arguments, a `TypeError` is rejected.
    */
-  flush() {
+  async flush() {
     debug('flush')
     if (!this.isOpen) {
-      return Promise.reject(new Error('Port is not open'))
+      throw new Error('Port is not open')
     }
-    return Promise.resolve()
   }
 
   /**
    * Drain waits until all output data is transmitted to the serial port. An in progress write should be completed before this returns.
    * @returns {Promise} Resolves once the drain operation finishes.
-   * @throws {TypeError} When given invalid arguments, a `TypeError` is thrown.
+   * @rejects {TypeError} When given invalid arguments, a `TypeError` is rejected.
    */
-  drain() {
+  async drain() {
     debug('drain')
     if (!this.isOpen) {
-      return Promise.reject(new Error('Port is not open'))
+      throw new Error('Port is not open')
     }
-    return Promise.resolve()
   }
 }
 

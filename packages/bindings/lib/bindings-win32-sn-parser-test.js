@@ -28,10 +28,10 @@ const devices = {
 }
 
 describe('serialNumParser', () => {
-  Object.keys(devices).forEach(device => {
+  Object.entries(devices).forEach(([device, info]) => {
     it(`parses pnp id for ${device}`, () => {
-      const pnpId = devices[device].pnpId
-      const serialNumber = devices[device].serialNumber
+      const pnpId = info.pnpId
+      const serialNumber = info.serialNumber
       assert.equal(serialNumParser(pnpId), serialNumber)
     })
   })

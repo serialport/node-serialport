@@ -179,9 +179,7 @@ function testBinding(bindingName, Binding, testPort) {
         }
 
         it('cannot open if already open', () => {
-          const options = Object.assign({}, defaultOpenOptions, {
-            lock: false,
-          })
+          const options = { ...defaultOpenOptions, lock: false }
           return binding.open(testPort, options).then(() => {
             return binding.open(testPort, options).catch(err => {
               assert.instanceOf(err, Error)
@@ -200,9 +198,7 @@ function testBinding(bindingName, Binding, testPort) {
         describe('arbitrary baud rates', () => {
           ;[25000, 1000000, 250000].forEach(testBaud => {
             describe(`${testBaud} baud`, () => {
-              const customRates = Object.assign({}, defaultOpenOptions, {
-                baudRate: testBaud,
-              })
+              const customRates = { ...defaultOpenOptions, baudRate: testBaud }
               testFeature(`baudrate.${testBaud}`, `opens at ${testBaud} baud`, () => {
                 return binding.open(testPort, customRates).then(() => {
                   assert.equal(binding.isOpen, true)
@@ -242,9 +238,7 @@ function testBinding(bindingName, Binding, testPort) {
           })
 
           testFeature('open.unlock', 'can unlock the port', () => {
-            const noLock = Object.assign({}, defaultOpenOptions, {
-              lock: false,
-            })
+            const noLock = { ...defaultOpenOptions, lock: false }
             const binding2 = new Binding({ disconnect })
 
             return binding

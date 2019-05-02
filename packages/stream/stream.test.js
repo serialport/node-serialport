@@ -259,10 +259,9 @@ describe('SerialPort', () => {
         const port = new SerialPort('/dev/exists', {}, () => {
           port.close()
         })
-        sandbox.stub(SerialPort.Binding.prototype, 'close').callsFake(() => {
+        sandbox.stub(SerialPort.Binding.prototype, 'close').callsFake(async () => {
           assert.isFalse(port.isOpen)
           done()
-          return Promise.resolve()
         })
       })
 

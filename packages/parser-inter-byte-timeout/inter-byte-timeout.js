@@ -1,4 +1,4 @@
-const Transform = require('stream').Transform
+const { Transform } = require('stream')
 
 /**
  * Emits data if there is a pause between packets for the specified amount of time.
@@ -18,7 +18,7 @@ parser.on('data', console.log) // will emit data if there is a pause between pac
 class InterByteTimeoutParser extends Transform {
   constructor(options) {
     super()
-    options = Object.assign({ maxBufferSize: 65536 }, options)
+    options = { maxBufferSize: 65536, ...options }
     if (!options.interval) {
       throw new TypeError('"interval" is required')
     }
