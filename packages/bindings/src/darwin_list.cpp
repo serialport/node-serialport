@@ -291,7 +291,7 @@ void EIO_List(uv_work_t* req) {
       stSerialDevice device = (* next).value;
 
       ListResultItem* resultItem = new ListResultItem();
-      resultItem->comName = device.port;
+      resultItem->path = device.port;
 
       if (*device.locationId) {
         resultItem->locationId = device.locationId;
@@ -336,7 +336,7 @@ void EIO_AfterList(uv_work_t* req) {
     for (std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it, i++) {
       v8::Local<v8::Object> item = Nan::New<v8::Object>();
 
-      setIfNotEmpty(item, "comName", (*it)->comName.c_str());
+      setIfNotEmpty(item, "path", (*it)->path.c_str());
       setIfNotEmpty(item, "manufacturer", (*it)->manufacturer.c_str());
       setIfNotEmpty(item, "serialNumber", (*it)->serialNumber.c_str());
       setIfNotEmpty(item, "pnpId", (*it)->pnpId.c_str());

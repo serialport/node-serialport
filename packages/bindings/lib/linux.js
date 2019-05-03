@@ -5,6 +5,7 @@ const linuxList = require('./linux-list')
 const Poller = require('./poller')
 const unixRead = require('./unix-read')
 const unixWrite = require('./unix-write')
+const { wrapWithHiddenComName } = require('./legacy')
 
 const defaultBindingOptions = Object.freeze({
   vmin: 1,
@@ -25,7 +26,7 @@ const asyncFlush = promisify(binding.flush)
  */
 class LinuxBinding extends AbstractBinding {
   static list() {
-    return linuxList()
+    return wrapWithHiddenComName(linuxList())
   }
 
   constructor(opt) {

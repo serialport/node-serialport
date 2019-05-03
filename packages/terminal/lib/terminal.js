@@ -32,7 +32,7 @@ function listPorts() {
   SerialPort.list().then(
     ports => {
       ports.forEach(port => {
-        console.log(`${port.comName}\t${port.pnpId || ''}\t${port.manufacturer || ''}`)
+        console.log(`${port.path}\t${port.pnpId || ''}\t${port.manufacturer || ''}`)
       })
     },
     err => {
@@ -52,8 +52,8 @@ function askForPort() {
       name: 'serial-port-selection',
       message: 'Select a serial port to open',
       choices: ports.map((port, i) => ({
-        value: `[${i + 1}]\t${port.comName}\t${port.pnpId || ''}\t${port.manufacturer || ''}`,
-        name: port.comName,
+        value: `[${i + 1}]\t${port.path}\t${port.pnpId || ''}\t${port.manufacturer || ''}`,
+        name: port.path,
       })),
       validate: Boolean, // ensure we picked something
     })

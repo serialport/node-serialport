@@ -30,7 +30,7 @@ const defaultSetFlags = Object.freeze({
   rts: true,
 })
 
-const listFields = ['comName', 'manufacturer', 'serialNumber', 'pnpId', 'locationId', 'vendorId', 'productId']
+const listFields = ['path', 'manufacturer', 'serialNumber', 'pnpId', 'locationId', 'vendorId', 'productId']
 
 const bindingsToTest = ['mock', platform]
 
@@ -88,6 +88,7 @@ function testBinding(bindingName, Binding, testPort) {
                 assert.notEqual(port[key], '', 'empty values should be undefined')
                 assert.isNotNull(port[key], 'empty values should be undefined')
               })
+              assert.equal(port.comName, port.path)
             })
           })
         })

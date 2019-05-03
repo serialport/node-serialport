@@ -22,7 +22,7 @@ const debug = require('debug')('serialport/binding-abstract')
  */
 class AbstractBinding {
   /**
-   * Retrieves a list of available serial ports with metadata. The `comName` must be guaranteed, and all other fields should be undefined if unavailable. The `comName` is either the path or an identifier (eg `COM1`) used to open the serialport.
+   * Retrieves a list of available serial ports with metadata. The `path` must be guaranteed, and all other fields should be undefined if unavailable. The `path` is either the path or an identifier (eg `COM1`) used to open the serialport.
    * @returns {Promise} resolves to an array of port [info objects](#module_serialport--SerialPort.list).
    */
   static async list() {
