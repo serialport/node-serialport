@@ -13,6 +13,7 @@ const asyncGet = promisify(binding.get)
 const asyncGetBaudRate = promisify(binding.getBaudRate)
 const asyncDrain = promisify(binding.drain)
 const asyncFlush = promisify(binding.flush)
+const { wrapWithHiddenComName } = require('./legacy')
 
 /**
  * The Windows binding layer
@@ -21,18 +22,20 @@ class WindowsBinding extends AbstractBinding {
   static async list() {
     const ports = await asyncList()
     // Grab the serial number from the pnp id
-    return ports.map(port => {
-      if (port.pnpId && !port.serialNumber) {
-        const serialNumber = serialNumParser(port.pnpId)
-        if (serialNumber) {
-          return {
-            ...port,
-            serialNumber,
+    return wrapWithHiddenComName(
+      ports.map(port => {
+        if (port.pnpId && !port.serialNumber) {
+          const serialNumber = serialNumParser(port.pnpId)
+          if (serialNumber) {
+            return {
+              ...port,
+              serialNumber,
+            }
           }
         }
-      }
-      return port
-    })
+        return port
+      })
+    )
   }
 
   constructor(opt) {

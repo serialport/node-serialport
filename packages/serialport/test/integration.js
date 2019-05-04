@@ -56,7 +56,7 @@ function integrationTest(platform, testPort, Binding) {
             assert.isNull(err)
             let foundPort = false
             ports.forEach(port => {
-              if (normalizePath(port.comName) === normalizePath(testPort)) {
+              if (normalizePath(port.path) === normalizePath(testPort)) {
                 foundPort = true
               }
             })

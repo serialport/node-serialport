@@ -8,7 +8,7 @@ function checkPathOfDevice(path) {
 
 function propName(name) {
   return {
-    DEVNAME: 'comName',
+    DEVNAME: 'path',
     ID_VENDOR_ENC: 'manufacturer',
     ID_SERIAL_SHORT: 'serialNumber',
     ID_VENDOR_ID: 'vendorId',

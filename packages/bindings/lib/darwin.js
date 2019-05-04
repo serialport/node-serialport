@@ -4,6 +4,7 @@ const AbstractBinding = require('@serialport/binding-abstract')
 const Poller = require('./poller')
 const unixRead = require('./unix-read')
 const unixWrite = require('./unix-write')
+const { wrapWithHiddenComName } = require('./legacy')
 
 const defaultBindingOptions = Object.freeze({
   vmin: 1,
@@ -25,7 +26,7 @@ const asyncFlush = promisify(binding.flush)
  */
 class DarwinBinding extends AbstractBinding {
   static list() {
-    return asyncList()
+    return wrapWithHiddenComName(asyncList())
   }
 
   constructor(opt) {

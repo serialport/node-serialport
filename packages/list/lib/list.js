@@ -19,7 +19,7 @@ function jsonl(ports) {
 const formatters = {
   text(ports) {
     ports.forEach(port => {
-      console.log(`${port.comName}\t${port.pnpId || ''}\t${port.manufacturer || ''}`)
+      console.log(`${port.path}\t${port.pnpId || ''}\t${port.manufacturer || ''}`)
     })
   },
   json(ports) {

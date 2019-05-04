@@ -595,7 +595,7 @@ SerialPort.prototype.drain = function(callback) {
  */
 
 /**
- * Retrieves a list of available serial ports with metadata. Only the `comName` is guaranteed. If unavailable the other fields will be undefined. The `comName` is either the path or an identifier (eg `COM1`) used to open the SerialPort.
+ * Retrieves a list of available serial ports with metadata. Only the `path` is guaranteed. If unavailable the other fields will be undefined. The `path` is either the path or an identifier (eg `COM1`) used to open the SerialPort.
  *
  * We make an effort to identify the hardware attached and have consistent results between systems. Linux and OS X are mostly consistent. Windows relies on 3rd party device drivers for the information and is unable to guarantee the information. On windows If you have a USB connected device can we provide a serial number otherwise it will be `undefined`. The `pnpId` and `locationId` are not the same or present on all systems. The examples below were run with the same Arduino Uno.
  * @type {function}
@@ -605,7 +605,7 @@ SerialPort.prototype.drain = function(callback) {
 ```js
 // OSX example port
 {
-  comName: '/dev/tty.usbmodem1421',
+  path: '/dev/tty.usbmodem1421',
   manufacturer: 'Arduino (www.arduino.cc)',
   serialNumber: '752303138333518011C1',
   pnpId: undefined,
@@ -616,7 +616,7 @@ SerialPort.prototype.drain = function(callback) {
 
 // Linux example port
 {
-  comName: '/dev/ttyACM0',
+  path: '/dev/ttyACM0',
   manufacturer: 'Arduino (www.arduino.cc)',
   serialNumber: '752303138333518011C1',
   pnpId: 'usb-Arduino__www.arduino.cc__0043_752303138333518011C1-if00',
@@ -627,7 +627,7 @@ SerialPort.prototype.drain = function(callback) {
 
 // Windows example port
 {
-  comName: 'COM3',
+  path: 'COM3',
   manufacturer: 'Arduino LLC (www.arduino.cc)',
   serialNumber: '752303138333518011C1',
   pnpId: 'USB\\VID_2341&PID_0043\\752303138333518011C1',
@@ -642,7 +642,7 @@ var SerialPort = require('serialport');
 // callback approach
 SerialPort.list(function (err, ports) {
   ports.forEach(function(port) {
-    console.log(port.comName);
+    console.log(port.path);
     console.log(port.pnpId);
     console.log(port.manufacturer);
   });

@@ -855,7 +855,7 @@ void EIO_List(uv_work_t* req) {
     }
     if (isCom) {
       ListResultItem* resultItem = new ListResultItem();
-      resultItem->comName = name;
+      resultItem->path = name;
       resultItem->manufacturer = manufacturer;
       resultItem->pnpId = pnpId;
       if (vendorId) {
@@ -909,7 +909,7 @@ void EIO_AfterList(uv_work_t* req) {
     for (std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it, i++) {
       v8::Local<v8::Object> item = Nan::New<v8::Object>();
 
-      setIfNotEmpty(item, "comName", (*it)->comName.c_str());
+      setIfNotEmpty(item, "path", (*it)->path.c_str());
       setIfNotEmpty(item, "manufacturer", (*it)->manufacturer.c_str());
       setIfNotEmpty(item, "serialNumber", (*it)->serialNumber.c_str());
       setIfNotEmpty(item, "pnpId", (*it)->pnpId.c_str());

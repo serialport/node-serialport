@@ -21,7 +21,7 @@ function findArduino() {
       ports.forEach(port => {
         if (!resolved && /arduino/i.test(port.manufacturer)) {
           resolved = true
-          return resolve(port.comName)
+          return resolve(port.path)
         }
       })
       if (!resolved) {

@@ -12,7 +12,7 @@ void EIO_List(uv_work_t* req);
 void EIO_AfterList(uv_work_t* req);
 
 struct ListResultItem {
-  std::string comName;
+  std::string path;
   std::string manufacturer;
   std::string serialNumber;
   std::string pnpId;
