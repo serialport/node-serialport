@@ -1,17 +1,10 @@
 {
-  "settings": {
-    "react": {
-      "version": "16"
-    }
-  },
   "extends": [
-    "plugin:node/recommended",
-    "plugin:react/recommended"
+    "plugin:node/recommended"
   ],
   "plugins": [
     "prettier",
-    "node",
-    "react"
+    "node"
   ],
   "env": {
     "node": true,
@@ -50,7 +43,6 @@
       2
     ],
     "node/shebang": 0,
-    "react/prop-types": 0,
     "object-shorthand": 2,
     "prefer-arrow-callback": 2,
     "prefer-const": 2,
