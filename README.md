@@ -54,18 +54,7 @@ Parsers are traditionally Transform streams, but Duplex streams and other non st
 
 ### Developing Docs
 
-You can develop the docs by running
-
-```bash
-npm run docs:dev
-```
-
-And build them by running
-```bash
-npm run docs
-```
-
-Docs are automatically built with [netlify](https://www.netlify.com/pricing/) including previews on branches. The master branch is deployed to https://serialport.io
+See https://github.com/node-serialport/website
 
 ## License
 SerialPort packages are all [MIT licensed](LICENSE) and all it's dependencies are MIT licensed.
