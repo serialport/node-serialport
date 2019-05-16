@@ -1,0 +1,166 @@
+P: /devices/platform/serial8250/tty/ttyS0
+N: ttyS0
+E: DEVNAME=/dev/ttyS0
+E: DEVPATH=/devices/platform/serial8250/tty/ttyS0
+E: MAJOR=4
+E: MINOR=64
+E: SUBSYSTEM=tty
+
+P: /devices/platform/serial8250/tty/ttyS1
+N: ttyS1
+E: DEVNAME=/dev/ttyS1
+E: DEVPATH=/devices/platform/serial8250/tty/ttyS1
+E: MAJOR=4
+E: MINOR=65
+E: SUBSYSTEM=tty
+
+P: /devices/pci0000:00/0000:00:06.0/usb1/1-2/1-2:1.0/tty/ttyACM0
+N: ttyACM0
+S: serial/by-id/usb-Arduino__www.arduino.cc__0043_752303138333518011C1-if00
+S: serial/by-path/pci-0000:00:06.0-usb-0:2:1.0
+E: DEVLINKS=/dev/serial/by-path/pci-0000:00:06.0-usb-0:2:1.0 /dev/serial/by-id/usb-Arduino__www.arduino.cc__0043_752303138333518011C1-if00
+E: DEVNAME=/dev/ttyACM0
+E: DEVPATH=/devices/pci0000:00/0000:00:06.0/usb1/1-2/1-2:1.0/tty/ttyACM0
+E: ID_BUS=usb
+E: ID_MM_CANDIDATE=1
+E: ID_MODEL=0043
+E: ID_MODEL_ENC=0043
+E: ID_MODEL_FROM_DATABASE=Uno R3 (CDC ACM)
+E: ID_MODEL_ID=0043
+E: ID_PATH=pci-0000:00:06.0-usb-0:2:1.0
+E: ID_PATH_TAG=pci-0000_00_06_0-usb-0_2_1_0
+E: ID_PCI_CLASS_FROM_DATABASE=Serial bus controller
+E: ID_PCI_INTERFACE_FROM_DATABASE=OHCI
+E: ID_PCI_SUBCLASS_FROM_DATABASE=USB controller
+E: ID_REVISION=0001
+E: ID_SERIAL=Arduino__www.arduino.cc__0043_752303138333518011C1
+E: ID_SERIAL_SHORT=752303138333518011C1
+E: ID_TYPE=generic
+E: ID_USB_CLASS_FROM_DATABASE=Communications
+E: ID_USB_DRIVER=cdc_acm
+E: ID_USB_INTERFACES=:020201:0a0000:
+E: ID_USB_INTERFACE_NUM=00
+E: ID_VENDOR=Arduino__www.arduino.cc_
+E: ID_VENDOR_ENC=Arduino\x20\x28www.arduino.cc\x29
+E: ID_VENDOR_FROM_DATABASE=Arduino SA
+E: ID_VENDOR_ID=2341
+E: MAJOR=166
+E: MINOR=0
+E: SUBSYSTEM=tty
+E: TAGS=:systemd:
+E: USEC_INITIALIZED=2219936602
+
+P: /devices/unknown
+N: ttyAMA_im_a_programmer
+E: DEVNAME=/dev/ttyAMA_im_a_programmer
+E: DEVLINKS=/dev/serial/by-id/pci-NATA_Siolynx2_C8T6VI1F-if00-port0 /dev/serial/by-path/pci-0000:00:14.0-usb-0:2:1.0-port0
+
+P: /devices/unknown
+N: ttyMFD0
+E: DEVNAME=/dev/ttyMFD0
+E: ID_VENDOR_ID=0x2343
+E: ID_MODEL_ID=0043
+E: ID_MODEL_ENC=some device made by someone
+
+P: /devices/unknown
+N: rfcomm4
+E: DEVNAME=/dev/rfcomm4
+
+P: /devices/unknown
+N: ttyNOTASERIALPORT
+
+P: /devices/platform/vhci_hcd.0/usb2/2-2/2-2:1.0/tty/ttyACM0
+N: ttyACM0
+S: serial/by-id/usb-Texas_Instruments_TI_CC2531_USB_CDC___0X00124B0018ED3589-if00
+S: serial/by-path/platform-vhci_hcd.0-usb-0:2:1.0
+E: DEVLINKS=/dev/serial/by-path/platform-vhci_hcd.0-usb-0:2:1.0 /dev/serial/by-id/usb-Texas_Instruments_TI_CC2531_USB_CDC___0X00124B0018ED3589-if00
+E: DEVNAME=/dev/ttyACM0
+E: DEVPATH=/devices/platform/vhci_hcd.0/usb2/2-2/2-2:1.0/tty/ttyACM0
+E: ID_BUS=usb
+E: ID_MM_CANDIDATE=1
+E: ID_MODEL=TI_CC2531_USB_CDC
+E: ID_MODEL_ENC=TI\x20CC2531\x20USB\x20CDC
+E: ID_MODEL_ID=16a8
+E: ID_PATH=platform-vhci_hcd.0-usb-0:2:1.0
+E: ID_PATH_TAG=platform-vhci_hcd_0-usb-0_2_1_0
+E: ID_REVISION=0009
+E: ID_SERIAL=Texas_Instruments_TI_CC2531_USB_CDC___0X00124B0018ED3589
+E: ID_SERIAL_SHORT=__0X00124B0018ED3589
+E: ID_TYPE=generic
+E: ID_USB_CLASS_FROM_DATABASE=Communications
+E: ID_USB_DRIVER=cdc_acm
+E: ID_USB_INTERFACES=:020201:0a0000:
+E: ID_USB_INTERFACE_NUM=00
+E: ID_VENDOR=Texas_Instruments
+E: ID_VENDOR_ENC=Texas\x20Instruments
+E: ID_VENDOR_FROM_DATABASE=Texas Instruments, Inc.
+E: ID_VENDOR_ID=0451
+E: MAJOR=166
+E: MINOR=0
+E: SUBSYSTEM=tty
+E: TAGS=:systemd:
+E: USEC_INITIALIZED=28057828
+
+P: /devices/platform/vhci_hcd.0/usb2/2-1/2-1:1.0/ttyUSB0/tty/ttyUSB0
+N: ttyUSB0
+S: serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0
+S: serial/by-path/platform-vhci_hcd.0-usb-0:1:1.0-port0
+E: DEVLINKS=/dev/serial/by-id/usb-Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001-if00-port0 /dev/serial/by-path/platform-vhci_hcd.0-usb-0:1:1.0-port0
+E: DEVNAME=/dev/ttyUSB0
+E: DEVPATH=/devices/platform/vhci_hcd.0/usb2/2-1/2-1:1.0/ttyUSB0/tty/ttyUSB0
+E: ID_BUS=usb
+E: ID_MODEL=CP2102_USB_to_UART_Bridge_Controller
+E: ID_MODEL_ENC=CP2102\x20USB\x20to\x20UART\x20Bridge\x20Controller
+E: ID_MODEL_FROM_DATABASE=CP2102/CP2109 UART Bridge Controller [CP210x family]
+E: ID_MODEL_ID=ea60
+E: ID_PATH=platform-vhci_hcd.0-usb-0:1:1.0
+E: ID_PATH_TAG=platform-vhci_hcd_0-usb-0_1_1_0
+E: ID_REVISION=0100
+E: ID_SERIAL=Silicon_Labs_CP2102_USB_to_UART_Bridge_Controller_0001
+E: ID_SERIAL_SHORT=0001
+E: ID_TYPE=generic
+E: ID_USB_DRIVER=cp210x
+E: ID_USB_INTERFACES=:ff0000:
+E: ID_USB_INTERFACE_NUM=00
+E: ID_VENDOR=Silicon_Labs
+E: ID_VENDOR_ENC=Silicon\x20Labs
+E: ID_VENDOR_FROM_DATABASE=Cygnal Integrated Products, Inc.
+E: ID_VENDOR_ID=10c4
+E: MAJOR=188
+E: MINOR=0
+E: SUBSYSTEM=tty
+E: TAGS=:systemd:
+E: USEC_INITIALIZED=21347255
+
+P: /devices/platform/vhci_hcd.0/usb2/2-2/2-2:1.0/ttyUSB0/tty/ttyUSB0
+N: ttyUSB0
+S: ir-usb0
+S: serial/by-id/usb-Silicon_Labs_CP2104_USB_to_UART_Bridge_Controller_010625FA-if00-port0
+S: serial/by-path/platform-vhci_hcd.0-usb-0:2:1.0-port0
+E: DEVLINKS=/dev/ir-usb0 /dev/serial/by-id/usb-Silicon_Labs_CP2104_USB_to_UART_Bridge_Controller_010625FA-if00-port0 /dev/serial/by-path/platform-vhci_hcd.0-usb-0:2:1.0-port0
+E: DEVNAME=/dev/ttyUSB0
+E: DEVPATH=/devices/platform/vhci_hcd.0/usb2/2-2/2-2:1.0/ttyUSB0/tty/ttyUSB0
+E: ID_BUS=usb
+E: ID_MM_CANDIDATE=1
+E: ID_MODEL=CP2104_USB_to_UART_Bridge_Controller
+E: ID_MODEL_ENC=CP2104\x20USB\x20to\x20UART\x20Bridge\x20Controller
+E: ID_MODEL_FROM_DATABASE=CP2102/CP2109 UART Bridge Controller [CP210x family]
+E: ID_MODEL_ID=ea60
+E: ID_PATH=platform-vhci_hcd.0-usb-0:2:1.0
+E: ID_PATH_TAG=platform-vhci_hcd_0-usb-0_2_1_0
+E: ID_REVISION=0100
+E: ID_SERIAL=Silicon_Labs_CP2104_USB_to_UART_Bridge_Controller_010625FA
+E: ID_SERIAL_SHORT=010625FA
+E: ID_TYPE=generic
+E: ID_USB_DRIVER=cp210x
+E: ID_USB_INTERFACES=:ff0000:
+E: ID_USB_INTERFACE_NUM=00
+E: ID_VENDOR=Silicon_Labs
+E: ID_VENDOR_ENC=Silicon\x20Labs
+E: ID_VENDOR_FROM_DATABASE=Cygnal Integrated Products, Inc.
+E: ID_VENDOR_ID=10c4
+E: MAJOR=188
+E: MINOR=0
+E: SUBSYSTEM=tty
+E: TAGS=:systemd:
+E: USEC_INITIALIZED=1233179532

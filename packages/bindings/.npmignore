@@ -1,4 +1,4 @@
-*.test.js
+*.test.*
 lib/mocks
 build/
 prebuilds

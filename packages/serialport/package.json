@@ -1,7 +1,7 @@
 {
   "name": "serialport",
   "version": "8.0.0",
-  "description": "Node.js package to access serial ports. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!",
+  "description": "Access serial ports with JavaScript on Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!",
   "main": "lib",
   "repository": {
     "type": "git",

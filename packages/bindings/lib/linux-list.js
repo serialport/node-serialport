@@ -6,93 +6,94 @@ function checkPathOfDevice(path) {
   return /(tty(S|WCH|ACM|USB|AMA|MFD|O)|rfcomm)/.test(path) && path
 }
 
-function propName(name) {
-  return {
-    DEVNAME: 'path',
-    ID_VENDOR_ENC: 'manufacturer',
-    ID_SERIAL_SHORT: 'serialNumber',
-    ID_VENDOR_ID: 'vendorId',
-    ID_MODEL_ID: 'productId',
-    DEVLINKS: 'pnpId',
-  }[name.toUpperCase()]
-}
-
 function decodeHexEscape(str) {
+  if (!str) {
+    return
+  }
   return str.replace(/\\x([a-fA-F0-9]{2})/g, (a, b) => {
     return String.fromCharCode(parseInt(b, 16))
   })
 }
 
-function propVal(name, val) {
-  if (name === 'pnpId') {
-    const match = val.match(/\/by-id\/([^\s]+)/)
-    return (match && match[1]) || undefined
-  }
-  if (name === 'manufacturer') {
-    return decodeHexEscape(val)
-  }
-  if (/^0x/.test(val)) {
+function strip0x(val) {
+  if (/^0x/.test(val) && typeof val === 'string') {
     return val.substr(2)
   }
   return val
 }
 
-function listLinux() {
+function extractPnpId(val) {
+  if (!val) {
+    return
+  }
+  const match = val.match(/\/by-id\/([^\s]+)/)
+  return (match && match[1]) || undefined
+}
+
+function parseDevLinks(devLinks) {
+  if (!devLinks) {
+    return
+  }
+  return devLinks.split(' ').find(link => link.match(/^\/dev\/serial\/by-id\//))
+}
+
+function parsePort(text) {
+  const lines = text.split('\n')
+  const portData = {}
+
+  for (const line of lines) {
+    const lineType = line.slice(0, 1)
+    const data = line.slice(3)
+
+    // Check devname against a list of known good dev names for serial ports
+    if (lineType === 'N') {
+      if (!checkPathOfDevice(data)) {
+        return
+      }
+    }
+
+    // fetch key values
+    if (lineType === 'E') {
+      const keyValue = data.match(/^(.+)=(.*)/)
+      if (!keyValue) {
+        continue
+      }
+      portData[keyValue[1]] = keyValue[2]
+    }
+  }
+
+  const path = parseDevLinks(portData.DEVLINKS) || portData.DEVNAME
+  const manufacturer = decodeHexEscape(portData.ID_VENDOR_ENC)
+  const serialNumber = strip0x(portData.ID_SERIAL_SHORT)
+  const pnpId = extractPnpId(portData.DEVLINKS)
+  const vendorId = strip0x(portData.ID_VENDOR_ID)
+  const productId = strip0x(portData.ID_MODEL_ID)
+
+  return {
+    path,
+    manufacturer,
+    serialNumber,
+    pnpId,
+    vendorId,
+    productId,
+  }
+}
+
+async function listLinux() {
+  const ports = []
+  const udevadm = childProcess.spawn('udevadm', ['info', '-e'])
+  const portData = udevadm.stdout.pipe(new Readline({ delimiter: '\n\n' }))
+  portData.on('data', txt => {
+    const port = parsePort(txt)
+    if (port) {
+      ports.push(port)
+    }
+  })
+
   return new Promise((resolve, reject) => {
-    const ports = []
-    const ude = childProcess.spawn('udevadm', ['info', '-e'])
-    const lines = ude.stdout.pipe(new Readline())
-    ude.on('error', reject)
-    lines.on('error', reject)
-
-    let port = {}
-    let skipPort = false
-    lines.on('data', line => {
-      const lineType = line.slice(0, 1)
-      const data = line.slice(3)
-      // new port entry
-      if (lineType === 'P') {
-        port = {
-          manufacturer: undefined,
-          serialNumber: undefined,
-          pnpId: undefined,
-          locationId: undefined,
-          vendorId: undefined,
-          productId: undefined,
-        }
-        skipPort = false
-        return
-      }
-
-      if (skipPort) {
-        return
-      }
-
-      // Check dev name and save port if it matches flag to skip the rest of the data if not
-      if (lineType === 'N') {
-        if (checkPathOfDevice(data)) {
-          ports.push(port)
-        } else {
-          skipPort = true
-        }
-        return
-      }
-
-      // parse data about each port
-      if (lineType === 'E') {
-        const keyValue = data.match(/^(.+)=(.*)/)
-        if (!keyValue) {
-          return
-        }
-        const key = propName(keyValue[1])
-        if (!key) {
-          return
-        }
-        port[key] = propVal(key, keyValue[2])
-      }
-    })
-
-    lines.on('finish', () => resolve(ports))
+    udevadm.once('error', reject)
+    portData.once('error', reject)
+    portData.once('finish', () => resolve(ports))
   })
 }
 

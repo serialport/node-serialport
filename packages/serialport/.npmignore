@@ -1,4 +1,4 @@
-*.test.js
+*.test.*
 CHANGELOG.md
 examples/
 node_modules
