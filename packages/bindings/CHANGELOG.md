@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0](https://github.com/node-serialport/node-serialport/compare/@serialport/bindings@2.0.8...@serialport/bindings@3.0.0) (2019-05-16)
+
+
+### Bug Fixes
+
+* remove PURGE_RXABORT flag on flush for Windows ([#1817](https://github.com/node-serialport/node-serialport/issues/1817)) ([1daa919](https://github.com/node-serialport/node-serialport/commit/1daa919))
+* RTS/CTS flow control for Windows ([#1809](https://github.com/node-serialport/node-serialport/issues/1809)) ([cd112ca](https://github.com/node-serialport/node-serialport/commit/cd112ca))
+
+
+### chore
+
+* remove node6 support and upgrade codebase ([#1851](https://github.com/node-serialport/node-serialport/issues/1851)) ([d4f15c0](https://github.com/node-serialport/node-serialport/commit/d4f15c0))
+
+
+### BREAKING CHANGES
+
+* flush behavior on windows no longer cancels inflight reads
+* bindings now use async functions so they’ll never throw, only reject
+
+
+
+
+
 ## [2.0.8](https://github.com/node-serialport/node-serialport/compare/@serialport/bindings@2.0.7...@serialport/bindings@2.0.8) (2019-04-27)
 
 

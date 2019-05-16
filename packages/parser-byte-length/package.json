@@ -1,6 +1,6 @@
 {
   "name": "@serialport/parser-byte-length",
-  "version": "2.0.2",
+  "version": "3.0.0",
   "main": "byte-length.js",
   "engines": {
     "node": ">=8.6.0"
