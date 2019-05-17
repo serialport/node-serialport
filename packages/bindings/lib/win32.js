@@ -74,12 +74,14 @@ class WindowsBinding extends AbstractBinding {
   }
 
   async write(buffer) {
-    if (buffer.length === 0) {
-      return
-    }
     this.writeOperation = super
       .write(buffer)
-      .then(() => asyncWrite(this.fd, buffer))
+      .then(() => {
+        if (buffer.length === 0) {
+          return
+        }
+        return asyncWrite(this.fd, buffer)
+      })
       .then(() => {
         this.writeOperation = null
       })

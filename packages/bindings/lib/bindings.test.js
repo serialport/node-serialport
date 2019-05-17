@@ -38,6 +38,17 @@ function disconnect(err) {
   throw err || new Error('Unknown disconnection')
 }
 
+function shouldReject(promise, errType = Error, message = 'Should have rejected') {
+  return promise.then(
+    () => {
+      throw new Error(message)
+    },
+    err => {
+      assert.instanceOf(err, errType)
+    }
+  )
+}
+
 // All bindings are required to work with an "echo" firmware
 // The echo firmware should respond with this data when it's
 // ready to echo. This allows for remote device bootup.
@@ -156,22 +167,12 @@ function testBinding(bindingName, Binding, testPort) {
           })
         })
 
-        it('throws when not given a path', done => {
-          try {
-            binding.open('')
-          } catch (e) {
-            assert.instanceOf(e, TypeError)
-            done()
-          }
+        it('throws when not given a path', async () => {
+          await shouldReject(binding.open(''), TypeError)
         })
 
-        it('throws when not given options', done => {
-          try {
-            binding.open('COMBAD')
-          } catch (e) {
-            assert.instanceOf(e, TypeError)
-            done()
-          }
+        it('throws when not given options', async () => {
+          await shouldReject(binding.open('COMBAD'), TypeError)
         })
 
         if (!testPort) {
@@ -278,15 +279,9 @@ function testBinding(bindingName, Binding, testPort) {
       })
 
       describe('#update', () => {
-        it('throws when not given an object', done => {
+        it('throws when not given an object', async () => {
           const binding = new Binding({ disconnect })
-
-          try {
-            binding.update()
-          } catch (e) {
-            assert.instanceOf(e, TypeError)
-            done()
-          }
+          await shouldReject(binding.update(), TypeError)
         })
 
         it('errors asynchronously when not open', done => {
@@ -315,22 +310,12 @@ function testBinding(bindingName, Binding, testPort) {
 
         afterEach(() => binding.close())
 
-        it('throws errors when updating nothing', done => {
-          try {
-            binding.update({})
-          } catch (err) {
-            assert.instanceOf(err, Error)
-            done()
-          }
+        it('throws errors when updating nothing', async () => {
+          await shouldReject(binding.update({}), Error)
         })
 
-        it('errors when not called with options', done => {
-          try {
-            binding.set(() => {})
-          } catch (e) {
-            assert.instanceOf(e, Error)
-            done()
-          }
+        it('errors when not called with options', async () => {
+          await shouldReject(binding.set(() => {}), Error)
         })
 
         it('updates baudRate', () => {
@@ -338,30 +323,34 @@ function testBinding(bindingName, Binding, testPort) {
         })
       })
 
-      describe('#write', () => {
+      describe.only('#write', () => {
         it('errors asynchronously when not open', done => {
           const binding = new Binding({
             disconnect,
           })
           let noZalgo = false
-          binding.write(Buffer.from([])).catch(err => {
-            assert.instanceOf(err, Error)
-            assert(noZalgo)
-            done()
-          })
+          binding
+            .write(Buffer.from([]))
+            .then(
+              data => {
+                console.log({ data })
+                throw new Error('Should have errored')
+              },
+              err => {
+                assert.instanceOf(err, Error)
+                assert(noZalgo)
+                done()
+              }
+            )
+            .catch(done)
           noZalgo = true
         })
 
-        it('throws when not given a buffer', done => {
+        it('throws when not given a buffer', async () => {
           const binding = new Binding({
             disconnect,
           })
-          try {
-            binding.write(null)
-          } catch (e) {
-            assert.instanceOf(e, TypeError)
-            done()
-          }
+          await shouldReject(binding.write(null), TypeError)
         })
 
         if (!testPort) {
@@ -494,16 +483,11 @@ function testBinding(bindingName, Binding, testPort) {
           noZalgo = true
         })
 
-        it('throws when not called with options', done => {
+        it('throws when not called with options', async () => {
           const binding = new Binding({
             disconnect,
           })
-          try {
-            binding.set(() => {})
-          } catch (e) {
-            assert.instanceOf(e, TypeError)
-            done()
-          }
+          await shouldReject(binding.set(() => {}), TypeError)
         })
 
         if (!testPort) {

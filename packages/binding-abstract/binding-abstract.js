@@ -119,6 +119,8 @@ The in progress writes must error when the port is closed with an error object t
 
     debug('write', buffer.length, 'bytes')
     if (!this.isOpen) {
+      debug('write', 'error port is not open')
+
       throw new Error('Port is not open')
     }
   }
