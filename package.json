@@ -32,7 +32,6 @@
       "url": "https://www.roborooter.com"
     }
   ],
-  "dependencies": {},
   "devDependencies": {
     "cc": "^1.0.1",
     "chai": "^4.0.2",
@@ -44,7 +43,7 @@
     "eslint-plugin-node": "^9.0.1",
     "eslint-plugin-prettier": "^3.0.1",
     "eslint-plugin-promise": "^4.0.1",
-    "lerna": "^3.10.7",
+    "lerna": "^3.14.1",
     "mocha": "^6.1.4",
     "nyc": "^14.0.0",
     "plop": "^2.2.0",
