@@ -3,12 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [8.0.0](https://github.com/node-serialport/node-serialport/compare/serialport@7.1.5...serialport@8.0.0) (2019-05-16)
+# [8.0.0](https://github.com/serialport/node-serialport/compare/serialport@7.1.5...serialport@8.0.0) (2019-05-16)
 
 
 ### chore
 
-* remove node6 support and upgrade codebase ([#1851](https://github.com/node-serialport/node-serialport/issues/1851)) ([d4f15c0](https://github.com/node-serialport/node-serialport/commit/d4f15c0))
+* remove node6 support and upgrade codebase ([#1851](https://github.com/serialport/node-serialport/issues/1851)) ([d4f15c0](https://github.com/serialport/node-serialport/commit/d4f15c0))
 
 
 ### BREAKING CHANGES
@@ -19,7 +19,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [7.1.5](https://github.com/node-serialport/node-serialport/compare/serialport@7.1.4...serialport@7.1.5) (2019-04-27)
+## [7.1.5](https://github.com/serialport/node-serialport/compare/serialport@7.1.4...serialport@7.1.5) (2019-04-27)
 
 **Note:** Version bump only for package serialport
 
@@ -27,7 +27,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [7.1.4](https://github.com/node-serialport/node-serialport/compare/serialport@7.1.3...serialport@7.1.4) (2019-01-24)
+## [7.1.4](https://github.com/serialport/node-serialport/compare/serialport@7.1.3...serialport@7.1.4) (2019-01-24)
 
 **Note:** Version bump only for package serialport
 
@@ -35,7 +35,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [7.1.3](https://github.com/node-serialport/node-serialport/compare/serialport@7.1.2...serialport@7.1.3) (2019-01-12)
+## [7.1.3](https://github.com/serialport/node-serialport/compare/serialport@7.1.2...serialport@7.1.3) (2019-01-12)
 
 **Note:** Version bump only for package serialport
 
@@ -43,7 +43,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [7.1.2](https://github.com/node-serialport/node-serialport/compare/serialport@7.1.1...serialport@7.1.2) (2019-01-08)
+## [7.1.2](https://github.com/serialport/node-serialport/compare/serialport@7.1.1...serialport@7.1.2) (2019-01-08)
 
 **Note:** Version bump only for package serialport
 
@@ -51,7 +51,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [7.1.1](https://github.com/node-serialport/node-serialport/compare/serialport@7.1.0...serialport@7.1.1) (2018-12-19)
+## [7.1.1](https://github.com/serialport/node-serialport/compare/serialport@7.1.0...serialport@7.1.1) (2018-12-19)
 
 **Note:** Version bump only for package serialport
 
@@ -59,26 +59,26 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [7.1.0](https://github.com/node-serialport/node-serialport/compare/serialport@7.0.2...serialport@7.1.0) (2018-11-27)
+# [7.1.0](https://github.com/serialport/node-serialport/compare/serialport@7.0.2...serialport@7.1.0) (2018-11-27)
 
 
 ### Features
 
-* move cli tools to their own packages ([#1664](https://github.com/node-serialport/node-serialport/issues/1664)) ([103498e](https://github.com/node-serialport/node-serialport/commit/103498e)), closes [#1659](https://github.com/node-serialport/node-serialport/issues/1659)
+* move cli tools to their own packages ([#1664](https://github.com/serialport/node-serialport/issues/1664)) ([103498e](https://github.com/serialport/node-serialport/commit/103498e)), closes [#1659](https://github.com/serialport/node-serialport/issues/1659)
 
 
 
 
 
 <a name="7.0.2"></a>
-## [7.0.2](https://github.com/node-serialport/node-serialport/compare/serialport@7.0.1...serialport@7.0.2) (2018-08-29)
+## [7.0.2](https://github.com/serialport/node-serialport/compare/serialport@7.0.1...serialport@7.0.2) (2018-08-29)
 
 **Note:** Version bump only for package serialport
 
 * **chore:** Bump to fix build chain issues
 
 <a name="7.0.1"></a>
-## [7.0.1](https://github.com/node-serialport/node-serialport/compare/serialport@7.0.0...serialport@7.0.1) (2018-08-29)
+## [7.0.1](https://github.com/serialport/node-serialport/compare/serialport@7.0.0...serialport@7.0.1) (2018-08-29)
 
 **Note:** Version bump only for package serialport
 
@@ -94,10 +94,10 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 <a name="6.2.2"></a>
 ## 6.2.2 (2018-07-21)
 
-* fix: npm and git ignore for prebuild ([fb565fd](https://github.com/node-serialport/node-serialport/commit/fb565fd))
-* fix: Remove a new Buffer() call (#1603) ([e21fe7a](https://github.com/node-serialport/node-serialport/commit/e21fe7a)), closes [#1603](https://github.com/node-serialport/node-serialport/issues/1603)
-* Add support for beaglebone serial ports. (#1600) ([384eb37](https://github.com/node-serialport/node-serialport/commit/384eb37)), closes [#1600](https://github.com/node-serialport/node-serialport/issues/1600)
-* put back prebuild binary builders (#1602) ([4160aca](https://github.com/node-serialport/node-serialport/commit/4160aca)), closes [#1602](https://github.com/node-serialport/node-serialport/issues/1602)
+* fix: npm and git ignore for prebuild ([fb565fd](https://github.com/serialport/node-serialport/commit/fb565fd))
+* fix: Remove a new Buffer() call (#1603) ([e21fe7a](https://github.com/serialport/node-serialport/commit/e21fe7a)), closes [#1603](https://github.com/serialport/node-serialport/issues/1603)
+* Add support for beaglebone serial ports. (#1600) ([384eb37](https://github.com/serialport/node-serialport/commit/384eb37)), closes [#1600](https://github.com/serialport/node-serialport/issues/1600)
+* put back prebuild binary builders (#1602) ([4160aca](https://github.com/serialport/node-serialport/commit/4160aca)), closes [#1602](https://github.com/serialport/node-serialport/issues/1602)
 
 
 
@@ -106,16 +106,16 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 Thanks to @shodan8192 for finding and fixing a memory leak on unix systems!
 
-* docs: fix link to parser docs ([f2285d0](https://github.com/node-serialport/node-serialport/commit/f2285d0))
-* docs: regenerate docs ([eb053db](https://github.com/node-serialport/node-serialport/commit/eb053db))
-* chore: change to new parser packages and upgrade (fix builds) (#1562) ([d829ada](https://github.com/node-serialport/node-serialport/commit/d829ada)), closes [#1562](https://github.com/node-serialport/node-serialport/issues/1562)
-* chore: drop node 4 EOL, add node 10 🎉 (#1556) ([e1998b3](https://github.com/node-serialport/node-serialport/commit/e1998b3)), closes [#1556](https://github.com/node-serialport/node-serialport/issues/1556)
-* chore(package): update conventional-changelog-cli to version 2.0.0 (#1571) ([1bf70ae](https://github.com/node-serialport/node-serialport/commit/1bf70ae)), closes [#1571](https://github.com/node-serialport/node-serialport/issues/1571)
-* chore(package): update package specs (#1557) ([4ed5182](https://github.com/node-serialport/node-serialport/commit/4ed5182)), closes [#1557](https://github.com/node-serialport/node-serialport/issues/1557)
-* chore(package): upgrade packages ([46d798d](https://github.com/node-serialport/node-serialport/commit/46d798d))
-* fix: a few warnings and deprecations (#1558) ([a250f09](https://github.com/node-serialport/node-serialport/commit/a250f09)), closes [#1558](https://github.com/node-serialport/node-serialport/issues/1558)
-* fix: build isn't using the right version on 32x (#1564) ([f9953f2](https://github.com/node-serialport/node-serialport/commit/f9953f2)), closes [#1564](https://github.com/node-serialport/node-serialport/issues/1564)
-* fix: memory leak in unix serialport poller (#1572) ([9006bd6](https://github.com/node-serialport/node-serialport/commit/9006bd6)), closes [#1572](https://github.com/node-serialport/node-serialport/issues/1572)
+* docs: fix link to parser docs ([f2285d0](https://github.com/serialport/node-serialport/commit/f2285d0))
+* docs: regenerate docs ([eb053db](https://github.com/serialport/node-serialport/commit/eb053db))
+* chore: change to new parser packages and upgrade (fix builds) (#1562) ([d829ada](https://github.com/serialport/node-serialport/commit/d829ada)), closes [#1562](https://github.com/serialport/node-serialport/issues/1562)
+* chore: drop node 4 EOL, add node 10 🎉 (#1556) ([e1998b3](https://github.com/serialport/node-serialport/commit/e1998b3)), closes [#1556](https://github.com/serialport/node-serialport/issues/1556)
+* chore(package): update conventional-changelog-cli to version 2.0.0 (#1571) ([1bf70ae](https://github.com/serialport/node-serialport/commit/1bf70ae)), closes [#1571](https://github.com/serialport/node-serialport/issues/1571)
+* chore(package): update package specs (#1557) ([4ed5182](https://github.com/serialport/node-serialport/commit/4ed5182)), closes [#1557](https://github.com/serialport/node-serialport/issues/1557)
+* chore(package): upgrade packages ([46d798d](https://github.com/serialport/node-serialport/commit/46d798d))
+* fix: a few warnings and deprecations (#1558) ([a250f09](https://github.com/serialport/node-serialport/commit/a250f09)), closes [#1558](https://github.com/serialport/node-serialport/issues/1558)
+* fix: build isn't using the right version on 32x (#1564) ([f9953f2](https://github.com/serialport/node-serialport/commit/f9953f2)), closes [#1564](https://github.com/serialport/node-serialport/issues/1564)
+* fix: memory leak in unix serialport poller (#1572) ([9006bd6](https://github.com/serialport/node-serialport/commit/9006bd6)), closes [#1572](https://github.com/serialport/node-serialport/issues/1572)
 
 
 
@@ -124,125 +124,125 @@ Thanks to @shodan8192 for finding and fixing a memory leak on unix systems!
 
 This is a recommended release for everyone on windows as it fixes a memory leak in write operations.
 
-* docs: fix missing options objects and descriptions (#1504) ([e8b73c2](https://github.com/node-serialport/node-serialport/commit/e8b73c2)), closes [#1504](https://github.com/node-serialport/node-serialport/issues/1504)
-* docs: node 9 is working well these days ([b585c11](https://github.com/node-serialport/node-serialport/commit/b585c11))
-* docs: Switch to @reconbot/jsdoc-theme for docs ([a31078f](https://github.com/node-serialport/node-serialport/commit/a31078f))
-* docs(contributing): clean up the instructions a little bit ([71f2480](https://github.com/node-serialport/node-serialport/commit/71f2480))
-* docs(parsers): improve the parser examples ([41f1d2d](https://github.com/node-serialport/node-serialport/commit/41f1d2d))
-* fix(windows): Reset Buffer after write operations are complete to free memory (#1547) ([a1eef11](https://github.com/node-serialport/node-serialport/commit/a1eef11)), closes [#1547](https://github.com/node-serialport/node-serialport/issues/1547)
-* chore: Avoid using deprecated Buffer constructor (#1510) ([0c1533b](https://github.com/node-serialport/node-serialport/commit/0c1533b)), closes [#1510](https://github.com/node-serialport/node-serialport/issues/1510) [/nodejs.org/api/deprecations.html#deprecations_dep0005](https://github.com//nodejs.org/api/deprecations.html/issues/deprecations_dep0005)
-* chore: fix package json indents ([7c9b609](https://github.com/node-serialport/node-serialport/commit/7c9b609))
-* chore: move parsers to their new packages and clean up docs ([4bccb62](https://github.com/node-serialport/node-serialport/commit/4bccb62))
-* chore: remove old doc file ([37a8373](https://github.com/node-serialport/node-serialport/commit/37a8373))
-* chore(docs): Minor spelling change ([8a13e9f](https://github.com/node-serialport/node-serialport/commit/8a13e9f))
-* chore(package): update eslint-config-standard to version 11.0.0 (#1492) ([cf5b8fb](https://github.com/node-serialport/node-serialport/commit/cf5b8fb)), closes [#1492](https://github.com/node-serialport/node-serialport/issues/1492)
-* chore(package): update proxyquire to version 2.0.0 (#1511) ([bac0237](https://github.com/node-serialport/node-serialport/commit/bac0237)), closes [#1511](https://github.com/node-serialport/node-serialport/issues/1511)
-* chore(package): update sinon to version 5.0.0 ([9dbccbc](https://github.com/node-serialport/node-serialport/commit/9dbccbc))
-* chore(packages): ugprade conventional-changelog-cli@1.3.15 ([270c2be](https://github.com/node-serialport/node-serialport/commit/270c2be))
-* chore(packages): ugprade nan@2.9.2 (#1503) ([557afa4](https://github.com/node-serialport/node-serialport/commit/557afa4)), closes [#1503](https://github.com/node-serialport/node-serialport/issues/1503)
-* chore(packages): upgrade conventional-changelog@1.3.12 ([2b8f957](https://github.com/node-serialport/node-serialport/commit/2b8f957))
-* feat: upgrade socket-io example to latest serialport and fix bug (#1505) ([86e5ab0](https://github.com/node-serialport/node-serialport/commit/86e5ab0)), closes [#1505](https://github.com/node-serialport/node-serialport/issues/1505)
-* feat(linter): Added 'cc' to lint the C++ code on 'npm lint' (#1501) ([59960a3](https://github.com/node-serialport/node-serialport/commit/59960a3)), closes [#1501](https://github.com/node-serialport/node-serialport/issues/1501)
-* feat(windows): Fetch USB serial number by lookups in win registry (#1483) ([45b3a2f](https://github.com/node-serialport/node-serialport/commit/45b3a2f)), closes [#1483](https://github.com/node-serialport/node-serialport/issues/1483) [#1459](https://github.com/node-serialport/node-serialport/issues/1459)
+* docs: fix missing options objects and descriptions (#1504) ([e8b73c2](https://github.com/serialport/node-serialport/commit/e8b73c2)), closes [#1504](https://github.com/serialport/node-serialport/issues/1504)
+* docs: node 9 is working well these days ([b585c11](https://github.com/serialport/node-serialport/commit/b585c11))
+* docs: Switch to @reconbot/jsdoc-theme for docs ([a31078f](https://github.com/serialport/node-serialport/commit/a31078f))
+* docs(contributing): clean up the instructions a little bit ([71f2480](https://github.com/serialport/node-serialport/commit/71f2480))
+* docs(parsers): improve the parser examples ([41f1d2d](https://github.com/serialport/node-serialport/commit/41f1d2d))
+* fix(windows): Reset Buffer after write operations are complete to free memory (#1547) ([a1eef11](https://github.com/serialport/node-serialport/commit/a1eef11)), closes [#1547](https://github.com/serialport/node-serialport/issues/1547)
+* chore: Avoid using deprecated Buffer constructor (#1510) ([0c1533b](https://github.com/serialport/node-serialport/commit/0c1533b)), closes [#1510](https://github.com/serialport/node-serialport/issues/1510) [/nodejs.org/api/deprecations.html#deprecations_dep0005](https://github.com//nodejs.org/api/deprecations.html/issues/deprecations_dep0005)
+* chore: fix package json indents ([7c9b609](https://github.com/serialport/node-serialport/commit/7c9b609))
+* chore: move parsers to their new packages and clean up docs ([4bccb62](https://github.com/serialport/node-serialport/commit/4bccb62))
+* chore: remove old doc file ([37a8373](https://github.com/serialport/node-serialport/commit/37a8373))
+* chore(docs): Minor spelling change ([8a13e9f](https://github.com/serialport/node-serialport/commit/8a13e9f))
+* chore(package): update eslint-config-standard to version 11.0.0 (#1492) ([cf5b8fb](https://github.com/serialport/node-serialport/commit/cf5b8fb)), closes [#1492](https://github.com/serialport/node-serialport/issues/1492)
+* chore(package): update proxyquire to version 2.0.0 (#1511) ([bac0237](https://github.com/serialport/node-serialport/commit/bac0237)), closes [#1511](https://github.com/serialport/node-serialport/issues/1511)
+* chore(package): update sinon to version 5.0.0 ([9dbccbc](https://github.com/serialport/node-serialport/commit/9dbccbc))
+* chore(packages): ugprade conventional-changelog-cli@1.3.15 ([270c2be](https://github.com/serialport/node-serialport/commit/270c2be))
+* chore(packages): ugprade nan@2.9.2 (#1503) ([557afa4](https://github.com/serialport/node-serialport/commit/557afa4)), closes [#1503](https://github.com/serialport/node-serialport/issues/1503)
+* chore(packages): upgrade conventional-changelog@1.3.12 ([2b8f957](https://github.com/serialport/node-serialport/commit/2b8f957))
+* feat: upgrade socket-io example to latest serialport and fix bug (#1505) ([86e5ab0](https://github.com/serialport/node-serialport/commit/86e5ab0)), closes [#1505](https://github.com/serialport/node-serialport/issues/1505)
+* feat(linter): Added 'cc' to lint the C++ code on 'npm lint' (#1501) ([59960a3](https://github.com/serialport/node-serialport/commit/59960a3)), closes [#1501](https://github.com/serialport/node-serialport/issues/1501)
+* feat(windows): Fetch USB serial number by lookups in win registry (#1483) ([45b3a2f](https://github.com/serialport/node-serialport/commit/45b3a2f)), closes [#1483](https://github.com/serialport/node-serialport/issues/1483) [#1459](https://github.com/serialport/node-serialport/issues/1459)
 
 
 
 <a name="6.1.1"></a>
 ## <small>6.1.1 (2018-02-28)</small>
 
-* chore(docs): Minor spelling and grammer changes. ([093c85d](https://github.com/node-serialport/node-serialport/commit/093c85d))
-* fix(linux): Adds missing header file for musl libc (eg alpine) (#1487) ([02e2bfe](https://github.com/node-serialport/node-serialport/commit/02e2bfe)), closes [#1487](https://github.com/node-serialport/node-serialport/issues/1487) [#1470](https://github.com/node-serialport/node-serialport/issues/1470)
-* docs: Add appropriate thanks to the changelog ([a3b3663](https://github.com/node-serialport/node-serialport/commit/a3b3663))
-* docs(api): commit docs for github pages ([792459d](https://github.com/node-serialport/node-serialport/commit/792459d))
-* docs(changelog) :fix typo (#1484) ([2da025e](https://github.com/node-serialport/node-serialport/commit/2da025e)), closes [#1484](https://github.com/node-serialport/node-serialport/issues/1484)
+* chore(docs): Minor spelling and grammer changes. ([093c85d](https://github.com/serialport/node-serialport/commit/093c85d))
+* fix(linux): Adds missing header file for musl libc (eg alpine) (#1487) ([02e2bfe](https://github.com/serialport/node-serialport/commit/02e2bfe)), closes [#1487](https://github.com/serialport/node-serialport/issues/1487) [#1470](https://github.com/serialport/node-serialport/issues/1470)
+* docs: Add appropriate thanks to the changelog ([a3b3663](https://github.com/serialport/node-serialport/commit/a3b3663))
+* docs(api): commit docs for github pages ([792459d](https://github.com/serialport/node-serialport/commit/792459d))
+* docs(changelog) :fix typo (#1484) ([2da025e](https://github.com/serialport/node-serialport/commit/2da025e)), closes [#1484](https://github.com/serialport/node-serialport/issues/1484)
 
 
 
 <a name="6.1.0"></a>
 # 6.1.0 (2018-02-06)
 
-* chore(github): lock old issues and prs ([c8d2655](https://github.com/node-serialport/node-serialport/commit/c8d2655))
-* chore(package): update eslint-plugin-node to version 6.0.0 (#1466) ([bac94a0](https://github.com/node-serialport/node-serialport/commit/bac94a0)), closes [#1466](https://github.com/node-serialport/node-serialport/issues/1466)
-* feat(linux): Custom baud rates for linux (eg 250k baudrate) (#1464) ([910438c](https://github.com/node-serialport/node-serialport/commit/910438c)), closes [#1464](https://github.com/node-serialport/node-serialport/issues/1464) Thanks to @Fumon for closing this long standing issue!
+* chore(github): lock old issues and prs ([c8d2655](https://github.com/serialport/node-serialport/commit/c8d2655))
+* chore(package): update eslint-plugin-node to version 6.0.0 (#1466) ([bac94a0](https://github.com/serialport/node-serialport/commit/bac94a0)), closes [#1466](https://github.com/serialport/node-serialport/issues/1466)
+* feat(linux): Custom baud rates for linux (eg 250k baudrate) (#1464) ([910438c](https://github.com/serialport/node-serialport/commit/910438c)), closes [#1464](https://github.com/serialport/node-serialport/issues/1464) Thanks to @Fumon for closing this long standing issue!
 
 
 
 <a name="6.0.5"></a>
 ## 6.0.5 (2018-02-04)
 
-* fix(changelog): drop the augular changelog as it misses commits ([7d0ff88](https://github.com/node-serialport/node-serialport/commit/7d0ff88))
-* fix(docs): Put gitter link back ([f8f3ce5](https://github.com/node-serialport/node-serialport/commit/f8f3ce5))
-* fix(terminal): specifying a port now behaves correctly (#1463) ([1fa20e7](https://github.com/node-serialport/node-serialport/commit/1fa20e7)), closes [#1463](https://github.com/node-serialport/node-serialport/issues/1463)
-* chore(build): build on node 9 ([a819bca](https://github.com/node-serialport/node-serialport/commit/a819bca))
-* chore(docs): fix appveyor links in readme ([388d37b](https://github.com/node-serialport/node-serialport/commit/388d37b))
-* chore(package): update commander to version 2.13.0 ([a94fea0](https://github.com/node-serialport/node-serialport/commit/a94fea0))
-* chore(package): update mocha to version 5.0.0 (#1446) ([e728ff3](https://github.com/node-serialport/node-serialport/commit/e728ff3)), closes [#1446](https://github.com/node-serialport/node-serialport/issues/1446)
-* chore(package): update prebuild to version 7.0.0 ([bc46149](https://github.com/node-serialport/node-serialport/commit/bc46149))
-* chore(package): update prebuild-install to version 2.4.1 ([13e8d0a](https://github.com/node-serialport/node-serialport/commit/13e8d0a))
-* chore(package): update sinon to version 4.1.5 ([699a907](https://github.com/node-serialport/node-serialport/commit/699a907))
-* chore(packages): upgrade eslint ([416cfe3](https://github.com/node-serialport/node-serialport/commit/416cfe3))
-* chore(packages): upgrade sinon ([17148df](https://github.com/node-serialport/node-serialport/commit/17148df))
-* Add null check code ([602793d](https://github.com/node-serialport/node-serialport/commit/602793d))
-* Adding in port selection to serialport-term. (#1448) ([9f543b6](https://github.com/node-serialport/node-serialport/commit/9f543b6)), closes [#1448](https://github.com/node-serialport/node-serialport/issues/1448)
-* Bumping prebuild version and updating docs with info about building against NW.js headers. (#1461) ([672c198](https://github.com/node-serialport/node-serialport/commit/672c198)), closes [#1461](https://github.com/node-serialport/node-serialport/issues/1461)
-* docs(readme): Fix broken link to gitter (#1457) ([3e68e8f](https://github.com/node-serialport/node-serialport/commit/3e68e8f)), closes [#1457](https://github.com/node-serialport/node-serialport/issues/1457)
-* docs(readyParser): correct the required parameters (#1392) ([dcd256d](https://github.com/node-serialport/node-serialport/commit/dcd256d)), closes [#1392](https://github.com/node-serialport/node-serialport/issues/1392)
-* feat(docs): Switch to JSDOC docs not in the readme (#1383) ([60fc047](https://github.com/node-serialport/node-serialport/commit/60fc047)), closes [#1383](https://github.com/node-serialport/node-serialport/issues/1383)
-* feat(parsers): Adding option to include delimiter in the DelimiterParser transform. (#1453) ([6a3ab65](https://github.com/node-serialport/node-serialport/commit/6a3ab65)), closes [#1453](https://github.com/node-serialport/node-serialport/issues/1453)
-* feat(parsers): ByteLength is now more efficient (#1402) ([f7eb2f0](https://github.com/node-serialport/node-serialport/commit/f7eb2f0)), closes [#1402](https://github.com/node-serialport/node-serialport/issues/1402)
+* fix(changelog): drop the augular changelog as it misses commits ([7d0ff88](https://github.com/serialport/node-serialport/commit/7d0ff88))
+* fix(docs): Put gitter link back ([f8f3ce5](https://github.com/serialport/node-serialport/commit/f8f3ce5))
+* fix(terminal): specifying a port now behaves correctly (#1463) ([1fa20e7](https://github.com/serialport/node-serialport/commit/1fa20e7)), closes [#1463](https://github.com/serialport/node-serialport/issues/1463)
+* chore(build): build on node 9 ([a819bca](https://github.com/serialport/node-serialport/commit/a819bca))
+* chore(docs): fix appveyor links in readme ([388d37b](https://github.com/serialport/node-serialport/commit/388d37b))
+* chore(package): update commander to version 2.13.0 ([a94fea0](https://github.com/serialport/node-serialport/commit/a94fea0))
+* chore(package): update mocha to version 5.0.0 (#1446) ([e728ff3](https://github.com/serialport/node-serialport/commit/e728ff3)), closes [#1446](https://github.com/serialport/node-serialport/issues/1446)
+* chore(package): update prebuild to version 7.0.0 ([bc46149](https://github.com/serialport/node-serialport/commit/bc46149))
+* chore(package): update prebuild-install to version 2.4.1 ([13e8d0a](https://github.com/serialport/node-serialport/commit/13e8d0a))
+* chore(package): update sinon to version 4.1.5 ([699a907](https://github.com/serialport/node-serialport/commit/699a907))
+* chore(packages): upgrade eslint ([416cfe3](https://github.com/serialport/node-serialport/commit/416cfe3))
+* chore(packages): upgrade sinon ([17148df](https://github.com/serialport/node-serialport/commit/17148df))
+* Add null check code ([602793d](https://github.com/serialport/node-serialport/commit/602793d))
+* Adding in port selection to serialport-term. (#1448) ([9f543b6](https://github.com/serialport/node-serialport/commit/9f543b6)), closes [#1448](https://github.com/serialport/node-serialport/issues/1448)
+* Bumping prebuild version and updating docs with info about building against NW.js headers. (#1461) ([672c198](https://github.com/serialport/node-serialport/commit/672c198)), closes [#1461](https://github.com/serialport/node-serialport/issues/1461)
+* docs(readme): Fix broken link to gitter (#1457) ([3e68e8f](https://github.com/serialport/node-serialport/commit/3e68e8f)), closes [#1457](https://github.com/serialport/node-serialport/issues/1457)
+* docs(readyParser): correct the required parameters (#1392) ([dcd256d](https://github.com/serialport/node-serialport/commit/dcd256d)), closes [#1392](https://github.com/serialport/node-serialport/issues/1392)
+* feat(docs): Switch to JSDOC docs not in the readme (#1383) ([60fc047](https://github.com/serialport/node-serialport/commit/60fc047)), closes [#1383](https://github.com/serialport/node-serialport/issues/1383)
+* feat(parsers): Adding option to include delimiter in the DelimiterParser transform. (#1453) ([6a3ab65](https://github.com/serialport/node-serialport/commit/6a3ab65)), closes [#1453](https://github.com/serialport/node-serialport/issues/1453)
+* feat(parsers): ByteLength is now more efficient (#1402) ([f7eb2f0](https://github.com/serialport/node-serialport/commit/f7eb2f0)), closes [#1402](https://github.com/serialport/node-serialport/issues/1402)
 
 
 
 <a name="6.0.4"></a>
-## [6.0.4](https://github.com/node-serialport/node-serialport/compare/v6.0.3...v6.0.4) (2017-10-26)
+## [6.0.4](https://github.com/serialport/node-serialport/compare/v6.0.3...v6.0.4) (2017-10-26)
 
 
 ### Bug Fixes
 
-* **packages:** just-extend isn't necessary anymore ([#1376](https://github.com/node-serialport/node-serialport/issues/1376)) ([8f650c3](https://github.com/node-serialport/node-serialport/commit/8f650c3))
-* **windows:** bad parameter for ReadThread (windows) ([#1377](https://github.com/node-serialport/node-serialport/issues/1377)) ([6f3afbe](https://github.com/node-serialport/node-serialport/commit/6f3afbe))
+* **packages:** just-extend isn't necessary anymore ([#1376](https://github.com/serialport/node-serialport/issues/1376)) ([8f650c3](https://github.com/serialport/node-serialport/commit/8f650c3))
+* **windows:** bad parameter for ReadThread (windows) ([#1377](https://github.com/serialport/node-serialport/issues/1377)) ([6f3afbe](https://github.com/serialport/node-serialport/commit/6f3afbe))
 
 
 
 <a name="6.0.3"></a>
-## [6.0.3](https://github.com/node-serialport/node-serialport/compare/v6.0.0...v6.0.3) (2017-10-22)
+## [6.0.3](https://github.com/serialport/node-serialport/compare/v6.0.0...v6.0.3) (2017-10-22)
 
 ### Bug Fixes
 
-* **windows:** Fix async handle leak ([#1367](https://github.com/node-serialport/node-serialport/issues/1367)) ([c1d9d88](https://github.com/node-serialport/node-serialport/commit/c1d9d88)), closes [#1363](https://github.com/node-serialport/node-serialport/issues/1363)
-* **windows:** Fix read & write bugs for windows ([#1364](https://github.com/node-serialport/node-serialport/issues/1364)) ([0e4b1f9](https://github.com/node-serialport/node-serialport/commit/0e4b1f9))
+* **windows:** Fix async handle leak ([#1367](https://github.com/serialport/node-serialport/issues/1367)) ([c1d9d88](https://github.com/serialport/node-serialport/commit/c1d9d88)), closes [#1363](https://github.com/serialport/node-serialport/issues/1363)
+* **windows:** Fix read & write bugs for windows ([#1364](https://github.com/serialport/node-serialport/issues/1364)) ([0e4b1f9](https://github.com/serialport/node-serialport/commit/0e4b1f9))
 
 
 
 <a name="6.0.0"></a>
-# [6.0.0](https://github.com/node-serialport/node-serialport/compare/5.0.0...v6.0.0) (2017-10-09)
+# [6.0.0](https://github.com/serialport/node-serialport/compare/5.0.0...v6.0.0) (2017-10-09)
 
 
 ### Features
 
-* **open:** Throw on incorrect baudrate option ([#1347](https://github.com/node-serialport/node-serialport/issues/1347)) ([a3b8d35](https://github.com/node-serialport/node-serialport/commit/a3b8d35))
-* **parsers:** Add cctalk parsers ([#1342](https://github.com/node-serialport/node-serialport/issues/1342)) ([bcb492f](https://github.com/node-serialport/node-serialport/commit/bcb492f))
-* **test:** tone down codecov comments ([#1289](https://github.com/node-serialport/node-serialport/issues/1289)) ([749ffac](https://github.com/node-serialport/node-serialport/commit/749ffac))
-* **windows:** Add ERROR_INVALID_PARAMETER to supported bindings errors ([#1354](https://github.com/node-serialport/node-serialport/issues/1354)) ([4ff9c67](https://github.com/node-serialport/node-serialport/commit/4ff9c67))
+* **open:** Throw on incorrect baudrate option ([#1347](https://github.com/serialport/node-serialport/issues/1347)) ([a3b8d35](https://github.com/serialport/node-serialport/commit/a3b8d35))
+* **parsers:** Add cctalk parsers ([#1342](https://github.com/serialport/node-serialport/issues/1342)) ([bcb492f](https://github.com/serialport/node-serialport/commit/bcb492f))
+* **test:** tone down codecov comments ([#1289](https://github.com/serialport/node-serialport/issues/1289)) ([749ffac](https://github.com/serialport/node-serialport/commit/749ffac))
+* **windows:** Add ERROR_INVALID_PARAMETER to supported bindings errors ([#1354](https://github.com/serialport/node-serialport/issues/1354)) ([4ff9c67](https://github.com/serialport/node-serialport/commit/4ff9c67))
 
 
 ### Bug Fixes
 
-* **docs:** Add a note about windows support ([76b7191](https://github.com/node-serialport/node-serialport/commit/76b7191)), closes [#1299](https://github.com/node-serialport/node-serialport/issues/1299)
-* **docs:** add missing parsers to properties list ([3faadac](https://github.com/node-serialport/node-serialport/commit/3faadac))
-* **docs:** correct default highWaterMark to 65536 bytes ([e83ec4e](https://github.com/node-serialport/node-serialport/commit/e83ec4e))
-* **docs:** Fixed typo in upgrade guide ([#1321](https://github.com/node-serialport/node-serialport/issues/1321)) ([bf251a9](https://github.com/node-serialport/node-serialport/commit/bf251a9))
-* **linux:** The productID should be a number not a description string ([#1279](https://github.com/node-serialport/node-serialport/issues/1279)) ([bf46f68](https://github.com/node-serialport/node-serialport/commit/bf46f68))
-* **package:** update debug to version 3.0.0 ([#1292](https://github.com/node-serialport/node-serialport/issues/1292)) ([4987750](https://github.com/node-serialport/node-serialport/commit/4987750))
-* **tests:** fixup for [#1279](https://github.com/node-serialport/node-serialport/issues/1279) ([#1285](https://github.com/node-serialport/node-serialport/issues/1285)) ([56074f6](https://github.com/node-serialport/node-serialport/commit/56074f6))
-* **windows:** Add option to disable RTS ([#1277](https://github.com/node-serialport/node-serialport/issues/1277)) ([5b8d163](https://github.com/node-serialport/node-serialport/commit/5b8d163))
-* **windows:** Asynchronous callbacks for reading and writing ([#1328](https://github.com/node-serialport/node-serialport/issues/1328)) ([69de595](https://github.com/node-serialport/node-serialport/commit/69de595)), closes [#1221](https://github.com/node-serialport/node-serialport/issues/1221)
-* **windows:** Parse more types of pnpIds ([#1288](https://github.com/node-serialport/node-serialport/issues/1288)) ([0b554d7](https://github.com/node-serialport/node-serialport/commit/0b554d7)), closes [#1220](https://github.com/node-serialport/node-serialport/issues/1220)
+* **docs:** Add a note about windows support ([76b7191](https://github.com/serialport/node-serialport/commit/76b7191)), closes [#1299](https://github.com/serialport/node-serialport/issues/1299)
+* **docs:** add missing parsers to properties list ([3faadac](https://github.com/serialport/node-serialport/commit/3faadac))
+* **docs:** correct default highWaterMark to 65536 bytes ([e83ec4e](https://github.com/serialport/node-serialport/commit/e83ec4e))
+* **docs:** Fixed typo in upgrade guide ([#1321](https://github.com/serialport/node-serialport/issues/1321)) ([bf251a9](https://github.com/serialport/node-serialport/commit/bf251a9))
+* **linux:** The productID should be a number not a description string ([#1279](https://github.com/serialport/node-serialport/issues/1279)) ([bf46f68](https://github.com/serialport/node-serialport/commit/bf46f68))
+* **package:** update debug to version 3.0.0 ([#1292](https://github.com/serialport/node-serialport/issues/1292)) ([4987750](https://github.com/serialport/node-serialport/commit/4987750))
+* **tests:** fixup for [#1279](https://github.com/serialport/node-serialport/issues/1279) ([#1285](https://github.com/serialport/node-serialport/issues/1285)) ([56074f6](https://github.com/serialport/node-serialport/commit/56074f6))
+* **windows:** Add option to disable RTS ([#1277](https://github.com/serialport/node-serialport/issues/1277)) ([5b8d163](https://github.com/serialport/node-serialport/commit/5b8d163))
+* **windows:** Asynchronous callbacks for reading and writing ([#1328](https://github.com/serialport/node-serialport/issues/1328)) ([69de595](https://github.com/serialport/node-serialport/commit/69de595)), closes [#1221](https://github.com/serialport/node-serialport/issues/1221)
+* **windows:** Parse more types of pnpIds ([#1288](https://github.com/serialport/node-serialport/issues/1288)) ([0b554d7](https://github.com/serialport/node-serialport/commit/0b554d7)), closes [#1220](https://github.com/serialport/node-serialport/issues/1220)
 
 
 ### Chores
 
-* **binaries:** Lets switch to prebuild! ([#1282](https://github.com/node-serialport/node-serialport/issues/1282)) ([8c36e99](https://github.com/node-serialport/node-serialport/commit/8c36e99))
+* **binaries:** Lets switch to prebuild! ([#1282](https://github.com/serialport/node-serialport/issues/1282)) ([8c36e99](https://github.com/serialport/node-serialport/commit/8c36e99))
 
 ### BREAKING CHANGES
 
@@ -252,7 +252,7 @@ This is a recommended release for everyone on windows as it fixes a memory leak 
 
 Version 5.0.0 🎉
 -------------
-Nearly [a year in the making](https://github.com/node-serialport/node-serialport/compare/4.0.7...5.0.0-beta9) Node SerialPort 5.0.0 is a major rewrite that improves stability, compatibility and performance. The api surface is similar to version 4 there have been a number of changes to ensure consistent error handling and operation of a serial port. Notably we are now a [`Stream`](https://nodejs.org/api/stream.html)! We can also introduce a bindings layer. A small low level api to provide access to underlying hardware. External bindings written in other languages or targeting other platforms can now be used.
+Nearly [a year in the making](https://github.com/serialport/node-serialport/compare/4.0.7...5.0.0-beta9) Node SerialPort 5.0.0 is a major rewrite that improves stability, compatibility and performance. The api surface is similar to version 4 there have been a number of changes to ensure consistent error handling and operation of a serial port. Notably we are now a [`Stream`](https://nodejs.org/api/stream.html)! We can also introduce a bindings layer. A small low level api to provide access to underlying hardware. External bindings written in other languages or targeting other platforms can now be used.
 
 Some major cpu performance gains on unix platforms can be found and we're less buggy and better performing on Windows too.
 
