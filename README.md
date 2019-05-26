@@ -1,17 +1,17 @@
 # Node Serialport
-[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
-[![codecov](https://codecov.io/gh/node-serialport/node-serialport/branch/master/graph/badge.svg)](https://codecov.io/gh/node-serialport/node-serialport)
-[![Build Status](https://travis-ci.org/node-serialport/node-serialport.svg?branch=master)](https://travis-ci.org/node-serialport/node-serialport)
+[![Backers on Open Collective](https://opencollective.com/serialport-monorepo/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/serialport-monorepo/sponsors/badge.svg)](#sponsors) [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
+[![codecov](https://codecov.io/gh/serialport/node-serialport/branch/master/graph/badge.svg)](https://codecov.io/gh/serialport/node-serialport)
+[![Build Status](https://travis-ci.org/serialport/node-serialport.svg?branch=master)](https://travis-ci.org/serialport/node-serialport)
 [![Build status](https://ci.appveyor.com/api/projects/status/ijg4rnd9vi16tbgr/branch/master?svg=true)](https://ci.appveyor.com/project/serialport/node-serialport/branch/master)
-[![Greenkeeper badge](https://badges.greenkeeper.io/node-serialport/node-serialport.svg)](https://greenkeeper.io/)
+[![Greenkeeper badge](https://badges.greenkeeper.io/serialport/node-serialport.svg)](https://greenkeeper.io/)
 
-Working with serial ports can be hard, this is a collection of projects that make it easier.
+Access serial ports with JavaScript. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!
 
 > Go to https://serialport.io/ to learn more, find guides and api documentation.
 
 ## Quick Links
 - [**Guides**](https://serialport.io/docs/guide-about)
-- [**API Docs**](https://serialport.io/docs/en/api-serialport)
+- [**API Docs**](https://serialport.io/docs/api-serialport)
 - [The `serialport` package api docs](https://serialport.io/docs/api-serialport)
 
 
@@ -46,7 +46,7 @@ Parsers are traditionally Transform streams, but Duplex streams and other non st
 ## Developing
 
 ### Developing node serialport projects
-1. Clone this repo `git clone git@github.com:node-serialport/node-serialport.git`
+1. Clone this repo `git clone git@github.com:serialport/node-serialport.git`
 1. Run `npm install` to setup local package dependencies (run this any time you depend on a package local to this repo)
 1. Run `npm test` to ensure everything is working properly
 1. Run `npm run generate` to generate a new project
@@ -55,6 +55,32 @@ Parsers are traditionally Transform streams, but Duplex streams and other non st
 ### Developing Docs
 
 See https://github.com/node-serialport/website
+
+## Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/undefined/undefinedgraphs/contributors"><img src="https://opencollective.com/serialport-monorepo/contributors.svg?width=890&button=false" /></a>
+
+## Backers
+
+Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/serialport-monorepo#backer)]
+
+<a href="https://opencollective.com/serialport-monorepo#backers" target="_blank"><img src="https://opencollective.com/serialport-monorepo/backers.svg?width=890"></a>
+
+## Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/serialport-monorepo#sponsor)]
+
+<a href="https://opencollective.com/serialport-monorepo/sponsor/0/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/serialport-monorepo/sponsor/1/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/serialport-monorepo/sponsor/2/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/serialport-monorepo/sponsor/3/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/serialport-monorepo/sponsor/4/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/serialport-monorepo/sponsor/5/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/serialport-monorepo/sponsor/6/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/serialport-monorepo/sponsor/7/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/serialport-monorepo/sponsor/8/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/serialport-monorepo/sponsor/9/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/9/avatar.svg"></a>
 
 ## License
 SerialPort packages are all [MIT licensed](LICENSE) and all it's dependencies are MIT licensed.

@@ -5,7 +5,7 @@
   "main": "lib",
   "repository": {
     "type": "git",
-    "url": "git://github.com/node-serialport/node-serialport.git"
+    "url": "git://github.com/serialport/node-serialport.git"
   },
   "keywords": [
     "ccTalk",

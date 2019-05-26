@@ -13,4 +13,4 @@ SerialPort.Binding = Binding
 const port = new Serialport('/dev/ttyay')
 ```
 
-Learn more at our [stream documentation](https://serialport.io/docs/en/api-stream) page.
+Learn more at our [stream documentation](https://serialport.io/docs/api-stream) page.

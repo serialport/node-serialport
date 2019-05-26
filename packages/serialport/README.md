@@ -1,12 +1,12 @@
 # SerialPort
 
-Working with serial ports can be hard, this is a collection of projects that make it easier.
+Access serial ports with JavaScript. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!
 
 > Go to https://serialport.io/ to learn more, find guides and api documentation.
 
 ## Quick Links
 - [**Guides**](https://serialport.io/docs/guide-about)
-- [**API Docs**](https://serialport.io/docs/en/api-serialport)
+- [**API Docs**](https://serialport.io/docs/api-serialport)
 - [The `serialport` package api docs](https://serialport.io/docs/api-serialport)
 
 
@@ -41,7 +41,7 @@ Parsers are traditionally Transform streams, but Duplex streams and other non st
 ## Developing
 
 ### Developing node serialport projects
-1. Clone this repo `git clone git@github.com:node-serialport/node-serialport.git`
+1. Clone this repo `git clone git@github.com:serialport/node-serialport.git`
 1. Run `npm install` to setup local package dependencies (run this any time you depend on a package local to this repo)
 1. Run `npm test` to ensure everything is working properly
 1. Run `npm run generate` to generate a new project
