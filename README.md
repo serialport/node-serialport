@@ -1,5 +1,5 @@
 # Node Serialport
-[![Backers on Open Collective](https://opencollective.com/serialport-monorepo/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/serialport-monorepo/sponsors/badge.svg)](#sponsors) [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
+[![Backers on Open Collective](https://opencollective.com/serialport/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/serialport/sponsors/badge.svg)](#sponsors) [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
 [![codecov](https://codecov.io/gh/serialport/node-serialport/branch/master/graph/badge.svg)](https://codecov.io/gh/serialport/node-serialport)
 [![Build Status](https://travis-ci.org/serialport/node-serialport.svg?branch=master)](https://travis-ci.org/serialport/node-serialport)
 [![Build status](https://ci.appveyor.com/api/projects/status/ijg4rnd9vi16tbgr/branch/master?svg=true)](https://ci.appveyor.com/project/serialport/node-serialport/branch/master)
@@ -13,7 +13,6 @@ Access serial ports with JavaScript. Linux, OSX and Windows. Welcome your roboti
 - [**Guides**](https://serialport.io/docs/guide-about)
 - [**API Docs**](https://serialport.io/docs/api-serialport)
 - [The `serialport` package api docs](https://serialport.io/docs/api-serialport)
-
 
 ### Serialport
 - [`serialport`](https://serialport.io/docs/api-serialport) Chances are you're looking for the `serialport` package which provides a good set of defaults for most projects. However it is quite easy to mix and match the parts of serialport you need.
@@ -56,32 +55,6 @@ Parsers are traditionally Transform streams, but Duplex streams and other non st
 
 See https://github.com/node-serialport/website
 
-## Contributors
-
-This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
-<a href="https://github.com/undefined/undefinedgraphs/contributors"><img src="https://opencollective.com/serialport-monorepo/contributors.svg?width=890&button=false" /></a>
-
-## Backers
-
-Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/serialport-monorepo#backer)]
-
-<a href="https://opencollective.com/serialport-monorepo#backers" target="_blank"><img src="https://opencollective.com/serialport-monorepo/backers.svg?width=890"></a>
-
-## Sponsors
-
-Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/serialport-monorepo#sponsor)]
-
-<a href="https://opencollective.com/serialport-monorepo/sponsor/0/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/0/avatar.svg"></a>
-<a href="https://opencollective.com/serialport-monorepo/sponsor/1/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/1/avatar.svg"></a>
-<a href="https://opencollective.com/serialport-monorepo/sponsor/2/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/2/avatar.svg"></a>
-<a href="https://opencollective.com/serialport-monorepo/sponsor/3/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/3/avatar.svg"></a>
-<a href="https://opencollective.com/serialport-monorepo/sponsor/4/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/4/avatar.svg"></a>
-<a href="https://opencollective.com/serialport-monorepo/sponsor/5/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/5/avatar.svg"></a>
-<a href="https://opencollective.com/serialport-monorepo/sponsor/6/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/6/avatar.svg"></a>
-<a href="https://opencollective.com/serialport-monorepo/sponsor/7/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/7/avatar.svg"></a>
-<a href="https://opencollective.com/serialport-monorepo/sponsor/8/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/8/avatar.svg"></a>
-<a href="https://opencollective.com/serialport-monorepo/sponsor/9/website" target="_blank"><img src="https://opencollective.com/serialport-monorepo/sponsor/9/avatar.svg"></a>
-
 ## License
 SerialPort packages are all [MIT licensed](LICENSE) and all it's dependencies are MIT licensed.
 
@@ -109,3 +82,30 @@ If you have a PR that improves the project people in any or all of the above peo
 
 - [Francis Gulotta](https://twitter.com/reconbot) | [reconbot](https://github.com/reconbot)
 - [Nick Hehr](https://twitter.com/hipsterbrown) | [hipsterbrown](https://github.com/hipsterbrown)
+
+
+### Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/serialport/node-serialport/graphs/contributors"><img src="https://opencollective.com/serialport/contributors.svg?width=890&button=false" /></a>
+
+### Backers
+
+Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/serialport#backer)]
+
+<a href="https://opencollective.com/serialport#backers" target="_blank"><img src="https://opencollective.com/serialport/backers.svg?width=890"></a>
+
+### Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/serialport#sponsor)]
+
+<!-- <a href="https://opencollective.com/serialport/sponsor/0/website" target="_blank"><img src="https://opencollective.com/serialport/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/serialport/sponsor/1/website" target="_blank"><img src="https://opencollective.com/serialport/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/serialport/sponsor/2/website" target="_blank"><img src="https://opencollective.com/serialport/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/serialport/sponsor/3/website" target="_blank"><img src="https://opencollective.com/serialport/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/serialport/sponsor/4/website" target="_blank"><img src="https://opencollective.com/serialport/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/serialport/sponsor/5/website" target="_blank"><img src="https://opencollective.com/serialport/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/serialport/sponsor/6/website" target="_blank"><img src="https://opencollective.com/serialport/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/serialport/sponsor/7/website" target="_blank"><img src="https://opencollective.com/serialport/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/serialport/sponsor/8/website" target="_blank"><img src="https://opencollective.com/serialport/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/serialport/sponsor/9/website" target="_blank"><img src="https://opencollective.com/serialport/sponsor/9/avatar.svg"></a> -->
