@@ -48,7 +48,7 @@
     "mocha": "^6.1.4",
     "nyc": "^14.0.0",
     "plop": "^2.2.0",
-    "prebuild": "^8.1.2",
+    "prebuild": "^9.0.0",
     "prettier": "^1.16.4",
     "proxyquire": "^2.1.0",
     "sinon": "^7.2.3"
