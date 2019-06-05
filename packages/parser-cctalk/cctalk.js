@@ -21,12 +21,12 @@ class CCTalkParser extends Transform {
   }
   _transform(buffer, _, cb) {
     if (this.maxDelayBetweenBytesMs > 0) {
-      const now = +new Date
+      const now = +new Date()
       if (now - this.lastByteFetchTime > this.maxDelayBetweenBytesMs) {
         this.array = []
         this.cursor = 0
       }
-      this.lastByteFetchTime = now;
+      this.lastByteFetchTime = now
     }
 
     this.cursor += buffer.length
