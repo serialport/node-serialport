@@ -5,7 +5,7 @@ This can be checked in the .travis.yml file and appveyor.yml file. Within these 
 
 Two factor auth is required for publishing.
 
-1. run `NPM_CONFIG_OTP=<2fa code> npm run publish`
+1. run `npm run publish`
 2. Let everyone know 🎉
 
 If publishing more than 3 packages at once and one of them is the bindings package, you'll need to figure out a way to get the ci's to build the binaries as github wont tell them about the new tags. You can do this by deleting the tag and pushing it again for the bindings package (only binary package as of this writing).
@@ -31,4 +31,4 @@ git push origin @serialport/bindings@2.0.3
 
 Note:
 
-CI sets the `prebuild_upload` environment variable with a GitHub token to trigger `prebuild` to upload the binaries to the release tag. This is already configured on Travis and AppVeyor. 
+CI sets the `prebuild_upload` environment variable with a GitHub token to trigger `prebuild` to upload the binaries to the release tag. This is already configured on Travis and AppVeyor.
