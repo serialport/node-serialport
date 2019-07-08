@@ -26,6 +26,7 @@ class MockBinding extends AbstractBinding {
   // Reset mocks
   static reset() {
     ports = {}
+    serialNumber = 0
   }
 
   // Create a mock port
