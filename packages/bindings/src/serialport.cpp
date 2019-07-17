@@ -326,9 +326,9 @@ void EIO_AfterGet(uv_work_t* req) {
     argv[1] = Nan::Undefined();
   } else {
     v8::Local<v8::Object> results = Nan::New<v8::Object>();
-    results->Set(Nan::New<v8::String>("cts").ToLocalChecked(), Nan::New<v8::Boolean>(data->cts));
-    results->Set(Nan::New<v8::String>("dsr").ToLocalChecked(), Nan::New<v8::Boolean>(data->dsr));
-    results->Set(Nan::New<v8::String>("dcd").ToLocalChecked(), Nan::New<v8::Boolean>(data->dcd));
+    Nan::Set(results, Nan::New<v8::String>("cts").ToLocalChecked(), Nan::New<v8::Boolean>(data->cts));
+    Nan::Set(results, Nan::New<v8::String>("dsr").ToLocalChecked(), Nan::New<v8::Boolean>(data->dsr));
+    Nan::Set(results, Nan::New<v8::String>("dcd").ToLocalChecked(), Nan::New<v8::Boolean>(data->dcd));
 
     argv[0] = Nan::Null();
     argv[1] = results;
@@ -375,7 +375,7 @@ void EIO_AfterGetBaudRate(uv_work_t* req) {
     argv[1] = Nan::Undefined();
   } else {
     v8::Local<v8::Object> results = Nan::New<v8::Object>();
-    results->Set(Nan::New<v8::String>("baudRate").ToLocalChecked(), Nan::New<v8::Integer>(data->baudRate));
+    Nan::Set(results, Nan::New<v8::String>("baudRate").ToLocalChecked(), Nan::New<v8::Integer>(data->baudRate));
 
     argv[0] = Nan::Null();
     argv[1] = results;
