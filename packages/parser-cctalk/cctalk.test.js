@@ -50,26 +50,26 @@ describe('CCTalkParser', () => {
   })
   it('resets incomplete message after timeout', () => {
     const spy = sinon.spy()
-    const clock = sinon.useFakeTimers(Date.now());
+    const clock = sinon.useFakeTimers(Date.now())
     const parser = new CCTalkParser(50)
     parser.on('data', spy)
     parser.write(Buffer.from([2, 2, 1]))
-    clock.tick(51);
+    clock.tick(51)
     parser.write(Buffer.from([2, 2, 1, 254, 1, 1, 217]))
     assert.equal(spy.callCount, 1)
     assert.deepEqual(spy.getCall(0).args[0], Buffer.from([2, 2, 1, 254, 1, 1, 217]))
-    clock.restore();
+    clock.restore()
   })
   it('disabled message timeout', () => {
     const spy = sinon.spy()
-    const clock = sinon.useFakeTimers(Date.now());
+    const clock = sinon.useFakeTimers(Date.now())
     const parser = new CCTalkParser(0)
     parser.on('data', spy)
     parser.write(Buffer.from([2, 2, 1]))
-    clock.tick(100);
+    clock.tick(100)
     parser.write(Buffer.from([254, 1, 1, 217]))
     assert.equal(spy.callCount, 1)
     assert.deepEqual(spy.getCall(0).args[0], Buffer.from([2, 2, 1, 254, 1, 1, 217]))
-    clock.restore();
+    clock.restore()
   })
 })
