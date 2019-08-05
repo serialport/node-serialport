@@ -12,7 +12,7 @@ const parser = port.pipe(new CCtalk())
 parser.on('data', console.log)
  */
 class CCTalkParser extends Transform {
-  constructor(maxDelayBetweenBytesMs = 0) {
+  constructor(maxDelayBetweenBytesMs = 50) {
     super()
     this.array = []
     this.cursor = 0
@@ -21,7 +21,7 @@ class CCTalkParser extends Transform {
   }
   _transform(buffer, _, cb) {
     if (this.maxDelayBetweenBytesMs > 0) {
-      const now = +new Date()
+      const now = Date.now()
       if (now - this.lastByteFetchTime > this.maxDelayBetweenBytesMs) {
         this.array = []
         this.cursor = 0
