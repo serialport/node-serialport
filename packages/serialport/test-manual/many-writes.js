@@ -66,7 +66,7 @@ function writeOneCommandAtATime(port) {
 async function writeAndDrain(port) {
   const command = commands.pop()
   if (!command) {
-    port
+    return port
   }
   const commandNumber = commandCount - commands.length;
   return new Promise((resolve, reject) => {
