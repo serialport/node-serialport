@@ -19,13 +19,13 @@ module.exports = async function unixWrite(buffer, offset) {
     throw new Error('Port is not open')
   }
   try {
-    const bytesWritten = await writeAsync(this.fd, buffer, offset, bytesToWrite)
+    const { bytesWritten } = await writeAsync(this.fd, buffer, offset, bytesToWrite)
     logger('write returned: wrote', bytesWritten, 'bytes')
     if (bytesWritten + offset < buffer.length) {
       if (!this.isOpen) {
         throw new Error('Port is not open')
       }
-      return resolve(unixWrite.call(this, buffer, bytesWritten + offset))
+      return unixWrite.call(this, buffer, bytesWritten + offset)
     }
 
     logger('Finished writing', bytesWritten + offset, 'bytes')
