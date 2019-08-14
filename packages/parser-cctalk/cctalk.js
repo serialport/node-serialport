@@ -12,12 +12,23 @@ const parser = port.pipe(new CCtalk())
 parser.on('data', console.log)
  */
 class CCTalkParser extends Transform {
-  constructor() {
+  constructor(maxDelayBetweenBytesMs = 50) {
     super()
     this.array = []
     this.cursor = 0
+    this.lastByteFetchTime = 0
+    this.maxDelayBetweenBytesMs = maxDelayBetweenBytesMs
   }
   _transform(buffer, _, cb) {
+    if (this.maxDelayBetweenBytesMs > 0) {
+      const now = Date.now()
+      if (now - this.lastByteFetchTime > this.maxDelayBetweenBytesMs) {
+        this.array = []
+        this.cursor = 0
+      }
+      this.lastByteFetchTime = now
+    }
+
     this.cursor += buffer.length
     // TODO: Better Faster es7 no supported by node 4
     // ES7 allows directly push [...buffer]

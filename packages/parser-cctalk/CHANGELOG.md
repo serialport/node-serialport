@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.0.0](https://github.com/serialport/node-serialport/compare/@serialport/parser-cctalk@2.0.2...@serialport/parser-cctalk@4.0.0) (2019-08-05)
+
+### implementing packet byte timeouts due to cctalk documentation
+
+* Added timeout parameter to constructor
+* Implemented the reset of packet receiving process after timeout ([#1886])
+
 # [3.0.0](https://github.com/serialport/node-serialport/compare/@serialport/parser-cctalk@2.0.2...@serialport/parser-cctalk@3.0.0) (2019-05-16)
 
 
