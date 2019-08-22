@@ -458,7 +458,7 @@ describe('SerialPort', () => {
         })
       })
 
-      it('emits the close event and runs the callback', done => {
+      it('emits the "close" event and runs the callback', done => {
         let called = 0
         const doneIfTwice = function() {
           called++
@@ -472,7 +472,7 @@ describe('SerialPort', () => {
         port.on('close', doneIfTwice)
       })
 
-      it('emits an error event or error callback but not both', done => {
+      it('emits an "error" event or error callback but not both', done => {
         const port = new SerialPort('/dev/exists', { autoOpen: false })
         let called = 0
         const doneIfTwice = function(err) {
@@ -487,7 +487,7 @@ describe('SerialPort', () => {
         port.close(doneIfTwice)
       })
 
-      it('fires a close event after being reopened', done => {
+      it('emits a "close" event after being reopened', done => {
         const port = new SerialPort('/dev/exists', () => {
           const closeSpy = sandbox.spy()
           port.on('close', closeSpy)
@@ -893,6 +893,19 @@ describe('SerialPort', () => {
         })
         port.binding.write(testData)
       })
+    })
+
+    it('emits data events with resuming', async () => {
+      const testData = Buffer.from('I am a really short string')
+      const port = new SerialPort('/dev/exists', { bindingOptions: { echo: true } })
+      await new Promise(resolve => port.on('open', resolve))
+      await new Promise(resolve => port.write(testData, resolve))
+      await new Promise(resolve => port.once('readable', resolve))
+      const data1 = port.read()
+      await new Promise(resolve => port.write(testData, resolve))
+      await new Promise(resolve => port.once('readable', resolve))
+      const data2 = port.read()
+      assert.deepEqual(Buffer.concat([data1, data2]), Buffer.concat([testData, testData]))
     })
   })
 
