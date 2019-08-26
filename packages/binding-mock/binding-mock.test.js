@@ -16,7 +16,6 @@ describe('BindingMock', () => {
   it('constructs', () => {
     new BindingMock({})
   })
-  it('needs more testing')
 
   describe('instance method', () => {
     beforeEach(function() {

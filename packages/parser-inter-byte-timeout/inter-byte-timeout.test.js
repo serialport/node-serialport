@@ -71,7 +71,7 @@ describe('InterByteTimeoutParser', () => {
     parser.end()
     assert(spy.calledOnce, 'expecting 1 data event')
   })
-  it('emits all buffered data when stream ends', () => {
+  it('handles not having any buffered data when stream ends', () => {
     const spy = sinon.spy()
     const parser = new InterByteTimeoutParser({ interval: 15 })
     parser.on('data', spy)

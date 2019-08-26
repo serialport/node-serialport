@@ -90,18 +90,6 @@ describe('ReadlineParser', () => {
     })
   })
 
-  it('allows setting of the delimiter with a string', () => {
-    new ReadlineParser({ delimiter: 'string' })
-  })
-
-  it('allows setting of the delimiter with a buffer', () => {
-    new ReadlineParser({ delimiter: Buffer.from([1]) })
-  })
-
-  it('allows setting of the delimiter with an array of bytes', () => {
-    new ReadlineParser({ delimiter: [1] })
-  })
-
   it("doesn't emits empty data events", () => {
     const spy = sinon.spy()
     const parser = new ReadlineParser({ delimiter: 'a' })
