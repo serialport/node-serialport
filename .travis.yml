@@ -21,16 +21,10 @@ env:
   matrix:
   - BINARY_BUILDER="true" TRAVIS_NODE_VERSION="8"
   - BINARY_BUILDER="true" TRAVIS_NODE_VERSION="8" ARCH="x86"
-  - TRAVIS_NODE_VERSION="10"
-  - TRAVIS_NODE_VERSION="12"
 matrix:
   exclude:
   - os: osx
-    env: TRAVIS_NODE_VERSION="6" ARCH="x86"
-  - os: osx
     env: BINARY_BUILDER="true" TRAVIS_NODE_VERSION="8" ARCH="x86"
-  - os: osx
-    env: TRAVIS_NODE_VERSION="9" ARCH="x86"
 
 before_install:
 
@@ -69,15 +63,10 @@ install:
 - npm run rebuild
 
 script:
-- npm test
-
 # if publishing, do it
 - >
   if [[ $PUBLISH_BINARY == true ]]; then
     echo "building and uploading binaries"
     npm run prebuild;
   fi;
-
-after_success:
-- npm run coverage
-
+  true
