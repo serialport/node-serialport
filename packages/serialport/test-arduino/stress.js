@@ -21,16 +21,12 @@ describe('the stress', () => {
   const testPort = process.env.TEST_PORT
 
   if (!testPort) {
+    // eslint-disable-next-line mocha/no-pending-tests
     it('cannot be tested as we have no test ports')
     return
   }
 
   describe('of 2 minutes of running 1k writes', () => {
-    if (process.version.match('v0.10.')) {
-      it('either leaks like a siv or memwatch is broken on v10')
-      return
-    }
-
     it("doesn't leak memory", done => {
       const data = Buffer.alloc(1024)
       const hd = new memwatch.HeapDiff()

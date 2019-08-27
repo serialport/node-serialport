@@ -164,7 +164,7 @@ describe('SerialPort', () => {
     })
 
     it('allows optional options', function(done) {
-      this.port = new SerialPort('/dev/exists', done)
+      this.port = new SerialPort('/dev/exists', () => done())
     })
   })
 

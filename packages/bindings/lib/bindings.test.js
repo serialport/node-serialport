@@ -1,3 +1,4 @@
+/* eslint-disable mocha/no-pending-tests */
 let platform
 switch (process.platform) {
   case 'win32':
@@ -323,7 +324,7 @@ function testBinding(bindingName, Binding, testPort) {
         })
       })
 
-      describe.only('#write', () => {
+      describe('#write', () => {
         it('errors asynchronously when not open', done => {
           const binding = new Binding({
             disconnect,

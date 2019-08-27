@@ -1,10 +1,12 @@
 {
   "extends": [
-    "plugin:node/recommended"
+    "plugin:node/recommended",
+    "plugin:mocha/recommended"
   ],
   "plugins": [
     "prettier",
-    "node"
+    "node",
+    "mocha"
   ],
   "env": {
     "node": true,
@@ -62,6 +64,9 @@
     ],
     "valid-jsdoc": [
       0
-    ]
+    ],
+    "mocha/no-mocha-arrows": [0],
+    "mocha/no-setup-in-describe": [0],
+    "mocha/no-hooks-for-single-case": [0]
   }
 }
