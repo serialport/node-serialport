@@ -370,10 +370,10 @@ SerialPort.prototype._read = function(bytesToRead) {
   const start = pool.used
 
   // the actual read.
-  debug('_read', `reading`)
+  debug('_read', `reading`, { start, toRead })
   this.binding.read(pool, start, toRead).then(
-    bytesRead => {
-      debug('binding.read', `finished`)
+    ({ bytesRead }) => {
+      debug('binding.read', `finished`, { bytesRead })
       // zero bytes means read means we've hit EOF? Maybe this should be an error
       if (bytesRead === 0) {
         debug('binding.read', 'Zero bytes read closing readable stream')

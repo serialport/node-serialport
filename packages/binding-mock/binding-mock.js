@@ -149,10 +149,10 @@ class MockBinding extends AbstractBinding {
       })
     }
     const data = this.port.data.slice(0, length)
-    const readLength = data.copy(buffer, offset)
+    const bytesRead = data.copy(buffer, offset)
     this.port.data = this.port.data.slice(length)
-    debug(this.serialNumber, 'read', readLength, 'bytes')
-    return readLength
+    debug(this.serialNumber, 'read', bytesRead, 'bytes')
+    return { bytesRead, buffer }
   }
 
   async write(buffer) {

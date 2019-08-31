@@ -544,9 +544,10 @@ function testBinding(bindingName, Binding, testPort) {
           return binding.read(buffer, 0, buffer.length)
         })
 
-        it('returns at maximum the requested number of bytes', () => {
-          return binding.read(buffer, 0, 1).then(bytesRead => {
+        it('returns at maximum the requested number of bytes and the buffer', () => {
+          return binding.read(buffer, 0, 1).then(({ bytesRead, buffer: returnedBuffer }) => {
             assert.equal(bytesRead, 1)
+            assert.equal(buffer, returnedBuffer)
           })
         })
       })

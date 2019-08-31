@@ -85,12 +85,12 @@ The in progress reads must error when the port is closed with an error object th
       throw new TypeError('"buffer" is not a Buffer')
     }
 
-    if (typeof offset !== 'number') {
-      throw new TypeError('"offset" is not an integer')
+    if (typeof offset !== 'number' || isNaN(length)) {
+      throw new TypeError(`"offset" is not an integer got "${isNaN(length) ? 'NaN' : typeof offset}"`)
     }
 
-    if (typeof length !== 'number') {
-      throw new TypeError('"length" is not an integer')
+    if (typeof length !== 'number' || isNaN(length)) {
+      throw new TypeError(`"length" is not an integer got "${isNaN(length) ? 'NaN' : typeof length}"`)
     }
 
     debug('read')
