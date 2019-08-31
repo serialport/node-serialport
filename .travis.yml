@@ -69,7 +69,6 @@ install:
 - npm run rebuild
 
 script:
-- npm run lint
 - npm test
 
 # if publishing, do it
