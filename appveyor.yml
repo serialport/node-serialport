@@ -47,7 +47,6 @@ build_script:
 - npm run rebuild
 
 test_script:
-- npm run lint
 - npm test
 
 - ps: >
