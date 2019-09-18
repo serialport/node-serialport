@@ -1,6 +1,6 @@
 {
   "name": "@serialport/parser-inter-byte-timeout",
-  "version": "2.0.0",
+  "version": "8.0.1",
   "main": "inter-byte-timeout.js",
   "engines": {
     "node": ">=8.6.0"

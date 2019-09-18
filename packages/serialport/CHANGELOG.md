@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.1](https://github.com/serialport/node-serialport/compare/v6.2.2...v8.0.1) (2019-09-18)
+
+
+### Bug Fixes
+
+* Add missing `return` statement ([#1911](https://github.com/serialport/node-serialport/issues/1911)) ([288e6ac](https://github.com/serialport/node-serialport/commit/288e6ac))
+* fix open colelctive link ([#1928](https://github.com/serialport/node-serialport/issues/1928)) ([6426214](https://github.com/serialport/node-serialport/commit/6426214))
+* missing maintainer name ([a626103](https://github.com/serialport/node-serialport/commit/a626103))
+* stream read not working past 1 read ([#1925](https://github.com/serialport/node-serialport/issues/1925)) ([3a13279](https://github.com/serialport/node-serialport/commit/3a13279))
+
+
+### chore
+
+* remove node6 support and upgrade codebase ([#1851](https://github.com/serialport/node-serialport/issues/1851)) ([d4f15c0](https://github.com/serialport/node-serialport/commit/d4f15c0))
+
+
+### Features
+
+* add eslint mocha ([#1922](https://github.com/serialport/node-serialport/issues/1922)) ([afbc431](https://github.com/serialport/node-serialport/commit/afbc431))
+* move cli tools to their own packages ([#1664](https://github.com/serialport/node-serialport/issues/1664)) ([103498e](https://github.com/serialport/node-serialport/commit/103498e)), closes [#1659](https://github.com/serialport/node-serialport/issues/1659)
+
+
+### BREAKING CHANGES
+
+* bindings now use async functions so they’ll never throw, only reject
+
+
+
+
+
 # [8.0.0](https://github.com/serialport/node-serialport/compare/serialport@7.1.5...serialport@8.0.0) (2019-05-16)
 
 

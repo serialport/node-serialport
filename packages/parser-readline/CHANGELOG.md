@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.1](https://github.com/serialport/node-serialport/compare/v6.2.2...v8.0.1) (2019-09-18)
+
+
+### chore
+
+* remove node6 support and upgrade codebase ([#1851](https://github.com/serialport/node-serialport/issues/1851)) ([d4f15c0](https://github.com/serialport/node-serialport/commit/d4f15c0))
+
+
+### Features
+
+* add eslint mocha ([#1922](https://github.com/serialport/node-serialport/issues/1922)) ([afbc431](https://github.com/serialport/node-serialport/commit/afbc431))
+
+
+### BREAKING CHANGES
+
+* bindings now use async functions so they’ll never throw, only reject
+
+
+
+
+
 # [3.0.0](https://github.com/serialport/node-serialport/compare/@serialport/parser-readline@2.0.2...@serialport/parser-readline@3.0.0) (2019-05-16)
 
 

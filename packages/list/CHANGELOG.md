@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.1](https://github.com/serialport/node-serialport/compare/v6.2.2...v8.0.1) (2019-09-18)
+
+
+### chore
+
+* remove node6 support and upgrade codebase ([#1851](https://github.com/serialport/node-serialport/issues/1851)) ([d4f15c0](https://github.com/serialport/node-serialport/commit/d4f15c0))
+
+
+### Features
+
+* move cli tools to their own packages ([#1664](https://github.com/serialport/node-serialport/issues/1664)) ([103498e](https://github.com/serialport/node-serialport/commit/103498e)), closes [#1659](https://github.com/serialport/node-serialport/issues/1659)
+
+
+### BREAKING CHANGES
+
+* bindings now use async functions so they’ll never throw, only reject
+
+
+
+
+
 # [2.0.0](https://github.com/serialport/node-serialport/compare/@serialport/list@1.1.5...@serialport/list@2.0.0) (2019-05-16)
 
 

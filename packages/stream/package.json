@@ -1,9 +1,9 @@
 {
   "name": "@serialport/stream",
-  "version": "3.0.0",
+  "version": "8.0.1",
   "main": "stream.js",
   "dependencies": {
-    "@serialport/binding-mock": "^3.0.0",
+    "@serialport/binding-mock": "^8.0.1",
     "debug": "^4.1.1"
   },
   "engines": {
