@@ -439,13 +439,34 @@ describe('SerialPort', () => {
     })
 
     describe('#close', () => {
-      it('emits a close event', done => {
+      it('emits a close event for writing consumers', done => {
         const port = new SerialPort('/dev/exists', () => {
           port.on('close', () => {
             assert.isFalse(port.isOpen)
             done()
           })
           port.close()
+        })
+      })
+
+      it('emits an "end" event for reading consumers when endOnClose is true', done => {
+        const port = new SerialPort('/dev/exists', { endOnClose: true })
+        port.on('open', () => {
+          port.on('end', () => {
+            assert.isFalse(port.isOpen)
+            done()
+          })
+          port.close()
+        })
+      })
+
+      it('doesn\'t emit an "end" event for reading consumers when endOnClose is false', done => {
+        const port = new SerialPort('/dev/exists')
+        port.on('open', () => {
+          port.on('end', () => {
+            done(new Error('Should not have ended'))
+          })
+          port.close(() => done())
         })
       })
 

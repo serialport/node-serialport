@@ -10,6 +10,7 @@ const FLOWCONTROLS = Object.freeze(['xon', 'xoff', 'xany', 'rtscts'])
 
 const defaultSettings = Object.freeze({
   autoOpen: true,
+  endOnClose: false,
   baudRate: 9600,
   dataBits: 8,
   hupcl: true,
@@ -432,6 +433,9 @@ SerialPort.prototype.close = function(callback, disconnectError) {
       this.closing = false
       debug('binding.close', 'finished')
       this.emit('close', disconnectError)
+      if (this.settings.endOnClose) {
+        this.emit('end')
+      }
       if (callback) {
         callback.call(this, disconnectError)
       }
