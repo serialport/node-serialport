@@ -1,12 +1,12 @@
 const debug = require('debug')
 const logger = debug('serialport/bindings/poller')
 const EventEmitter = require('events')
-const FDPoller = require('bindings')('bindings.node').Poller
+const PollerBindings = require('bindings')('bindings.node').Poller
 
 const EVENTS = {
-  UV_READABLE: 1,
-  UV_WRITABLE: 2,
-  UV_DISCONNECT: 4,
+  UV_READABLE: 0b0001,
+  UV_WRITABLE: 0b0010,
+  UV_DISCONNECT: 0b0100,
 }
 
 function handleEvent(error, eventFlag) {
@@ -35,7 +35,7 @@ function handleEvent(error, eventFlag) {
  * Polls unix systems for readable or writable states of a file or serialport
  */
 class Poller extends EventEmitter {
-  constructor(fd) {
+  constructor(fd, FDPoller = PollerBindings) {
     logger('Creating poller')
     super()
     this.poller = new FDPoller(fd, handleEvent.bind(this))
