@@ -49,22 +49,29 @@ void Poller::stop() {
   }
 }
 
+int Poller::_stop() {
+  return uv_poll_stop(poll_handle);
+}
+
 void Poller::onData(uv_poll_t* handle, int status, int events) {
   Nan::HandleScope scope;
   Poller* obj = static_cast<Poller*>(handle->data);
   v8::Local<v8::Value> argv[2];
+
+  // if Error
   if (0 != status) {
     // fprintf(stdout, "OnData Error status=%s events=%d\n", uv_strerror(status), events);
     argv[0] = v8::Exception::Error(Nan::New<v8::String>(uv_strerror(status)).ToLocalChecked());
     argv[1] = Nan::Undefined();
+    obj->_stop(); // doesn't matter if this errors
   } else {
-    // fprintf(stdout, "OnData status=%d events=%d\n", status, events);
+    // fprintf(stdout, "OnData status=%d events=%d subscribed=%d\n", status, events, obj->events);
     argv[0] = Nan::Null();
     argv[1] = Nan::New<v8::Integer>(events);
+    // remove triggered events from the poll
+    int newEvents = obj->events & ~events;
+    obj->poll(newEvents);
   }
-  // remove triggered events from the poll
-  int newEvents = obj->events & ~events;
-  obj->poll(newEvents);
 
   obj->callback.Call(2, argv, obj);
 }
