@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.2](https://github.com/node-serialport/node-serialport/compare/v8.0.1...v8.0.2) (2019-09-24)
+
+
+### Bug Fixes
+
+* stop polling if the poller has an error ([#1936](https://github.com/node-serialport/node-serialport/issues/1936)) ([c57b6e9](https://github.com/node-serialport/node-serialport/commit/c57b6e9)), closes [#1803](https://github.com/node-serialport/node-serialport/issues/1803)
+* we weren’t running all the tests ([#1937](https://github.com/node-serialport/node-serialport/issues/1937)) ([a5f7d60](https://github.com/node-serialport/node-serialport/commit/a5f7d60))
+
+
+### Features
+
+* add optional end event for piping ([#1926](https://github.com/node-serialport/node-serialport/issues/1926)) ([275315a](https://github.com/node-serialport/node-serialport/commit/275315a))
+
+
+
+
+
 ## [8.0.1](https://github.com/node-serialport/node-serialport/compare/v6.2.2...v8.0.1) (2019-09-18)
 
 

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.2](https://github.com/serialport/node-serialport/compare/v8.0.1...v8.0.2) (2019-09-24)
+
+
+### Features
+
+* add optional end event for piping ([#1926](https://github.com/serialport/node-serialport/issues/1926)) ([275315a](https://github.com/serialport/node-serialport/commit/275315a))
+
+
+
+
+
 ## [8.0.1](https://github.com/serialport/node-serialport/compare/v6.2.2...v8.0.1) (2019-09-18)
 
 
