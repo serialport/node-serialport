@@ -358,7 +358,7 @@ SerialPort.prototype._read = function(bytesToRead) {
   }
 
   if (!this._pool || this._pool.length - this._pool.used < this._kMinPoolSpace) {
-    debug('_read', 'discarding the read buffer pool')
+    debug('_read', 'discarding the read buffer pool because it is below kMinPoolSpace')
     this._pool = allocNewReadPool(this.settings.highWaterMark)
   }
 

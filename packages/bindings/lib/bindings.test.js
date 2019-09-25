@@ -532,23 +532,22 @@ function testBinding(bindingName, Binding, testPort) {
         }
 
         let binding, buffer
-        beforeEach(() => {
+        beforeEach(async () => {
           buffer = Buffer.alloc(readyData.length)
           binding = new Binding({ disconnect })
-          return binding.open(testPort, defaultOpenOptions)
+          await binding.open(testPort, defaultOpenOptions)
         })
 
         afterEach(() => binding.close())
 
-        it("doesn't throw if the port is open", () => {
-          return binding.read(buffer, 0, buffer.length)
+        it("doesn't throw if the port is open", async () => {
+          await binding.read(buffer, 0, buffer.length)
         })
 
-        it('returns at maximum the requested number of bytes and the buffer', () => {
-          return binding.read(buffer, 0, 1).then(({ bytesRead, buffer: returnedBuffer }) => {
-            assert.equal(bytesRead, 1)
-            assert.equal(buffer, returnedBuffer)
-          })
+        it('returns at maximum the requested number of bytes and the buffer', async () => {
+          const { bytesRead, buffer: returnedBuffer } = await binding.read(buffer, 0, 1)
+          assert.equal(bytesRead, 1)
+          assert.equal(buffer, returnedBuffer)
         })
       })
 
