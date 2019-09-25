@@ -1,9 +1,9 @@
 {
   "name": "@serialport/terminal",
   "version": "8.0.2",
-  "main": "lib/terminal.js",
+  "main": "lib",
   "bin": {
-    "serialport-terminal": "./lib/terminal.js"
+    "serialport-terminal": "./lib/index.js"
   },
   "dependencies": {
     "commander": "^2.13.0",

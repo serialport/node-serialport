@@ -2,7 +2,7 @@
 
 const sinon = require('sinon')
 
-const RegexParser = require('./regex')
+const RegexParser = require('../')
 
 describe('RegexParser', () => {
   it('transforms data to strings split on either carriage return or new line', () => {

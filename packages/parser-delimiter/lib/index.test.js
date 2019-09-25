@@ -1,8 +1,7 @@
 /* eslint-disable no-new */
 
 const sinon = require('sinon')
-
-const DelimiterParser = require('./delimiter')
+const DelimiterParser = require('../')
 
 describe('DelimiterParser', () => {
   it('transforms data to strings split on a delimiter', () => {

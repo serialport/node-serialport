@@ -1,5 +1,5 @@
 const crypto = require('crypto')
-const SerialPort = require('.')
+const SerialPort = require('../')
 
 let platform
 switch (process.platform) {

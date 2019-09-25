@@ -2,7 +2,7 @@
 
 const sinon = require('sinon')
 
-const ReadyParser = require('./ready')
+const ReadyParser = require('../')
 
 describe('ReadyParser', () => {
   it('emits data received after the ready data', () => {

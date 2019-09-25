@@ -1,6 +1,6 @@
 {
   "name": "@serialport/parser-delimiter",
-  "main": "delimiter.js",
+  "main": "lib",
   "version": "8.0.1",
   "engines": {
     "node": ">=8.6.0"

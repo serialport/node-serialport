@@ -1,7 +1,7 @@
 {
   "name": "@serialport/binding-mock",
   "version": "8.0.1",
-  "main": "binding-mock.js",
+  "main": "lib",
   "keywords": [
     "serialport-binding"
   ],

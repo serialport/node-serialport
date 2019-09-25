@@ -1,5 +1,5 @@
 const sinon = require('sinon')
-const CCTalkParser = require('./cctalk')
+const CCTalkParser = require('../')
 
 describe('CCTalkParser', () => {
   it('constructs', () => {

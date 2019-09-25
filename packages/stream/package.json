@@ -1,7 +1,7 @@
 {
   "name": "@serialport/stream",
   "version": "8.0.2",
-  "main": "stream.js",
+  "main": "lib",
   "dependencies": {
     "@serialport/binding-mock": "^8.0.1",
     "debug": "^4.1.1"

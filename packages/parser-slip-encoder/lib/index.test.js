@@ -2,7 +2,7 @@
 
 const sinon = require('sinon')
 
-const SlipEncoder = require('./slip-encoder')
+const SlipEncoder = require('../')
 
 describe('SlipEncoderParser', () => {
   it('Adds one delimiter to one-byte messages', () => {

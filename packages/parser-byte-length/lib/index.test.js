@@ -1,7 +1,7 @@
 /* eslint-disable no-new */
 
 const sinon = require('sinon')
-const ByteLengthParser = require('./byte-length')
+const ByteLengthParser = require('../')
 
 describe('ByteLengthParser', () => {
   it('emits data events every 8 bytes', () => {
