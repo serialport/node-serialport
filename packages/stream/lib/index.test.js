@@ -169,24 +169,34 @@ describe('SerialPort', () => {
   })
 
   describe('static methods', () => {
-    it('calls to the bindings', done => {
-      const spy = sinon.spy(MockBinding, 'list')
-      SerialPort.list((err, ports) => {
-        assert.isNull(err)
+    describe('Serialport#list', () => {
+      it('calls to the bindings', async () => {
+        const spy = sinon.spy(MockBinding, 'list')
+        const ports = await SerialPort.list()
         assert.isArray(ports)
         assert(spy.calledOnce)
-        done()
       })
-    })
 
-    it('errors if there are no bindings', done => {
-      SerialPort.Binding = null
-      try {
-        SerialPort.list(() => {})
-      } catch (e) {
-        assert.instanceOf(e, TypeError)
-        done()
-      }
+      it('errors if there are no bindings', async () => {
+        SerialPort.Binding = null
+        try {
+          await SerialPort.list()
+        } catch (e) {
+          assert.instanceOf(e, TypeError)
+          return
+        }
+        throw new Error('no expected error')
+      })
+
+      it('errors if there is a callback', async () => {
+        try {
+          await SerialPort.list(() => {})
+        } catch (e) {
+          assert.instanceOf(e, TypeError)
+          return
+        }
+        throw new Error('no expected error')
+      })
     })
   })
 

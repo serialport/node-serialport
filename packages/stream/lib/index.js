@@ -592,18 +592,10 @@ SerialPort.prototype.drain = function(callback) {
  */
 
 /**
- * This callback type is called `requestCallback`.
- * @callback listCallback
- * @param {?error} error
- * @param {array} ports an array of objects with port info
- */
-
-/**
  * Retrieves a list of available serial ports with metadata. Only the `path` is guaranteed. If unavailable the other fields will be undefined. The `path` is either the path or an identifier (eg `COM1`) used to open the SerialPort.
  *
  * We make an effort to identify the hardware attached and have consistent results between systems. Linux and OS X are mostly consistent. Windows relies on 3rd party device drivers for the information and is unable to guarantee the information. On windows If you have a USB connected device can we provide a serial number otherwise it will be `undefined`. The `pnpId` and `locationId` are not the same or present on all systems. The examples below were run with the same Arduino Uno.
  * @type {function}
- * @param {listCallback=} callback Called with a list of available serial ports.
  * @returns {Promise} Resolves with the list of available serial ports.
  * @example
 ```js
@@ -643,14 +635,6 @@ SerialPort.prototype.drain = function(callback) {
 
 ```js
 var SerialPort = require('serialport');
-// callback approach
-SerialPort.list(function (err, ports) {
-  ports.forEach(function(port) {
-    console.log(port.path);
-    console.log(port.pnpId);
-    console.log(port.manufacturer);
-  });
-});
 
 // promise approach
 SerialPort.list()
@@ -658,16 +642,15 @@ SerialPort.list()
   .catch(err) {...});
 ```
  */
-SerialPort.list = function(callback) {
+SerialPort.list = async function(callback) {
+  debug('.list')
   if (!SerialPort.Binding) {
     throw new TypeError('No Binding set on `SerialPort.Binding`')
   }
-  debug('.list')
-  const promise = SerialPort.Binding.list()
-  if (typeof callback === 'function') {
-    promise.then(ports => callback(null, ports), err => callback(err))
+  if (callback) {
+    throw new TypeError('SerialPort.list no longer takes a callback and only returns a promise')
   }
-  return promise
+  return SerialPort.Binding.list()
 }
 
 module.exports = SerialPort

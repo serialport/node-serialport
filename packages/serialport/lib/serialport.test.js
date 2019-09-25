@@ -46,23 +46,15 @@ function integrationTest(platform, testPort, Binding) {
 
     describe('static Method', () => {
       describe('.list', () => {
-        it('contains the test port', done => {
+        it('contains the test port', async () => {
           function normalizePath(name) {
             const parts = name.split('.')
             return parts[parts.length - 1].toLowerCase()
           }
 
-          SerialPort.list((err, ports) => {
-            assert.isNull(err)
-            let foundPort = false
-            ports.forEach(port => {
-              if (normalizePath(port.path) === normalizePath(testPort)) {
-                foundPort = true
-              }
-            })
-            assert.isTrue(foundPort)
-            done()
-          })
+          const ports = await SerialPort.list()
+          const foundPort = ports.some(port => normalizePath(port.path) === normalizePath(testPort))
+          assert.isTrue(foundPort)
         })
       })
     })
