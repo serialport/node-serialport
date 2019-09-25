@@ -1,7 +1,7 @@
 {
   "name": "@serialport/parser-byte-length",
   "version": "8.0.1",
-  "main": "byte-length.js",
+  "main": "lib",
   "engines": {
     "node": ">=8.6.0"
   },

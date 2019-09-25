@@ -1,9 +1,9 @@
 {
   "name": "@serialport/list",
   "version": "8.0.2",
-  "main": "lib/list.js",
+  "main": "lib",
   "bin": {
-    "serialport-list": "./lib/list.js"
+    "serialport-list": "./lib/index.js"
   },
   "dependencies": {
     "@serialport/bindings": "^8.0.2",

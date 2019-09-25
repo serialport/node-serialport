@@ -3,7 +3,7 @@ const sinon = require('sinon')
 chai.use(require('chai-subset'))
 const assert = chai.assert
 
-const SerialPort = require('./stream')
+const SerialPort = require('../')
 const MockBinding = require('@serialport/binding-mock')
 
 describe('SerialPort', () => {

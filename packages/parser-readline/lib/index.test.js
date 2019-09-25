@@ -2,7 +2,7 @@
 
 const sinon = require('sinon')
 
-const ReadlineParser = require('./readline')
+const ReadlineParser = require('../')
 
 describe('ReadlineParser', () => {
   it('transforms data to strings split on a delimiter', () => {

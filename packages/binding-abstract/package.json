@@ -1,7 +1,7 @@
 {
   "name": "@serialport/binding-abstract",
   "version": "8.0.1",
-  "main": "binding-abstract.js",
+  "main": "lib",
   "keywords": [
     "serialport-binding"
   ],

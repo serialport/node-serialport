@@ -1,4 +1,4 @@
-const BindingMock = require('./binding-mock')
+const BindingMock = require('../')
 
 // copypasta from bindings/lib/bindings.test.js
 function shouldReject(promise, errType = Error, message = 'Should have rejected') {

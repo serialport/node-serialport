@@ -1,6 +1,6 @@
 const serialNumParser = require('./win32-sn-parser')
 
-const devices = {
+const devices = Object.freeze({
   'FTDI Device': {
     pnpId: 'FTDIBUS\\VID_0403+PID_6015+DO004ZB7A\\0000',
     serialNumber: 'DO004ZB7',
@@ -25,7 +25,7 @@ const devices = {
     pnpId: 'WATEVER\\Whoever\\However!',
     serialNumber: null,
   },
-}
+})
 
 describe('serialNumParser', () => {
   Object.entries(devices).forEach(([device, info]) => {

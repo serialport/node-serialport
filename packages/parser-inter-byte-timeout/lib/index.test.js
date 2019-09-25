@@ -1,7 +1,7 @@
 /* eslint-disable no-new */
 
 const sinon = require('sinon')
-const InterByteTimeoutParser = require('./inter-byte-timeout')
+const InterByteTimeoutParser = require('../')
 
 function wait(interval) {
   return new Promise((resolve, reject) => {

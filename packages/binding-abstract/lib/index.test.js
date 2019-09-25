@@ -1,6 +1,6 @@
 /* eslint-disable no-new */
 
-const BindingAbstract = require('./binding-abstract')
+const BindingAbstract = require('../')
 
 describe('BindingAbstract', () => {
   it('constructs', () => {

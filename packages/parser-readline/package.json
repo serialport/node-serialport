@@ -1,6 +1,6 @@
 {
   "name": "@serialport/parser-readline",
-  "main": "readline.js",
+  "main": "lib",
   "version": "8.0.1",
   "dependencies": {
     "@serialport/parser-delimiter": "^8.0.1"
