@@ -1,5 +1,6 @@
 const chai = require('chai')
 const sinon = require('sinon')
+const { randomBytes } = require('crypto')
 chai.use(require('chai-subset'))
 const assert = chai.assert
 
@@ -599,6 +600,14 @@ describe('SerialPort', () => {
         done()
       })
 
+      it('can be called without callback', done => {
+        const port = new SerialPort('/dev/exists', () => {
+          assert.equal(port.baudRate, 9600)
+          port.update({ baudRate: 14400 })
+          done()
+        })
+      })
+
       it('sets the baudRate on the port', done => {
         const port = new SerialPort('/dev/exists', () => {
           assert.equal(port.baudRate, 9600)
@@ -937,6 +946,33 @@ describe('SerialPort', () => {
       await new Promise(resolve => port.once('readable', resolve))
       const data2 = port.read()
       assert.deepEqual(Buffer.concat([data1, data2]), Buffer.concat([testData, testData]))
+    })
+
+    it('reads more data than the high water mark', async () => {
+      const testData = randomBytes((64 * 1024) / 2 + 1)
+      const port = new SerialPort('/dev/exists', { bindingOptions: { echo: true } })
+      await new Promise(resolve => port.on('open', resolve))
+      await new Promise(resolve => port.write(testData, resolve))
+      await new Promise(resolve => port.once('readable', resolve))
+      const data1 = port.read()
+      await new Promise(resolve => port.write(testData, resolve))
+      await new Promise(resolve => port.once('readable', resolve))
+      const data2 = port.read()
+      await new Promise(resolve => port.once('readable', resolve))
+      const data3 = port.read()
+      assert.deepEqual(Buffer.concat([data1, data2, data3]), Buffer.concat([testData, testData]))
+    })
+
+    it('reads more data than the high water mark at once', async () => {
+      const testData = randomBytes(64 * 1024 + 1)
+      const port = new SerialPort('/dev/exists', { bindingOptions: { echo: true } })
+      await new Promise(resolve => port.on('open', resolve))
+      await new Promise(resolve => port.write(testData, resolve))
+      await new Promise(resolve => port.once('readable', resolve))
+      const data1 = port.read()
+      await new Promise(resolve => port.once('readable', resolve))
+      const data2 = port.read()
+      assert.deepEqual(Buffer.concat([data1, data2]), testData)
     })
   })
 
