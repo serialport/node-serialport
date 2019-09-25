@@ -5,25 +5,17 @@ const SerialPort = require('../../');
 const fs = require('fs');
 const Path = require('path');
 
-function findArduino() {
-  return new Promise((resolve, reject) => {
-    if (process.argv[2]) {
-      return resolve(process.argv[2]);
+async function findArduino() {
+  if (process.argv[2]) {
+    return process.argv[2]
+  }
+  const ports = await SerialPort.list()
+  for (const port of ports) {
+    if (/arduino/i.test(port.manufacturer)) {
+      return port.path
     }
-    SerialPort.list((err, ports) => {
-      if (err) { return reject(err) }
-      let resolved = false;
-      ports.forEach((port) => {
-        if (!resolved && /arduino/i.test(port.manufacturer)) {
-          resolved = true;
-          return resolve(port.path);
-        }
-      });
-      if (!resolved) {
-        reject(new Error('No arduinos found'));
-      }
-    });
-  });
+  }
+  throw new Error('No arduinos found')
 }
 
 function writeAllCommands(port) {

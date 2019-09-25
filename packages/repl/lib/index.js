@@ -7,32 +7,20 @@ const SerialPort = require('serialport')
 process.env.DEBUG = process.env.DEBUG || '*'
 
 // outputs the path to an arduino or nothing
-function findArduino() {
-  return new Promise((resolve, reject) => {
-    const envPort = process.argv[2] || process.env.TEST_PORT
-    if (envPort) {
-      return resolve(envPort)
+async function findArduino() {
+  const envPort = process.argv[2] || process.env.TEST_PORT
+  if (envPort) {
+    return envPort
+  }
+  const ports = await SerialPort.list()
+  for (const port of ports) {
+    if (/arduino/i.test(port.manufacturer)) {
+      return port.path
     }
-    SerialPort.list((err, ports) => {
-      if (err) {
-        return reject(err)
-      }
-      let resolved = false
-      ports.forEach(port => {
-        if (!resolved && /arduino/i.test(port.manufacturer)) {
-          resolved = true
-          return resolve(port.path)
-        }
-      })
-      if (!resolved) {
-        reject(
-          new Error(
-            'No arduinos found. You must specify a port to load.\n\nFor example:\n\tserialport-repl COM3\n\tserialport-repl /dev/tty.my-serialport'
-          )
-        )
-      }
-    })
-  })
+  }
+  throw new Error(
+    'No arduinos found. You must specify a port to load.\n\nFor example:\n\tserialport-repl COM3\n\tserialport-repl /dev/tty.my-serialport'
+  )
 }
 
 findArduino()
