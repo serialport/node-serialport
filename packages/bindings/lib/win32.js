@@ -5,6 +5,7 @@ const serialNumParser = require('./win32-sn-parser')
 
 const asyncList = promisify(binding.list)
 const asyncOpen = promisify(binding.open)
+const asyncClose = promisify(binding.close)
 const asyncRead = promisify(binding.read)
 const asyncWrite = promisify(binding.write)
 const asyncUpdate = promisify(binding.update)
