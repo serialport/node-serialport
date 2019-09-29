@@ -8,8 +8,6 @@ environment:
   matrix:
   - nodejs_version: "8"
     binary_builder: "true"
-  - nodejs_version: "10"
-  - nodejs_version: "12"
 
 platform:
 - x86
@@ -47,15 +45,10 @@ build_script:
 - npm run rebuild
 
 test_script:
-- npm test
-
 - ps: >
     if ($env:publish_binary -eq "true") {
       npm run prebuild
     }
     true;
-
-after_test:
-- npm run coverage
 
 deploy: OFF
