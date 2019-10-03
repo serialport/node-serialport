@@ -18,13 +18,13 @@ module.exports = async function unixRead(buffer, offset, length) {
   }
 
   try {
-    const bytesRead = await readAsync(this.fd, buffer, offset, length, null)
+    const { bytesRead } = await readAsync(this.fd, buffer, offset, length, null)
     if (bytesRead === 0) {
       return this.read(buffer, offset, length)
     }
 
     logger('Finished read', bytesRead, 'bytes')
-    return bytesRead
+    return { bytesRead, buffer }
   } catch (err) {
     if (err.code === 'EAGAIN' || err.code === 'EWOULDBLOCK' || err.code === 'EINTR') {
       if (!this.isOpen) {
