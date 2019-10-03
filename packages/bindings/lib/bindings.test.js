@@ -347,7 +347,7 @@ function testBinding(bindingName, Binding, testPort) {
           noZalgo = true
         })
 
-        it('throws when not given a buffer', async () => {
+        it('rejects when not given a buffer', async () => {
           const binding = new Binding({
             disconnect,
           })
