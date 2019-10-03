@@ -1,6 +1,6 @@
 {
   "name": "@serialport/terminal",
-  "version": "8.0.2",
+  "version": "8.0.3",
   "main": "lib",
   "bin": {
     "serialport-terminal": "./lib/index.js"
@@ -8,7 +8,7 @@
   "dependencies": {
     "commander": "^2.13.0",
     "prompt-list": "^3.2.0",
-    "serialport": "^8.0.2"
+    "serialport": "^8.0.3"
   },
   "engines": {
     "node": ">=8.6.0"

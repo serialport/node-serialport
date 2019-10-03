@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.3](https://github.com/serialport/node-serialport/compare/v8.0.2...v8.0.3) (2019-10-03)
+
+
+### Bug Fixes
+
+* Add missing asyncClose ([#1946](https://github.com/serialport/node-serialport/issues/1946)) ([4a3d2a0](https://github.com/serialport/node-serialport/commit/4a3d2a0)), closes [#1904](https://github.com/serialport/node-serialport/issues/1904)
+* enabling disabled tests rename all pkgs to lib ([#1941](https://github.com/serialport/node-serialport/issues/1941)) ([b1cc840](https://github.com/serialport/node-serialport/commit/b1cc840))
+* unix reading ([#1953](https://github.com/serialport/node-serialport/issues/1953)) ([c7ca08f](https://github.com/serialport/node-serialport/commit/c7ca08f))
+
+
+
+
+
 ## [8.0.2](https://github.com/serialport/node-serialport/compare/v8.0.1...v8.0.2) (2019-09-24)
 
 

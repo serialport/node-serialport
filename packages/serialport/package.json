@@ -1,6 +1,6 @@
 {
   "name": "serialport",
-  "version": "8.0.2",
+  "version": "8.0.3",
   "description": "Node.js package to access serial ports. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!",
   "main": "lib",
   "repository": {
@@ -45,15 +45,15 @@
     }
   ],
   "dependencies": {
-    "@serialport/binding-mock": "^8.0.1",
-    "@serialport/bindings": "^8.0.2",
-    "@serialport/parser-byte-length": "^8.0.1",
+    "@serialport/binding-mock": "^8.0.3",
+    "@serialport/bindings": "^8.0.3",
+    "@serialport/parser-byte-length": "^8.0.3",
     "@serialport/parser-cctalk": "^3.0.0",
-    "@serialport/parser-delimiter": "^8.0.1",
-    "@serialport/parser-readline": "^8.0.1",
-    "@serialport/parser-ready": "^8.0.1",
-    "@serialport/parser-regex": "^8.0.1",
-    "@serialport/stream": "^8.0.2",
+    "@serialport/parser-delimiter": "^8.0.3",
+    "@serialport/parser-readline": "^8.0.3",
+    "@serialport/parser-ready": "^8.0.3",
+    "@serialport/parser-regex": "^8.0.3",
+    "@serialport/stream": "^8.0.3",
     "debug": "^4.1.1"
   },
   "engines": {
