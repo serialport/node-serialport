@@ -1,5 +1,6 @@
+.DS_Store
 *.test.js
-lib/mocks
 build/
-prebuilds
 CHANGELOG.md
+lib/mocks
+prebuilds
