@@ -65,17 +65,13 @@ class DarwinBinding extends AbstractBinding {
   }
 
   async write(buffer) {
-    this.writeOperation = super
-      .write(buffer)
-      .then(() => {
-        if (buffer.length === 0) {
-          return
-        }
-        return unixWrite.call(this, buffer)
-      })
-      .then(() => {
-        this.writeOperation = null
-      })
+    this.writeOperation = super.write(buffer).then(async () => {
+      if (buffer.length === 0) {
+        return
+      }
+      await unixWrite.call(this, buffer)
+      this.writeOperation = null
+    })
     return this.writeOperation
   }
 

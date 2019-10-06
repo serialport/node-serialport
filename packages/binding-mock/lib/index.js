@@ -160,27 +160,25 @@ class MockBinding extends AbstractBinding {
     if (this.writeOperation) {
       throw new Error('Overlapping writes are not supported and should be queued by the serialport object')
     }
-    this.writeOperation = super
-      .write(buffer)
-      .then(resolveNextTick)
-      .then(async () => {
-        if (!this.isOpen) {
-          throw new Error('Write canceled')
-        }
-        const data = (this.lastWrite = Buffer.from(buffer)) // copy
-        if (this.port.record) {
-          this.recording = Buffer.concat([this.recording, data])
-        }
-        if (this.port.echo) {
-          process.nextTick(() => {
-            if (this.isOpen) {
-              this.emitData(data)
-            }
-          })
-        }
-        this.writeOperation = null
-        debug(this.serialNumber, 'writing finished')
-      })
+    this.writeOperation = super.write(buffer).then(async () => {
+      await resolveNextTick()
+      if (!this.isOpen) {
+        throw new Error('Write canceled')
+      }
+      const data = (this.lastWrite = Buffer.from(buffer)) // copy
+      if (this.port.record) {
+        this.recording = Buffer.concat([this.recording, data])
+      }
+      if (this.port.echo) {
+        process.nextTick(() => {
+          if (this.isOpen) {
+            this.emitData(data)
+          }
+        })
+      }
+      this.writeOperation = null
+      debug(this.serialNumber, 'writing finished')
+    })
     return this.writeOperation
   }
 

@@ -39,13 +39,14 @@ function disconnect(err) {
   throw err || new Error('Unknown disconnection')
 }
 
-function shouldReject(promise, errType = Error, message = 'Should have rejected') {
+const shouldReject = (promise, errType = Error, message = 'Should have rejected') => {
   return promise.then(
     () => {
       throw new Error(message)
     },
     err => {
       assert.instanceOf(err, errType)
+      return err
     }
   )
 }
@@ -81,27 +82,25 @@ function testBinding(bindingName, Binding, testPort) {
 
     describe('static method', () => {
       describe('.list', () => {
-        it('returns an array', () => {
-          return Binding.list().then(ports => {
-            assert.isArray(ports)
-          })
+        it('returns an array', async () => {
+          const ports = await Binding.list()
+          assert.isArray(ports)
         })
 
-        it('has objects with undefined when there is no data', () => {
-          return Binding.list().then(ports => {
-            assert.isArray(ports)
-            if (ports.length === 0) {
-              console.log('no ports to test')
-              return
-            }
-            ports.forEach(port => {
-              assert.containSubset(Object.keys(port), listFields)
-              Object.keys(port).forEach(key => {
-                assert.notEqual(port[key], '', 'empty values should be undefined')
-                assert.isNotNull(port[key], 'empty values should be undefined')
-              })
-              assert.equal(port.comName, port.path)
+        it('has objects with undefined when there is no data', async () => {
+          const ports = await Binding.list()
+          assert.isArray(ports)
+          if (ports.length === 0) {
+            console.log('no ports to test')
+            return
+          }
+          ports.forEach(port => {
+            assert.containSubset(Object.keys(port), listFields)
+            Object.keys(port).forEach(key => {
+              assert.notEqual(port[key], '', 'empty values should be undefined')
+              assert.isNotNull(port[key], 'empty values should be undefined')
             })
+            assert.equal(port.comName, port.path)
           })
         })
       })
@@ -160,12 +159,10 @@ function testBinding(bindingName, Binding, testPort) {
           })
         })
 
-        it('errors when providing a bad port', () => {
-          return binding.open('COMBAD', defaultOpenOptions).catch(err => {
-            assert.instanceOf(err, Error)
-            assert.include(err.message, 'COMBAD')
-            assert.equal(binding.isOpen, false)
-          })
+        it('errors when providing a bad port', async () => {
+          const err = await shouldReject(binding.open('COMBAD', defaultOpenOptions))
+          assert.include(err.message, 'COMBAD')
+          assert.equal(binding.isOpen, false)
         })
 
         it('throws when not given a path', async () => {
@@ -181,75 +178,60 @@ function testBinding(bindingName, Binding, testPort) {
           return
         }
 
-        it('cannot open if already open', () => {
+        it('cannot open if already open', async () => {
           const options = { ...defaultOpenOptions, lock: false }
-          return binding.open(testPort, options).then(() => {
-            return binding.open(testPort, options).catch(err => {
-              assert.instanceOf(err, Error)
-              return binding.close()
-            })
-          })
+          await binding.open(testPort, options)
+          await shouldReject(binding.open(testPort, options))
+          await binding.close()
         })
 
-        it('keeps open state', () => {
-          return binding.open(testPort, defaultOpenOptions).then(() => {
-            assert.equal(binding.isOpen, true)
-            return binding.close()
-          })
+        it('keeps open state', async () => {
+          await binding.open(testPort, defaultOpenOptions)
+          assert.equal(binding.isOpen, true)
+          await binding.close()
         })
 
         describe('arbitrary baud rates', () => {
           ;[25000, 1000000, 250000].forEach(testBaud => {
             describe(`${testBaud} baud`, () => {
               const customRates = { ...defaultOpenOptions, baudRate: testBaud }
-              testFeature(`baudrate.${testBaud}`, `opens at ${testBaud} baud`, () => {
-                return binding.open(testPort, customRates).then(() => {
-                  assert.equal(binding.isOpen, true)
-                  return binding.close()
-                })
+              testFeature(`baudrate.${testBaud}`, `opens at ${testBaud} baud`, async () => {
+                await binding.open(testPort, customRates)
+                assert.equal(binding.isOpen, true)
+                await binding.close()
               })
 
-              testFeature(`baudrate.${testBaud}_check`, `sets ${testBaud} baud successfully`, () => {
-                return binding
-                  .open(testPort, customRates)
-                  .then(() => binding.getBaudRate())
-                  .then(res => {
-                    assert.equal(res.baudRate, customRates.baudRate)
-                    return binding.close()
-                  })
+              testFeature(`baudrate.${testBaud}_check`, `sets ${testBaud} baud successfully`, async () => {
+                await binding.open(testPort, customRates)
+                const { baudRate } = await binding.getBaudRate()
+                assert.equal(baudRate, customRates.baudRate)
+                return binding.close()
               })
             })
           })
         })
 
         describe('optional locking', () => {
-          it('locks the port by default', () => {
+          it('locks the port by default', async () => {
             const binding2 = new Binding({ disconnect })
-
-            return binding
-              .open(testPort, defaultOpenOptions)
-              .then(() => {
-                assert.equal(binding.isOpen, true)
-              })
-              .then(() => {
-                return binding2.open(testPort, defaultOpenOptions).catch(err => {
-                  assert.instanceOf(err, Error)
-                  assert.equal(binding2.isOpen, false)
-                  return binding.close()
-                })
-              })
+            await binding.open(testPort, defaultOpenOptions)
+            assert.equal(binding.isOpen, true)
+            await shouldReject(binding2.open(testPort, defaultOpenOptions))
+            assert.equal(binding2.isOpen, false)
+            await binding.close()
           })
 
-          testFeature('open.unlock', 'can unlock the port', () => {
+          testFeature('open.unlock', 'can unlock the port', async () => {
             const noLock = { ...defaultOpenOptions, lock: false }
             const binding2 = new Binding({ disconnect })
 
-            return binding
-              .open(testPort, noLock)
-              .then(() => assert.equal(binding.isOpen, true))
-              .then(() => binding2.open(testPort, noLock))
-              .then(() => assert.equal(binding2.isOpen, true))
-              .then(() => Promise.all([binding.close(), binding2.close()]))
+            await binding.open(testPort, noLock)
+            assert.equal(binding.isOpen, true)
+
+            await binding2.open(testPort, noLock)
+            assert.equal(binding2.isOpen, true)
+
+            await Promise.all([binding.close(), binding2.close()])
           })
         })
       })
@@ -260,10 +242,8 @@ function testBinding(bindingName, Binding, testPort) {
           binding = new Binding({ disconnect })
         })
 
-        it('errors when already closed', () => {
-          return binding.close().catch(err => {
-            assert.instanceOf(err, Error)
-          })
+        it('errors when already closed', async () => {
+          await shouldReject(binding.close())
         })
 
         if (!testPort) {
