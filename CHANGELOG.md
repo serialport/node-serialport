@@ -26,8 +26,11 @@ Windows got a few notable bug fixes from contributors and RTS/CTS flow control s
 
 And lastly our CI system has mostly been moved to GitHub Actions, they are much much faster than our travis/appveyor combo and cheaper too (free!). We still pay for Appveyor because we still use them with travis for binary builds. When that process is migrated we should be able to drop both services completely.
 
+This is also our first major release since starting the [serialport collective](https://opencollective.com/serialport)! Like a lot of projects we rely on volunteers, students, professionals and the backing of companies using the project for their businesses. If you find serialport helpful, [please read about why you might want to donate](https://opencollective.com/serialport#section-about) to the project and our project's goals.
+
 Thanks to @boneskull, @BryanHunt, @hipsterbrown, @Holger-Will, @icebob, @jacobq, @jowy, @krutkay, @maxvgi, @nornagon, @podarok, @reconbot, and @warp for their help with this release!
 
+And Thanks to our first 5 open collective backers! https://opencollective.com/serialport#backers for help with sustaining this project!
 
 ### Bug Fixes
 
