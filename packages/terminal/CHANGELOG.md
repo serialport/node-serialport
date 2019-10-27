@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.4](https://github.com/serialport/node-serialport/compare/v8.0.3...v8.0.4) (2019-10-27)
+
+
+### Bug Fixes
+
+* improve the options and output of terminal ([#1962](https://github.com/serialport/node-serialport/issues/1962)) ([4b23928](https://github.com/serialport/node-serialport/commit/4b23928cd276d60df7c13ec32084a99752b2c3c1))
+* learn now needs the package-lock.json files ([4b8fc24](https://github.com/serialport/node-serialport/commit/4b8fc248778b69f7afde17ab9ef791ef8867c4a5))
+* npmignore should ignore .DS_Store files ([#1954](https://github.com/serialport/node-serialport/issues/1954)) ([eb6b57b](https://github.com/serialport/node-serialport/commit/eb6b57bffe33c9bc7775bb6b0fdf1081db86ebcc))
+
+
+
+
+
 ## [8.0.3](https://github.com/serialport/node-serialport/compare/v8.0.2...v8.0.3) (2019-10-03)
 
 
