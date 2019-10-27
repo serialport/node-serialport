@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.5](https://github.com/node-serialport/node-serialport/compare/v8.0.4...v8.0.5) (2019-10-27)
+
+
+### Bug Fixes
+
+* cctalk wasn’t upgraded in serialport ([3e568f7](https://github.com/node-serialport/node-serialport/commit/3e568f7ca4b8e1c0743b780860532e5998091b86))
+
+
+
+
+
 ## [8.0.4](https://github.com/node-serialport/node-serialport/compare/v8.0.3...v8.0.4) (2019-10-27)
 
 
