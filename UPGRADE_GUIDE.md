@@ -1,6 +1,10 @@
 Upgrading from 7.x to 8.x
 -------------
 - Serialport cli tools are now their own packages. See https://serialport.io/docs/guide-cli for more information on how to use them.
+- `SerialPort.list()` and `Bindings.list()` no longer take a callback and only return a promise.
+- `comName` has been renamed `path` in the `PortInfo` objects returned from `SerialPort.list()` or `Bindings.list()` you'll get a deprecation warning if you access `comName` until the next major version where it will be absent.
+- `@serialport/terminal` now takes a `--path` argument instead of a `--port` argument
+- Bindings now use async functions and no longer throw errors, they only reject errors. If you relied on this behavior you can now simplify your code to only looking for promise rejections.
 
 
 Upgrading from 6.x to 7.x
