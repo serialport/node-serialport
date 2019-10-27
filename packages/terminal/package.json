@@ -6,8 +6,8 @@
     "serialport-terminal": "./lib/index.js"
   },
   "dependencies": {
-    "commander": "^2.13.0",
-    "prompt-list": "^3.2.0",
+    "commander": "^3.0.2",
+    "enquirer": "^2.3.2",
     "serialport": "^8.0.3"
   },
   "engines": {
