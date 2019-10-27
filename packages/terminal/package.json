@@ -8,7 +8,8 @@
   "dependencies": {
     "commander": "^3.0.2",
     "enquirer": "^2.3.2",
-    "serialport": "^8.0.5"
+    "@serialport/bindings": "^8.0.4",
+    "@serialport/stream": "^8.0.4"
   },
   "engines": {
     "node": ">=8.6.0"

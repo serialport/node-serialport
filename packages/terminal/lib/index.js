@@ -1,9 +1,10 @@
 // #!/usr/bin/env node
 const { Select } = require('enquirer')
 const args = require('commander')
-const SerialPort = require('serialport')
+const SerialPort = require('@serialport/stream')
 const { version } = require('../package.json')
 const { OutputTranslator } = require('./output-translator')
+SerialPort.Binding = require('@serialport/bindings')
 
 const makeNumber = input => Number(input)
 
