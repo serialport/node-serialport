@@ -48,7 +48,7 @@
     "@serialport/binding-mock": "^8.0.4",
     "@serialport/bindings": "^8.0.4",
     "@serialport/parser-byte-length": "^8.0.4",
-    "@serialport/parser-cctalk": "^3.0.0",
+    "@serialport/parser-cctalk": "^8.0.4",
     "@serialport/parser-delimiter": "^8.0.4",
     "@serialport/parser-readline": "^8.0.4",
     "@serialport/parser-ready": "^8.0.4",
