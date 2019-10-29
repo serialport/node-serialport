@@ -23,7 +23,7 @@ args
 
 const listPorts = async () => {
   const ports = await SerialPort.list()
-  for (port of ports) {
+  for (const port of ports) {
     console.log(`${port.path}\t${port.pnpId || ''}\t${port.manufacturer || ''}`)
   }
 }

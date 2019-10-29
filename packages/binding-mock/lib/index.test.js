@@ -80,7 +80,9 @@ describe('BindingMock', () => {
         // speculative cleanup
         try {
           await this.binding.close()
-        } catch (ignored) {}
+        } catch (ignored) {
+          // ignored
+        }
       })
 
       it('should delete any configured phony ports', function() {
