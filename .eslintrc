@@ -22,7 +22,8 @@
   },
   "globals": {
     "assert": false,
-    "makeTestFeature": false
+    "makeTestFeature": false,
+    "shouldReject": false
   },
   "rules": {
     "no-extra-semi": "off",

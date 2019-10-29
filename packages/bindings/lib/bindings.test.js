@@ -35,22 +35,6 @@ const listFields = ['path', 'manufacturer', 'serialNumber', 'pnpId', 'locationId
 
 const bindingsToTest = ['mock', platform]
 
-function disconnect(err) {
-  throw err || new Error('Unknown disconnection')
-}
-
-const shouldReject = (promise, errType = Error, message = 'Should have rejected') => {
-  return promise.then(
-    () => {
-      throw new Error(message)
-    },
-    err => {
-      assert.instanceOf(err, errType)
-      return err
-    }
-  )
-}
-
 // All bindings are required to work with an "echo" firmware
 // The echo firmware should respond with this data when it's
 // ready to echo. This allows for remote device bootup.
@@ -108,9 +92,7 @@ function testBinding(bindingName, Binding, testPort) {
 
     describe('constructor', () => {
       it('creates a binding object', () => {
-        const binding = new Binding({
-          disconnect,
-        })
+        const binding = new Binding({})
         assert.instanceOf(binding, Binding)
       })
 
@@ -133,9 +115,7 @@ function testBinding(bindingName, Binding, testPort) {
 
         let binding
         beforeEach(() => {
-          binding = new Binding({
-            disconnect,
-          })
+          binding = new Binding({})
         })
 
         it('is true after open and false after close', () => {
@@ -154,9 +134,7 @@ function testBinding(bindingName, Binding, testPort) {
       describe('#open', () => {
         let binding
         beforeEach(() => {
-          binding = new Binding({
-            disconnect,
-          })
+          binding = new Binding({})
         })
 
         it('errors when providing a bad port', async () => {
@@ -213,7 +191,7 @@ function testBinding(bindingName, Binding, testPort) {
 
         describe('optional locking', () => {
           it('locks the port by default', async () => {
-            const binding2 = new Binding({ disconnect })
+            const binding2 = new Binding({})
             await binding.open(testPort, defaultOpenOptions)
             assert.equal(binding.isOpen, true)
             await shouldReject(binding2.open(testPort, defaultOpenOptions))
@@ -223,7 +201,7 @@ function testBinding(bindingName, Binding, testPort) {
 
           testFeature('open.unlock', 'can unlock the port', async () => {
             const noLock = { ...defaultOpenOptions, lock: false }
-            const binding2 = new Binding({ disconnect })
+            const binding2 = new Binding({})
 
             await binding.open(testPort, noLock)
             assert.equal(binding.isOpen, true)
@@ -239,7 +217,7 @@ function testBinding(bindingName, Binding, testPort) {
       describe('#close', () => {
         let binding
         beforeEach(() => {
-          binding = new Binding({ disconnect })
+          binding = new Binding({})
         })
 
         it('errors when already closed', async () => {
@@ -261,14 +239,12 @@ function testBinding(bindingName, Binding, testPort) {
 
       describe('#update', () => {
         it('throws when not given an object', async () => {
-          const binding = new Binding({ disconnect })
+          const binding = new Binding({})
           await shouldReject(binding.update(), TypeError)
         })
 
         it('errors asynchronously when not open', done => {
-          const binding = new Binding({
-            disconnect,
-          })
+          const binding = new Binding({})
           let noZalgo = false
           binding.update({ baudRate: 9600 }).catch(err => {
             assert.instanceOf(err, Error)
@@ -285,7 +261,7 @@ function testBinding(bindingName, Binding, testPort) {
 
         let binding
         beforeEach(() => {
-          binding = new Binding({ disconnect })
+          binding = new Binding({})
           return binding.open(testPort, defaultOpenOptions)
         })
 
@@ -306,9 +282,7 @@ function testBinding(bindingName, Binding, testPort) {
 
       describe('#write', () => {
         it('errors asynchronously when not open', done => {
-          const binding = new Binding({
-            disconnect,
-          })
+          const binding = new Binding({})
           let noZalgo = false
           binding
             .write(Buffer.from([]))
@@ -328,9 +302,7 @@ function testBinding(bindingName, Binding, testPort) {
         })
 
         it('rejects when not given a buffer', async () => {
-          const binding = new Binding({
-            disconnect,
-          })
+          const binding = new Binding({})
           await shouldReject(binding.write(null), TypeError)
         })
 
@@ -341,9 +313,7 @@ function testBinding(bindingName, Binding, testPort) {
 
         let binding
         beforeEach(() => {
-          binding = new Binding({
-            disconnect,
-          })
+          binding = new Binding({})
           return binding.open(testPort, defaultOpenOptions)
         })
 
@@ -368,9 +338,7 @@ function testBinding(bindingName, Binding, testPort) {
 
       describe('#drain', () => {
         it('errors asynchronously when not open', done => {
-          const binding = new Binding({
-            disconnect,
-          })
+          const binding = new Binding({})
           let noZalgo = false
           binding.drain().catch(err => {
             assert.instanceOf(err, Error)
@@ -387,9 +355,7 @@ function testBinding(bindingName, Binding, testPort) {
 
         let binding
         beforeEach(() => {
-          binding = new Binding({
-            disconnect,
-          })
+          binding = new Binding({})
           return binding.open(testPort, defaultOpenOptions)
         })
 
@@ -418,9 +384,7 @@ function testBinding(bindingName, Binding, testPort) {
 
       describe('#flush', () => {
         it('errors asynchronously when not open', done => {
-          const binding = new Binding({
-            disconnect,
-          })
+          const binding = new Binding({})
           let noZalgo = false
           binding.flush().catch(err => {
             assert.instanceOf(err, Error)
@@ -437,9 +401,7 @@ function testBinding(bindingName, Binding, testPort) {
 
         let binding
         beforeEach(() => {
-          binding = new Binding({
-            disconnect,
-          })
+          binding = new Binding({})
           return binding.open(testPort, defaultOpenOptions)
         })
 
@@ -452,9 +414,7 @@ function testBinding(bindingName, Binding, testPort) {
 
       describe('#set', () => {
         it('errors asynchronously when not open', done => {
-          const binding = new Binding({
-            disconnect,
-          })
+          const binding = new Binding({})
           let noZalgo = false
           binding.set(defaultSetFlags).catch(err => {
             assert.instanceOf(err, Error)
@@ -465,9 +425,7 @@ function testBinding(bindingName, Binding, testPort) {
         })
 
         it('throws when not called with options', async () => {
-          const binding = new Binding({
-            disconnect,
-          })
+          const binding = new Binding({})
           await shouldReject(binding.set(() => {}), TypeError)
         })
 
@@ -478,9 +436,7 @@ function testBinding(bindingName, Binding, testPort) {
 
         let binding
         beforeEach(() => {
-          binding = new Binding({
-            disconnect,
-          })
+          binding = new Binding({})
           return binding.open(testPort, defaultOpenOptions)
         })
 
@@ -495,7 +451,7 @@ function testBinding(bindingName, Binding, testPort) {
       // is left over on the pipe and isn't cleared when flushed on unix
       describe('#read', () => {
         it('errors asynchronously when not open', done => {
-          const binding = new Binding({ disconnect })
+          const binding = new Binding({})
           const buffer = Buffer.alloc(5)
           let noZalgo = false
           binding.read(buffer, 0, buffer.length).catch(err => {
@@ -514,11 +470,11 @@ function testBinding(bindingName, Binding, testPort) {
         let binding, buffer
         beforeEach(async () => {
           buffer = Buffer.alloc(readyData.length)
-          binding = new Binding({ disconnect })
+          binding = new Binding({})
           await binding.open(testPort, defaultOpenOptions)
         })
 
-        afterEach(() => binding.close())
+        afterEach(() => binding.isOpen && binding.close())
 
         it("doesn't throw if the port is open", async () => {
           await binding.read(buffer, 0, buffer.length)
@@ -529,13 +485,23 @@ function testBinding(bindingName, Binding, testPort) {
           assert.equal(bytesRead, 1)
           assert.equal(buffer, returnedBuffer)
         })
+
+        it('cancels the read when the port is closed', async () => {
+          let bytesToRead = 0
+          while (bytesToRead < readyData.length) {
+            const { bytesRead } = await binding.read(buffer, 0, readyData.length)
+            bytesToRead += bytesRead
+          }
+          const readError = shouldReject(binding.read(Buffer.allocUnsafe(100), 0, 100))
+          await binding.close()
+          const err = await readError
+          assert.isTrue(err.canceled)
+        })
       })
 
       describe('#get', () => {
         it('errors asynchronously when not open', done => {
-          const binding = new Binding({
-            disconnect,
-          })
+          const binding = new Binding({})
           let noZalgo = false
           binding.get().catch(err => {
             assert.instanceOf(err, Error)
@@ -552,7 +518,7 @@ function testBinding(bindingName, Binding, testPort) {
 
         let binding
         beforeEach(() => {
-          binding = new Binding({ disconnect })
+          binding = new Binding({})
           return binding.open(testPort, defaultOpenOptions)
         })
 

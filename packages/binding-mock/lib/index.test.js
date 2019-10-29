@@ -1,17 +1,5 @@
 const BindingMock = require('../')
 
-// copypasta from bindings/lib/bindings.test.js
-function shouldReject(promise, errType = Error, message = 'Should have rejected') {
-  return promise.then(
-    () => {
-      throw new Error(message)
-    },
-    err => {
-      assert.instanceOf(err, errType)
-    }
-  )
-}
-
 describe('BindingMock', () => {
   it('constructs', () => {
     new BindingMock({})

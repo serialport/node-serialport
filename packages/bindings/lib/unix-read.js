@@ -11,28 +11,32 @@ const readable = binding => {
   })
 }
 
-module.exports = async function unixRead(buffer, offset, length) {
+const unixRead = async ({ binding, buffer, offset, length, fsReadAsync = readAsync }) => {
   logger('Starting read')
-  if (!this.isOpen) {
-    throw new Error('Port is not open')
+  if (!binding.isOpen) {
+    const err = new Error('Port is not open')
+    err.canceled = true
+    throw err
   }
 
   try {
-    const { bytesRead } = await readAsync(this.fd, buffer, offset, length, null)
+    const { bytesRead } = await fsReadAsync(binding.fd, buffer, offset, length, null)
     if (bytesRead === 0) {
-      return this.read(buffer, offset, length)
+      return unixRead({ binding, buffer, offset, length, fsReadAsync })
     }
-
     logger('Finished read', bytesRead, 'bytes')
     return { bytesRead, buffer }
   } catch (err) {
+    logger('read error', err)
     if (err.code === 'EAGAIN' || err.code === 'EWOULDBLOCK' || err.code === 'EINTR') {
-      if (!this.isOpen) {
-        throw new Error('Port is not open')
+      if (!binding.isOpen) {
+        const err = new Error('Port is not open')
+        err.canceled = true
+        throw err
       }
       logger('waiting for readable because of code:', err.code)
-      await readable(this)
-      return this.read(buffer, offset, length)
+      await readable(binding)
+      return unixRead({ binding, buffer, offset, length, fsReadAsync })
     }
 
     const disconnectError =
@@ -42,10 +46,12 @@ module.exports = async function unixRead(buffer, offset, length) {
       err.errno === -1 // generic error
 
     if (disconnectError) {
-      err.disconnect = true
+      err.canceled = true
       logger('disconnecting', err)
     }
 
     throw err
   }
 }
+
+module.exports = unixRead
