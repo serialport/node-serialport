@@ -25,6 +25,8 @@ jobs:
       run: |
         npm install --global node-gyp@latest
         npm prefix -g | % {npm config set node_gyp "$_\node_modules\node-gyp\bin\node-gyp.js"}
+    - name: upgrade npm
+      run: npm install -g npm
     - name: npm install
       run: npm install
     - name: npm run rebuild
