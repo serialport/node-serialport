@@ -19,7 +19,7 @@ const cancelError = message => {
  * Mock bindings for pretend serialport access
  */
 class MockBinding extends AbstractBinding {
-  constructor(opt) {
+  constructor(opt = {}) {
     super(opt)
     this.pendingRead = null // thunk for a promise or null
     this.isOpen = false

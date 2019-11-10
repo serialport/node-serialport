@@ -29,7 +29,7 @@ class AbstractBinding {
     debug('list')
   }
 
-  constructor(opt) {
+  constructor(opt = {}) {
     if (typeof opt !== 'object') {
       throw new TypeError('"options" is not an object')
     }
