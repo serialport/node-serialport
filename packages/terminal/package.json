@@ -6,7 +6,7 @@
     "serialport-terminal": "./lib/index.js"
   },
   "dependencies": {
-    "commander": "^3.0.2",
+    "commander": "^4.0.0",
     "enquirer": "^2.3.2",
     "@serialport/bindings": "^8.0.4",
     "@serialport/stream": "^8.0.4"
