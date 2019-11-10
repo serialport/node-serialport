@@ -29,7 +29,7 @@ class DarwinBinding extends AbstractBinding {
     return wrapWithHiddenComName(asyncList())
   }
 
-  constructor(opt) {
+  constructor(opt = {}) {
     super(opt)
     this.bindingOptions = { ...defaultBindingOptions, ...opt.bindingOptions }
     this.fd = null

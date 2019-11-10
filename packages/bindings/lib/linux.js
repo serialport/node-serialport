@@ -29,7 +29,7 @@ class LinuxBinding extends AbstractBinding {
     return wrapWithHiddenComName(linuxList())
   }
 
-  constructor(opt) {
+  constructor(opt = {}) {
     super(opt)
     this.bindingOptions = { ...defaultBindingOptions, ...opt.bindingOptions }
     this.fd = null

@@ -39,7 +39,7 @@ class WindowsBinding extends AbstractBinding {
     )
   }
 
-  constructor(opt) {
+  constructor(opt = {}) {
     super(opt)
     this.bindingOptions = { ...opt.bindingOptions }
     this.fd = null
