@@ -321,7 +321,7 @@ SerialPort.prototype._write = function(data, encoding, callback) {
     },
     err => {
       debug('binding.write', 'error', err)
-      if (!err.canceled) {
+      if (err.disconnect) {
         this._disconnected(err)
       }
       callback(err)
