@@ -974,13 +974,24 @@ describe('SerialPort', () => {
       const data2 = port.read()
       assert.deepEqual(Buffer.concat([data1, data2]), testData)
     })
+
+    it("doesn't error if the port is closed when reading", async () => {
+      const port = new SerialPort('/dev/exists')
+      await new Promise(resolve => port.on('open', resolve))
+      port.read()
+      port.read()
+      let err = null
+      port.on('error', error => (err = error))
+      await new Promise((resolve, reject) => port.close(err => (err ? reject(err) : resolve())))
+      assert.isNull(err)
+    })
   })
 
   describe('disconnect close errors', () => {
     it('emits as a disconnected close event on a bad read', done => {
       const port = new SerialPort('/dev/exists')
-      sinon.stub(port.binding, 'read').callsFake(() => {
-        return Promise.reject(new Error('EBAD_ERR'))
+      sinon.stub(port.binding, 'read').callsFake(async () => {
+        throw new Error('EBAD_ERR')
       })
       port.on('close', err => {
         assert.instanceOf(err, Error)

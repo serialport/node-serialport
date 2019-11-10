@@ -61,7 +61,7 @@ class LinuxBinding extends AbstractBinding {
 
   async read(buffer, offset, length) {
     await super.read(buffer, offset, length)
-    return unixRead.call(this, buffer, offset, length)
+    return unixRead({ binding: this, buffer, offset, length })
   }
 
   async write(buffer) {

@@ -9,6 +9,12 @@ function resolveNextTick(value) {
   return new Promise(resolve => process.nextTick(() => resolve(value)))
 }
 
+const cancelError = message => {
+  const err = new Error(message)
+  err.canceled = true
+  return err
+}
+
 /**
  * Mock bindings for pretend serialport access
  */
@@ -127,7 +133,7 @@ class MockBinding extends AbstractBinding {
     delete this.serialNumber
     this.isOpen = false
     if (this.pendingRead) {
-      this.pendingRead(new Error('port is closed'))
+      this.pendingRead(cancelError('port is closed'))
     }
   }
 
@@ -136,7 +142,7 @@ class MockBinding extends AbstractBinding {
     await super.read(buffer, offset, length)
     await resolveNextTick()
     if (!this.isOpen) {
-      throw new Error('Read canceled')
+      throw cancelError('Read canceled')
     }
     if (this.port.data.length <= 0) {
       return new Promise((resolve, reject) => {
