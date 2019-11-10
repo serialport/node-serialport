@@ -11,33 +11,32 @@ const writable = binding => {
   })
 }
 
-module.exports = async function unixWrite(buffer, offset) {
-  offset = offset || 0
+const unixWrite = async ({ binding, buffer, offset = 0, fsWriteAsync = writeAsync }) => {
   const bytesToWrite = buffer.length - offset
   logger('Starting write', buffer.length, 'bytes offset', offset, 'bytesToWrite', bytesToWrite)
-  if (!this.isOpen) {
+  if (!binding.isOpen) {
     throw new Error('Port is not open')
   }
   try {
-    const { bytesWritten } = await writeAsync(this.fd, buffer, offset, bytesToWrite)
+    const { bytesWritten } = await fsWriteAsync(binding.fd, buffer, offset, bytesToWrite)
     logger('write returned: wrote', bytesWritten, 'bytes')
     if (bytesWritten + offset < buffer.length) {
-      if (!this.isOpen) {
+      if (!binding.isOpen) {
         throw new Error('Port is not open')
       }
-      return unixWrite.call(this, buffer, bytesWritten + offset)
+      return unixWrite({ binding, buffer, offset: bytesWritten + offset, fsWriteAsync })
     }
 
     logger('Finished writing', bytesWritten + offset, 'bytes')
   } catch (err) {
     logger('write errored', err)
     if (err.code === 'EAGAIN' || err.code === 'EWOULDBLOCK' || err.code === 'EINTR') {
-      if (!this.isOpen) {
+      if (!binding.isOpen) {
         throw new Error('Port is not open')
       }
       logger('waiting for writable because of code:', err.code)
-      await writable(this)
-      return unixWrite.call(this, buffer, offset)
+      await writable(binding)
+      return unixWrite({ binding, buffer, offset, fsWriteAsync })
     }
 
     const disconnectError =
@@ -55,3 +54,4 @@ module.exports = async function unixWrite(buffer, offset) {
     throw err
   }
 }
+module.exports = unixWrite
