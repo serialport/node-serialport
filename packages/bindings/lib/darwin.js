@@ -69,7 +69,7 @@ class DarwinBinding extends AbstractBinding {
       if (buffer.length === 0) {
         return
       }
-      await unixWrite.call(this, buffer)
+      await unixWrite({ binding: this, buffer })
       this.writeOperation = null
     })
     return this.writeOperation
