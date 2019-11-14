@@ -33,7 +33,7 @@
     }
   ],
   "devDependencies": {
-    "cc": "^1.0.1",
+    "cc": "^2.0.1",
     "chai": "^4.0.2",
     "chai-subset": "^1.5.0",
     "codecov": "^3.6.1",
