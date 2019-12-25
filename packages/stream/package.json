@@ -1,12 +1,12 @@
 {
   "name": "@serialport/stream",
-  "version": "8.0.4",
+  "version": "8.0.6",
   "main": "lib",
   "dependencies": {
     "debug": "^4.1.1"
   },
   "devDependencies": {
-    "@serialport/binding-mock": "^8.0.4"
+    "@serialport/binding-mock": "^8.0.6"
   },
   "engines": {
     "node": ">=8.6.0"

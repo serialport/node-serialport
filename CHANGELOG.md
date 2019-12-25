@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.6](https://github.com/node-serialport/node-serialport/compare/v8.0.5...v8.0.6) (2019-12-25)
+
+
+### Bug Fixes
+
+* bindings.close() should cause a canceled read error ([#1972](https://github.com/node-serialport/node-serialport/issues/1972)) ([50f967e](https://github.com/node-serialport/node-serialport/commit/50f967e788f362da57d782829712542c8f15f8c8))
+* No prebuilt binaries found with electron-builder ([#2003](https://github.com/node-serialport/node-serialport/issues/2003)) ([16f9662](https://github.com/node-serialport/node-serialport/commit/16f966233930bc7c7302d2b7a53d70282b42e165))
+* stream required bindings-mock as a dep ([#1970](https://github.com/node-serialport/node-serialport/issues/1970)) ([e978b7e](https://github.com/node-serialport/node-serialport/commit/e978b7eb244b87a6be2ae914965adeb1f4562935))
+* upgrade npm on GitHub actions to fix bug ([#1973](https://github.com/node-serialport/node-serialport/issues/1973)) ([d500a5b](https://github.com/node-serialport/node-serialport/commit/d500a5b1ba6e6600e0a3f4486a3c496304f95c3f))
+
+
+
+
+
 ## [8.0.5](https://github.com/node-serialport/node-serialport/compare/v8.0.4...v8.0.5) (2019-10-27)
 
 
