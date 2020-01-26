@@ -45,7 +45,7 @@
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-promise": "^4.2.1",
     "lerna": "^3.18.3",
-    "mocha": "^6.2.2",
+    "mocha": "^7.0.1",
     "nyc": "^15.0.0",
     "plop": "^2.5.2",
     "prebuild": "^9.1.1",
