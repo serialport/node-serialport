@@ -1,4 +1,5 @@
-// #!/usr/bin/env node
+#!/usr/bin/env node
+
 const { Select } = require('enquirer')
 const args = require('commander')
 const SerialPort = require('@serialport/stream')
