@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.7](https://github.com/node-serialport/node-serialport/compare/v8.0.6...v8.0.7) (2020-01-30)
+
+
+### Bug Fixes
+
+* uncomment node shebang line in terminal package ([#2023](https://github.com/node-serialport/node-serialport/issues/2023)) ([2a59726](https://github.com/node-serialport/node-serialport/commit/2a5972684367083595cf75e489f1165d24844423))
+
+
+
+
+
 ## [8.0.6](https://github.com/node-serialport/node-serialport/compare/v8.0.5...v8.0.6) (2019-12-25)
 
 
