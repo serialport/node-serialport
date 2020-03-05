@@ -113,4 +113,18 @@ describe('listLinux', () => {
       assert.containSubset(ports, portOutput)
     })
   })
+
+  it('rejects on non-zero exit codes', () => {
+    const list = listLinux()
+    listLinux.emit('close', 1)
+
+    list.then(
+      () => {
+        assert.fail('should not resolve for non-zero exit codes')
+      },
+      error => {
+        assert(error, new Error('List exited with code: 1'))
+      }
+    )
+  })
 })
