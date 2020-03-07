@@ -123,7 +123,7 @@ describe('listLinux', () => {
         assert.fail('should not resolve for non-zero exit codes')
       },
       error => {
-        assert(error, new Error('List exited with code: 1'))
+        assert(error, new Error('Error listing ports udevadm exited with error code: 1'))
       }
     )
   })
