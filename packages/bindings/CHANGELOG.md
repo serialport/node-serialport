@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [8.0.8](https://github.com/serialport/node-serialport/compare/v8.0.7...v8.0.8) (2020-05-07)
+
+
+### Bug Fixes
+
+* reject on non-zero exit codes ([#2046](https://github.com/serialport/node-serialport/issues/2046)) ([6ee5c84](https://github.com/serialport/node-serialport/commit/6ee5c8471fd1e041ebfba736f1eb708d2764b63e))
+
+
+
+
+
 ## [8.0.7](https://github.com/serialport/node-serialport/compare/v8.0.6...v8.0.7) (2020-01-30)
 
 **Note:** Version bump only for package @serialport/bindings
