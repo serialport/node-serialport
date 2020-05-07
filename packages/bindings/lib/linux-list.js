@@ -42,6 +42,7 @@ function listLinux() {
     const ports = []
     const ude = childProcess.spawn('udevadm', ['info', '-e'])
     const lines = ude.stdout.pipe(new Readline())
+    ude.on('close', code => code && reject(new Error(`Error listing ports udevadm exited with error code: ${code}`)))
     ude.on('error', reject)
     lines.on('error', reject)
 
