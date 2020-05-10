@@ -30,7 +30,7 @@ listLinux.emit = () => {
 }
 
 listLinux.reset = () => {
-  mockPorts = {}
+  mockPorts = undefined
 }
 
 module.exports = listLinux
