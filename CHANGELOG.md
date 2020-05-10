@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [9.0.0](https://github.com/node-serialport/node-serialport/compare/v8.0.8...v9.0.0) (2020-05-10)
+
+
+### chore
+
+* build on node 14 and drop node 8 and 32bit linux builds ([#2079](https://github.com/node-serialport/node-serialport/issues/2079)) ([e0c232c](https://github.com/node-serialport/node-serialport/commit/e0c232c77ade7ab188dade1dc0cc7af134ce3a95))
+
+
+### BREAKING CHANGES
+
+* Dropping node 8 and 32bit linux builds
+
+
+
+
+
 ## [8.0.8](https://github.com/node-serialport/node-serialport/compare/v8.0.7...v8.0.8) (2020-05-07)
 
 

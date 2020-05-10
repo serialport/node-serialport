@@ -1,9 +1,9 @@
 {
   "name": "@serialport/parser-readline",
   "main": "lib",
-  "version": "8.0.6",
+  "version": "9.0.0",
   "dependencies": {
-    "@serialport/parser-delimiter": "^8.0.6"
+    "@serialport/parser-delimiter": "^9.0.0"
   },
   "engines": {
     "node": ">=8.6.0"
