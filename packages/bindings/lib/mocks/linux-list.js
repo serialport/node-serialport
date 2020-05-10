@@ -25,7 +25,7 @@ listLinux.setPorts = ports => {
   mockPorts = ports
 }
 
-listLinux.emit = function() {
+listLinux.emit = () => {
   event.emit.apply(event, arguments)
 }
 

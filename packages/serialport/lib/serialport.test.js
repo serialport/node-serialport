@@ -60,8 +60,8 @@ function integrationTest(platform, testPort, Binding) {
     })
 
     describe('constructor', () => {
-      it('provides an error in callback when trying to open an invalid port', function(done) {
-        this.port = new SerialPort('COMBAD', err => {
+      it('provides an error in callback when trying to open an invalid port', done => {
+        new SerialPort('COMBAD', err => {
           assert.instanceOf(err, Error)
           done()
         })
@@ -126,7 +126,7 @@ function integrationTest(platform, testPort, Binding) {
         })
       })
 
-      it('can be read after closing and opening', function(done) {
+      it('can be read after closing and opening', function (done) {
         this.timeout(6000)
         const port = new SerialPort(testPort, { autoOpen: false })
         port.on('error', done)
@@ -174,7 +174,7 @@ function integrationTest(platform, testPort, Binding) {
     })
 
     describe('#read and #write', () => {
-      it('2k test', function(done) {
+      it('2k test', function (done) {
         this.timeout(20000)
         // 2k of random data
         const input = crypto.randomBytes(1024 * 2)

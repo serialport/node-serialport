@@ -193,7 +193,7 @@ Object.defineProperties(SerialPort.prototype, {
  * @event error
  */
 
-SerialPort.prototype._error = function(error, callback) {
+SerialPort.prototype._error = function (error, callback) {
   if (callback) {
     callback.call(this, error)
   } else {
@@ -201,7 +201,7 @@ SerialPort.prototype._error = function(error, callback) {
   }
 }
 
-SerialPort.prototype._asyncError = function(error, callback) {
+SerialPort.prototype._asyncError = function (error, callback) {
   process.nextTick(() => this._error(error, callback))
 }
 
@@ -216,7 +216,7 @@ SerialPort.prototype._asyncError = function(error, callback) {
  * @emits open
  * @returns {undefined}
  */
-SerialPort.prototype.open = function(openCallback) {
+SerialPort.prototype.open = function (openCallback) {
   if (this.isOpen) {
     return this._asyncError(new Error('Port is already open'), openCallback)
   }
@@ -251,7 +251,7 @@ SerialPort.prototype.open = function(openCallback) {
  * @param {errorCallback=} [callback] Called once the port's baud rate changes. If `.update` is called without a callback, and there is an error, an error event is emitted.
  * @returns {undefined}
  */
-SerialPort.prototype.update = function(options, callback) {
+SerialPort.prototype.update = function (options, callback) {
   if (typeof options !== 'object') {
     throw TypeError('"options" is not an object')
   }
@@ -300,14 +300,14 @@ In addition to the usual `stream.write` arguments (`String` and `Buffer`), `writ
  * @since 5.0.0
  */
 const superWrite = SerialPort.prototype.write
-SerialPort.prototype.write = function(data, encoding, callback) {
+SerialPort.prototype.write = function (data, encoding, callback) {
   if (Array.isArray(data)) {
     data = Buffer.from(data)
   }
   return superWrite.call(this, data, encoding, callback)
 }
 
-SerialPort.prototype._write = function(data, encoding, callback) {
+SerialPort.prototype._write = function (data, encoding, callback) {
   if (!this.isOpen) {
     return this.once('open', function afterOpenWrite() {
       this._write(data, encoding, callback)
@@ -329,7 +329,7 @@ SerialPort.prototype._write = function(data, encoding, callback) {
   )
 }
 
-SerialPort.prototype._writev = function(data, callback) {
+SerialPort.prototype._writev = function (data, callback) {
   debug('_writev', `${data.length} chunks of data`)
   const dataV = data.map(write => write.chunk)
   this._write(Buffer.concat(dataV), null, callback)
@@ -348,7 +348,7 @@ SerialPort.prototype._writev = function(data, callback) {
  * @event data
  */
 
-SerialPort.prototype._read = function(bytesToRead) {
+SerialPort.prototype._read = function (bytesToRead) {
   if (!this.isOpen) {
     debug('_read', 'queueing _read for after open')
     this.once('open', () => {
@@ -394,7 +394,7 @@ SerialPort.prototype._read = function(bytesToRead) {
   )
 }
 
-SerialPort.prototype._disconnected = function(err) {
+SerialPort.prototype._disconnected = function (err) {
   if (!this.isOpen) {
     debug('disconnected aborted because already closed', err)
     return
@@ -418,7 +418,7 @@ SerialPort.prototype._disconnected = function(err) {
  * @emits close
  * @returns {undefined}
  */
-SerialPort.prototype.close = function(callback, disconnectError) {
+SerialPort.prototype.close = function (callback, disconnectError) {
   disconnectError = disconnectError || null
 
   if (!this.isOpen) {
@@ -460,7 +460,7 @@ SerialPort.prototype.close = function(callback, disconnectError) {
  * @since 5.0.0
  * @returns {undefined}
  */
-SerialPort.prototype.set = function(options, callback) {
+SerialPort.prototype.set = function (options, callback) {
   if (typeof options !== 'object') {
     throw TypeError('"options" is not an object')
   }
@@ -492,7 +492,7 @@ SerialPort.prototype.set = function(options, callback) {
  * @param {modemBitsCallback=} callback Called once the modem bits are retrieved.
  * @returns {undefined}
  */
-SerialPort.prototype.get = function(callback) {
+SerialPort.prototype.get = function (callback) {
   if (!this.isOpen) {
     debug('get attempted, but port is not open')
     return this._asyncError(new Error('Port is not open'), callback)
@@ -518,7 +518,7 @@ SerialPort.prototype.get = function(callback) {
  * @param  {errorCallback=} callback Called once the flush operation finishes.
  * @returns {undefined}
  */
-SerialPort.prototype.flush = function(callback) {
+SerialPort.prototype.flush = function (callback) {
   if (!this.isOpen) {
     debug('flush attempted, but port is not open')
     return this._asyncError(new Error('Port is not open'), callback)
@@ -553,7 +553,7 @@ function writeAndDrain (data, callback) {
 }
 ```
  */
-SerialPort.prototype.drain = function(callback) {
+SerialPort.prototype.drain = function (callback) {
   debug('drain')
   if (!this.isOpen) {
     debug('drain queuing on port open')
@@ -642,7 +642,7 @@ SerialPort.list()
   .catch(err) {...});
 ```
  */
-SerialPort.list = async function(callback) {
+SerialPort.list = async function (callback) {
   debug('.list')
   if (!SerialPort.Binding) {
     throw new TypeError('No Binding set on `SerialPort.Binding`')

@@ -25,14 +25,14 @@ describe('SerialPort', () => {
   })
 
   describe('constructor', () => {
-    it('provides auto construction', function(done) {
+    it('provides auto construction', done => {
       const serialPort = SerialPort
-      this.port = serialPort('/dev/exists', done)
+      serialPort('/dev/exists', done)
     })
 
     describe('autoOpen', () => {
-      it('opens the port automatically', function(done) {
-        this.port = new SerialPort('/dev/exists', err => {
+      it('opens the port automatically', done => {
+        new SerialPort('/dev/exists', err => {
           assert.isNull(err)
           done()
         })
@@ -53,8 +53,8 @@ describe('SerialPort', () => {
     })
 
     // needs to be passes the callback to open
-    it('passes the error to the callback when an bad port is provided', function(done) {
-      this.port = new SerialPort('/bad/port', err => {
+    it('passes the error to the callback when an bad port is provided', done => {
+      new SerialPort('/bad/port', err => {
         assert.instanceOf(err, Error)
         done()
       })
@@ -69,79 +69,79 @@ describe('SerialPort', () => {
       })
     })
 
-    it('throws an error when bindings are missing', function(done) {
+    it('throws an error when bindings are missing', done => {
       SerialPort.Binding = undefined
       try {
-        this.port = new SerialPort('/dev/exists')
+        new SerialPort('/dev/exists')
       } catch (err) {
         assert.instanceOf(err, Error)
         done()
       }
     })
 
-    it('throws an error when no port is provided', function(done) {
+    it('throws an error when no port is provided', done => {
       try {
-        this.port = new SerialPort('')
+        new SerialPort('')
       } catch (err) {
         assert.instanceOf(err, Error)
         done()
       }
     })
 
-    it('throws an error when given bad options even with a callback', function(done) {
+    it('throws an error when given bad options even with a callback', done => {
       try {
-        this.port = new SerialPort('/dev/exists', { baudRate: 'whatever' }, () => {})
+        new SerialPort('/dev/exists', { baudRate: 'whatever' }, () => {})
       } catch (err) {
         assert.instanceOf(err, Error)
         done()
       }
     })
 
-    it('throws an error when given bad baudrate even with a callback', function() {
+    it('throws an error when given bad baudrate even with a callback', () => {
       assert.throws(() => {
-        this.port = new SerialPort('/dev/exists', { baudrate: 9600 }, () => {})
+        new SerialPort('/dev/exists', { baudrate: 9600 }, () => {})
       })
     })
 
-    it('errors with a non number baudRate', function(done) {
+    it('errors with a non number baudRate', done => {
       try {
-        this.port = new SerialPort('/bad/port', { baudRate: 'whatever' })
+        new SerialPort('/bad/port', { baudRate: 'whatever' })
       } catch (err) {
         assert.instanceOf(err, Error)
         done()
       }
     })
 
-    it('errors with invalid databits', function(done) {
+    it('errors with invalid databits', done => {
       try {
-        this.port = new SerialPort('/dev/exists', { dataBits: 19 })
+        new SerialPort('/dev/exists', { dataBits: 19 })
       } catch (err) {
         assert.instanceOf(err, Error)
         done()
       }
     })
 
-    it('errors with invalid stopbits', function(done) {
+    it('errors with invalid stopbits', done => {
       try {
-        this.port = new SerialPort('/dev/exists', { stopBits: 19 })
+        new SerialPort('/dev/exists', { stopBits: 19 })
       } catch (err) {
         assert.instanceOf(err, Error)
         done()
       }
     })
 
-    it('errors with invalid parity', function(done) {
+    it('errors with invalid parity', done => {
       try {
-        this.port = new SerialPort('/dev/exists', { parity: 'pumpkins' })
+        new SerialPort('/dev/exists', { parity: 'pumpkins' })
       } catch (err) {
         assert.instanceOf(err, Error)
         done()
       }
     })
 
-    it('errors with invalid flow control', function(done) {
+    it('errors with invalid flow control', done => {
       try {
-        this.port = new SerialPort('/dev/exists', { xon: 'pumpkins' })
+        new SerialPort('/dev/exists', { xon: 'pumpkins' })
       } catch (err) {
         assert.instanceOf(err, Error)
         done()
@@ -164,8 +164,8 @@ describe('SerialPort', () => {
       done()
     })
 
-    it('allows optional options', function(done) {
-      this.port = new SerialPort('/dev/exists', () => done())
+    it('allows optional options', done => {
+      new SerialPort('/dev/exists', () => done())
     })
   })
 
@@ -492,7 +492,7 @@ describe('SerialPort', () => {
 
       it('emits the "close" event and runs the callback', done => {
         let called = 0
-        const doneIfTwice = function() {
+        const doneIfTwice = function () {
           called++
           if (called === 2) {
             return done()
@@ -507,7 +507,7 @@ describe('SerialPort', () => {
       it('emits an "error" event or error callback but not both', done => {
         const port = new SerialPort('/dev/exists', { autoOpen: false })
         let called = 0
-        const doneIfTwice = function(err) {
+        const doneIfTwice = function (err) {
           assert.instanceOf(err, Error)
           called++
           if (called === 2) {
@@ -535,7 +535,7 @@ describe('SerialPort', () => {
       })
 
       it('errors when the port is not open', done => {
-        const cb = function() {}
+        const cb = function () {}
         const port = new SerialPort('/dev/exists', { autoOpen: false }, cb)
         port.close(err => {
           assert.instanceOf(err, Error)
