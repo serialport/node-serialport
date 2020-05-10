@@ -5,15 +5,17 @@ describe('BindingMock', () => {
     new BindingMock({})
   })
 
+  let binding
+
   describe('instance method', () => {
-    beforeEach(function() {
-      this.binding = new BindingMock({})
+    beforeEach(() => {
+      binding = new BindingMock({})
     })
 
     describe('open', () => {
       describe('when phony port not created', () => {
-        it('should reject', function() {
-          return shouldReject(this.binding.open('/dev/ttyUSB0', {}))
+        it('should reject', () => {
+          return shouldReject(binding.open('/dev/ttyUSB0', {}))
         })
       })
 
@@ -26,14 +28,14 @@ describe('BindingMock', () => {
           BindingMock.reset()
         })
 
-        it('should open the phony port', async function() {
-          await this.binding.open('/dev/ttyUSB0', {})
-          assert.isTrue(this.binding.isOpen)
+        it('should open the phony port', async () => {
+          await binding.open('/dev/ttyUSB0', {})
+          assert.isTrue(binding.isOpen)
         })
 
-        it('should have a "port" prop with "info.serialNumber" prop', async function() {
-          await this.binding.open('/dev/ttyUSB0', {})
-          assert.strictEqual(this.binding.port.info.serialNumber, 1)
+        it('should have a "port" prop with "info.serialNumber" prop', async () => {
+          await binding.open('/dev/ttyUSB0', {})
+          assert.strictEqual(binding.port.info.serialNumber, 1)
         })
       })
     })
@@ -56,33 +58,33 @@ describe('BindingMock', () => {
       })
     })
     describe('reset', () => {
-      beforeEach(async function() {
+      beforeEach(async () => {
         BindingMock.createPort('/dev/ttyUSB0')
-        this.binding = new BindingMock({})
-        await this.binding.open('/dev/ttyUSB0', {})
-        assert.strictEqual(this.binding.port.info.serialNumber, 1)
-        await this.binding.close()
+        binding = new BindingMock({})
+        await binding.open('/dev/ttyUSB0', {})
+        assert.strictEqual(binding.port.info.serialNumber, 1)
+        await binding.close()
       })
 
-      afterEach(async function() {
+      afterEach(async () => {
         // speculative cleanup
         try {
-          await this.binding.close()
+          await binding.close()
         } catch (ignored) {
           // ignored
         }
       })
 
-      it('should delete any configured phony ports', function() {
+      it('should delete any configured phony ports', () => {
         BindingMock.reset()
-        return shouldReject(this.binding.open('/dev/ttyUSB0', {}))
+        return shouldReject(binding.open('/dev/ttyUSB0', {}))
       })
 
-      it('should reset the serialNumber assigned to the phony port', async function() {
+      it('should reset the serialNumber assigned to the phony port', async () => {
         BindingMock.reset()
         BindingMock.createPort('/dev/ttyUSB0')
-        await this.binding.open('/dev/ttyUSB0', {})
-        assert.strictEqual(this.binding.port.info.serialNumber, 1)
+        await binding.open('/dev/ttyUSB0', {})
+        assert.strictEqual(binding.port.info.serialNumber, 1)
       })
     })
   })

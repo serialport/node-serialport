@@ -273,7 +273,10 @@ function testBinding(bindingName, Binding, testPort) {
         })
 
         it('errors when not called with options', async () => {
-          await shouldReject(binding.set(() => {}), Error)
+          await shouldReject(
+            binding.set(() => {}),
+            Error
+          )
         })
 
         it('updates baudRate', () => {
@@ -325,7 +328,7 @@ function testBinding(bindingName, Binding, testPort) {
           return binding.write(data)
         })
 
-        it('resolves after a large write (2k)', function() {
+        it('resolves after a large write (2k)', function () {
           this.timeout(20000)
           const data = Buffer.alloc(1024 * 2)
           return binding.write(data)
@@ -366,7 +369,7 @@ function testBinding(bindingName, Binding, testPort) {
           return binding.drain()
         })
 
-        it('waits for in progress writes to finish', function(done) {
+        it('waits for in progress writes to finish', function (done) {
           this.timeout(10000)
           let finishedWrite = false
           binding
@@ -427,7 +430,10 @@ function testBinding(bindingName, Binding, testPort) {
 
         it('throws when not called with options', async () => {
           const binding = new Binding()
-          await shouldReject(binding.set(() => {}), TypeError)
+          await shouldReject(
+            binding.set(() => {}),
+            TypeError
+          )
         })
 
         if (!testPort) {

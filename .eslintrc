@@ -46,7 +46,8 @@
         "singleQuote": true,
         "trailingComma": "es5",
         "semi": false,
-        "printWidth": 150
+        "printWidth": 150,
+        "arrowParens": "avoid"
       }
     ],
     "mocha/no-exclusive-tests": "error",

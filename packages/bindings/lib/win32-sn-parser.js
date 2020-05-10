@@ -1,6 +1,6 @@
 const PARSERS = [/USB\\(?:.+)\\(.+)/, /FTDIBUS\\(?:.+)\+(.+?)A?\\.+/]
 
-module.exports = function(pnpId) {
+module.exports = pnpId => {
   if (!pnpId) {
     return null
   }

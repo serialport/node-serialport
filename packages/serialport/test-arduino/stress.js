@@ -52,7 +52,7 @@ describe('the stress', () => {
       port.on('data', () => {})
 
       let writing = true
-      const write = function() {
+      const write = () => {
         if (!writing) {
           return
         }
