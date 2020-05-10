@@ -1,3 +1,9 @@
+Upgrading from 8.x to 9.x
+-------------
+- Serialport no longer supports Node 8
+- We no longer provide 32 bit linux prebuild builds, you may still build these binaries yourself however.
+
+
 Upgrading from 7.x to 8.x
 -------------
 - Serialport cli tools are now their own packages. See https://serialport.io/docs/guide-cli for more information on how to use them.
@@ -10,6 +16,7 @@ Upgrading from 7.x to 8.x
 Upgrading from 6.x to 7.x
 -------------
 We dropped support for Node.js 4, so you'll have to upgrade if you're running 4. We also split into many packages. See https://serialport.io/docs/api-overview for an overview of the new packages. Binaries have moved into `@serialport/bindings` so if you're distributing serialport in an electron app, you may have to make some changes.
+
 
 Upgrading from 5.x to 6.x
 -------------
