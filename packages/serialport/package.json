@@ -63,5 +63,6 @@
   "scripts": {
     "repl": "node bin/repl.js",
     "postinstall": "node thank-you.js"
-  }
+  },
+  "preferUnplugged": false
 }
