@@ -29,6 +29,7 @@ const defaultSetFlags = Object.freeze({
   dtr: true,
   dts: false,
   rts: true,
+  low_latency: false,
 })
 
 const listFields = ['path', 'manufacturer', 'serialNumber', 'pnpId', 'locationId', 'vendorId', 'productId']

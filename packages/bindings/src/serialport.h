@@ -105,6 +105,7 @@ struct SetBaton : public Nan::AsyncResource {
   bool dtr = false;
   bool dsr = false;
   bool brk = false;
+  bool low_latency = false;
 };
 
 struct GetBaton : public Nan::AsyncResource {
@@ -115,6 +116,7 @@ struct GetBaton : public Nan::AsyncResource {
   bool cts = false;
   bool dsr = false;
   bool dcd = false;
+  bool low_latency = false;
 };
 
 struct GetBaudRateBaton : public Nan::AsyncResource {

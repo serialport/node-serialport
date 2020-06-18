@@ -3,6 +3,7 @@
 #include <sys/ioctl.h>
 #include <asm/ioctls.h>
 #include <asm/termbits.h>
+#include <linux/serial.h>
 
 // Uses the termios2 interface to set nonstandard baud rates
 int linuxSetCustomBaudRate(const int fd, const unsigned int baudrate) {
@@ -32,6 +33,26 @@ int linuxGetSystemBaudRate(const int fd, int* const outbaud) {
   }
 
   *outbaud = static_cast<int>(t.c_ospeed);
+
+  return 0;
+}
+
+int linuxSetLowLatencyMode(const int fd, const bool enable) {
+  struct serial_struct ss;
+
+  if (ioctl(fd, TIOCGSERIAL, &ss)) {
+    return -1;
+  }
+
+  if (enable) {
+    ss.flags |= ASYNC_LOW_LATENCY;
+  } else {
+    ss.flags &= ~ASYNC_LOW_LATENCY;
+  }
+
+  if (ioctl(fd, TIOCSSERIAL, &ss)) {
+    return -2;
+  }
 
   return 0;
 }
