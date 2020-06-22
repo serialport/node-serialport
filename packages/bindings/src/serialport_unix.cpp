@@ -333,7 +333,7 @@ void EIO_Set(uv_work_t* req) {
   }
 
   #if defined(__linux__)
-  int err = linuxSetLowLatencyMode(data->fd, data->low_latency);
+  int err = linuxSetLowLatencyMode(data->fd, data->lowLatency);
   if (err == -1) {
     snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get", strerror(errno));
     return;
@@ -370,14 +370,14 @@ void EIO_Get(uv_work_t* req) {
     return;
   }
 
-  data->low_latency = false;
+  data->lowLatency = false;
   #if defined(__linux__) && defined(ASYNC_LOW_LATENCY)
   int latency_bits;
   if (-1 == ioctl(data->fd, TIOCGSERIAL, &latency_bits)) {
     snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get", strerror(errno));
     return;
   }
-  data->low_latency = latency_bits & ASYNC_LOW_LATENCY;
+  data->lowLatency = latency_bits & ASYNC_LOW_LATENCY;
   #endif
 
   data->cts = bits & TIOCM_CTS;
