@@ -95,10 +95,10 @@ describe('unixRead', () => {
     const err = await shouldReject(unixRead({ binding: mock, buffer: readBuffer, offset: 0, length: 8, fsReadAsync }))
     assert.isTrue(err.canceled)
   })
-  it('rejects a canceled error when fsread errors a disconnect error', async () => {
+  it('rejects a disconnected error when fsread errors a disconnect error', async () => {
     const readBuffer = Buffer.alloc(8, 0)
     const fsReadAsync = makeFsReadError('EBADF')
     const err = await shouldReject(unixRead({ binding: mock, buffer: readBuffer, offset: 0, length: 8, fsReadAsync }))
-    assert.isTrue(err.canceled)
+    assert.isTrue(err.disconnect)
   })
 })

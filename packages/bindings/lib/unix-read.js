@@ -46,7 +46,7 @@ const unixRead = async ({ binding, buffer, offset, length, fsReadAsync = readAsy
       err.errno === -1 // generic error
 
     if (disconnectError) {
-      err.canceled = true
+      err.disconnect = true
       logger('disconnecting', err)
     }
 
