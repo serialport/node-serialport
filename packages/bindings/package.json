@@ -11,10 +11,11 @@
     "bindings": "^1.5.0",
     "debug": "^4.1.1",
     "nan": "^2.14.1",
-    "prebuild-install": "^5.3.3"
+    "prebuild-install": "^5.3.5"
   },
   "devDependencies": {
-    "@serialport/binding-mock": "^9.0.0"
+    "@serialport/binding-mock": "^9.0.0",
+    "node-abi": "^2.18.0"
   },
   "engines": {
     "node": ">=8.6.0"
