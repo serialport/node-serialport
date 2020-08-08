@@ -4,7 +4,6 @@
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fserialport%2Fnode-serialport%2Fbadge&style=flat-square)](https://actions-badge.atrox.dev/serialport/node-serialport/goto)
 [![Build Status](https://travis-ci.org/serialport/node-serialport.svg?branch=master)](https://travis-ci.org/serialport/node-serialport)
 [![Build status](https://ci.appveyor.com/api/projects/status/ijg4rnd9vi16tbgr/branch/master?svg=true)](https://ci.appveyor.com/project/serialport/node-serialport/branch/master)
-[![Greenkeeper badge](https://badges.greenkeeper.io/serialport/node-serialport.svg)](https://greenkeeper.io/)
 
 Access serial ports with JavaScript. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!
 
