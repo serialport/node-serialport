@@ -1,4 +1,7 @@
-os: unstable
+image:
+  - Visual Studio 2019
+  - Ubuntu
+  - macOS
 environment:
   prebuild_upload:
     secure: a/seaM+nUnQWhWUnbyz8fl9vPwuyqDTrFviptDykYp2c46vdTvlAxU6yqD/PpDiI
@@ -15,6 +18,7 @@ platform:
 
 install:
 - ps: Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:platform;
+- sh: nvm install $nodejs_version $env:platform
 - ps: >
     @{
       "nodejs_version" = $env:nodejs_version
