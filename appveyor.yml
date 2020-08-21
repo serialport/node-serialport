@@ -6,7 +6,7 @@ environment:
     secure: iDcAJCYgJK4tffyzEHbMVR8DatJcIN8eY0h29p9JQkl43TcEcm6Z6JLOBpGDk1MJ
 
   matrix:
-  - nodejs_version: "14"
+  - nodejs_version: "12"
     binary_builder: "true"
 
 platform:
