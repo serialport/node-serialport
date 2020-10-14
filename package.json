@@ -37,7 +37,7 @@
     "chai": "^4.0.2",
     "chai-subset": "^1.5.0",
     "codecov": "^3.6.1",
-    "eslint": "^6.6.0",
+    "eslint": "^7.11.0",
     "eslint-config-prettier": "^6.5.0",
     "eslint-plugin-import": "^2.18.2",
     "eslint-plugin-mocha": "^7.0.0",
