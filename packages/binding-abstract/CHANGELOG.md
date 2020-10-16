@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.2](https://github.com/serialport/node-serialport/compare/v9.0.1...v9.0.2) (2020-10-16)
+
+
+### Bug Fixes
+
+* while validating for offset, check for offset's value for NaN instead length ([#2124](https://github.com/serialport/node-serialport/issues/2124)) ([4215122](https://github.com/serialport/node-serialport/commit/42151228240c5c818ac5327d6ff5c01398805564))
+
+
+
+
+
 ## [9.0.1](https://github.com/serialport/node-serialport/compare/v9.0.0...v9.0.1) (2020-08-08)
 
 **Note:** Version bump only for package @serialport/binding-abstract
