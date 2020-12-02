@@ -6,13 +6,13 @@ const { HEADER_LENGTH, convertHeaderBufferToObj } = require('./utils')
  * A Transform stream that accepts a stream of octet data and converts it into an object
  * representation of a CCSDS Space Packet. See https://public.ccsds.org/Pubs/133x0b2e1.pdf for a
  * description of the Space Packet format.
- *
  * @extends Transform
  */
 class SpacePacketParser extends Transform {
   /**
-   *
-   * @param {Object} options Configuration options for the stream
+   * A Transform stream that accepts a stream of octet data and emits object representations of
+   * CCSDS Space Packets once a packet has been completely received.
+   * @param {Object} [options] Configuration options for the stream
    * @param {Number} options.timeCodeFieldLength The length of the time code field within the data
    * @param {Number} options.ancillaryDataFieldLength The length of the ancillary data field within the data
    */
@@ -30,6 +30,11 @@ class SpacePacketParser extends Transform {
     this.expectingHeader = true
   }
 
+  /**
+   * Bundle the header, secondary header if present, and the data into a JavaScript object to emit.
+   * If more data has been received past the current packet, begin the process of parsing the next
+   * packet(s).
+   */
   pushCompletedPacket() {
     const completedPacket = { header: { ...this.header } }
     const timeCode = Buffer.from(this.dataBuffer.slice(0, this.timeCodeFieldLength))
@@ -51,6 +56,8 @@ class SpacePacketParser extends Transform {
     completedPacket.data = data.toString()
     this.push(completedPacket)
 
+    // If there is an overflow (i.e. we have more data than the packet we just pushed) begin parsing
+    // the next packet.
     const nextChunk = Buffer.from(this.dataBuffer.slice(this.dataLength))
 
     if (nextChunk.length >= HEADER_LENGTH) {
@@ -64,6 +71,12 @@ class SpacePacketParser extends Transform {
     }
   }
 
+  /**
+   * Build the Stream's headerBuffer property from the received Buffer chunk; extract data from it
+   * if it's complete. If there's more to the chunk than just the header, initiate handling the
+   * packet data.
+   * @param {Buffer} chunk Build the Stream's headerBuffer property from
+   */
   extractHeader(chunk) {
     const headerAsBuffer = Buffer.concat([this.headerBuffer, chunk])
     const startOfDataBuffer = headerAsBuffer.slice(HEADER_LENGTH)
