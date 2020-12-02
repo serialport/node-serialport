@@ -21,22 +21,15 @@ const toOctetStr = num => {
  * @param {Buffer} buf The buffer containing the Space Packet Header Data
  */
 const convertHeaderBufferToObj = buf => {
-  const [byte0, byte1, byte2, byte3, byte4, byte5] = [...buf.slice(0, HEADER_LENGTH)]
-  const isVersion1 = toOctetStr(byte0).indexOf('000') === 0
+  const headerStr = Array.from(buf.slice(0, HEADER_LENGTH)).reduce((accum, curr) => `${accum}${toOctetStr(curr)}`, '')
+  const isVersion1 = headerStr.slice(0, 3) === '000'
   const versionNumber = isVersion1 ? 1 : 'UNKNOWN_VERSION'
-  const type = byte0 >>> 4
-  const secondaryHeader = (byte0 >>> 3) % 2
-  const zeroAndOneAsBinString = [byte0, byte1].reduce((accum, curr) => `${accum}${toOctetStr(curr)}`, '')
-  const apidAsBinString = zeroAndOneAsBinString.slice(5)
-  const apid = parseInt(apidAsBinString, 2)
-  const byte2AsBinString = toOctetStr(byte2)
-  const sequenceFlags = parseInt(byte2AsBinString.slice(0, 2), 2)
-  const packetNameAsBinString = `${byte2AsBinString}${toOctetStr(byte3)}`.slice(2)
-  const packetName = parseInt(packetNameAsBinString, 2)
-  const packetLengthAsBinString = [byte4, byte5].reduce((accum, curr) => {
-    return `${accum}${toOctetStr(curr)}`
-  }, '')
-  const dataLength = parseInt(packetLengthAsBinString, 2) + 1
+  const type = Number(headerStr[3])
+  const secondaryHeader = Number(headerStr[4])
+  const apid = parseInt(headerStr.slice(5, 16), 2)
+  const sequenceFlags = parseInt(headerStr.slice(16, 18), 2)
+  const packetName = parseInt(headerStr.slice(18, 32), 2)
+  const dataLength = parseInt(headerStr.slice(-16), 2) + 1
 
   return {
     versionNumber,
