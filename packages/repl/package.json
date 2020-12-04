@@ -1,13 +1,13 @@
 {
   "name": "@serialport/repl",
-  "version": "9.0.2",
+  "version": "9.0.3",
   "main": "lib",
   "bin": {
     "serialport-repl": "./lib/index.js"
   },
   "dependencies": {
     "promirepl": "^2.0.1",
-    "serialport": "^9.0.2"
+    "serialport": "^9.0.3"
   },
   "engines": {
     "node": ">=8.6.0"

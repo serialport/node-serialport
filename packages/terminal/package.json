@@ -1,12 +1,12 @@
 {
   "name": "@serialport/terminal",
-  "version": "9.0.2",
+  "version": "9.0.3",
   "main": "lib",
   "bin": {
     "serialport-terminal": "./lib/index.js"
   },
   "dependencies": {
-    "@serialport/bindings": "^9.0.2",
+    "@serialport/bindings": "^9.0.3",
     "@serialport/stream": "^9.0.2",
     "commander": "^5.1.0",
     "enquirer": "^2.3.5"
