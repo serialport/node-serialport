@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@serialport/binding-mock": "^9.0.2",
-    "node-abi": "^2.18.0"
+    "node-abi": "^2.19.3"
   },
   "engines": {
     "node": ">=8.6.0"
