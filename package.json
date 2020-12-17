@@ -46,6 +46,7 @@
     "eslint-plugin-promise": "^4.2.1",
     "lerna": "^3.22.1",
     "mocha": "^8.2.1",
+    "node-abi": "^2.19.3",
     "nyc": "^15.1.0",
     "plop": "^2.7.4",
     "prebuild": "^10.0.1",
