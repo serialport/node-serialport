@@ -1,7 +1,7 @@
 {
   "name": "@serialport/parser-spacepacket",
   "main": "lib",
-  "version": "9.0.1",
+  "version": "9.0.5",
   "engines": {
     "node": ">=8.6.0"
   },
