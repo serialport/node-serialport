@@ -1,0 +1,16 @@
+{
+  "name": "@serialport/parser-packet-length",
+  "main": "lib",
+  "version": "9.0.1",
+  "engines": {
+    "node": ">=8.6.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/serialport/node-serialport.git"
+  }
+}
