@@ -50,6 +50,7 @@
     "@serialport/parser-byte-length": "^9.0.1",
     "@serialport/parser-cctalk": "^9.0.1",
     "@serialport/parser-delimiter": "^9.0.1",
+    "@serialport/parser-inter-byte-timeout": "^9.0.1",
     "@serialport/parser-readline": "^9.0.1",
     "@serialport/parser-ready": "^9.0.1",
     "@serialport/parser-regex": "^9.0.1",
