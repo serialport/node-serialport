@@ -9,7 +9,7 @@ void setup() {
 
 void loop() {
   while (Serial.available()) {
-    int byte = Serial.read();
-    Serial.write(byte);
+    uint8_t oneByteData = Serial.read();
+    Serial.write(oneByteData);
   }
 }
