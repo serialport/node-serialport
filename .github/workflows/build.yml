@@ -6,11 +6,15 @@ on:
     - 'force-build'
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.config.os }}
     strategy:
       matrix:
         node-version: [14.x]
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        config:
+          - { os: macos-latest, arch: x64 }
+          - { os: ubuntu-latest, arch: x64 }
+          - { os: windows-latest, arch: x64 }
+          - { os: windows-latest, arch: ia32 }
     steps:
     - uses: actions/checkout@v1
     - name: Use Node.js ${{ matrix.node-version }}
