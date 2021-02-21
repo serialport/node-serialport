@@ -264,6 +264,7 @@ NAN_METHOD(Set) {
   baton->cts = getBoolFromObject(options, "cts");
   baton->dtr = getBoolFromObject(options, "dtr");
   baton->dsr = getBoolFromObject(options, "dsr");
+  baton->lowLatency = getBoolFromObject(options, "lowLatency");
 
   uv_work_t* req = new uv_work_t();
   req->data = baton;
@@ -307,6 +308,7 @@ NAN_METHOD(Get) {
   baton->cts = false;
   baton->dsr = false;
   baton->dcd = false;
+  baton->lowLatency = false;
   baton->callback.Reset(info[1].As<v8::Function>());
 
   uv_work_t* req = new uv_work_t();
@@ -329,6 +331,7 @@ void EIO_AfterGet(uv_work_t* req) {
     Nan::Set(results, Nan::New<v8::String>("cts").ToLocalChecked(), Nan::New<v8::Boolean>(data->cts));
     Nan::Set(results, Nan::New<v8::String>("dsr").ToLocalChecked(), Nan::New<v8::Boolean>(data->dsr));
     Nan::Set(results, Nan::New<v8::String>("dcd").ToLocalChecked(), Nan::New<v8::Boolean>(data->dcd));
+    Nan::Set(results, Nan::New<v8::String>("lowLatency").ToLocalChecked(), Nan::New<v8::Boolean>(data->lowLatency));
 
     argv[0] = Nan::Null();
     argv[1] = results;

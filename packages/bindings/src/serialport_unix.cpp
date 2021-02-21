@@ -332,6 +332,17 @@ void EIO_Set(uv_work_t* req) {
     bits |= TIOCM_DSR;
   }
 
+  #if defined(__linux__)
+  int err = linuxSetLowLatencyMode(data->fd, data->lowLatency);
+  if (err == -1) {
+    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get", strerror(errno));
+    return;
+  } else if(err == -2) {
+    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot set", strerror(errno));
+    return;
+  }
+  #endif
+
   int result = 0;
   if (data->brk) {
     result = ioctl(data->fd, TIOCSBRK, NULL);
@@ -358,6 +369,16 @@ void EIO_Get(uv_work_t* req) {
     snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get", strerror(errno));
     return;
   }
+
+  data->lowLatency = false;
+  #if defined(__linux__) && defined(ASYNC_LOW_LATENCY)
+  int latency_bits;
+  if (-1 == ioctl(data->fd, TIOCGSERIAL, &latency_bits)) {
+    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get", strerror(errno));
+    return;
+  }
+  data->lowLatency = latency_bits & ASYNC_LOW_LATENCY;
+  #endif
 
   data->cts = bits & TIOCM_CTS;
   data->dsr = bits & TIOCM_DSR;
