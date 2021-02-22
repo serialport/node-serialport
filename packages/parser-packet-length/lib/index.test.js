@@ -20,7 +20,7 @@ describe('DelimiterParser', () => {
 
   it('transforms data to packets of correct length starting with delimiter when length is offset', () => {
     const spy = sinon.spy()
-    const parser = new PacketLengthParser({ length_offset: 2, packet_overhead: 3 })
+    const parser = new PacketLengthParser({ lengthOffset: 2, packetOverhead: 3 })
     parser.on('data', spy)
     parser.write(Buffer.from('\xaa\x01\x0dI love robots\xaa\x02\x13Each '))
     parser.write(Buffer.from('and Every One\n'))
@@ -34,7 +34,7 @@ describe('DelimiterParser', () => {
 
   it('transforms data to packets of correct length starting with delimiter when length is offset and multibyte', () => {
     const spy = sinon.spy()
-    const parser = new PacketLengthParser({ length_offset: 2, packet_overhead: 4, length_bytes: 2 })
+    const parser = new PacketLengthParser({ lengthOffset: 2, packetOverhead: 4, lengthBytes: 2 })
     parser.on('data', spy)
     parser.write(Buffer.from('\xaa\x01\x0d\x00I love robots\xaa\x02\x13\x00Each '))
     parser.write(Buffer.from('and Every One\n'))
@@ -48,7 +48,7 @@ describe('DelimiterParser', () => {
 
   it('flushes remaining data when the stream ends', () => {
     const spy = sinon.spy()
-    const parser = new PacketLengthParser({ length_offset: 2, packet_overhead: 4, length_bytes: 2 })
+    const parser = new PacketLengthParser({ lengthOffset: 2, packetOverhead: 4, lengthBytes: 2 })
     parser.on('data', spy)
     parser.write(Buffer.from('\xaa\x01\x0d\x00I love robots\xaa\x02\x13\x00Each '))
     parser.write(Buffer.from('and Every One\n'))
@@ -64,7 +64,7 @@ describe('DelimiterParser', () => {
 
   it('Emits data when early when invalid length encountered', () => {
     const spy = sinon.spy()
-    const parser = new PacketLengthParser({ length_offset: 2, packet_overhead: 4, length_bytes: 2, max_len: 0x0d })
+    const parser = new PacketLengthParser({ lengthOffset: 2, packetOverhead: 4, lengthBytes: 2, maxLen: 0x0d })
     parser.on('data', spy)
     parser.write(Buffer.from('\xaa\x01\x0d\x00I love robots\xaa\x02\x13\x00Each '))
     parser.write(Buffer.from('and Every One\n'))
@@ -79,7 +79,7 @@ describe('DelimiterParser', () => {
 
   it('works if a multibyte length crosses a chunk boundary', () => {
     const spy = sinon.spy()
-    const parser = new PacketLengthParser({ length_offset: 2, packet_overhead: 4, length_bytes: 2 })
+    const parser = new PacketLengthParser({ lengthOffset: 2, packetOverhead: 4, lengthBytes: 2 })
     parser.on('data', spy)
     parser.write(Buffer.from('\xaa\x01\x0d'))
     parser.write(Buffer.from('\x00I love robots\xaa\x02\x13\x00Each '))

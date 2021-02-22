@@ -19,9 +19,9 @@ const PacketLengthParser = require('@serialport/packet-length-parser')
 const port = new SerialPort('/dev/tty-usbserial1')
 const parser = port.pipe(new PacketLengthParser({
   delimiter: 0xbc,
-  packet_overhead: 5,
-  length_bytes: 2,
-  length_offset: 2,
+  packetOverhead: 5,
+  lengthBytes: 2,
+  lengthOffset: 2,
 }))
 */
 class PacketLengthParser extends Transform {
@@ -30,10 +30,10 @@ class PacketLengthParser extends Transform {
 
     const opts = {
       delimiter: 0xaa,
-      packet_overhead: 2,
-      length_bytes: 1,
-      length_offset: 1,
-      max_len: 0xff,
+      packetOverhead: 2,
+      lengthBytes: 1,
+      lengthOffset: 1,
+      maxLen: 0xff,
 
       ...options,
     }
@@ -54,10 +54,10 @@ class PacketLengthParser extends Transform {
       if (true === this.start) {
         this.buffer = Buffer.concat([this.buffer, Buffer.from([byte])])
 
-        if (this.buffer.length >= this.opts.length_offset + this.opts.length_bytes) {
-          const len = this.buffer.readUIntLE(this.opts.length_offset, this.opts.length_bytes)
+        if (this.buffer.length >= this.opts.lengthOffset + this.opts.lengthBytes) {
+          const len = this.buffer.readUIntLE(this.opts.lengthOffset, this.opts.lengthBytes)
 
-          if (this.buffer.length == len + this.opts.packet_overhead || len > this.opts.max_len) {
+          if (this.buffer.length == len + this.opts.packetOverhead || len > this.opts.maxLen) {
             this.push(this.buffer)
             this.buffer = Buffer.alloc(0)
             this.start = false
