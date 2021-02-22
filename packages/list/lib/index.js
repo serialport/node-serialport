@@ -2,13 +2,11 @@
 
 const bindings = require('@serialport/bindings')
 const { version } = require('../package.json')
-const args = require('commander')
+const { program, Option } = require('commander')
 
-args
-  .version(version)
-  .description('List available serial ports')
-  .option('-f, --format <type>', 'Format the output as text, json, or jsonl. default: text', /^(text|json|jsonline|jsonl)$/i, 'text')
-  .parse(process.argv)
+const formatOption = new Option('-f, --format <type>', 'Format the output').choices(['text', 'json', 'jsonline', 'jsonl']).default('text')
+
+program.version(version).description('List available serial ports').addOption(formatOption).parse(process.argv)
 
 function jsonl(ports) {
   ports.forEach(port => {
@@ -29,7 +27,18 @@ const formatters = {
   jsonline: jsonl,
 }
 
-bindings.list().then(formatters[args.format], err => {
-  console.error(JSON.stringify(err))
-  process.exit(1)
-})
+const args = program.opts()
+
+bindings
+  .list()
+  .then(ports => {
+    const formatter = formatters[args.format]
+    if (!formatter) {
+      throw new Error(`Invalid formatter "${args.format}"`)
+    }
+    formatter(ports)
+  })
+  .catch(err => {
+    console.error(err)
+    process.exit(1)
+  })

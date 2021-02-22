@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@serialport/bindings": "^9.0.4",
-    "commander": "^5.1.0"
+    "commander": "^7.1.0"
   },
   "engines": {
     "node": ">=8.6.0"

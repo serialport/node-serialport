@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const { Select } = require('enquirer')
-const args = require('commander')
+const { program } = require('commander')
 const SerialPort = require('@serialport/stream')
 const { version } = require('../package.json')
 const { OutputTranslator } = require('./output-translator')
@@ -9,7 +9,7 @@ SerialPort.Binding = require('@serialport/bindings')
 
 const makeNumber = input => Number(input)
 
-args
+program
   .version(version)
   .usage('[options]')
   .description('A basic terminal interface for communicating over a serial port. Pressing ctrl+c exits.')
@@ -21,6 +21,8 @@ args
   .option('--stopbits <bits>', 'Stop bits default: 1', makeNumber, 1)
   .option('--no-echo', "Don't print characters as you type them.")
   .parse(process.argv)
+
+const args = program.opts()
 
 const listPorts = async () => {
   const ports = await SerialPort.list()
