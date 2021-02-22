@@ -1,6 +1,6 @@
 {
   "name": "@serialport/parser-cctalk",
-  "version": "9.0.1",
+  "version": "9.0.7",
   "main": "lib",
   "engines": {
     "node": ">=10.0.0"
