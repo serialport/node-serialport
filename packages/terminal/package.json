@@ -8,7 +8,7 @@
   "dependencies": {
     "@serialport/bindings": "^9.0.4",
     "@serialport/stream": "^9.0.2",
-    "commander": "^5.1.0",
+    "commander": "^7.1.0",
     "enquirer": "^2.3.5"
   },
   "engines": {
