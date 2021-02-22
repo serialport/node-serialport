@@ -58,11 +58,9 @@
     "debug": "^4.3.1"
   },
   "engines": {
-    "node": ">=8.6.0"
+    "node": ">=10.0.0"
   },
   "license": "MIT",
-  "scripts": {
-    "postinstall": "node thank-you.js"
-  },
+  "funding": "https://opencollective.com/serialport/donate",
   "preferUnplugged": false
 }

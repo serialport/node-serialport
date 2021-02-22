@@ -9,7 +9,7 @@
     "@serialport/binding-mock": "^9.0.2"
   },
   "engines": {
-    "node": ">=8.6.0"
+    "node": ">=10.0.0"
   },
   "publishConfig": {
     "access": "public"
@@ -18,5 +18,6 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/serialport/node-serialport.git"
-  }
+  },
+  "funding": "https://opencollective.com/serialport/donate"
 }

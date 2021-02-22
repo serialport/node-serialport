@@ -18,7 +18,7 @@
     "node-abi": "^2.19.3"
   },
   "engines": {
-    "node": ">=8.6.0"
+    "node": ">=10.0.0"
   },
   "scripts": {
     "install": "prebuild-install --tag-prefix @serialport/bindings@ || node-gyp rebuild",
@@ -45,5 +45,6 @@
       "src/*.h"
     ],
     "linelength": "120"
-  }
+  },
+  "funding": "https://opencollective.com/serialport/donate"
 }
