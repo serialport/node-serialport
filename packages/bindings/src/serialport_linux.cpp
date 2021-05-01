@@ -43,6 +43,8 @@ int linuxSetLowLatencyMode(const int fd, const bool enable) {
   if (ioctl(fd, TIOCGSERIAL, &ss)) {
     return -1;
   }
+  
+  int oldFlags = ss.flags;
 
   if (enable) {
     ss.flags |= ASYNC_LOW_LATENCY;
@@ -50,9 +52,24 @@ int linuxSetLowLatencyMode(const int fd, const bool enable) {
     ss.flags &= ~ASYNC_LOW_LATENCY;
   }
 
-  if (ioctl(fd, TIOCSSERIAL, &ss)) {
-    return -2;
+  if (oldFlags != ss.flags)
+  {
+    if (ioctl(fd, TIOCSSERIAL, &ss)) {
+      return -2;
+    }
   }
+
+  return 0;
+}
+
+int linuxGetLowLatencyMode(const int fd, bool* const enabled) {
+  struct serial_struct ss;
+
+  if (ioctl(fd, TIOCGSERIAL, &ss)) {
+    return -1;
+  }
+
+  *enabled = ss.flags & ASYNC_LOW_LATENCY;
 
   return 0;
 }
