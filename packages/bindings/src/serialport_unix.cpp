@@ -352,10 +352,10 @@ void EIO_Set(uv_work_t* req) {
   #if defined(__linux__)
   int err = linuxSetLowLatencyMode(data->fd, data->lowLatency);
   if (err == -1) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get", strerror(errno));
+    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get low latency", strerror(errno));
     return;
   } else if(err == -2) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot set", strerror(errno));
+    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot set low latency", strerror(errno));
     return;
 }
   #endif
