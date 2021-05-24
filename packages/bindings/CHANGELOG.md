@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.0.8](https://github.com/serialport/node-serialport/compare/v9.0.9...v9.0.8) (2021-05-24)
+
+
+### Bug Fixes
+
+* electron 11 prebuilds were broken ([#2237](https://github.com/serialport/node-serialport/issues/2237)) ([ac25b3a](https://github.com/serialport/node-serialport/commit/ac25b3ad5393f8c398824c46c411509b91fb3755))
+
+
+
+
+
 ## [9.0.7](https://github.com/serialport/node-serialport/compare/v9.0.6...v9.0.7) (2021-02-22)
 
 **Note:** Version bump only for package @serialport/bindings
