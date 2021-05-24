@@ -10,6 +10,7 @@
     'conditions': [
       ['OS=="win"',
         {
+          'defines': ['CHECK_NODE_MODULE_VERSION'],
           'sources': [
             'src/serialport_win.cpp'
           ],

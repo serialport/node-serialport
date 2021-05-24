@@ -1,5 +1,12 @@
 #ifndef PACKAGES_SERIALPORT_SRC_SERIALPORT_H_
 #define PACKAGES_SERIALPORT_SRC_SERIALPORT_H_
+
+// Workaround for electron 11 abi issue https://github.com/serialport/node-serialport/issues/2191
+#include <node_version.h>
+#if CHECK_NODE_MODULE_VERSION && NODE_MODULE_VERSION == 85
+#define V8_REVERSE_JSARGS
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
