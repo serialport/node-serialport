@@ -17,7 +17,7 @@ int linuxSetCustomBaudRate(const int fd, const unsigned int baudrate) {
     t.c_cflag |= BOTHER;
     t.c_ospeed = t.c_ispeed = baudrate;
 
-    if (ioctl(fd, TCSETS2, &t)) {
+    if (ioctl(fd, TCSETS2, &t) < 0) {
       return -2;
     }
 
@@ -43,22 +43,19 @@ int linuxSetLowLatencyMode(const int fd, const bool enable) {
   if (ioctl(fd, TIOCGSERIAL, &ss)) {
     return -1;
   }
-  
-  int oldFlags = ss.flags;
 
-  if (enable) {
-    ss.flags |= ASYNC_LOW_LATENCY;
-  } else {
-    ss.flags &= ~ASYNC_LOW_LATENCY;
-  }
+  if (ss.flags & ASYNC_LOW_LATENCY != enable) {
+    
+    if (enable) {
+      ss.flags |= ASYNC_LOW_LATENCY;
+    } else {
+      ss.flags &= ~ASYNC_LOW_LATENCY;
+    }
 
-  if (oldFlags != ss.flags)
-  {
-    if (ioctl(fd, TIOCSSERIAL, &ss)) {
+    if (ioctl(fd, TIOCSSERIAL, &ss) < 0) {
       return -2;
     }
   }
-
   return 0;
 }
 
