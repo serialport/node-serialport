@@ -332,17 +332,6 @@ void EIO_Set(uv_work_t* req) {
     bits |= TIOCM_DSR;
   }
 
-  #if defined(__linux__)
-  int err = linuxSetLowLatencyMode(data->fd, data->lowLatency);
-  if (err == -1) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get", strerror(errno));
-    return;
-  } else if(err == -2) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot set", strerror(errno));
-    return;
-  }
-  #endif
-
   int result = 0;
   if (data->brk) {
     result = ioctl(data->fd, TIOCSBRK, NULL);
@@ -359,6 +348,17 @@ void EIO_Set(uv_work_t* req) {
     snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot set", strerror(errno));
     return;
   }
+
+  #if defined(__linux__)
+  int err = linuxSetLowLatencyMode(data->fd, data->lowLatency);
+  if (err == -1) {
+    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get low latency", strerror(errno));
+    return;
+  } else if(err == -2) {
+    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot set low latency", strerror(errno));
+    return;
+}
+  #endif
 }
 
 void EIO_Get(uv_work_t* req) {
@@ -370,19 +370,20 @@ void EIO_Get(uv_work_t* req) {
     return;
   }
 
-  data->lowLatency = false;
-  #if defined(__linux__) && defined(ASYNC_LOW_LATENCY)
-  int latency_bits;
-  if (-1 == ioctl(data->fd, TIOCGSERIAL, &latency_bits)) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get", strerror(errno));
-    return;
-  }
-  data->lowLatency = latency_bits & ASYNC_LOW_LATENCY;
-  #endif
-
   data->cts = bits & TIOCM_CTS;
   data->dsr = bits & TIOCM_DSR;
   data->dcd = bits & TIOCM_CD;
+
+  #if defined(__linux__) && defined(ASYNC_LOW_LATENCY)
+  bool lowlatency = false;
+  if (-1 == linuxGetLowLatencyMode(data->fd, &lowlatency)) {
+    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get low latency", strerror(errno));
+    return;
+  }
+  data->lowLatency = lowlatency;
+  #else
+  data->lowLatency = false;
+  #endif
 }
 
 void EIO_GetBaudRate(uv_work_t* req) {
