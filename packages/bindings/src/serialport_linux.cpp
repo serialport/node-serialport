@@ -9,7 +9,7 @@
 int linuxSetCustomBaudRate(const int fd, const unsigned int baudrate) {
     struct termios2 t;
 
-    if (ioctl(fd, TCGETS2, &t)) {
+    if (ioctl(fd, TCGETS2, &t) == -1) {
       return -1;
     }
 
@@ -17,7 +17,7 @@ int linuxSetCustomBaudRate(const int fd, const unsigned int baudrate) {
     t.c_cflag |= BOTHER;
     t.c_ospeed = t.c_ispeed = baudrate;
 
-    if (ioctl(fd, TCSETS2, &t) < 0) {
+    if (ioctl(fd, TCSETS2, &t) == -1) {
       return -2;
     }
 
@@ -28,7 +28,7 @@ int linuxSetCustomBaudRate(const int fd, const unsigned int baudrate) {
 int linuxGetSystemBaudRate(const int fd, int* const outbaud) {
   struct termios2 t;
 
-  if (ioctl(fd, TCGETS2, &t)) {
+  if (ioctl(fd, TCGETS2, &t) == -1) {
     return -1;
   }
 
@@ -40,29 +40,31 @@ int linuxGetSystemBaudRate(const int fd, int* const outbaud) {
 int linuxSetLowLatencyMode(const int fd, const bool enable) {
   struct serial_struct ss;
 
-  if (ioctl(fd, TIOCGSERIAL, &ss)) {
+  if (ioctl(fd, TIOCGSERIAL, &ss) == -1) {
     return -1;
   }
 
-  if (ss.flags & ASYNC_LOW_LATENCY != enable) {
-    
-    if (enable) {
-      ss.flags |= ASYNC_LOW_LATENCY;
-    } else {
-      ss.flags &= ~ASYNC_LOW_LATENCY;
-    }
-
-    if (ioctl(fd, TIOCSSERIAL, &ss) < 0) {
-      return -2;
-    }
+  if ((ss.flags & ASYNC_LOW_LATENCY) == enable) {
+    return 0;
   }
+
+  if (enable) {
+    ss.flags |= ASYNC_LOW_LATENCY;
+  } else {
+    ss.flags &= ~ASYNC_LOW_LATENCY;
+  }
+
+  if (ioctl(fd, TIOCSSERIAL, &ss) == -1) {
+    return -2;
+  }
+
   return 0;
 }
 
 int linuxGetLowLatencyMode(const int fd, bool* const enabled) {
   struct serial_struct ss;
 
-  if (ioctl(fd, TIOCGSERIAL, &ss)) {
+  if (ioctl(fd, TIOCGSERIAL, &ss) == -1) {
     return -1;
   }
 
