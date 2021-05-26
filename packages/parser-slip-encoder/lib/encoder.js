@@ -35,16 +35,12 @@ class SlipEncoder extends Transform {
       ...options,
     }
     this.opts = opts
-
-    if (options.bluetoothQuirk) {
-      this._bluetoothQuirk = true
-    }
   }
 
   _transform(chunk, encoding, cb) {
     const chunkLength = chunk.length
 
-    if (this._bluetoothQuirk && chunkLength === 0) {
+    if (this.opts.bluetoothQuirk && chunkLength === 0) {
       // Edge case: push no data. Bluetooth-quirky SLIP parsers don't like
       // lots of 0xC0s together.
       return cb()
@@ -55,7 +51,7 @@ class SlipEncoder extends Transform {
     const encoded = Buffer.alloc(chunkLength * 2 + 2)
     let j = 0
 
-    if (this._bluetoothQuirk == true) {
+    if (this.opts.bluetoothQuirk == true) {
       encoded[j++] = this.opts.END
     }
 
