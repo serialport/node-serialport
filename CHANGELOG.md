@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [9.1.0](https://github.com/node-serialport/node-serialport/compare/v9.0.8...v9.1.0) (2021-05-28)
+
+
+### Bug Fixes
+
+* linux baudRate and latency errors ([#2253](https://github.com/node-serialport/node-serialport/issues/2253)) ([015bc17](https://github.com/node-serialport/node-serialport/commit/015bc17996721c92746e44e797b1a3d899076af1))
+* Linux low latency allow seting without changing low latency mode ([#2241](https://github.com/node-serialport/node-serialport/issues/2241)) ([fb53b99](https://github.com/node-serialport/node-serialport/commit/fb53b99d4ab63bf0b50409a2f9e0c7c29715699b))
+* parser-slip-encoder had a breaking change ([#2254](https://github.com/node-serialport/node-serialport/issues/2254)) ([c89b600](https://github.com/node-serialport/node-serialport/commit/c89b6004308ede97c10e18f1b2fb4d40041ff752))
+
+
+### Features
+
+* Add slip decoder to parser-slip-encoder ([#2196](https://github.com/node-serialport/node-serialport/issues/2196)) ([85297bc](https://github.com/node-serialport/node-serialport/commit/85297bc3d13cdc3beeee52e5badb0016ee6f24f5))
+
+
+
+
+
 ## [9.0.8](https://github.com/node-serialport/node-serialport/compare/v9.0.9...v9.0.8) (2021-05-24)
 
 

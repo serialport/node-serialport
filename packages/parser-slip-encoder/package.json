@@ -1,7 +1,7 @@
 {
   "name": "@serialport/parser-slip-encoder",
   "main": "lib",
-  "version": "9.0.7",
+  "version": "9.1.0",
   "engines": {
     "node": ">=10.0.0"
   },
