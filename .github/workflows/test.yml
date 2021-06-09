@@ -1,43 +1,34 @@
-name: Test
+name: Test / Lint
 on:
   push:
-    branches:
-      - '**'
-  # pull_request:
-  #   types: [opened, synchronize]
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: 14
+    - run: npm ci
+    - run: npm run lint
   test:
     runs-on: ${{ matrix.config.os }}
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x]
+        node-version: [10.x, 12.x, 14.x, 16.x]
         config:
+          # arch isn't used and we have no way to use it currently
           - { os: macos-latest, arch: x64 }
           - { os: ubuntu-latest, arch: x64 }
           - { os: windows-latest, arch: x64 }
-          - { os: windows-latest, arch: ia32 }
     steps:
-    - uses: actions/checkout@v1
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-    # https://github.com/nodejs/node-gyp/issues/1663#issuecomment-535049449
-    - name: patch node gyp on windows to support Visual Studio 2019
-      if: matrix.os == 'windows-latest'
-      shell: powershell
-      run: |
-        npm install --global node-gyp@latest
-        npm prefix -g | % {npm config set node_gyp "$_\node_modules\node-gyp\bin\node-gyp.js"}
-    - name: upgrade npm
-      run: npm install -g npm
-    - name: npm install
-      run: npm install
-    - name: npm run rebuild
-      run: npm run rebuild
-    - name: npm test
-      run: npm test
-    - name: coverage
-      run: npm run coverage
+    - run: npm ci
+    - run: npm run rebuild
+    - run: npm test
+    - run: npm run coverage
       env:
         CI: true
