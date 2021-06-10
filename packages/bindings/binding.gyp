@@ -19,7 +19,15 @@
               'ExceptionHandling': '2',
               'DisableSpecificWarnings': [ '4530', '4506' ],
             }
-          }
+          },
+          'conditions': [
+            ['target_arch=="ia32"', {
+              'variables': {
+                'v8_enable_pointer_compression%': 0,
+                'v8_enable_31bit_smis_on_64bit_arch%': 0,
+              }
+            }]
+          ]
         }
       ],
       ['OS=="mac"',
