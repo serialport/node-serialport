@@ -25,5 +25,8 @@ const serialport = new SerialPort(path)
 
 - SerialPort@?
 - Node.js v?
-- Windows? Linux? Mac?
+- Electron (if applicable) v?
+- Prebuild? Build from Source? 
+- Operating system and version: Windows? Linux? Mac?
+- Architecture: i32/x86? x64? ARM?
 - Hardware and chipset? (Prolific/FTDI/Other)
