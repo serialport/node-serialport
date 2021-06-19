@@ -45,16 +45,16 @@
     }
   ],
   "dependencies": {
-    "@serialport/binding-mock": "^9.0.7",
-    "@serialport/bindings": "^9.1.0",
-    "@serialport/parser-byte-length": "^9.0.7",
-    "@serialport/parser-cctalk": "^9.0.7",
-    "@serialport/parser-delimiter": "^9.0.7",
-    "@serialport/parser-inter-byte-timeout": "^9.0.7",
-    "@serialport/parser-readline": "^9.0.7",
-    "@serialport/parser-ready": "^9.0.7",
-    "@serialport/parser-regex": "^9.0.7",
-    "@serialport/stream": "^9.0.7",
+    "@serialport/binding-mock": "9.0.7",
+    "@serialport/bindings": "9.1.0",
+    "@serialport/parser-byte-length": "9.0.7",
+    "@serialport/parser-cctalk": "9.0.7",
+    "@serialport/parser-delimiter": "9.0.7",
+    "@serialport/parser-inter-byte-timeout": "9.0.7",
+    "@serialport/parser-readline": "9.0.7",
+    "@serialport/parser-ready": "9.0.7",
+    "@serialport/parser-regex": "9.0.7",
+    "@serialport/stream": "9.0.7",
     "debug": "^4.3.1"
   },
   "engines": {
