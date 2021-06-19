@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [9.2.0](https://github.com/serialport/node-serialport/compare/v9.1.0...v9.2.0) (2021-06-19)
+
+
+### Features
+
+* Pin version numbers for all monorepo packages ([#2275](https://github.com/serialport/node-serialport/issues/2275)) ([4fbb973](https://github.com/serialport/node-serialport/commit/4fbb973e9ea7de4dd00494b9293a428ac1c3a1e2))
+
+
+
+
+
 # [9.1.0](https://github.com/serialport/node-serialport/compare/v9.0.8...v9.1.0) (2021-05-28)
 
 **Note:** Version bump only for package serialport
