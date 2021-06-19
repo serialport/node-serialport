@@ -6,7 +6,7 @@
     "serialport-list": "./lib/index.js"
   },
   "dependencies": {
-    "@serialport/bindings": "^9.1.0",
+    "@serialport/bindings": "9.1.0",
     "commander": "^7.1.0"
   },
   "engines": {
