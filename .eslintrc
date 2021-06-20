@@ -47,7 +47,8 @@
         "trailingComma": "es5",
         "semi": false,
         "printWidth": 150,
-        "arrowParens": "avoid"
+        "arrowParens": "avoid",
+        "endOfLine": "auto"
       }
     ],
     "mocha/no-exclusive-tests": "error",
