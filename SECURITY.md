@@ -6,8 +6,8 @@ We currently support the latest version of serialport only.
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 8.x.x   | :white_check_mark: |
-| < 7.0.x | :x:                |
+| 9.x.x   | :white_check_mark: |
+| < 9.0.x | :x:                |
 
 ## Reporting a Vulnerability
 
