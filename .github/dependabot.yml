@@ -17,16 +17,3 @@ updates:
     commit-message:
       prefix: "Chore: "
       include: "scope"
-
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/packages/bindings/" # Location of package manifests
-    schedule:
-      interval: "daily"
-    allow:
-      # Allow updates for node-abi
-      - dependency-name: "node-abi"
-    # Prefix all commit messages with "Composer"
-    # include a list of updated dependencies
-    commit-message:
-      prefix: "Chore: "
-      include: "scope"
