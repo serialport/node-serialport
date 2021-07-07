@@ -15,5 +15,5 @@ updates:
     # Prefix all commit messages with "Composer"
     # include a list of updated dependencies
     commit-message:
-      prefix: "Chore: "
+      prefix: "chore: "
       include: "scope"
