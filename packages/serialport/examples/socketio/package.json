@@ -4,6 +4,7 @@
   "description": "LED switch example written for node-serialport.",
   "main": "index.js",
   "dependencies": {
+    "node-addon-api": "4.0.0",
     "express": "^4.14.1",
     "serialport": "^7.1.5",
     "socket.io": "^2.2.0"

@@ -6,11 +6,11 @@
     "serialport-binding"
   ],
   "dependencies": {
+    "node-addon-api": "4.0.0",
     "@serialport/binding-abstract": "^9.0.7",
     "@serialport/parser-readline": "^9.0.7",
     "bindings": "^1.5.0",
     "debug": "^4.3.1",
-    "nan": "^2.14.2",
     "prebuild-install": "^6.0.1"
   },
   "devDependencies": {
@@ -21,9 +21,9 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "install": "prebuild-install --tag-prefix @serialport/bindings@ || node-gyp rebuild",
+    "install": "prebuild-install --tag-prefix @serialport/bindings@ --runtime napi --target 4 --verbose || node-gyp rebuild",
     "lint": "cc --verbose",
-    "prebuild": "prebuild --all --force --strip --verbose --tag-prefix @serialport/bindings@",
+    "prebuild": "prebuild --runtime napi --target 4 --force --strip --verbose --tag-prefix @serialport/bindings@",
     "rebuild": "node-gyp rebuild"
   },
   "publishConfig": {
@@ -46,5 +46,10 @@
     ],
     "linelength": "120"
   },
-  "funding": "https://opencollective.com/serialport/donate"
+  "funding": "https://opencollective.com/serialport/donate",
+  "binary": {
+    "napi_versions": [
+      4
+    ]
+  }
 }
