@@ -41,6 +41,7 @@
     "lerna-changelog": "^2.2.0",
     "mocha": "^9.1.3",
     "node-abi": "3.5.0",
+    "node-addon-api": "^4.0.0",
     "nyc": "^15.1.0",
     "plop": "^2.7.6",
     "prebuild": "^11.0.0",

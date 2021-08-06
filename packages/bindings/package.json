@@ -10,8 +10,8 @@
     "@serialport/parser-readline": "9.2.4",
     "bindings": "^1.5.0",
     "debug": "^4.3.2",
-    "nan": "^2.15.0",
-    "prebuild-install": "^7.0.0"
+    "prebuild-install": "^7.0.0",
+    "node-addon-api": "4.2.0"
   },
   "devDependencies": {
     "@serialport/binding-mock": "9.2.4",
@@ -21,11 +21,9 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "install": "prebuild-install --tag-prefix @serialport/bindings@ || node-gyp rebuild",
+    "install": "prebuild-install --tag-prefix @serialport/bindings@ --runtime napi --target 4 --verbose || node-gyp rebuild",
     "lint": "cc --verbose",
-    "prebuild": "npm run prebuild-node && npm run prebuild-electron",
-    "prebuild-node": "prebuild --force --strip --verbose --tag-prefix @serialport/bindings@ -t 12.0.0 -t 14.0.0 -t 16.0.0",
-    "prebuild-electron": "prebuild --force --strip --verbose --tag-prefix @serialport/bindings@ -r electron -t 13.0.0 -t 14.0.0 -t 15.0.0 -t 16.0.0",
+    "prebuild": "prebuild --runtime napi --target 4 --force --strip --verbose --tag-prefix @serialport/bindings@",
     "rebuild": "node-gyp rebuild"
   },
   "publishConfig": {
@@ -48,5 +46,10 @@
     ],
     "linelength": "120"
   },
-  "funding": "https://opencollective.com/serialport/donate"
+  "funding": "https://opencollective.com/serialport/donate",
+  "binary": {
+    "napi_versions": [
+      4
+    ]
+  }
 }
