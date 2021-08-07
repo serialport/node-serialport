@@ -11,7 +11,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <napi.h>
-#include <uv.h> // TODO Added by the migration tool, not sure it is needed
 #include <string>
 
 #define ERROR_STRING_SIZE 1024
@@ -66,8 +65,8 @@ SerialPortParity ToParityEnum(const Napi::String& str);
 SerialPortStopBits ToStopBitEnum(double stopBits);
 
 struct OpenBaton {//: public Napi::AsyncResource {
-  // OpenBaton() :
-  //   AsyncResource("node-serialport:OpenBaton"), errorString(), path() {}
+  OpenBaton() : // AsyncResource("node-serialport:OpenBaton"), 
+  errorString(), path() {}
   char errorString[ERROR_STRING_SIZE];
   Napi::FunctionReference callback;
   napi_async_work work;
@@ -98,14 +97,14 @@ struct ConnectionOptions {
   int baudRate = 0;
 };
 struct ConnectionOptionsBaton : ConnectionOptions {//, Napi::AsyncResource {
-  // ConnectionOptionsBaton() :
-  //   AsyncResource("node-serialport:ConnectionOptionsBaton") {}
+  ConnectionOptionsBaton() {} // : AsyncResource("node-serialport:ConnectionOptionsBaton") {}
   Napi::FunctionReference callback;
   napi_async_work work;
 };
 
 struct SetBaton {//: public Napi::AsyncResource {
-  // SetBaton() : AsyncResource("node-serialport:SetBaton"), errorString() {}
+  SetBaton() : // AsyncResource("node-serialport:SetBaton"), 
+  errorString() {}
   int fd = 0;
   Napi::FunctionReference callback;
   napi_async_work work;
@@ -120,7 +119,8 @@ struct SetBaton {//: public Napi::AsyncResource {
 };
 
 struct GetBaton {//: public Napi::AsyncResource {
-  //GetBaton() : AsyncResource("node-serialport:GetBaton"), errorString() {}
+  GetBaton() : // AsyncResource("node-serialport:GetBaton"), 
+  errorString() {}
   int fd = 0;
   Napi::FunctionReference callback;
   napi_async_work work;
@@ -132,8 +132,8 @@ struct GetBaton {//: public Napi::AsyncResource {
 };
 
 struct GetBaudRateBaton {//: public Napi::AsyncResource {
-  // GetBaudRateBaton() :
-  //   AsyncResource("node-serialport:GetBaudRateBaton"), errorString() {}
+  GetBaudRateBaton() : // AsyncResource("node-serialport:GetBaudRateBaton"), 
+  errorString() {}
   int fd = 0;
   Napi::FunctionReference callback;
   napi_async_work work;
@@ -142,7 +142,8 @@ struct GetBaudRateBaton {//: public Napi::AsyncResource {
 };
 
 struct VoidBaton {//: public Napi::AsyncResource {
-  // VoidBaton() : AsyncResource("node-serialport:VoidBaton"), errorString() {}
+  VoidBaton() : // AsyncResource("node-serialport:VoidBaton"), 
+  errorString() {}
   int fd = 0;
   Napi::FunctionReference callback;
   napi_async_work work;
