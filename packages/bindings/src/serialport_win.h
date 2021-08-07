@@ -3,35 +3,40 @@
 // #include <stdio.h>
 // #include <stdlib.h>
 // #include <string.h>
-#include <nan.h>
+#include <napi.h>
+#include <uv.h>
+#include <node_buffer.h>
 #include <list>
 #include <string>
 
 #define ERROR_STRING_SIZE 1024
 
-struct WriteBaton : public Nan::AsyncResource {
-  WriteBaton() : AsyncResource("node-serialport:WriteBaton"), bufferData(), errorString() {}
+struct WriteBaton {//}: public Napi::AsyncResource {
+   WriteBaton() : //AsyncResource("node-serialport:WriteBaton"), 
+   bufferData(), errorString() {}
   int fd = 0;
   char* bufferData = nullptr;
   size_t bufferLength = 0;
   size_t offset = 0;
   size_t bytesWritten = 0;
   void* hThread = nullptr;
+  Napi::Env env = nullptr;
   bool complete = false;
-  Nan::Persistent<v8::Object> buffer;
-  Nan::Callback callback;
+  Napi::ObjectReference buffer;
+  Napi::FunctionReference callback;
   int result = 0;
   char errorString[ERROR_STRING_SIZE];
 };
 
-NAN_METHOD(Write);
+Napi::Value Write(const Napi::CallbackInfo& info);
 void EIO_Write(uv_work_t* req);
 void EIO_AfterWrite(uv_async_t* req);
 DWORD __stdcall WriteThread(LPVOID param);
 
 
-struct ReadBaton : public Nan::AsyncResource {
-  ReadBaton() : AsyncResource("node-serialport:ReadBaton"), errorString() {}
+struct ReadBaton {//}: public Napi::AsyncResource {
+  ReadBaton() : //AsyncResource("node-serialport:ReadBaton"), 
+  errorString() {}
   int fd = 0;
   char* bufferData = nullptr;
   size_t bufferLength = 0;
@@ -39,20 +44,21 @@ struct ReadBaton : public Nan::AsyncResource {
   size_t bytesToRead = 0;
   size_t offset = 0;
   void* hThread = nullptr;
+  Napi::Env env = nullptr;
   bool complete = false;
   char errorString[ERROR_STRING_SIZE];
-  Nan::Callback callback;
+  Napi::FunctionReference callback;
 };
 
-NAN_METHOD(Read);
+Napi::Value Read(const Napi::CallbackInfo& info);
 void EIO_Read(uv_work_t* req);
 void EIO_AfterRead(uv_async_t* req);
 DWORD __stdcall ReadThread(LPVOID param);
 
 
-NAN_METHOD(List);
-void EIO_List(uv_work_t* req);
-void EIO_AfterList(uv_work_t* req);
+Napi::Value List(const Napi::CallbackInfo& info);
+void EIO_List(napi_env env, void* req);
+void EIO_AfterList(napi_env env, napi_status status, void* req);
 
 struct ListResultItem {
   std::string path;
@@ -64,9 +70,11 @@ struct ListResultItem {
   std::string productId;
 };
 
-struct ListBaton : public Nan::AsyncResource {
-  ListBaton() : AsyncResource("node-serialport:ListBaton") {}
-  Nan::Callback callback;
+struct ListBaton { //}: public Napi::AsyncResource {
+  ListBaton() //: AsyncResource("node-serialport:ListBaton") 
+  {}
+  Napi::FunctionReference callback;
+  napi_async_work work;
   std::list<ListResultItem*> results;
   char errorString[ERROR_STRING_SIZE] = "";
 };
