@@ -79,8 +79,8 @@ int ToDataBitsConstant(int dataBits) {
   return -1;
 }
 
-void EIO_Open(uv_work_t* req) {
-  OpenBaton* data = static_cast<OpenBaton*>(req->data);
+void EIO_Open(napi_env env, void* req) {
+  OpenBaton* data = (OpenBaton*)req;
 
   int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
   int fd = open(data->path, flags);
@@ -161,8 +161,8 @@ int setBaudRate(ConnectionOptions *data) {
   return 1;
 }
 
-void EIO_Update(uv_work_t* req) {
-  ConnectionOptionsBaton* data = static_cast<ConnectionOptionsBaton*>(req->data);
+void EIO_Update(napi_env env, void* req) {
+  ConnectionOptionsBaton* data = (ConnectionOptionsBaton*)req;
   setBaudRate(data);
 }
 
@@ -302,8 +302,8 @@ int setup(int fd, OpenBaton *data) {
   return 1;
 }
 
-void EIO_Close(uv_work_t* req) {
-  VoidBaton* data = static_cast<VoidBaton*>(req->data);
+void EIO_Close(napi_env env, void* req) {
+  VoidBaton* data =(VoidBaton*)req;
 
   if (-1 == close(data->fd)) {
     snprintf(data->errorString, sizeof(data->errorString),
@@ -311,8 +311,8 @@ void EIO_Close(uv_work_t* req) {
   }
 }
 
-void EIO_Set(uv_work_t* req) {
-  SetBaton* data = static_cast<SetBaton*>(req->data);
+void EIO_Set(napi_env env, void* req) {
+  SetBaton* data = (SetBaton*)req);
 
   int bits;
   ioctl(data->fd, TIOCMGET, &bits);
@@ -367,8 +367,8 @@ void EIO_Set(uv_work_t* req) {
   #endif
 }
 
-void EIO_Get(uv_work_t* req) {
-  GetBaton* data = static_cast<GetBaton*>(req->data);
+void EIO_Get(napi_env env, void* req) {
+  GetBaton* data = (GetBaton*)req;
 
   int bits;
   if (-1 == ioctl(data->fd, TIOCMGET, &bits)) {
@@ -390,8 +390,8 @@ void EIO_Get(uv_work_t* req) {
   #endif
 }
 
-void EIO_GetBaudRate(uv_work_t* req) {
-  GetBaudRateBaton* data = static_cast<GetBaudRateBaton*>(req->data);
+void EIO_GetBaudRate(napi_env env, void* req) {
+  GetBaudRateBaton* data = (GetBaudRateBaton*)req;
   int outbaud = -1;
 
   #if defined(__linux__) && defined(ASYNC_SPD_CUST)
@@ -407,8 +407,8 @@ void EIO_GetBaudRate(uv_work_t* req) {
   data->baudRate = outbaud;
 }
 
-void EIO_Flush(uv_work_t* req) {
-  VoidBaton* data = static_cast<VoidBaton*>(req->data);
+void EIO_Flush(napi_env env, void* req) {
+  VoidBaton* data = (VoidBaton*)req;
 
   if (-1 == tcflush(data->fd, TCIOFLUSH)) {
     snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot flush", strerror(errno));
@@ -416,8 +416,8 @@ void EIO_Flush(uv_work_t* req) {
   }
 }
 
-void EIO_Drain(uv_work_t* req) {
-  VoidBaton* data = static_cast<VoidBaton*>(req->data);
+void EIO_Drain(napi_env env, void* req) {
+  VoidBaton* data = (VoidBaton*)req;
 
   if (-1 == tcdrain(data->fd)) {
     snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot drain", strerror(errno));
