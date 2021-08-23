@@ -1,18 +1,19 @@
 #ifndef PACKAGES_SERIALPORT_SRC_POLLER_H_
 #define PACKAGES_SERIALPORT_SRC_POLLER_H_
 
-#include <nan.h>
+#include <napi.h>
+#include <uv.h>
 
-class Poller : public Nan::ObjectWrap, public Nan::AsyncResource {
+class Poller : public Napi::ObjectWrap<Poller> { //}, public Napi::AsyncResource {
  public:
-  static NAN_MODULE_INIT(Init);
-  static void onData(uv_poll_t* handle, int status, int events);
-  static void onClose(uv_handle_t* poll_handle);
+  static Napi::Object Init(Napi::Env env, Napi::Object exports);
+  static void onData(napi_env env, uv_poll_t* handle, int status, int events);
+  static void onClose(napi_env env, uv_handle_t* poll_handle);
 
  private:
   int fd;
   uv_poll_t* poll_handle;
-  Nan::Callback callback;
+  Napi::FunctionReference callback;
   bool uv_poll_init_success = false;
 
   // can this be read off of poll_handle?
@@ -20,15 +21,15 @@ class Poller : public Nan::ObjectWrap, public Nan::AsyncResource {
 
   explicit Poller(int fd);
   ~Poller();
-  void poll(int events);
+  void poll(napi_env n_env, int events);
   void stop();
   int _stop();
 
-  static NAN_METHOD(New);
-  static NAN_METHOD(poll);
-  static NAN_METHOD(stop);
-  static NAN_METHOD(destroy);
-  static inline Nan::Persistent<v8::Function> & constructor();
+  static Napi::Value New(const Napi::CallbackInfo& info);
+  static Napi::Value poll(const Napi::CallbackInfo& info);
+  static Napi::Value stop(const Napi::CallbackInfo& info);
+  static Napi::Value destroy(const Napi::CallbackInfo& info);
+  static inline Napi::FunctionReference & constructor();
 };
 
 #endif  // PACKAGES_SERIALPORT_SRC_POLLER_H_
