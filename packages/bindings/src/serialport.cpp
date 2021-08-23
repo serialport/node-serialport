@@ -275,7 +275,7 @@ Napi::Value Set(const Napi::CallbackInfo& info) {
   }
   Napi::Function callback = info[2].As<Napi::Function>();
 
-  SetBaton* baton = new SetBaton(callback);
+  SetBaton* baton = new SetBaton();
   baton->fd = fd;
   baton->callback.Reset(callback);
   baton->brk = getBoolFromObject(options, "brk");
