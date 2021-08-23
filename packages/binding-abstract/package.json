@@ -6,7 +6,6 @@
     "serialport-binding"
   ],
   "dependencies": {
-    "node-addon-api": "4.0.0",
     "debug": "^4.3.1"
   },
   "engines": {
