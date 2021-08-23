@@ -324,7 +324,7 @@ void EIO_List(napi_env env, void* req) {
   }
 }
 
-void EIO_AfterList(napi_env env, napi_status status, void* req) {
+void EIO_AfterList(napi_env n_env, napi_status status, void* req) {
   Napi::HandleScope scope(env);
 
   ListBaton* data = (ListBaton*)req;
@@ -333,9 +333,7 @@ void EIO_AfterList(napi_env env, napi_status status, void* req) {
   args.reserve(2);
   if (data->errorString[0]) {
     args.push_back(Napi::String::New(env, data->errorString));
-    napi_value undefined;
-    status = napi_get_undefined(env, &undefined);
-    args.push_back(undefined);
+    args.push_back(env.Undefined());
   } else {
     Napi::Array results = Napi::Array::New(env);
     int i = 0;
@@ -352,9 +350,7 @@ void EIO_AfterList(napi_env env, napi_status status, void* req) {
 
       (results).Set(i, item);
     }
-    napi_value null;
-    status = napi_get_null(env, &null);
-    args.push_back(null);
+    args.push_back(env.Null());
     args.push_back(results);
   }
   data->callback.Call(args);

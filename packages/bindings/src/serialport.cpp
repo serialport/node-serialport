@@ -80,7 +80,8 @@ Napi::Value Open(const Napi::CallbackInfo& info) {
   return env.Undefined();
 }
 
-void EIO_AfterOpen(napi_env env, napi_status status, void* req) {
+void EIO_AfterOpen(napi_env n_env, napi_status status, void* req) {
+  Napi::Env env = Napi::Env::Env(n_env);
   Napi::HandleScope scope(env);
 
   OpenBaton* data = (OpenBaton*)req;
@@ -89,13 +90,9 @@ void EIO_AfterOpen(napi_env env, napi_status status, void* req) {
   args.reserve(2);
   if (data->errorString[0]) {
     args.push_back(Napi::String::New(env, data->errorString));
-    napi_value undefined;
-    status = napi_get_undefined(env, &undefined);
-    args.push_back(undefined);
+    args.push_back(env.Undefined());
   } else {
-    napi_value null;
-    status = napi_get_null(env, &null);
-    args.push_back(null);
+    args.push_back(env.Null());
     args.push_back(Napi::Number::New(env, data->result));
   }
 
@@ -144,7 +141,8 @@ Napi::Value Update(const Napi::CallbackInfo& info) {
   return env.Undefined();
 }
 
-void EIO_AfterUpdate(napi_env env, napi_status status, void* req) {
+void EIO_AfterUpdate(napi_env n_env, napi_status status, void* req) {
+  Napi::Env env = Napi::Env::Env(n_env);
   Napi::HandleScope scope(env);
 
   ConnectionOptionsBaton* data = (ConnectionOptionsBaton*)req;
@@ -154,9 +152,7 @@ void EIO_AfterUpdate(napi_env env, napi_status status, void* req) {
   if (data->errorString[0]) {
     args.push_back(Napi::String::New(env, data->errorString));
   } else {
-    napi_value null;
-    status = napi_get_null(env, &null);
-    args.push_back(null);
+    args.push_back(env.Null());
   }
 
   data->callback.Call(args);
@@ -190,7 +186,8 @@ Napi::Value Close(const Napi::CallbackInfo& info) {
   return env.Undefined();
 }
 
-void EIO_AfterClose(napi_env env, napi_status status, void* req) {
+void EIO_AfterClose(napi_env n_env, napi_status status, void* req) {
+    Napi::Env env = Napi::Env::Env(n_env);
   Napi::HandleScope scope(env);
   VoidBaton* data = (VoidBaton*)req;
 
@@ -199,9 +196,7 @@ void EIO_AfterClose(napi_env env, napi_status status, void* req) {
   if (data->errorString[0]) {
     args.push_back(Napi::String::New(env, data->errorString));
   } else {
-    napi_value null;
-    status = napi_get_null(env, &null);
-    args.push_back(null);
+    args.push_back(env.Null());
   }
   data->callback.Call(args);
 
@@ -236,7 +231,8 @@ Napi::Value Flush(const Napi::CallbackInfo& info) {
   return env.Undefined();
 }
 
-void EIO_AfterFlush(napi_env env, napi_status status, void* req) {
+void EIO_AfterFlush(napi_env n_env, napi_status status, void* req) {
+    Napi::Env env = Napi::Env::Env(n_env);
   Napi::HandleScope scope(env);
 
   VoidBaton* data = (VoidBaton*)req;
@@ -247,9 +243,7 @@ void EIO_AfterFlush(napi_env env, napi_status status, void* req) {
   if (data->errorString[0]) {
     args.push_back(Napi::String::New(env, data->errorString));
   } else {
-    napi_value null;
-    status = napi_get_null(env, &null);
-    args.push_back(null);
+    args.push_back(env.Null());
   }
 
   data->callback.Call(args);
@@ -281,7 +275,7 @@ Napi::Value Set(const Napi::CallbackInfo& info) {
   }
   Napi::Function callback = info[2].As<Napi::Function>();
 
-  SetBaton* baton = new SetBaton();
+  SetBaton* baton = new SetBaton(callback);
   baton->fd = fd;
   baton->callback.Reset(callback);
   baton->brk = getBoolFromObject(options, "brk");
@@ -298,7 +292,8 @@ Napi::Value Set(const Napi::CallbackInfo& info) {
   return env.Undefined();
 }
 
-void EIO_AfterSet(napi_env env, napi_status status, void* req) {
+void EIO_AfterSet(napi_env n_env, napi_status status, void* req) {
+  Napi::Env env = Napi::Env::Env(n_env);
   Napi::HandleScope scope(env);
 
   SetBaton* data = (SetBaton*)req;
@@ -309,9 +304,7 @@ void EIO_AfterSet(napi_env env, napi_status status, void* req) {
   if (data->errorString[0]) {
     args.push_back(Napi::String::New(env, data->errorString));
   } else {
-    napi_value null;
-    status = napi_get_null(env, &null);
-    args.push_back(null);
+    args.push_back(env.Null());
   }
   data->callback.Call(args);
 
@@ -349,7 +342,8 @@ Napi::Value Get(const Napi::CallbackInfo& info) {
   return env.Undefined();
 }
 
-void EIO_AfterGet(napi_env env, napi_status status, void* req) {
+void EIO_AfterGet(napi_env n_env, napi_status status, void* req) {
+  Napi::Env env = Napi::Env::Env(n_env);
   Napi::HandleScope scope(env);
 
   GetBaton* data = (GetBaton*)req;
@@ -359,18 +353,14 @@ void EIO_AfterGet(napi_env env, napi_status status, void* req) {
 
   if (data->errorString[0]) {
     args.push_back(Napi::String::New(env, data->errorString));
-    napi_value undefined;
-    status = napi_get_undefined(env, &undefined);
-    args.push_back(undefined);
+    args.push_back(env.Undefined());
   } else {
     Napi::Object results = Napi::Object::New(env);
     (results).Set(Napi::String::New(env, "cts"), Napi::Boolean::New(env, data->cts));
     (results).Set(Napi::String::New(env, "dsr"), Napi::Boolean::New(env, data->dsr));
     (results).Set(Napi::String::New(env, "dcd"), Napi::Boolean::New(env, data->dcd));
     (results).Set(Napi::String::New(env, "lowLatency"), Napi::Boolean::New(env, data->lowLatency));
-    napi_value null;
-    status = napi_get_null(env, &null);
-    args.push_back(null);
+    args.push_back(env.Null());
     args.push_back(results);
   }
   data->callback.Call(args);
@@ -406,7 +396,8 @@ Napi::Value GetBaudRate(const Napi::CallbackInfo& info) {
   return env.Undefined();
 }
 
-void EIO_AfterGetBaudRate(napi_env env, napi_status status, void* req) {
+void EIO_AfterGetBaudRate(napi_env n_env, napi_status status, void* req) {
+  Napi::Env env = Napi::Env::Env(n_env);
   Napi::HandleScope scope(env);
 
   GetBaudRateBaton* data = (GetBaudRateBaton*)req;
@@ -416,15 +407,11 @@ void EIO_AfterGetBaudRate(napi_env env, napi_status status, void* req) {
 
   if (data->errorString[0]) {
     args.push_back(Napi::String::New(env, data->errorString));
-    napi_value undefined;
-    status = napi_get_undefined(env, &undefined);
-    args.push_back(undefined);
+    args.push_back(env.Undefined());
   } else {
     Napi::Object results = Napi::Object::New(env);
     (results).Set(Napi::String::New(env, "baudRate"), Napi::Number::New(env, data->baudRate));
-    napi_value null;
-    status = napi_get_null(env, &null);
-    args.push_back(null);
+    args.push_back(env.Null());
     args.push_back(results);
   }
   data->callback.Call(args);
@@ -459,7 +446,8 @@ Napi::Value Drain(const Napi::CallbackInfo& info) {
   return env.Undefined();
 }
 
-void EIO_AfterDrain(napi_env env, napi_status status, void* req) {
+void EIO_AfterDrain(napi_env n_env, napi_status status, void* req) {
+  Napi::Env env = Napi::Env::Env(n_env);
   Napi::HandleScope scope(env);
 
   VoidBaton* data = (VoidBaton*)req;
@@ -470,9 +458,7 @@ void EIO_AfterDrain(napi_env env, napi_status status, void* req) {
   if (data->errorString[0]) {
     args.push_back(Napi::String::New(env, data->errorString));
   } else {
-    napi_value null;
-    status = napi_get_null(env, &null);
-    args.push_back(null);
+    args.push_back(env.Null());
   }
   data->callback.Call(args);
 
@@ -509,7 +495,6 @@ SerialPortStopBits inline(ToStopBitEnum(double stopBits)) {
 }
 
 Napi::Object init(Napi::Env env, Napi::Object exports) {
-  Napi::HandleScope scope(env);
   exports.Set("set", Napi::Function::New(env, Set));
   exports.Set("get", Napi::Function::New(env, Get));
   exports.Set("getBaudRate", Napi::Function::New(env, GetBaudRate));
@@ -524,8 +509,8 @@ Napi::Object init(Napi::Env env, Napi::Object exports) {
   #endif
 
   #ifdef WIN32
-  exports.Set(Napi::String::New(env, "write"), Napi::Function::New(env, Write));
-  exports.Set(Napi::String::New(env, "read"), Napi::Function::New(env, Read));
+  exports.Set("write", Napi::Function::New(env, Write));
+  exports.Set("read", Napi::Function::New(env, Read));
   exports.Set("list", Napi::Function::New(env, List));
   #else
   Poller::Init(env, target, module);

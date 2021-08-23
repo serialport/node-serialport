@@ -17,35 +17,35 @@
 
 Napi::Value Open(const Napi::CallbackInfo& info);
 void EIO_Open(napi_env env, void* req);
-void EIO_AfterOpen(napi_env env, napi_status status, void* req);
+void EIO_AfterOpen(napi_env n_env, napi_status status, void* req);
 
 Napi::Value Update(const Napi::CallbackInfo& info);
 void EIO_Update(napi_env env, void* req);
-void EIO_AfterUpdate(napi_env env, napi_status status, void* req);
+void EIO_AfterUpdate(napi_env n_env, napi_status status, void* req);
 
 Napi::Value Close(const Napi::CallbackInfo& info);
 void EIO_Close(napi_env env, void* req);
-void EIO_AfterClose(napi_env env, napi_status status, void* req);
+void EIO_AfterClose(napi_env n_env, napi_status status, void* req);
 
 Napi::Value Flush(const Napi::CallbackInfo& info);
 void EIO_Flush(napi_env env, void* req);
-void EIO_AfterFlush(napi_env env, napi_status status, void* req);
+void EIO_AfterFlush(napi_env n_env, napi_status status, void* req);
 
 Napi::Value Set(const Napi::CallbackInfo& info);
 void EIO_Set(napi_env env, void* req);
-void EIO_AfterSet(napi_env env, napi_status status, void* req);
+void EIO_AfterSet(napi_env n_env, napi_status status, void* req);
 
 Napi::Value Get(const Napi::CallbackInfo& info);
 void EIO_Get(napi_env env, void* req);
-void EIO_AfterGet(napi_env env, napi_status status, void* req);
+void EIO_AfterGet(napi_env n_env, napi_status status, void* req);
 
 Napi::Value GetBaudRate(const Napi::CallbackInfo& info);
 void EIO_GetBaudRate(napi_env env, void* req);
-void EIO_AfterGetBaudRate(napi_env env, napi_status status, void* req);
+void EIO_AfterGetBaudRate(napi_env n_env, napi_status status, void* req);
 
 Napi::Value Drain(const Napi::CallbackInfo& info);
 void EIO_Drain(napi_env env, void* req);
-void EIO_AfterDrain(napi_env env, napi_status status, void* req);
+void EIO_AfterDrain(napi_env n_env, napi_status status, void* req);
 
 enum SerialPortParity {
   SERIALPORT_PARITY_NONE  = 1,

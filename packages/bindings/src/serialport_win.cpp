@@ -385,9 +385,9 @@ DWORD __stdcall WriteThread(LPVOID param) {
   ExitThread(0);
 }
 
-void EIO_AfterWrite(uv_async_t* req) { //(napi_env env, napi_status status, void* req) { 
+void EIO_AfterWrite(uv_async_t* req) { //(napi_env n_env, napi_status status, void* req) { 
   WriteBaton* baton = (WriteBaton*)req;
-  napi_env env = baton->env;
+  Napi::Env env = baton->env;
   Napi::HandleScope scope(env);
   WaitForSingleObject(baton->hThread, INFINITE);
   CloseHandle(baton->hThread);
@@ -398,9 +398,7 @@ void EIO_AfterWrite(uv_async_t* req) { //(napi_env env, napi_status status, void
   if (baton->errorString[0]) {
     args.push_back(Napi::String::New(env, baton->errorString));
   } else {
-    napi_value null;
-    napi_status status = napi_get_null(env, &null);
-    args.push_back(null);
+    args.push_back(env.Null());
   }
 
   baton->callback.Call(args);
@@ -574,9 +572,9 @@ DWORD __stdcall ReadThread(LPVOID param) {
   ExitThread(0);
 }
 
-void EIO_AfterRead(uv_async_t* req) { // (napi_env env, napi_status status, void* req) {
+void EIO_AfterRead(uv_async_t* req) { // (napi_env n_env, napi_status status, void* req) {
   ReadBaton* baton = (ReadBaton*)req;
-  napi_env env = baton->env;
+  Napi::Env env = baton->env;
   Napi::HandleScope scope(env);
   WaitForSingleObject(baton->hThread, INFINITE);
   CloseHandle(baton->hThread);
@@ -586,13 +584,9 @@ void EIO_AfterRead(uv_async_t* req) { // (napi_env env, napi_status status, void
   args.reserve(2);
   if (baton->errorString[0]) {
     args.push_back(Napi::String::New(env, baton->errorString));
-    napi_value undefined;
-    napi_status status = napi_get_undefined(env, &undefined);
-    args.push_back(undefined);
+    args.push_back(env.Undefined());
   } else {
-    napi_value null;
-    napi_status status = napi_get_null(env, &null);
-    args.push_back(null);
+    args.push_back(env.Null());
     args.push_back(Napi::Number::New(env, static_cast<int>(baton->bytesRead)));
   }
 
@@ -919,7 +913,8 @@ void setIfNotEmpty(Napi::Object item, std::string key, const char *value) {
   }
 }
 
-void EIO_AfterList(napi_env env, napi_status status, void* req) {
+void EIO_AfterList(napi_env n_env, napi_status status, void* req) {
+  Napi::Env env = Napi::Env::Env(n_env);
   Napi::HandleScope scope(env);
 
   ListBaton* data = (ListBaton*)req;
@@ -928,9 +923,7 @@ void EIO_AfterList(napi_env env, napi_status status, void* req) {
   args.reserve(2);
   if (data->errorString[0]) {
     args.push_back(Napi::String::New(env, data->errorString));
-    napi_value undefined;
-    status = napi_get_undefined(env, &undefined);
-    args.push_back(undefined);
+    args.push_back(env.Undefined());
   } else {
     Napi::Array results = Napi::Array::New(env);
     int i = 0;
@@ -947,9 +940,7 @@ void EIO_AfterList(napi_env env, napi_status status, void* req) {
 
       (results).Set(i, item);
     }
-    napi_value null;
-    status = napi_get_null(env, &null);
-    args.push_back(null);
+    args.push_back(env.Null());
     args.push_back(results);
   }
   data->callback.Call(args);
