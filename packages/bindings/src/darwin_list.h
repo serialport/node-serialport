@@ -9,8 +9,8 @@
 #define ERROR_STRING_SIZE 1024
 
 Napi::Value List(const Napi::CallbackInfo& info);
-void EIO_List(napi_env env, void* req);
-void EIO_AfterList(napi_env env, napi_status status, void* req);
+void EIO_List(napi_env n_env, void* req);
+void EIO_AfterList(napi_env n_env, napi_status status, void* req);
 
 struct ListResultItem {
   std::string path;

@@ -58,7 +58,7 @@ DWORD __stdcall ReadThread(LPVOID param);
 
 Napi::Value List(const Napi::CallbackInfo& info);
 void EIO_List(napi_env env, void* req);
-void EIO_AfterList(napi_env env, napi_status status, void* req);
+void EIO_AfterList(napi_env n_env, napi_status status, void* req);
 
 struct ListResultItem {
   std::string path;
