@@ -16,8 +16,7 @@
 #define ERROR_STRING_SIZE 1024
 
 Napi::Value Open(const Napi::CallbackInfo& info);
-void EIO_Open(napi_env env, void* req);
-void EIO_AfterOpen(napi_env n_env, napi_status status, void* req);
+void EIO_Open(void* req);
 
 Napi::Value Update(const Napi::CallbackInfo& info);
 void EIO_Update(napi_env env, void* req);
@@ -64,12 +63,10 @@ enum SerialPortStopBits {
 SerialPortParity ToParityEnum(const Napi::String& str);
 SerialPortStopBits ToStopBitEnum(double stopBits);
 
-struct OpenBaton {//: public Napi::AsyncResource {
-  OpenBaton() : // AsyncResource("node-serialport:OpenBaton"), 
+struct OpenBaton : public Napi::AsyncWorker {
+  OpenBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:OpenBaton"), 
   errorString(), path() {}
   char errorString[ERROR_STRING_SIZE];
-  Napi::FunctionReference callback;
-  napi_async_work work;
   char path[1024];
   int fd = 0;
   int result = 0;
@@ -88,6 +85,21 @@ struct OpenBaton {//: public Napi::AsyncResource {
   uint8_t vmin = 0;
   uint8_t vtime = 0;
 #endif
+  void Execute() override {
+    EIO_Open(this);
+  }
+
+  void OnError(Napi::Error const &error) override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({Napi::String::New(env, errorString), env.Undefined()});
+  }
+
+  void OnOK() override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({env.Null(), Napi::Number::New(env, result)});
+  }
 };
 
 struct ConnectionOptions {

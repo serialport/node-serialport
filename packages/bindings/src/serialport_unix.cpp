@@ -76,7 +76,7 @@ int ToDataBitsConstant(int dataBits) {
   return -1;
 }
 
-void EIO_Open(napi_env env, void* req) {
+void EIO_Open(void* req) {
   OpenBaton* data = (OpenBaton*)req;
 
   int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
