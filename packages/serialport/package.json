@@ -45,6 +45,7 @@
     }
   ],
   "dependencies": {
+    "node-addon-api": "4.0.0",
     "@serialport/binding-mock": "9.0.7",
     "@serialport/bindings": "^9.2.0",
     "@serialport/parser-byte-length": "9.0.7",

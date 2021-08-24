@@ -3,6 +3,7 @@
   "main": "lib",
   "version": "9.0.7",
   "dependencies": {
+    "node-addon-api": "4.0.0",
     "@serialport/parser-delimiter": "^9.0.7"
   },
   "engines": {
