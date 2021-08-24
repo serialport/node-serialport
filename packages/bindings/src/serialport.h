@@ -87,6 +87,7 @@ struct OpenBaton : public Napi::AsyncWorker {
 #endif
   void Execute() override {
     EIO_Open(this);
+    SetError(std::string(errorString));
   }
 
   void OnError(Napi::Error const &error) override {
