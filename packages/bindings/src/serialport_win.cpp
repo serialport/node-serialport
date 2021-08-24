@@ -56,7 +56,7 @@ void AsyncCloseCallback(uv_handle_t* handle) {
   delete async;
 }
 
-void EIO_Open(napi_env env, void* req) {
+void EIO_Open(void* req) {
   OpenBaton* data = (OpenBaton*)req;
 
   char originalPath[1024];

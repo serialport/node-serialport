@@ -54,7 +54,7 @@ Napi::Value Open(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
-  OpenBaton* baton = new OpenBaton();
+  OpenBaton* baton = new OpenBaton(info[2].As<Napi::Function>());
   snprintf(baton->path, sizeof(baton->path), "%s", path.c_str());
   baton->baudRate = getIntFromObject(options, "baudRate");
   baton->dataBits = getIntFromObject(options, "dataBits");
@@ -66,39 +66,14 @@ Napi::Value Open(const Napi::CallbackInfo& info) {
   baton->xany = getBoolFromObject(options, "xany");
   baton->hupcl = getBoolFromObject(options, "hupcl");
   baton->lock = getBoolFromObject(options, "lock");
-  baton->callback.Reset(info[2].As<Napi::Function>());
 
   #ifndef WIN32
     baton->vmin = getIntFromObject(options, "vmin");
     baton->vtime = getIntFromObject(options, "vtime");
   #endif
 
-  napi_value resource_name;
-  napi_create_string_utf8(env, "Open", NAPI_AUTO_LENGTH, &resource_name);
-  napi_create_async_work(env, NULL, resource_name, EIO_Open, EIO_AfterOpen, baton, &baton->work);
-  napi_queue_async_work(env, baton->work);
+  baton->Queue();
   return env.Undefined();
-}
-
-void EIO_AfterOpen(napi_env n_env, napi_status status, void* req) {
-  Napi::Env env = Napi::Env::Env(n_env);
-  Napi::HandleScope scope(env);
-
-  OpenBaton* data = (OpenBaton*)req;
-
-  std::vector<napi_value> args;
-  args.reserve(2);
-  if (data->errorString[0]) {
-    args.push_back(Napi::String::New(env, data->errorString));
-    args.push_back(env.Undefined());
-  } else {
-    args.push_back(env.Null());
-    args.push_back(Napi::Number::New(env, data->result));
-  }
-
-  data->callback.Call(args);
-  napi_delete_async_work(env, data->work);
-  free(data);
 }
 
 Napi::Value Update(const Napi::CallbackInfo& info) {
