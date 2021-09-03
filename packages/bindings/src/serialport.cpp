@@ -206,7 +206,7 @@ Napi::Value Get(const Napi::CallbackInfo& info) {
     Napi::TypeError::New(env, "Second argument must be a function").ThrowAsJavaScriptException();
     return env.Null();
   }
-  Napi::Function callback = info[2].As<Napi::Function>();
+  Napi::Function callback = info[1].As<Napi::Function>();
 
   GetBaton* baton = new GetBaton(callback);
   baton->fd = fd;
@@ -303,7 +303,7 @@ Napi::Object init(Napi::Env env, Napi::Object exports) {
   exports.Set("drain", Napi::Function::New(env, Drain));
 
   #ifdef __APPLE__
-  exports.Set(Napi::String::New(env, "list"), Napi::Function::New(env, List));
+  exports.Set("list", Napi::Function::New(env, List));
   #endif
 
   #ifdef WIN32
