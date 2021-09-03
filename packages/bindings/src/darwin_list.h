@@ -22,8 +22,8 @@ struct ListResultItem {
   std::string productId;
 };
 
-struct ListBaton { //}: public Napi::AsyncResource {
-  ListBaton() : //AsyncResource("node-serialport:ListBaton"), 
+struct ListBaton { //: public Napi::AsyncWorker {
+  ListBaton() : //Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:ListBaton"), 
   errorString() {}
   Napi::FunctionReference callback;
   napi_async_work work;

@@ -2,7 +2,7 @@
 #include <uv.h>
 #include "./poller.h"
 
-Poller::Poller(int fd) { //}: AsyncResource("node-serialport:poller") {
+Poller::Poller(int fd) { //}: Napi::AsyncWorker(callback, "node-serialport:poller") {
   Napi::HandleScope scope(env);
   this->fd = fd;
   this->poll_handle = new uv_poll_t();

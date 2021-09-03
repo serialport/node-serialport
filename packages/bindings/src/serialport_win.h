@@ -11,8 +11,8 @@
 
 #define ERROR_STRING_SIZE 1024
 
-struct WriteBaton {//}: public Napi::AsyncResource {
-   WriteBaton() : //AsyncResource("node-serialport:WriteBaton"), 
+struct WriteBaton {//}: public Napi::AsyncWorker {
+   WriteBaton() : //Napi::AsyncWorker(callback, "node-serialport:WriteBaton"), 
    bufferData(), errorString() {}
   int fd = 0;
   char* bufferData = nullptr;
@@ -34,8 +34,8 @@ void EIO_AfterWrite(uv_async_t* req);
 DWORD __stdcall WriteThread(LPVOID param);
 
 
-struct ReadBaton {//}: public Napi::AsyncResource {
-  ReadBaton() : //AsyncResource("node-serialport:ReadBaton"), 
+struct ReadBaton {//}: public Napi::AsyncWorker {
+  ReadBaton() : //Napi::AsyncWorker(callback, "node-serialport:ReadBaton"), 
   errorString() {}
   int fd = 0;
   char* bufferData = nullptr;
@@ -70,8 +70,8 @@ struct ListResultItem {
   std::string productId;
 };
 
-struct ListBaton { //}: public Napi::AsyncResource {
-  ListBaton() //: AsyncResource("node-serialport:ListBaton") 
+struct ListBaton { //}: public Napi::AsyncWorker {
+  ListBaton() //: Napi::AsyncWorker(callback, "node-serialport:ListBaton") 
   {}
   Napi::FunctionReference callback;
   napi_async_work work;

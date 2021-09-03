@@ -4,7 +4,7 @@
 #include <napi.h>
 #include <uv.h>
 
-class Poller : public Napi::ObjectWrap<Poller> { //}, public Napi::AsyncResource {
+class Poller : public Napi::ObjectWrap<Poller> { //}, public Napi::AsyncWorker {
  public:
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
   static void onData(napi_env env, uv_poll_t* handle, int status, int events);
