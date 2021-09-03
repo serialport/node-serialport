@@ -56,24 +56,22 @@ void AsyncCloseCallback(uv_handle_t* handle) {
   delete async;
 }
 
-void EIO_Open(void* req) {
-  OpenBaton* data = (OpenBaton*)req;
-
+void OpenBaton::Execute() {
   char originalPath[1024];
-  strncpy_s(originalPath, sizeof(originalPath), data->path, _TRUNCATE);
-  // data->path is char[1024] but on Windows it has the form "COMx\0" or "COMxx\0"
+  strncpy_s(originalPath, sizeof(originalPath), path, _TRUNCATE);
+  // path is char[1024] but on Windows it has the form "COMx\0" or "COMxx\0"
   // We want to prepend "\\\\.\\" to it before we call CreateFile
-  strncpy(data->path + 20, data->path, 10);
-  strncpy(data->path, "\\\\.\\", 4);
-  strncpy(data->path + 4, data->path + 20, 10);
+  strncpy(path + 20, path, 10);
+  strncpy(path, "\\\\.\\", 4);
+  strncpy(path + 4, path + 20, 10);
 
   int shareMode = FILE_SHARE_READ | FILE_SHARE_WRITE;
-  if (data->lock) {
+  if (lock) {
     shareMode = 0;
   }
 
   HANDLE file = CreateFile(
-    data->path,
+    path,
     GENERIC_READ | GENERIC_WRITE,
     shareMode,  // dwShareMode 0 Prevents other processes from opening if they request delete, read, or write access
     NULL,
@@ -85,7 +83,8 @@ void EIO_Open(void* req) {
     DWORD errorCode = GetLastError();
     char temp[100];
     _snprintf_s(temp, sizeof(temp), _TRUNCATE, "Opening %s", originalPath);
-    ErrorCodeToString(temp, errorCode, data->errorString);
+    ErrorCodeToString(temp, errorCode, errorString);
+    this->SetError(errorString);
     return;
   }
 
@@ -94,12 +93,13 @@ void EIO_Open(void* req) {
   dcb.DCBlength = sizeof(DCB);
 
   if (!GetCommState(file, &dcb)) {
-    ErrorCodeToString("Open (GetCommState)", GetLastError(), data->errorString);
+    ErrorCodeToString("Open (GetCommState)", GetLastError(), errorString);
+    this->SetError(errorString);
     CloseHandle(file);
     return;
   }
 
-  if (data->hupcl) {
+  if (hupcl) {
     dcb.fDtrControl = DTR_CONTROL_ENABLE;
   } else {
     dcb.fDtrControl = DTR_CONTROL_DISABLE;  // disable DTR to avoid reset
@@ -113,19 +113,19 @@ void EIO_Open(void* req) {
   dcb.fOutxDsrFlow = FALSE;
   dcb.fOutxCtsFlow = FALSE;
 
-  if (data->xon) {
+  if (xon) {
     dcb.fOutX = TRUE;
   } else {
     dcb.fOutX = FALSE;
   }
 
-  if (data->xoff) {
+  if (xoff) {
     dcb.fInX = TRUE;
   } else {
     dcb.fInX = FALSE;
   }
 
-  if (data->rtscts) {
+  if (rtscts) {
     dcb.fRtsControl = RTS_CONTROL_HANDSHAKE;
     dcb.fOutxCtsFlow = TRUE;
   } else {
@@ -133,10 +133,10 @@ void EIO_Open(void* req) {
   }
 
   dcb.fBinary = true;
-  dcb.BaudRate = data->baudRate;
-  dcb.ByteSize = data->dataBits;
+  dcb.BaudRate = baudRate;
+  dcb.ByteSize = dataBits;
 
-  switch (data->parity) {
+  switch (parity) {
   case SERIALPORT_PARITY_NONE:
     dcb.Parity = NOPARITY;
     break;
@@ -154,7 +154,7 @@ void EIO_Open(void* req) {
     break;
   }
 
-  switch (data->stopBits) {
+  switch (stopBits) {
   case SERIALPORT_STOPBITS_ONE:
     dcb.StopBits = ONESTOPBIT;
     break;
@@ -167,7 +167,8 @@ void EIO_Open(void* req) {
   }
 
   if (!SetCommState(file, &dcb)) {
-    ErrorCodeToString("Open (SetCommState)", GetLastError(), data->errorString);
+    ErrorCodeToString("Open (SetCommState)", GetLastError(), errorString);
+    this->SetError(errorString);
     CloseHandle(file);
     return;
   }
@@ -182,7 +183,8 @@ void EIO_Open(void* req) {
   commTimeouts.WriteTotalTimeoutMultiplier = 0;  // Variable part of write timeout (per byte)
 
   if (!SetCommTimeouts(file, &commTimeouts)) {
-    ErrorCodeToString("Open (SetCommTimeouts)", GetLastError(), data->errorString);
+    ErrorCodeToString("Open (SetCommTimeouts)", GetLastError(), errorString);
+    this->SetError(errorString);
     CloseHandle(file);
     return;
   }
@@ -191,97 +193,95 @@ void EIO_Open(void* req) {
   PurgeComm(file, PURGE_RXCLEAR);
   PurgeComm(file, PURGE_TXCLEAR);
 
-  data->result = static_cast<int>(reinterpret_cast<uintptr_t>(file));
+  result = static_cast<int>(reinterpret_cast<uintptr_t>(file));
 }
 
-void EIO_Update(napi_env env, void* req) {
-  ConnectionOptionsBaton* data = (ConnectionOptionsBaton*)req;
-
+void ConnectionOptionsBaton::Execute() {
   DCB dcb = { 0 };
   SecureZeroMemory(&dcb, sizeof(DCB));
   dcb.DCBlength = sizeof(DCB);
 
-  if (!GetCommState(int2handle(data->fd), &dcb)) {
-    ErrorCodeToString("Update (GetCommState)", GetLastError(), data->errorString);
+  if (!GetCommState(int2handle(fd), &dcb)) {
+    ErrorCodeToString("Update (GetCommState)", GetLastError(), errorString);
+    this->SetError(errorString);
     return;
   }
 
-  dcb.BaudRate = data->baudRate;
+  dcb.BaudRate = baudRate;
 
-  if (!SetCommState(int2handle(data->fd), &dcb)) {
-    ErrorCodeToString("Update (SetCommState)", GetLastError(), data->errorString);
+  if (!SetCommState(int2handle(fd), &dcb)) {
+    ErrorCodeToString("Update (SetCommState)", GetLastError(), errorString);
+    this->SetError(errorString);
     return;
   }
 }
 
-void EIO_Set(napi_env env, void* req) {
-  SetBaton* data = (SetBaton*)req;
-
-  if (data->rts) {
-    EscapeCommFunction(int2handle(data->fd), SETRTS);
+void SetBaton::Execute(){
+  if (rts) {
+    EscapeCommFunction(int2handle(fd), SETRTS);
   } else {
-    EscapeCommFunction(int2handle(data->fd), CLRRTS);
+    EscapeCommFunction(int2handle(fd), CLRRTS);
   }
 
-  if (data->dtr) {
-    EscapeCommFunction(int2handle(data->fd), SETDTR);
+  if (dtr) {
+    EscapeCommFunction(int2handle(fd), SETDTR);
   } else {
-    EscapeCommFunction(int2handle(data->fd), CLRDTR);
+    EscapeCommFunction(int2handle(fd), CLRDTR);
   }
 
-  if (data->brk) {
-    EscapeCommFunction(int2handle(data->fd), SETBREAK);
+  if (brk) {
+    EscapeCommFunction(int2handle(fd), SETBREAK);
   } else {
-    EscapeCommFunction(int2handle(data->fd), CLRBREAK);
+    EscapeCommFunction(int2handle(fd), CLRBREAK);
   }
 
   DWORD bits = 0;
 
-  GetCommMask(int2handle(data->fd), &bits);
+  GetCommMask(int2handle(fd), &bits);
 
   bits &= ~(EV_CTS | EV_DSR);
 
-  if (data->cts) {
+  if (cts) {
     bits |= EV_CTS;
   }
 
-  if (data->dsr) {
+  if (dsr) {
     bits |= EV_DSR;
   }
 
-  if (!SetCommMask(int2handle(data->fd), bits)) {
-    ErrorCodeToString("Setting options on COM port (SetCommMask)", GetLastError(), data->errorString);
+  if (!SetCommMask(int2handle(fd), bits)) {
+    ErrorCodeToString("Setting options on COM port (SetCommMask)", GetLastError(), errorString);
+    this->SetError(errorString);
     return;
   }
 }
 
-void EIO_Get(napi_env env, void* req) {
-  GetBaton* data = (GetBaton*)req;
-
+void GetBaton::Execute() {
   DWORD bits = 0;
-  if (!GetCommModemStatus(int2handle(data->fd), &bits)) {
-    ErrorCodeToString("Getting control settings on COM port (GetCommModemStatus)", GetLastError(), data->errorString);
+  if (!GetCommModemStatus(int2handle(fd), &bits)) {
+    ErrorCodeToString("Getting control settings on COM port (GetCommModemStatus)", GetLastError(), errorString);
+    this->SetError(errorString);
     return;
   }
 
-  data->cts = bits & MS_CTS_ON;
-  data->dsr = bits & MS_DSR_ON;
-  data->dcd = bits & MS_RLSD_ON;
+  cts = bits & MS_CTS_ON;
+  dsr = bits & MS_DSR_ON;
+  dcd = bits & MS_RLSD_ON;
 }
 
-void EIO_GetBaudRate(napi_env env, void* req) {
-  GetBaudRateBaton* data = (GetBaudRateBaton*)req;
+void GetBaudRateBaton::Execute() {
 
   DCB dcb = { 0 };
   SecureZeroMemory(&dcb, sizeof(DCB));
   dcb.DCBlength = sizeof(DCB);
 
-  if (!GetCommState(int2handle(data->fd), &dcb)) {
-    ErrorCodeToString("Getting baud rate (GetCommState)", GetLastError(), data->errorString);
+  if (!GetCommState(int2handle(fd), &dcb)) {
+    ErrorCodeToString("Getting baud rate (GetCommState)", GetLastError(), errorString);
+    this->SetError(errorString);
     return;
   }
 
-  data->baudRate = static_cast<int>(dcb.BaudRate);
+  baudRate = static_cast<int>(dcb.BaudRate);
 }
 
 bool IsClosingHandle(int fd) {
@@ -594,10 +594,8 @@ void EIO_AfterRead(uv_async_t* req) { // (napi_env n_env, napi_status status, vo
   delete baton;
 }
 
-void EIO_Close(napi_env env, void* req) {
-  VoidBaton* data = (VoidBaton*)req;
-
-  g_closingHandles.push_back(data->fd);
+void CloseBaton::Execute() {
+  g_closingHandles.push_back(fd);
 
   HMODULE hKernel32 = LoadLibrary("kernel32.dll");
   // Look up function address
@@ -606,10 +604,10 @@ void EIO_Close(napi_env env, void* req) {
   if (pCancelIoEx) {
     // Function exists so call it
     // Cancel all pending IO Requests for the current device
-    pCancelIoEx(int2handle(data->fd), NULL);
+    pCancelIoEx(int2handle(fd), NULL);
   }
-  if (!CloseHandle(int2handle(data->fd))) {
-    ErrorCodeToString("Closing connection (CloseHandle)", GetLastError(), data->errorString);
+  if (!CloseHandle(int2handle(fd))) {
+    ErrorCodeToString("Closing connection (CloseHandle)", GetLastError(), errorString);
     return;
   }
 }
@@ -953,21 +951,19 @@ void EIO_AfterList(napi_env n_env, napi_status status, void* req) {
 }
 
 
-void EIO_Flush(napi_env env, void* req) {
-  VoidBaton* data = (VoidBaton*)req;
-
+void FlushBaton::Execute() {
   DWORD purge_all = PURGE_RXCLEAR | PURGE_TXABORT | PURGE_TXCLEAR;
-  if (!PurgeComm(int2handle(data->fd), purge_all)) {
-    ErrorCodeToString("Flushing connection (PurgeComm)", GetLastError(), data->errorString);
+  if (!PurgeComm(int2handle(fd), purge_all)) {
+    ErrorCodeToString("Flushing connection (PurgeComm)", GetLastError(), errorString);
+    this->SetError(errorString);
     return;
   }
 }
 
-void EIO_Drain(napi_env env, void* req) {
-  VoidBaton* data = (VoidBaton*)req;
-
-  if (!FlushFileBuffers(int2handle(data->fd))) {
-    ErrorCodeToString("Draining connection (FlushFileBuffers)", GetLastError(), data->errorString);
+void DrainBaton::Execute() {
+  if (!FlushFileBuffers(int2handle(fd))) {
+    ErrorCodeToString("Draining connection (FlushFileBuffers)", GetLastError(), errorString);
+    this->SetError(errorString);
     return;
   }
 }
