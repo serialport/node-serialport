@@ -11,8 +11,16 @@
 
 #define ERROR_STRING_SIZE 1024
 
-struct WriteBaton {//}: public Napi::AsyncWorker {
-   WriteBaton() : //Napi::AsyncWorker(callback, "node-serialport:WriteBaton"), 
+
+static inline HANDLE int2handle(int ptr) {
+  return reinterpret_cast<HANDLE>(static_cast<uintptr_t>(ptr));
+}
+
+void ErrorCodeToString(const char* prefix, int errorCode, char *errorStr);
+void __stdcall WriteIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAPPED* ov);
+
+struct WriteBaton : public Napi::AsyncWorker {
+   WriteBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:WriteBaton"), 
    bufferData(), errorString() {}
   int fd = 0;
   char* bufferData = nullptr;
@@ -20,22 +28,52 @@ struct WriteBaton {//}: public Napi::AsyncWorker {
   size_t offset = 0;
   size_t bytesWritten = 0;
   void* hThread = nullptr;
-  Napi::Env env = nullptr;
   bool complete = false;
   Napi::ObjectReference buffer;
-  Napi::FunctionReference callback;
   int result = 0;
   char errorString[ERROR_STRING_SIZE];
+
+  void Execute() override {
+    OVERLAPPED* ov = new OVERLAPPED;
+    memset(ov, 0, sizeof(OVERLAPPED));
+    ov->hEvent = static_cast<void*>(this);
+
+    while (!complete) {
+      char* offsetPtr = bufferData + offset;
+      // WriteFileEx requires calling GetLastError even upon success. Clear the error beforehand.
+      SetLastError(0);
+      WriteFileEx(int2handle(fd), offsetPtr, static_cast<DWORD>(bufferLength - offset), ov, WriteIOCompletion);
+      // Error codes when call is successful, such as ERROR_MORE_DATA.
+      DWORD lastError = GetLastError();
+      if (lastError != ERROR_SUCCESS) {
+        ErrorCodeToString("Writing to COM port (WriteFileEx)", lastError, errorString);
+        this->SetError(errorString);
+        break;
+      }
+      // IOCompletion routine is only called once this thread is in an alertable wait state.
+      SleepEx(INFINITE, TRUE);
+    }
+  }
+
+  void OnError(Napi::Error const &error) override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({Napi::String::New(env, errorString)});
+  }
+
+  void OnOK() override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({env.Null()});
+  }
 };
 
 Napi::Value Write(const Napi::CallbackInfo& info);
-void EIO_Write(uv_work_t* req);
-void EIO_AfterWrite(uv_async_t* req);
-DWORD __stdcall WriteThread(LPVOID param);
 
+void __stdcall ReadIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAPPED* ov);
 
-struct ReadBaton {//}: public Napi::AsyncWorker {
-  ReadBaton() : //Napi::AsyncWorker(callback, "node-serialport:ReadBaton"), 
+struct ReadBaton : public Napi::AsyncWorker {
+  ReadBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:ReadBaton"), 
   errorString() {}
   int fd = 0;
   char* bufferData = nullptr;
@@ -44,10 +82,56 @@ struct ReadBaton {//}: public Napi::AsyncWorker {
   size_t bytesToRead = 0;
   size_t offset = 0;
   void* hThread = nullptr;
-  Napi::Env env = nullptr;
   bool complete = false;
   char errorString[ERROR_STRING_SIZE];
-  Napi::FunctionReference callback;
+
+  void Execute() override {
+    DWORD lastError;
+
+    OVERLAPPED* ov = new OVERLAPPED;
+    memset(ov, 0, sizeof(OVERLAPPED));
+    ov->hEvent = static_cast<void*>(this);
+
+    while (!complete) {
+      // Reset the read timeout to 0, so that it will block until more data arrives.
+      COMMTIMEOUTS commTimeouts = {};
+      commTimeouts.ReadIntervalTimeout = 0;
+      if (!SetCommTimeouts(int2handle(fd), &commTimeouts)) {
+        lastError = GetLastError();
+        ErrorCodeToString("Setting COM timeout (SetCommTimeouts)", lastError, errorString);
+        this->SetError(errorString);
+        break;
+      }
+      // ReadFileEx doesn't use overlapped's hEvent, so it is reserved for user data.
+      ov->hEvent = static_cast<HANDLE>(this);
+      char* offsetPtr = bufferData + offset;
+      // ReadFileEx requires calling GetLastError even upon success. Clear the error beforehand.
+      SetLastError(0);
+      // Only read 1 byte, so that the callback will be triggered once any data arrives.
+      ReadFileEx(int2handle(fd), offsetPtr, 1, ov, ReadIOCompletion);
+      // Error codes when call is successful, such as ERROR_MORE_DATA.
+      lastError = GetLastError();
+      if (lastError != ERROR_SUCCESS) {
+        ErrorCodeToString("Reading from COM port (ReadFileEx)", lastError, errorString);
+        this->SetError(errorString);
+        break;
+      }
+      // IOCompletion routine is only called once this thread is in an alertable wait state.
+      SleepEx(INFINITE, TRUE);
+    }
+  }
+
+  void OnError(Napi::Error const &error) override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({Napi::String::New(env, errorString), env.Undefined()});
+  }
+
+  void OnOK() override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({env.Null(), Napi::Number::New(env, static_cast<int>(bytesRead))});
+  }
 };
 
 Napi::Value Read(const Napi::CallbackInfo& info);

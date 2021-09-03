@@ -22,9 +22,6 @@
 // Declare type of pointer to CancelIoEx function
 typedef BOOL (WINAPI *CancelIoExType)(HANDLE hFile, LPOVERLAPPED lpOverlapped);
 
-static inline HANDLE int2handle(int ptr) {
-  return reinterpret_cast<HANDLE>(static_cast<uintptr_t>(ptr));
-}
 
 std::list<int> g_closingHandles;
 
@@ -319,23 +316,15 @@ Napi::Value Write(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
-  WriteBaton* baton = new WriteBaton();
+  WriteBaton* baton = new WriteBaton(info[2].As<Napi::Function>());
   baton->fd = fd;
   baton->buffer.Reset(buffer);
   baton->bufferData = bufferData;
   baton->bufferLength = bufferLength;
   baton->offset = 0;
-  baton->callback.Reset(info[2].As<Napi::Function>());
-  baton->env = env;
   baton->complete = false;
 
-  // TODO switch to using Napi::ThreadSafeFunction
-  uv_async_t* async = new uv_async_t;
-  uv_async_init(uv_default_loop(), async, EIO_AfterWrite);
-  async->data = baton;
-  // WriteFileEx requires a thread that can block. Create a new thread to
-  // run the write operation, saving the handle so it can be deallocated later.
-  baton->hThread = CreateThread(NULL, 0, WriteThread, async, 0, NULL);
+  baton->Queue();
   return env.Null();
 }
 
@@ -354,56 +343,6 @@ void __stdcall WriteIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLA
       baton->complete = true;
     }
   }
-}
-
-DWORD __stdcall WriteThread(LPVOID param) {
-  uv_async_t* async = static_cast<uv_async_t*>(param);
-  WriteBaton* baton = static_cast<WriteBaton*>(async->data);
-
-  OVERLAPPED* ov = new OVERLAPPED;
-  memset(ov, 0, sizeof(OVERLAPPED));
-  ov->hEvent = static_cast<void*>(baton);
-
-  while (!baton->complete) {
-    char* offsetPtr = baton->bufferData + baton->offset;
-    // WriteFileEx requires calling GetLastError even upon success. Clear the error beforehand.
-    SetLastError(0);
-    WriteFileEx(int2handle(baton->fd), offsetPtr,
-                static_cast<DWORD>(baton->bufferLength - baton->offset), ov, WriteIOCompletion);
-    // Error codes when call is successful, such as ERROR_MORE_DATA.
-    DWORD lastError = GetLastError();
-    if (lastError != ERROR_SUCCESS) {
-      ErrorCodeToString("Writing to COM port (WriteFileEx)", lastError, baton->errorString);
-      break;
-    }
-    // IOCompletion routine is only called once this thread is in an alertable wait state.
-    SleepEx(INFINITE, TRUE);
-  }
-  delete ov;
-  // Signal the main thread to run the callback.
-  uv_async_send(async);
-  ExitThread(0);
-}
-
-void EIO_AfterWrite(uv_async_t* req) { //(napi_env n_env, napi_status status, void* req) { 
-  WriteBaton* baton = (WriteBaton*)req;
-  Napi::Env env = baton->env;
-  Napi::HandleScope scope(env);
-  WaitForSingleObject(baton->hThread, INFINITE);
-  CloseHandle(baton->hThread);
-  uv_close(reinterpret_cast<uv_handle_t*>(req), AsyncCloseCallback);
-
-  std::vector<napi_value> args;
-  args.reserve(1);
-  if (baton->errorString[0]) {
-    args.push_back(Napi::String::New(env, baton->errorString));
-  } else {
-    args.push_back(env.Null());
-  }
-
-  baton->callback.Call(args);
-  baton->buffer.Reset();
-  free(baton);
 }
 
 Napi::Value Read(const Napi::CallbackInfo& info) {
@@ -448,22 +387,15 @@ Napi::Value Read(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
-  ReadBaton* baton = new ReadBaton();
+  ReadBaton* baton = new ReadBaton(info[4].As<Napi::Function>());
   baton->fd = fd;
   baton->offset = offset;
   baton->bytesToRead = bytesToRead;
   baton->bufferLength = bufferLength;
   baton->bufferData = buffer.As<Napi::Buffer<char>>().Data();
-  baton->callback.Reset(info[4].As<Napi::Function>());
-  baton->env = env;
   baton->complete = false;
 
-  uv_async_t* async = new uv_async_t;
-  uv_async_init(uv_default_loop(), async, EIO_AfterRead);
-  async->data = baton;
-  // ReadFileEx requires a thread that can block. Create a new thread to
-  // run the read operation, saving the handle so it can be deallocated later.
-  baton->hThread = CreateThread(NULL, 0, ReadThread, async, 0, NULL);
+  baton->Queue();
   return env.Null();
 }
 
@@ -532,67 +464,6 @@ void __stdcall ReadIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAP
   baton->complete = true;
 }
 
-DWORD __stdcall ReadThread(LPVOID param) {
-  uv_async_t* async = static_cast<uv_async_t*>(param);
-  ReadBaton* baton = static_cast<ReadBaton*>(async->data);
-  DWORD lastError;
-
-  OVERLAPPED* ov = new OVERLAPPED;
-  memset(ov, 0, sizeof(OVERLAPPED));
-  ov->hEvent = static_cast<void*>(baton);
-
-  while (!baton->complete) {
-    // Reset the read timeout to 0, so that it will block until more data arrives.
-    COMMTIMEOUTS commTimeouts = {};
-    commTimeouts.ReadIntervalTimeout = 0;
-    if (!SetCommTimeouts(int2handle(baton->fd), &commTimeouts)) {
-      lastError = GetLastError();
-      ErrorCodeToString("Setting COM timeout (SetCommTimeouts)", lastError, baton->errorString);
-      break;
-    }
-    // ReadFileEx doesn't use overlapped's hEvent, so it is reserved for user data.
-    ov->hEvent = static_cast<HANDLE>(baton);
-    char* offsetPtr = baton->bufferData + baton->offset;
-    // ReadFileEx requires calling GetLastError even upon success. Clear the error beforehand.
-    SetLastError(0);
-    // Only read 1 byte, so that the callback will be triggered once any data arrives.
-    ReadFileEx(int2handle(baton->fd), offsetPtr, 1, ov, ReadIOCompletion);
-    // Error codes when call is successful, such as ERROR_MORE_DATA.
-    lastError = GetLastError();
-    if (lastError != ERROR_SUCCESS) {
-      ErrorCodeToString("Reading from COM port (ReadFileEx)", lastError, baton->errorString);
-      break;
-    }
-    // IOCompletion routine is only called once this thread is in an alertable wait state.
-    SleepEx(INFINITE, TRUE);
-  }
-  delete ov;
-  // Signal the main thread to run the callback.
-  uv_async_send(async);
-  ExitThread(0);
-}
-
-void EIO_AfterRead(uv_async_t* req) { // (napi_env n_env, napi_status status, void* req) {
-  ReadBaton* baton = (ReadBaton*)req;
-  Napi::Env env = baton->env;
-  Napi::HandleScope scope(env);
-  WaitForSingleObject(baton->hThread, INFINITE);
-  CloseHandle(baton->hThread);
-  uv_close(reinterpret_cast<uv_handle_t*>(req), AsyncCloseCallback);
-
-  std::vector<napi_value> args;
-  args.reserve(2);
-  if (baton->errorString[0]) {
-    args.push_back(Napi::String::New(env, baton->errorString));
-    args.push_back(env.Undefined());
-  } else {
-    args.push_back(env.Null());
-    args.push_back(Napi::Number::New(env, static_cast<int>(baton->bytesRead)));
-  }
-
-  baton->callback.Call(args);
-  delete baton;
-}
 
 void CloseBaton::Execute() {
   g_closingHandles.push_back(fd);
