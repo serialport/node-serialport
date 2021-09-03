@@ -103,37 +103,13 @@ Napi::Value Update(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
-  ConnectionOptionsBaton* baton = new ConnectionOptionsBaton();
+  ConnectionOptionsBaton* baton = new ConnectionOptionsBaton(info[2].As<Napi::Function>());
 
   baton->fd = fd;
   baton->baudRate = getIntFromObject(options, "baudRate");
-  baton->callback.Reset(info[2].As<Napi::Function>());
 
-  napi_value resource_name;
-  napi_create_string_utf8(env, "Update", NAPI_AUTO_LENGTH, &resource_name);
-  napi_create_async_work(env, NULL, resource_name, EIO_Update, EIO_AfterUpdate, baton, &baton->work);
-  napi_queue_async_work(env, baton->work);
+  baton->Queue();
   return env.Undefined();
-}
-
-void EIO_AfterUpdate(napi_env n_env, napi_status status, void* req) {
-  Napi::Env env = Napi::Env::Env(n_env);
-  Napi::HandleScope scope(env);
-
-  ConnectionOptionsBaton* data = (ConnectionOptionsBaton*)req;
-
-  std::vector<napi_value> args;
-  args.reserve(1);
-  if (data->errorString[0]) {
-    args.push_back(Napi::String::New(env, data->errorString));
-  } else {
-    args.push_back(env.Null());
-  }
-
-  data->callback.Call(args);
-  
-  napi_delete_async_work(env, data->work);
-  free(data);
 }
 
 Napi::Value Close(const Napi::CallbackInfo& info) {
@@ -150,33 +126,11 @@ Napi::Value Close(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
-  VoidBaton* baton = new VoidBaton();
+  CloseBaton* baton = new CloseBaton(info[1].As<Napi::Function>());
   baton->fd = info[0].ToNumber().Int64Value();;
-  baton->callback.Reset(info[1].As<Napi::Function>());
   
-  napi_value resource_name;
-  napi_create_string_utf8(env, "Close", NAPI_AUTO_LENGTH, &resource_name);
-  napi_create_async_work(env, NULL, resource_name, EIO_Close, EIO_AfterClose, baton, &baton->work);
-  napi_queue_async_work(env, baton->work);
+  baton->Queue();
   return env.Undefined();
-}
-
-void EIO_AfterClose(napi_env n_env, napi_status status, void* req) {
-    Napi::Env env = Napi::Env::Env(n_env);
-  Napi::HandleScope scope(env);
-  VoidBaton* data = (VoidBaton*)req;
-
-  std::vector<napi_value> args;
-  args.reserve(1);
-  if (data->errorString[0]) {
-    args.push_back(Napi::String::New(env, data->errorString));
-  } else {
-    args.push_back(env.Null());
-  }
-  data->callback.Call(args);
-
-  napi_delete_async_work(env, data->work);
-  free(data);
 }
 
 Napi::Value Flush(const Napi::CallbackInfo& info) {
@@ -195,36 +149,11 @@ Napi::Value Flush(const Napi::CallbackInfo& info) {
   }
   Napi::Function callback = info[1].As<Napi::Function>();
 
-  VoidBaton* baton = new VoidBaton();
+  FlushBaton* baton = new FlushBaton(callback);
   baton->fd = fd;
-  baton->callback.Reset(callback);
 
-  napi_value resource_name;
-  napi_create_string_utf8(env, "Flush", NAPI_AUTO_LENGTH, &resource_name);
-  napi_create_async_work(env, NULL, resource_name, EIO_Flush, EIO_AfterFlush, baton, &baton->work);
-  napi_queue_async_work(env, baton->work);
+  baton->Queue();
   return env.Undefined();
-}
-
-void EIO_AfterFlush(napi_env n_env, napi_status status, void* req) {
-    Napi::Env env = Napi::Env::Env(n_env);
-  Napi::HandleScope scope(env);
-
-  VoidBaton* data = (VoidBaton*)req;
-
-  std::vector<napi_value> args;
-  args.reserve(1);
-
-  if (data->errorString[0]) {
-    args.push_back(Napi::String::New(env, data->errorString));
-  } else {
-    args.push_back(env.Null());
-  }
-
-  data->callback.Call(args);
-
-  napi_delete_async_work(env, data->work);
-  free(data);
 }
 
 Napi::Value Set(const Napi::CallbackInfo& info) {
@@ -250,9 +179,8 @@ Napi::Value Set(const Napi::CallbackInfo& info) {
   }
   Napi::Function callback = info[2].As<Napi::Function>();
 
-  SetBaton* baton = new SetBaton();
+  SetBaton* baton = new SetBaton(callback);
   baton->fd = fd;
-  baton->callback.Reset(callback);
   baton->brk = getBoolFromObject(options, "brk");
   baton->rts = getBoolFromObject(options, "rts");
   baton->cts = getBoolFromObject(options, "cts");
@@ -260,31 +188,8 @@ Napi::Value Set(const Napi::CallbackInfo& info) {
   baton->dsr = getBoolFromObject(options, "dsr");
   baton->lowLatency = getBoolFromObject(options, "lowLatency");
   
-  napi_value resource_name;
-  napi_create_string_utf8(env, "Set", NAPI_AUTO_LENGTH, &resource_name);
-  napi_create_async_work(env, NULL, resource_name, EIO_Set, EIO_AfterSet, baton, &baton->work);
-  napi_queue_async_work(env, baton->work);
+  baton->Queue();
   return env.Undefined();
-}
-
-void EIO_AfterSet(napi_env n_env, napi_status status, void* req) {
-  Napi::Env env = Napi::Env::Env(n_env);
-  Napi::HandleScope scope(env);
-
-  SetBaton* data = (SetBaton*)req;
-
-  std::vector<napi_value> args;
-  args.reserve(2);
-
-  if (data->errorString[0]) {
-    args.push_back(Napi::String::New(env, data->errorString));
-  } else {
-    args.push_back(env.Null());
-  }
-  data->callback.Call(args);
-
-  napi_delete_async_work(env, data->work);
-  free(data);
 }
 
 Napi::Value Get(const Napi::CallbackInfo& info) {
@@ -301,47 +206,17 @@ Napi::Value Get(const Napi::CallbackInfo& info) {
     Napi::TypeError::New(env, "Second argument must be a function").ThrowAsJavaScriptException();
     return env.Null();
   }
+  Napi::Function callback = info[2].As<Napi::Function>();
 
-  GetBaton* baton = new GetBaton();
+  GetBaton* baton = new GetBaton(callback);
   baton->fd = fd;
   baton->cts = false;
   baton->dsr = false;
   baton->dcd = false;
   baton->lowLatency = false;
-  baton->callback.Reset(info[1].As<Napi::Function>());
 
-  napi_value resource_name;
-  napi_create_string_utf8(env, "Get", NAPI_AUTO_LENGTH, &resource_name);
-  napi_create_async_work(env, NULL, resource_name, EIO_Get, EIO_AfterGet, baton, &baton->work);
-  napi_queue_async_work(env, baton->work);
+  baton->Queue();
   return env.Undefined();
-}
-
-void EIO_AfterGet(napi_env n_env, napi_status status, void* req) {
-  Napi::Env env = Napi::Env::Env(n_env);
-  Napi::HandleScope scope(env);
-
-  GetBaton* data = (GetBaton*)req;
-
-  std::vector<napi_value> args;
-  args.reserve(2);
-
-  if (data->errorString[0]) {
-    args.push_back(Napi::String::New(env, data->errorString));
-    args.push_back(env.Undefined());
-  } else {
-    Napi::Object results = Napi::Object::New(env);
-    (results).Set(Napi::String::New(env, "cts"), Napi::Boolean::New(env, data->cts));
-    (results).Set(Napi::String::New(env, "dsr"), Napi::Boolean::New(env, data->dsr));
-    (results).Set(Napi::String::New(env, "dcd"), Napi::Boolean::New(env, data->dcd));
-    (results).Set(Napi::String::New(env, "lowLatency"), Napi::Boolean::New(env, data->lowLatency));
-    args.push_back(env.Null());
-    args.push_back(results);
-  }
-  data->callback.Call(args);
-
-  napi_delete_async_work(env, data->work);
-  free(data);
 }
 
 Napi::Value GetBaudRate(const Napi::CallbackInfo& info) {
@@ -359,40 +234,12 @@ Napi::Value GetBaudRate(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
-  GetBaudRateBaton* baton = new GetBaudRateBaton();
+  GetBaudRateBaton* baton = new GetBaudRateBaton(info[1].As<Napi::Function>());
   baton->fd = fd;
   baton->baudRate = 0;
-  baton->callback.Reset(info[1].As<Napi::Function>());
 
-  napi_value resource_name;
-  napi_create_string_utf8(env, "GetBaudRate", NAPI_AUTO_LENGTH, &resource_name);
-  napi_create_async_work(env, NULL, resource_name, EIO_GetBaudRate, EIO_AfterGetBaudRate, baton, &baton->work);
-  napi_queue_async_work(env, baton->work);
+  baton->Queue();
   return env.Undefined();
-}
-
-void EIO_AfterGetBaudRate(napi_env n_env, napi_status status, void* req) {
-  Napi::Env env = Napi::Env::Env(n_env);
-  Napi::HandleScope scope(env);
-
-  GetBaudRateBaton* data = (GetBaudRateBaton*)req;
-
-  std::vector<napi_value> args;
-  args.reserve(2);
-
-  if (data->errorString[0]) {
-    args.push_back(Napi::String::New(env, data->errorString));
-    args.push_back(env.Undefined());
-  } else {
-    Napi::Object results = Napi::Object::New(env);
-    (results).Set(Napi::String::New(env, "baudRate"), Napi::Number::New(env, data->baudRate));
-    args.push_back(env.Null());
-    args.push_back(results);
-  }
-  data->callback.Call(args);
-
-  napi_delete_async_work(env, data->work);
-  free(data);
 }
 
 Napi::Value Drain(const Napi::CallbackInfo& info) {
@@ -410,35 +257,11 @@ Napi::Value Drain(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
-  VoidBaton* baton = new VoidBaton();
+  DrainBaton* baton = new DrainBaton(info[1].As<Napi::Function>());
   baton->fd = fd;
-  baton->callback.Reset(info[1].As<Napi::Function>());
-
-  napi_value resource_name;
-  napi_create_string_utf8(env, "Drain", NAPI_AUTO_LENGTH, &resource_name);
-  napi_create_async_work(env, NULL, resource_name, EIO_Drain, EIO_AfterDrain, baton, &baton->work);
-  napi_queue_async_work(env, baton->work);
+  
+  baton->Queue();
   return env.Undefined();
-}
-
-void EIO_AfterDrain(napi_env n_env, napi_status status, void* req) {
-  Napi::Env env = Napi::Env::Env(n_env);
-  Napi::HandleScope scope(env);
-
-  VoidBaton* data = (VoidBaton*)req;
-
-  std::vector<napi_value> args;
-  args.reserve(1);
-
-  if (data->errorString[0]) {
-    args.push_back(Napi::String::New(env, data->errorString));
-  } else {
-    args.push_back(env.Null());
-  }
-  data->callback.Call(args);
-
-  napi_delete_async_work(env, data->work);
-  free(data);
 }
 
 SerialPortParity inline(ToParityEnum(const Napi::String& napistr)) {

@@ -2,6 +2,7 @@
 #define PACKAGES_SERIALPORT_SRC_SERIALPORT_H_
 
 // Workaround for electron 11 abi issue https://github.com/serialport/node-serialport/issues/2191
+// TODO Replace with ABI stable runtime check (per https://github.com/serialport/node-serialport/pull/2305#discussion_r697542996)
 #include <node_version.h>
 #if CHECK_NODE_API_MODULE_VERSION && NODE_API_MODULE_VERSION == 85
 #define V8_REVERSE_JSARGS
@@ -16,35 +17,20 @@
 #define ERROR_STRING_SIZE 1024
 
 Napi::Value Open(const Napi::CallbackInfo& info);
-void EIO_Open(void* req);
 
 Napi::Value Update(const Napi::CallbackInfo& info);
-void EIO_Update(napi_env env, void* req);
-void EIO_AfterUpdate(napi_env n_env, napi_status status, void* req);
 
 Napi::Value Close(const Napi::CallbackInfo& info);
-void EIO_Close(napi_env env, void* req);
-void EIO_AfterClose(napi_env n_env, napi_status status, void* req);
 
 Napi::Value Flush(const Napi::CallbackInfo& info);
-void EIO_Flush(napi_env env, void* req);
-void EIO_AfterFlush(napi_env n_env, napi_status status, void* req);
 
 Napi::Value Set(const Napi::CallbackInfo& info);
-void EIO_Set(napi_env env, void* req);
-void EIO_AfterSet(napi_env n_env, napi_status status, void* req);
 
 Napi::Value Get(const Napi::CallbackInfo& info);
-void EIO_Get(napi_env env, void* req);
-void EIO_AfterGet(napi_env n_env, napi_status status, void* req);
 
 Napi::Value GetBaudRate(const Napi::CallbackInfo& info);
-void EIO_GetBaudRate(napi_env env, void* req);
-void EIO_AfterGetBaudRate(napi_env n_env, napi_status status, void* req);
 
 Napi::Value Drain(const Napi::CallbackInfo& info);
-void EIO_Drain(napi_env env, void* req);
-void EIO_AfterDrain(napi_env n_env, napi_status status, void* req);
 
 enum SerialPortParity {
   SERIALPORT_PARITY_NONE  = 1,
@@ -85,10 +71,7 @@ struct OpenBaton : public Napi::AsyncWorker {
   uint8_t vmin = 0;
   uint8_t vtime = 0;
 #endif
-  void Execute() override {
-    EIO_Open(this);
-    SetError(std::string(errorString));
-  }
+  void Execute();
 
   void OnError(Napi::Error const &error) override {
     auto env = Env();
@@ -109,18 +92,28 @@ struct ConnectionOptions {
   int fd = 0;
   int baudRate = 0;
 };
-struct ConnectionOptionsBaton : ConnectionOptions {//, Napi::AsyncResource {
-  ConnectionOptionsBaton() {} // : AsyncResource("node-serialport:ConnectionOptionsBaton") {}
-  Napi::FunctionReference callback;
-  napi_async_work work;
+struct ConnectionOptionsBaton : ConnectionOptions , Napi::AsyncWorker {
+  ConnectionOptionsBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:ConnectionOptionsBaton") {}
+  
+  void Execute();
+
+  void OnError(Napi::Error const &error) override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({Napi::String::New(env, errorString)});
+  }
+
+  void OnOK() override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({env.Null()});
+  }
 };
 
-struct SetBaton {//: public Napi::AsyncResource {
-  SetBaton() : // AsyncResource("node-serialport:SetBaton"), 
+struct SetBaton : public Napi::AsyncWorker {
+  SetBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:SetBaton"), 
   errorString() {}
   int fd = 0;
-  Napi::FunctionReference callback;
-  napi_async_work work;
   int result = 0;
   char errorString[ERROR_STRING_SIZE];
   bool rts = false;
@@ -129,38 +122,159 @@ struct SetBaton {//: public Napi::AsyncResource {
   bool dsr = false;
   bool brk = false;
   bool lowLatency = false;
+
+  void Execute();
+
+  void OnError(Napi::Error const &error) override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({Napi::String::New(env, errorString)});
+  }
+
+  void OnOK() override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({env.Null()});
+  }
 };
 
-struct GetBaton {//: public Napi::AsyncResource {
-  GetBaton() : // AsyncResource("node-serialport:GetBaton"), 
+struct GetBaton : public Napi::AsyncWorker {
+  GetBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:GetBaton"), 
   errorString() {}
   int fd = 0;
-  Napi::FunctionReference callback;
-  napi_async_work work;
   char errorString[ERROR_STRING_SIZE];
   bool cts = false;
   bool dsr = false;
   bool dcd = false;
   bool lowLatency = false;
+
+  void Execute();
+
+  void OnError(Napi::Error const &error) override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({Napi::String::New(env, errorString),env.Undefined()});
+  }
+
+  void OnOK() override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Napi::Object results = Napi::Object::New(env);
+    results.Set("cts", cts);
+    results.Set("dsr", dsr);
+    results.Set("dcd", dcd);
+    results.Set("lowLatency", lowLatency);
+    Callback().Call({env.Null(), results});
+  }
 };
 
-struct GetBaudRateBaton {//: public Napi::AsyncResource {
-  GetBaudRateBaton() : // AsyncResource("node-serialport:GetBaudRateBaton"), 
+struct GetBaudRateBaton : public Napi::AsyncWorker {
+  GetBaudRateBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:GetBaudRateBaton"), 
   errorString() {}
   int fd = 0;
-  Napi::FunctionReference callback;
-  napi_async_work work;
   char errorString[ERROR_STRING_SIZE];
   int baudRate = 0;
+  
+  void Execute();
+
+  void OnError(Napi::Error const &error) override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({Napi::String::New(env, errorString),env.Undefined()});
+  }
+
+  void OnOK() override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Napi::Object results = Napi::Object::New(env);
+    (results).Set(Napi::String::New(env, "baudRate"), Napi::Number::New(env, baudRate));
+    Callback().Call({env.Null(),results});
+  }
 };
 
-struct VoidBaton {//: public Napi::AsyncResource {
-  VoidBaton() : // AsyncResource("node-serialport:VoidBaton"), 
+// TODO Consider implementing inheritance?
+struct VoidBaton : public Napi::AsyncWorker {
+  VoidBaton(Napi::Function& callback, const char *resource_name) : Napi::AsyncWorker(callback, resource_name), 
   errorString() {}
   int fd = 0;
-  Napi::FunctionReference callback;
-  napi_async_work work;
   char errorString[ERROR_STRING_SIZE];
+
+  void OnError(Napi::Error const &error) override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({Napi::String::New(env, errorString)});
+  }
+
+  void OnOK() override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({env.Null()});
+  }
+};
+
+// TODO Inherit from Void Baton?
+struct CloseBaton : public Napi::AsyncWorker {
+  CloseBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:CloseBaton"), 
+  errorString() {}
+  int fd = 0;
+  char errorString[ERROR_STRING_SIZE];
+
+  void Execute();
+
+  void OnError(Napi::Error const &error) override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({Napi::String::New(env, errorString)});
+  }
+
+  void OnOK() override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({env.Null()});
+  }
+};
+
+// TODO Inherit from Void Baton?
+struct DrainBaton : public Napi::AsyncWorker {
+  DrainBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:DrainBaton"), 
+  errorString() {}
+  int fd = 0;
+  char errorString[ERROR_STRING_SIZE];
+
+  void Execute();
+
+  void OnError(Napi::Error const &error) override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({Napi::String::New(env, errorString)});
+  }
+
+  void OnOK() override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({env.Null()});
+  }
+};
+
+struct FlushBaton : public Napi::AsyncWorker {
+  FlushBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:FlushBaton"), 
+  errorString() {}
+  int fd = 0;
+  char errorString[ERROR_STRING_SIZE];
+
+  void Execute();
+
+  void OnError(Napi::Error const &error) override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({Napi::String::New(env, errorString)});
+  }
+
+  void OnOK() override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({env.Null()});
+  }
 };
 
 int setup(int fd, OpenBaton *data);

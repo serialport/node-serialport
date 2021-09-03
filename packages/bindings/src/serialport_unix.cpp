@@ -79,14 +79,14 @@ int ToDataBitsConstant(int dataBits) {
   return -1;
 }
 
-void EIO_Open(void* req) {
-  OpenBaton* data = (OpenBaton*)req;
+void OpenBaton::Execute() {
 
   int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
-  int fd = open(data->path, flags);
+  int fd = open(path, flags);
 
   if (-1 == fd) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot open %s", strerror(errno), data->path);
+    snprintf(errorString, sizeof(errorString), "Error: %s, cannot open %s", strerror(errno), path);
+    this->SetError(errorString);
     return;
   }
 
@@ -95,34 +95,33 @@ void EIO_Open(void* req) {
     return;
   }
 
-  data->result = fd;
+  result = fd;
 }
 
 int setBaudRate(ConnectionOptions *data) {
   // lookup the standard baudrates from the table
-  int baudRate = ToBaudConstant(data->baudRate);
-  int fd = data->fd;
+  int baudRate = ToBaudConstant(baudRate);
 
   // get port options
   struct termios options;
   if (-1 == tcgetattr(fd, &options)) {
-    snprintf(data->errorString, sizeof(data->errorString),
-             "Error: %s setting custom baud rate of %d", strerror(errno), data->baudRate);
+    snprintf(errorString, sizeof(errorString), "Error: %s setting custom baud rate of %d", strerror(errno), baudRate);
+    this->SetError(errorString);
     return -1;
   }
 
   // If there is a custom baud rate on linux you can do the following trick with B38400
   #if defined(__linux__) && defined(ASYNC_SPD_CUST)
     if (baudRate == -1) {
-      int err = linuxSetCustomBaudRate(fd, data->baudRate);
+      int err = linuxSetCustomBaudRate(fd, baudRate);
 
       if (err == -1) {
-        snprintf(data->errorString, sizeof(data->errorString),
-                 "Error: %s || while retrieving termios2 info", strerror(errno));
+        snprintf(errorString, sizeof(errorString), "Error: %s || while retrieving termios2 info", strerror(errno));
+        this->SetError(errorString);
         return -1;
       } else if (err == -2) {
-        snprintf(data->errorString, sizeof(data->errorString),
-                 "Error: %s || while setting custom baud rate of %d", strerror(errno), data->baudRate);
+        snprintf(errorString, sizeof(errorString), "Error: %s || while setting custom baud rate of %d", strerror(errno), baudRate);
+        this->SetError(errorString);
         return -1;
       }
 
@@ -133,10 +132,10 @@ int setBaudRate(ConnectionOptions *data) {
   // On OS X, starting with Tiger, we can set a custom baud rate with ioctl
   #if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
     if (-1 == baudRate) {
-      speed_t speed = data->baudRate;
+      speed_t speed = baudRate;
       if (-1 == ioctl(fd, IOSSIOSPEED, &speed)) {
-        snprintf(data->errorString, sizeof(data->errorString),
-                 "Error: %s calling ioctl(.., IOSSIOSPEED, %ld )", strerror(errno), speed);
+        snprintf(errorString, sizeof(errorString), "Error: %s calling ioctl(.., IOSSIOSPEED, %ld )", strerror(errno), speed);
+        this->SetError(errorString);
         return -1;
       } else {
         tcflush(fd, TCIOFLUSH);
@@ -146,8 +145,8 @@ int setBaudRate(ConnectionOptions *data) {
   #endif
 
   if (-1 == baudRate) {
-    snprintf(data->errorString, sizeof(data->errorString),
-             "Error baud rate of %d is not supported on your platform", data->baudRate);
+    snprintf(errorString, sizeof(errorString), "Error baud rate of %d is not supported on your platform", baudRate);
+    this->SetError(errorString);
     return -1;
   }
 
@@ -161,16 +160,14 @@ int setBaudRate(ConnectionOptions *data) {
   return 1;
 }
 
-void EIO_Update(napi_env env, void* req) {
-  ConnectionOptionsBaton* data = (ConnectionOptionsBaton*)req;
+void ConnectionOptionsBaton::Execute() {
   setBaudRate(data);
 }
 
 int setup(int fd, OpenBaton *data) {
   int dataBits = ToDataBitsConstant(data->dataBits);
   if (-1 == dataBits) {
-    snprintf(data->errorString, sizeof(data->errorString),
-             "Invalid data bits setting %d", data->dataBits);
+    snprintf(data->errorString, sizeof(data->errorString),"Invalid data bits setting %d", data->dataBits);
     return -1;
   }
 
@@ -302,53 +299,53 @@ int setup(int fd, OpenBaton *data) {
   return 1;
 }
 
-void EIO_Close(napi_env env, void* req) {
-  VoidBaton* data =(VoidBaton*)req;
+void CloseBaton::Execute() {
 
-  if (-1 == close(data->fd)) {
-    snprintf(data->errorString, sizeof(data->errorString),
-             "Error: %s, unable to close fd %d", strerror(errno), data->fd);
+  if (-1 == close(fd)) {
+    snprintf(errorString, sizeof(errorString), "Error: %s, unable to close fd %d", strerror(errno), fd);
+    this->SetError(errorString);
   }
 }
 
-void EIO_Set(napi_env env, void* req) {
-  SetBaton* data = (SetBaton*)req);
+void SetBaton::Execute() {
 
   int bits;
-  ioctl(data->fd, TIOCMGET, &bits);
+  ioctl(fd, TIOCMGET, &bits);
 
   bits &= ~(TIOCM_RTS | TIOCM_CTS | TIOCM_DTR | TIOCM_DSR);
 
-  if (data->rts) {
+  if (rts) {
     bits |= TIOCM_RTS;
   }
 
-  if (data->cts) {
+  if (cts) {
     bits |= TIOCM_CTS;
   }
 
-  if (data->dtr) {
+  if (dtr) {
     bits |= TIOCM_DTR;
   }
 
-  if (data->dsr) {
+  if (dsr) {
     bits |= TIOCM_DSR;
   }
 
   int result = 0;
-  if (data->brk) {
-    result = ioctl(data->fd, TIOCSBRK, NULL);
+  if (brk) {
+    result = ioctl(fd, TIOCSBRK, NULL);
   } else {
-    result = ioctl(data->fd, TIOCCBRK, NULL);
+    result = ioctl(fd, TIOCCBRK, NULL);
   }
 
   if (-1 == result) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot set", strerror(errno));
+    snprintf(errorString, sizeof(errorString), "Error: %s, cannot set", strerror(errno));
+    this->SetError(errorString);
     return;
   }
 
-  if (-1 == ioctl(data->fd, TIOCMSET, &bits)) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot set", strerror(errno));
+  if (-1 == ioctl(fd, TIOCMSET, &bits)) {
+    snprintf(errorString, sizeof(errorString), "Error: %s, cannot set", strerror(errno));
+    this->SetError(errorString);
     return;
   }
 
@@ -367,18 +364,17 @@ void EIO_Set(napi_env env, void* req) {
   #endif
 }
 
-void EIO_Get(napi_env env, void* req) {
-  GetBaton* data = (GetBaton*)req;
-
+void GetBaton::Execute() {
   int bits;
-  if (-1 == ioctl(data->fd, TIOCMGET, &bits)) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get", strerror(errno));
+  if (-1 == ioctl(fd, TIOCMGET, &bits)) {
+    snprintf(errorString, sizeof(errorString), "Error: %s, cannot get", strerror(errno));
+    this->SetError(errorString);
     return;
   }
 
-  data->cts = bits & TIOCM_CTS;
-  data->dsr = bits & TIOCM_DSR;
-  data->dcd = bits & TIOCM_CD;
+  cts = bits & TIOCM_CTS;
+  dsr = bits & TIOCM_DSR;
+  dcd = bits & TIOCM_CD;
 
   #if defined(__linux__) && defined(ASYNC_LOW_LATENCY)
   bool lowlatency = false;
@@ -386,41 +382,42 @@ void EIO_Get(napi_env env, void* req) {
   linuxGetLowLatencyMode(data->fd, &lowlatency);
   data->lowLatency = lowlatency;
   #else
-  data->lowLatency = false;
+  lowLatency = false;
   #endif
 }
 
-void EIO_GetBaudRate(napi_env env, void* req) {
-  GetBaudRateBaton* data = (GetBaudRateBaton*)req;
+void GetBaudRateBaton::Execute() {
   int outbaud = -1;
 
   #if defined(__linux__) && defined(ASYNC_SPD_CUST)
-  if (-1 == linuxGetSystemBaudRate(data->fd, &outbaud)) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get baud rate", strerror(errno));
+  if (-1 == linuxGetSystemBaudRate(fd, &outbaud)) {
+    snprintf(errorString, sizeof(errorString), "Error: %s, cannot get baud rate", strerror(errno));
+    this->SetError(errorString);
     return;
   }
   #else
-  snprintf(data->errorString, sizeof(data->errorString), "Error: System baud rate check not implemented on this platform");
+  snprintf(errorString, sizeof(errorString), "Error: System baud rate check not implemented on this platform");
+  this->SetError(errorString);
   return;
   #endif
 
-  data->baudRate = outbaud;
+  baudRate = outbaud;
 }
 
-void EIO_Flush(napi_env env, void* req) {
-  VoidBaton* data = (VoidBaton*)req;
+void FlushBaton::Execute() {
 
-  if (-1 == tcflush(data->fd, TCIOFLUSH)) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot flush", strerror(errno));
+  if (-1 == tcflush(fd, TCIOFLUSH)) {
+    snprintf(errorString, sizeof(errorString), "Error: %s, cannot flush", strerror(errno));
+    this->SetError(errorString);
     return;
   }
 }
 
-void EIO_Drain(napi_env env, void* req) {
-  VoidBaton* data = (VoidBaton*)req;
+void DrainBaton::Execute() {
 
-  if (-1 == tcdrain(data->fd)) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot drain", strerror(errno));
+  if (-1 == tcdrain(fd)) {
+    snprintf(errorString, sizeof(errorString), "Error: %s, cannot drain", strerror(errno));
+    this->SetError(errorString);
     return;
   }
 }
