@@ -24,14 +24,10 @@ Napi::Value List(const Napi::CallbackInfo& info)
     return env.Null();
   }
 
-  ListBaton* baton = new ListBaton();
+  ListBaton* baton = new ListBaton(info[0].As<Napi::Function>());
   snprintf(baton->errorString, sizeof(baton->errorString), "");
-  baton->callback.Reset(info[0].As<Napi::Function>());
 
-  napi_value resource_name;
-  napi_create_string_utf8(env, "List", NAPI_AUTO_LENGTH, &resource_name);
-  napi_create_async_work(env, NULL, resource_name, EIO_List, EIO_AfterList, baton, &baton->work);
-  napi_queue_async_work(env, baton->work);
+  baton->Queue();
   return env.Undefined();
 }
 
@@ -278,8 +274,7 @@ static stDeviceListItem* GetSerialDevices() {
   return devices;
 }
 
-void EIO_List(napi_env env, void* req) {
-  ListBaton* data = (ListBaton*)req;
+void ListBaton::Execute() {
 
   if (!lockInitialised) {
     uv_mutex_init(&list_mutex);
@@ -322,42 +317,4 @@ void EIO_List(napi_env env, void* req) {
       free(current);
     }
   }
-}
-
-void EIO_AfterList(napi_env n_env, napi_status status, void* req) {
-  Napi::HandleScope scope(env);
-
-  ListBaton* data = (ListBaton*)req;
-
-  std::vector<napi_value> args;
-  args.reserve(2);
-  if (data->errorString[0]) {
-    args.push_back(Napi::String::New(env, data->errorString));
-    args.push_back(env.Undefined());
-  } else {
-    Napi::Array results = Napi::Array::New(env);
-    int i = 0;
-    for (std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it, i++) {
-      Napi::Object item = Napi::Object::New(env);
-
-      setIfNotEmpty(item, "path", (*it)->path.c_str());
-      setIfNotEmpty(item, "manufacturer", (*it)->manufacturer.c_str());
-      setIfNotEmpty(item, "serialNumber", (*it)->serialNumber.c_str());
-      setIfNotEmpty(item, "pnpId", (*it)->pnpId.c_str());
-      setIfNotEmpty(item, "locationId", (*it)->locationId.c_str());
-      setIfNotEmpty(item, "vendorId", (*it)->vendorId.c_str());
-      setIfNotEmpty(item, "productId", (*it)->productId.c_str());
-
-      (results).Set(i, item);
-    }
-    args.push_back(env.Null());
-    args.push_back(results);
-  }
-  data->callback.Call(args);
-
-  for (std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it) {
-    delete *it;
-  }
-  napi_delete_async_work(env, data->work);
-  free(data);
 }
