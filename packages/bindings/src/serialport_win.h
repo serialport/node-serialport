@@ -57,8 +57,7 @@ DWORD __stdcall ReadThread(LPVOID param);
 
 
 Napi::Value List(const Napi::CallbackInfo& info);
-void EIO_List(napi_env env, void* req);
-void EIO_AfterList(napi_env n_env, napi_status status, void* req);
+void setIfNotEmpty(Napi::Object item, std::string key, const char *value);
 
 struct ListResultItem {
   std::string path;
@@ -70,13 +69,39 @@ struct ListResultItem {
   std::string productId;
 };
 
-struct ListBaton { //}: public Napi::AsyncWorker {
-  ListBaton() //: Napi::AsyncWorker(callback, "node-serialport:ListBaton") 
-  {}
-  Napi::FunctionReference callback;
-  napi_async_work work;
+struct ListBaton : public Napi::AsyncWorker {
+  ListBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:ListBaton"), 
+  errorString() {}
   std::list<ListResultItem*> results;
-  char errorString[ERROR_STRING_SIZE] = "";
+  char errorString[ERROR_STRING_SIZE];
+  void Execute();
+
+  void OnError(Napi::Error const &error) override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Callback().Call({Napi::String::New(env, errorString), env.Undefined()});
+  }
+
+  void OnOK() override {
+    auto env = Env();
+    Napi::HandleScope scope(env);
+    Napi::Array result = Napi::Array::New(env);
+    int i = 0;
+    for (std::list<ListResultItem*>::iterator it = results.begin(); it != results.end(); ++it, i++) {
+      Napi::Object item = Napi::Object::New(env);
+
+      setIfNotEmpty(item, "path", (*it)->path.c_str());
+      setIfNotEmpty(item, "manufacturer", (*it)->manufacturer.c_str());
+      setIfNotEmpty(item, "serialNumber", (*it)->serialNumber.c_str());
+      setIfNotEmpty(item, "pnpId", (*it)->pnpId.c_str());
+      setIfNotEmpty(item, "locationId", (*it)->locationId.c_str());
+      setIfNotEmpty(item, "vendorId", (*it)->vendorId.c_str());
+      setIfNotEmpty(item, "productId", (*it)->productId.c_str());
+
+      (result).Set(i, item);
+    }
+    Callback().Call({env.Null(), result});
+  }
 };
 
 #endif  // PACKAGES_SERIALPORT_SRC_SERIALPORT_WIN_H_
