@@ -53,8 +53,8 @@ Napi::Value Open(const Napi::CallbackInfo& info) {
     Napi::TypeError::New(env, "Third argument must be a function").ThrowAsJavaScriptException();
     return env.Null();
   }
-
-  OpenBaton* baton = new OpenBaton(info[2].As<Napi::Function>());
+  Napi::Function callback = info[2].As<Napi::Function>();
+  OpenBaton* baton = new OpenBaton(callback);
   snprintf(baton->path, sizeof(baton->path), "%s", path.c_str());
   baton->baudRate = getIntFromObject(options, "baudRate");
   baton->dataBits = getIntFromObject(options, "dataBits");
@@ -103,7 +103,8 @@ Napi::Value Update(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
-  ConnectionOptionsBaton* baton = new ConnectionOptionsBaton(info[2].As<Napi::Function>());
+  Napi::Function callback = info[2].As<Napi::Function>();
+  ConnectionOptionsBaton* baton = new ConnectionOptionsBaton(callback);
 
   baton->fd = fd;
   baton->baudRate = getIntFromObject(options, "baudRate");
@@ -126,7 +127,8 @@ Napi::Value Close(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
-  CloseBaton* baton = new CloseBaton(info[1].As<Napi::Function>());
+  Napi::Function callback = info[1].As<Napi::Function>();
+  CloseBaton* baton = new CloseBaton(callback);
   baton->fd = info[0].ToNumber().Int64Value();;
   
   baton->Queue();
@@ -234,7 +236,8 @@ Napi::Value GetBaudRate(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
-  GetBaudRateBaton* baton = new GetBaudRateBaton(info[1].As<Napi::Function>());
+  Napi::Function callback = info[1].As<Napi::Function>();
+  GetBaudRateBaton* baton = new GetBaudRateBaton(callback);
   baton->fd = fd;
   baton->baudRate = 0;
 
@@ -257,7 +260,8 @@ Napi::Value Drain(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
-  DrainBaton* baton = new DrainBaton(info[1].As<Napi::Function>());
+  Napi::Function callback = info[1].As<Napi::Function>();
+  DrainBaton* baton = new DrainBaton(callback);
   baton->fd = fd;
   
   baton->Queue();

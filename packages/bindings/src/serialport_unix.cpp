@@ -90,7 +90,7 @@ void OpenBaton::Execute() {
     return;
   }
 
-  if (-1 == setup(fd, data)) {
+  if (-1 == setup(fd, this)) {
     close(fd);
     return;
   }
@@ -98,7 +98,7 @@ void OpenBaton::Execute() {
   result = fd;
 }
 
-int setBaudRate(ConnectionOptions *data) {
+void ConnectionOptionsBaton::Execute() {
   // lookup the standard baudrates from the table
   int baudRate = ToBaudConstant(baudRate);
 
@@ -107,7 +107,7 @@ int setBaudRate(ConnectionOptions *data) {
   if (-1 == tcgetattr(fd, &options)) {
     snprintf(errorString, sizeof(errorString), "Error: %s setting custom baud rate of %d", strerror(errno), baudRate);
     this->SetError(errorString);
-    return -1;
+    return;
   }
 
   // If there is a custom baud rate on linux you can do the following trick with B38400
@@ -118,14 +118,14 @@ int setBaudRate(ConnectionOptions *data) {
       if (err == -1) {
         snprintf(errorString, sizeof(errorString), "Error: %s || while retrieving termios2 info", strerror(errno));
         this->SetError(errorString);
-        return -1;
+        return;
       } else if (err == -2) {
         snprintf(errorString, sizeof(errorString), "Error: %s || while setting custom baud rate of %d", strerror(errno), baudRate);
         this->SetError(errorString);
-        return -1;
+        return;
       }
 
-      return 1;
+      return;
     }
   #endif
 
@@ -136,10 +136,10 @@ int setBaudRate(ConnectionOptions *data) {
       if (-1 == ioctl(fd, IOSSIOSPEED, &speed)) {
         snprintf(errorString, sizeof(errorString), "Error: %s calling ioctl(.., IOSSIOSPEED, %ld )", strerror(errno), speed);
         this->SetError(errorString);
-        return -1;
+        return;
       } else {
         tcflush(fd, TCIOFLUSH);
-        return 1;
+        return;
       }
     }
   #endif
@@ -147,7 +147,7 @@ int setBaudRate(ConnectionOptions *data) {
   if (-1 == baudRate) {
     snprintf(errorString, sizeof(errorString), "Error baud rate of %d is not supported on your platform", baudRate);
     this->SetError(errorString);
-    return -1;
+    return;
   }
 
   // If we have a good baud rate set it and lets go
@@ -157,11 +157,7 @@ int setBaudRate(ConnectionOptions *data) {
   tcflush(fd, TCIOFLUSH);
   // make the changes now
   tcsetattr(fd, TCSANOW, &options);
-  return 1;
-}
-
-void ConnectionOptionsBaton::Execute() {
-  setBaudRate(data);
+  return;
 }
 
 int setup(int fd, OpenBaton *data) {
