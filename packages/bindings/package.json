@@ -1,6 +1,6 @@
 {
   "name": "@serialport/bindings",
-  "version": "9.2.0",
+  "version": "9.2.1",
   "main": "lib",
   "keywords": [
     "serialport-binding"
@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "@serialport/binding-mock": "^9.0.7",
-    "node-abi": "^2.30.0"
+    "node-abi": "^3.0.0"
   },
   "engines": {
     "node": ">=10.0.0"
