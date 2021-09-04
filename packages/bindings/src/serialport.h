@@ -192,13 +192,12 @@ struct GetBaudRateBaton : public Napi::AsyncWorker {
   }
 };
 
-// TODO Consider implementing inheritance?
 struct VoidBaton : public Napi::AsyncWorker {
   VoidBaton(Napi::Function& callback, const char *resource_name) : Napi::AsyncWorker(callback, resource_name), 
   errorString() {}
   int fd = 0;
   char errorString[ERROR_STRING_SIZE];
-
+  
   void OnError(Napi::Error const &error) override {
     auto env = Env();
     Napi::HandleScope scope(env);
@@ -212,69 +211,19 @@ struct VoidBaton : public Napi::AsyncWorker {
   }
 };
 
-// TODO Inherit from Void Baton?
-struct CloseBaton : public Napi::AsyncWorker {
-  CloseBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:CloseBaton"), 
-  errorString() {}
-  int fd = 0;
-  char errorString[ERROR_STRING_SIZE];
-
+struct CloseBaton : VoidBaton {
+  CloseBaton(Napi::Function& callback) : VoidBaton(callback, "node-serialport:CloseBaton") {}
   void Execute();
-
-  void OnError(Napi::Error const &error) override {
-    auto env = Env();
-    Napi::HandleScope scope(env);
-    Callback().Call({Napi::String::New(env, errorString)});
-  }
-
-  void OnOK() override {
-    auto env = Env();
-    Napi::HandleScope scope(env);
-    Callback().Call({env.Null()});
-  }
 };
 
-// TODO Inherit from Void Baton?
-struct DrainBaton : public Napi::AsyncWorker {
-  DrainBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:DrainBaton"), 
-  errorString() {}
-  int fd = 0;
-  char errorString[ERROR_STRING_SIZE];
-
+struct DrainBaton : VoidBaton {
+  DrainBaton(Napi::Function& callback) : VoidBaton(callback, "node-serialport:DrainBaton") {}
   void Execute();
-
-  void OnError(Napi::Error const &error) override {
-    auto env = Env();
-    Napi::HandleScope scope(env);
-    Callback().Call({Napi::String::New(env, errorString)});
-  }
-
-  void OnOK() override {
-    auto env = Env();
-    Napi::HandleScope scope(env);
-    Callback().Call({env.Null()});
-  }
 };
 
-struct FlushBaton : public Napi::AsyncWorker {
-  FlushBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:FlushBaton"), 
-  errorString() {}
-  int fd = 0;
-  char errorString[ERROR_STRING_SIZE];
-
+struct FlushBaton : VoidBaton {
+  FlushBaton(Napi::Function& callback) : VoidBaton(callback, "node-serialport:FlushBaton") {}
   void Execute();
-
-  void OnError(Napi::Error const &error) override {
-    auto env = Env();
-    Napi::HandleScope scope(env);
-    Callback().Call({Napi::String::New(env, errorString)});
-  }
-
-  void OnOK() override {
-    auto env = Env();
-    Napi::HandleScope scope(env);
-    Callback().Call({env.Null()});
-  }
 };
 
 int setup(int fd, OpenBaton *data);
