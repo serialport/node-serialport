@@ -7,8 +7,10 @@
 class Poller : public Napi::ObjectWrap<Poller> { //}, public Napi::AsyncWorker {
  public:
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
-  static void onData(napi_env env, uv_poll_t* handle, int status, int events);
-  static void onClose(napi_env env, uv_handle_t* poll_handle);
+  Poller(const Napi::CallbackInfo& info);
+  static void onData(uv_poll_t* handle, int status, int events);
+  static void onClose(uv_handle_t* poll_handle);
+  ~Poller();
 
  private:
   int fd;
@@ -19,16 +21,16 @@ class Poller : public Napi::ObjectWrap<Poller> { //}, public Napi::AsyncWorker {
   // can this be read off of poll_handle?
   int events = 0;
 
-  explicit Poller(int fd);
-  ~Poller();
-  void poll(napi_env n_env, int events);
+  explicit Poller(Napi::Function& callback);
+
+  void poll(int events);
   void stop();
   int _stop();
 
   static Napi::Value New(const Napi::CallbackInfo& info);
-  static Napi::Value poll(const Napi::CallbackInfo& info);
-  static Napi::Value stop(const Napi::CallbackInfo& info);
-  static Napi::Value destroy(const Napi::CallbackInfo& info);
+  Napi::Value poll(const Napi::CallbackInfo& info);
+  Napi::Value stop(const Napi::CallbackInfo& info);
+  Napi::Value destroy(const Napi::CallbackInfo& info);
   static inline Napi::FunctionReference & constructor();
 };
 
