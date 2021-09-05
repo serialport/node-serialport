@@ -315,7 +315,7 @@ Napi::Object init(Napi::Env env, Napi::Object exports) {
   exports.Set("read", Napi::Function::New(env, Read));
   exports.Set("list", Napi::Function::New(env, List));
   #else
-  Poller::Init(env, target, module);
+  Poller::Init(env, exports);
   #endif
   return exports;
 }
