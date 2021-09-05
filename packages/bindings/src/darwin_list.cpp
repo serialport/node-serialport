@@ -23,8 +23,8 @@ Napi::Value List(const Napi::CallbackInfo& info)
     Napi::TypeError::New(env, "First argument must be a function").ThrowAsJavaScriptException();
     return env.Null();
   }
-
-  ListBaton* baton = new ListBaton(info[0].As<Napi::Function>());
+  Napi::Function callback = info[0].As<Napi::Function>();
+  ListBaton* baton = new ListBaton(callback);
   snprintf(baton->errorString, sizeof(baton->errorString), "");
 
   baton->Queue();
