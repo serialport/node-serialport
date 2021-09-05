@@ -316,7 +316,8 @@ Napi::Value Write(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
-  WriteBaton* baton = new WriteBaton(info[2].As<Napi::Function>());
+  Napi::Function callback = info[2].As<Napi::Function>();
+  WriteBaton* baton = new WriteBaton(callback);
   baton->fd = fd;
   baton->buffer.Reset(buffer);
   baton->bufferData = bufferData;
@@ -386,8 +387,8 @@ Napi::Value Read(const Napi::CallbackInfo& info) {
     Napi::TypeError::New(env, "Fifth argument must be a function").ThrowAsJavaScriptException();
     return env.Null();
   }
-
-  ReadBaton* baton = new ReadBaton(info[4].As<Napi::Function>());
+  Napi::Function callback = info[4].As<Napi::Function>();
+  ReadBaton* baton = new ReadBaton(callback);
   baton->fd = fd;
   baton->offset = offset;
   baton->bytesToRead = bytesToRead;
@@ -499,7 +500,8 @@ Napi::Value List(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
-  ListBaton* baton = new ListBaton(info[0].As<Napi::Function>());
+  Napi::Function callback = info[0].As<Napi::Function>();
+  ListBaton* baton = new ListBaton(callback);
   snprintf(baton->errorString, sizeof(baton->errorString), "");
 
   baton->Queue();
