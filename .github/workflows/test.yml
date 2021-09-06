@@ -28,9 +28,37 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+
+        # Needed to convert coverage in gcov format to lcov format
+      - if: runner.os == 'Linux'
+        run: sudo apt-get install -y lcov
+      - if: runner.os == 'macOS'
+        run: brew install lcov
+
       - run: npm ci
+
+      # Workaround for lerna blocking environment variables
+      - run: touch packages/bindings/GENERATE_COVERAGE_FILE
+        if: runner.os != 'Windows'
+
       - run: npm run rebuild
+        # Uncomment if environment variables work
+        # env:
+        #   GENERATE_COVERAGE: 'yes'
+
+        # Run tests and generate coverage infomation
       - run: npm test
+
+        # Convert gcov `gcda` coverate information to lcov format, strip external deps, and publish
       - run: npm run coverage
+        # No C/C++ coverage support on Windows, yet
+        if: runner.os != 'Windows'
+        env:
+          CI: true
+
+        # Just publish
+      - run: npm run coverage:publish
+        # No C/C++ coverage support on Windows, yet
+        if: runner.os == 'Windows'
         env:
           CI: true

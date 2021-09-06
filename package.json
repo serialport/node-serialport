@@ -9,7 +9,10 @@
   "license": "MIT",
   "scripts": {
     "rebuild": "lerna run --stream rebuild",
-    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "coverage": "npm run coverage:lcov:capture && npm run coverage:lcov:strip-external && npm run coverage:publish",
+    "coverage:lcov:capture": "lcov --capture --directory packages/bindings/build/Release/obj.target/bindings/src --output-file coverage/gcc.lcov",
+    "coverage:lcov:strip-external": "lcov --extract coverage/gcc.lcov '*/packages/bindings/src/*' --output-file coverage/gcc.lcov",
+    "coverage:publish": "codecov --disable=gcov",
     "format": "eslint packages test --fix",
     "generate": "plop",
     "lint": "eslint packages test && lerna run --stream lint",
