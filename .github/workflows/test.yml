@@ -46,10 +46,10 @@ jobs:
         # env:
         #   GENERATE_COVERAGE: 'yes'
 
-        # Run tests and generate coverage infomation
+        # Run tests and generate coverage information
       - run: npm test
 
-        # Convert gcov `gcda` coverate information to lcov format, strip external deps, and publish
+        # Convert gcov `gcda` coverage information to lcov format, strip coverage info of external dependencies, and publish reports
       - run: npm run coverage
         # No C/C++ coverage support on Windows, yet
         if: runner.os != 'Windows'
