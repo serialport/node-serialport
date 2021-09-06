@@ -15,6 +15,7 @@ jobs:
   test:
     runs-on: ${{ matrix.config.os }}
     strategy:
+      fail-fast: false
       matrix:
         node-version: [10.x, 12.x, 14.x, 16.x]
         config:
