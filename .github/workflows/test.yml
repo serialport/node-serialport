@@ -37,14 +37,9 @@ jobs:
 
       - run: npm ci
 
-      # Workaround for lerna blocking environment variables
-      - run: touch packages/bindings/GENERATE_COVERAGE_FILE
-        if: runner.os != 'Windows'
-
       - run: npm run rebuild
-        # Uncomment if environment variables work
-        # env:
-        #   GENERATE_COVERAGE: 'yes'
+        env:
+          GENERATE_COVERAGE: yes
 
         # Run tests and generate coverage information
       - run: npm test

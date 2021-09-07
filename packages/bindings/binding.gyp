@@ -67,64 +67,20 @@
         }
       ],
 
-      
       # Coverage generation options
-      # These coverage options are currently only compatible with non-Windows OSes.
-      ['OS!="win"',
-        {
-          'variables': {
-            # Lerna seems to strips environment variables. Workaround: create `packages/bindings/GENERATE_COVERAGE_FILE`
-            'generate_coverage': '<!(test -e GENERATE_COVERAGE_FILE && echo "yes" || echo $GENERATE_COVERAGE)',
-          },
-          
-          # Only works with `gcc` (not Windows), for now
-          'conditions': [
-            ['generate_coverage=="yes"',
-              {
-                'cflags+': ['--coverage'],
-                'cflags_cc+': ['--coverage'],
-                'link_settings': {
-                    'libraries+': [
-                    '-lgcov',
-                    # To test if this condition is executing, cause an error by including a missing/non-existant library
-                    # '-lmissing',
-                  ],
-                },
-                'conditions': [
-                  ['OS=="mac"',
-                    {
-                      'xcode_settings': {
-                        'GCC_GENERATE_TEST_COVERAGE_FILES': ['YES'],
-                        'GCC_INSTRUMENT_PROGRAM_FLOW_ARCS': ['YES'],
-                        'OTHER_CFLAGS+': [
-                          '-fprofile-arcs -ftest-coverage',
-                        ],
-                        'OTHER_LDFLAGS+': [
-                          '-fprofile-arcs -ftest-coverage',
-                          # There has to be a better way to do this...
-                          '-L/usr/local/lib/gcc/9/gcc/x86_64-apple-darwin19/9.4.0',
-                        ],
-                      },
-                    },
-                  ],
-                ],
-              },
-            ],
-          ],
-        },
-      ],
-
-      # Below is an attempt to use the same blanket settings for all platforms. Unfortunately, this does not work.
-      # Remove `.disabled` to test with all systems
-      ['generate_coverage=="yes.disabled"',
+      # These coverage options are currently only compatible with non-Windows OSes
+      ['generate_coverage=="yes"',
         {
           'cflags+': ['--coverage'],
-          'cflags_cc+': ['--coverage'],
-          'link_settings': {
-            'libraries+': [
-              '-lgcov',
-              # To test if this condition is executing, cause an error by including a missing/non-existant library
-              '-lmissing',
+          'link_settings': {'libraries+': ['-lgcov']},
+          'xcode_settings': {
+            'GCC_GENERATE_TEST_COVERAGE_FILES': ['YES'],
+            'GCC_INSTRUMENT_PROGRAM_FLOW_ARCS': ['YES'],
+            'OTHER_CFLAGS+': ['-fprofile-arcs -ftest-coverage'],
+            'OTHER_LDFLAGS+': [
+              '-fprofile-arcs -ftest-coverage',
+              # There has to be a better way to do this...
+              '-L/usr/local/lib/gcc/9/gcc/x86_64-apple-darwin19/9.4.0',
             ],
           },
         },

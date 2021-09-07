@@ -5,4 +5,3 @@
 lerna-debug.log
 node_modules
 npm-debug.log
-/packages/bindings/GENERATE_COVERAGE_FILE
