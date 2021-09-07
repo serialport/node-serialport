@@ -45,15 +45,15 @@ jobs:
       - run: npm test
 
         # Convert gcov `gcda` coverage information to lcov format, strip coverage info of external dependencies, and publish reports
-      - run: npm run coverage
+      - if: runner.os != 'Windows'
+        run: npm run coverage
         # No C/C++ coverage support on Windows, yet
-        if: runner.os != 'Windows'
         env:
           CI: true
 
         # Just publish
-      - run: npm run coverage:publish
+      - if: runner.os == 'Windows'
+        run: npm run coverage:publish
         # No C/C++ coverage support on Windows, yet
-        if: runner.os == 'Windows'
         env:
           CI: true
