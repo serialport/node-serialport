@@ -109,9 +109,9 @@
                   ],
                 ],
               },
-            ]
+            ],
           ],
-        }
+        },
       ],
 
       # Below is an attempt to use the same blanket settings for all platforms. Unfortunately, this does not work.
@@ -128,7 +128,7 @@
             ],
           },
         },
-      ]
-    ]
+      ],
+    ],
   }],
 }
