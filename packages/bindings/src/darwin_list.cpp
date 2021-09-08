@@ -16,7 +16,7 @@
 uv_mutex_t list_mutex;
 Boolean lockInitialised = FALSE;
 
-Napi::Value List(const Napi::CallbackInfo& info) 
+Napi::Value List(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   // callback
   if (!info[0].IsFunction()) {
