@@ -103,7 +103,6 @@ void OpenBaton::Execute() {
   }
 
   dcb.Parity = NOPARITY;
-  dcb.ByteSize = 8;
   dcb.StopBits = ONESTOPBIT;
 
 
@@ -639,7 +638,7 @@ void getSerialNumber(const char *vid,
                 DWORD readSize = sizeof(readUuid);
 
                 // Query VID_(vendorId)&PID_(productId)\(serialnumber)\ContainerID
-                DWORD retCode = RegQueryValueEx(deviceHKey, "ContainerID", NULL, NULL, (LPBYTE)&readUuid, &readSize);
+                retCode = RegQueryValueEx(deviceHKey, "ContainerID", NULL, NULL, (LPBYTE)&readUuid, &readSize);
                 if (retCode == ERROR_SUCCESS) {
                     readUuid[readSize] = '\0';
                     if (strcmp(wantedUuid, readUuid) == 0) {
@@ -680,7 +679,7 @@ void ListBaton::Execute() {
   char *manufacturer;
   char *locationId;
   char serialNumber[MAX_REGISTRY_KEY_SIZE];
-  bool isCom;
+  bool isCom = false;
   while (true) {
     pnpId = NULL;
     vendorId = NULL;
