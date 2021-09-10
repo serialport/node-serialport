@@ -87,7 +87,8 @@ void OpenBaton::Execute() {
     return;
   }
 
-  if (-1 == setup(fd, this)) {
+  if (-1 == setup(fd, this)) {  
+    this->SetError(errorString);
     close(fd);
     return;
   }
@@ -97,7 +98,7 @@ void OpenBaton::Execute() {
 
 void ConnectionOptionsBaton::Execute() {
   // lookup the standard baudrates from the table
-  int baudRate = ToBaudConstant(baudRate);
+  int baudRate = ToBaudConstant(this->baudRate);
 
   // get port options
   struct termios options;
@@ -289,6 +290,68 @@ int setup(int fd, OpenBaton *data) {
   // Not needed since setBaudRate does this for us
   // tcflush(fd, TCIOFLUSH);
 
+  return 1;
+}
+
+int setBaudRate(ConnectionOptions *data) {
+  // lookup the standard baudrates from the table
+  int baudRate = ToBaudConstant(data->baudRate);
+  int fd = data->fd;
+
+  // get port options
+  struct termios options;
+  if (-1 == tcgetattr(fd, &options)) {
+    snprintf(data->errorString, sizeof(data->errorString),
+             "Error: %s setting custom baud rate of %d", strerror(errno), data->baudRate);
+    return -1;
+  }
+
+  // If there is a custom baud rate on linux you can do the following trick with B38400
+  #if defined(__linux__) && defined(ASYNC_SPD_CUST)
+    if (baudRate == -1) {
+      int err = linuxSetCustomBaudRate(fd, data->baudRate);
+
+      if (err == -1) {
+        snprintf(data->errorString, sizeof(data->errorString),
+                 "Error: %s || while retrieving termios2 info", strerror(errno));
+        return -1;
+      } else if (err == -2) {
+        snprintf(data->errorString, sizeof(data->errorString),
+                 "Error: %s || while setting custom baud rate of %d", strerror(errno), data->baudRate);
+        return -1;
+      }
+
+      return 1;
+    }
+  #endif
+
+  // On OS X, starting with Tiger, we can set a custom baud rate with ioctl
+  #if defined(MAC_OS_X_VERSION_10_4) && (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_4)
+    if (-1 == baudRate) {
+      speed_t speed = data->baudRate;
+      if (-1 == ioctl(fd, IOSSIOSPEED, &speed)) {
+        snprintf(data->errorString, sizeof(data->errorString),
+                 "Error: %s calling ioctl(.., IOSSIOSPEED, %ld )", strerror(errno), speed);
+        return -1;
+      } else {
+        tcflush(fd, TCIOFLUSH);
+        return 1;
+      }
+    }
+  #endif
+
+  if (-1 == baudRate) {
+    snprintf(data->errorString, sizeof(data->errorString), "Error baud rate of %d is not supported on your platform", data->baudRate);
+    return -1;
+  }
+
+  // If we have a good baud rate set it and lets go
+  cfsetospeed(&options, baudRate);
+  cfsetispeed(&options, baudRate);
+  // throw away all the buffered data
+  tcflush(fd, TCIOFLUSH);
+  // make the changes now
+  tcsetattr(fd, TCSANOW, &options);
   return 1;
 }
 
