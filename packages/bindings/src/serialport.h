@@ -93,7 +93,7 @@ struct ConnectionOptions {
   int baudRate = 0;
 };
 struct ConnectionOptionsBaton : ConnectionOptions , Napi::AsyncWorker {
-  ConnectionOptionsBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:ConnectionOptionsBaton") {}
+  ConnectionOptionsBaton(Napi::Function& callback) : ConnectionOptions() , Napi::AsyncWorker(callback, "node-serialport:ConnectionOptionsBaton") {}
   
   void Execute();
 
