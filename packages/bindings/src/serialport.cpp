@@ -268,7 +268,7 @@ Napi::Value Drain(const Napi::CallbackInfo& info) {
   return env.Undefined();
 }
 
-SerialPortParity inline(ToParityEnum(const Napi::String& napistr)) {
+inline SerialPortParity ToParityEnum(const Napi::String& napistr) {
   const char* str = napistr.Utf8Value().c_str();
   size_t count = strlen(str);
   SerialPortParity parity = SERIALPORT_PARITY_NONE;
@@ -286,7 +286,7 @@ SerialPortParity inline(ToParityEnum(const Napi::String& napistr)) {
   return parity;
 }
 
-SerialPortStopBits inline(ToStopBitEnum(double stopBits)) {
+ inline SerialPortStopBits ToStopBitEnum(double stopBits) {
   if (stopBits > 1.4 && stopBits < 1.6) {
     return SERIALPORT_STOPBITS_ONE_FIVE;
   }

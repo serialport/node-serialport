@@ -14,7 +14,7 @@
 #include <napi.h>
 #include <string>
 
-#define ERROR_STRING_SIZE 1024
+#define ERROR_STRING_SIZE 1088
 
 Napi::Value Open(const Napi::CallbackInfo& info);
 
