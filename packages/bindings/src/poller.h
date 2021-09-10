@@ -4,10 +4,11 @@
 #include <napi.h>
 #include <uv.h>
 
-class Poller : public Napi::ObjectWrap<Poller> { //}, public Napi::AsyncWorker {
+class Poller : public Napi::ObjectWrap<Poller> {
  public:
   static Napi::Object Init(Napi::Env env, Napi::Object exports);
-  Poller(const Napi::CallbackInfo& info);
+  explicit Poller(const Napi::CallbackInfo &info);
+  static Napi::Value New(const Napi::CallbackInfo& info);
   static void onData(uv_poll_t* handle, int status, int events);
   static void onClose(uv_handle_t* poll_handle);
   ~Poller();
@@ -15,19 +16,17 @@ class Poller : public Napi::ObjectWrap<Poller> { //}, public Napi::AsyncWorker {
  private:
   int fd;
   uv_poll_t* poll_handle;
-  Napi::FunctionReference callback;
+  Napi::Function callback;
   bool uv_poll_init_success = false;
+  int status = 0;
 
   // can this be read off of poll_handle?
   int events = 0;
-
-  explicit Poller(Napi::Function& callback);
 
   void poll(int events);
   void stop();
   int _stop();
 
-  static Napi::Value New(const Napi::CallbackInfo& info);
   Napi::Value poll(const Napi::CallbackInfo& info);
   Napi::Value stop(const Napi::CallbackInfo& info);
   Napi::Value destroy(const Napi::CallbackInfo& info);

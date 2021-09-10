@@ -2,9 +2,9 @@
 #include <uv.h>
 #include "./poller.h"
 
-Poller::Poller (const Napi::CallbackInfo& info) : Napi::ObjectWrap<Poller>(info) //: Napi::AsyncWorker(callback, "node-serialport:poller"), 
+Poller::Poller (const Napi::CallbackInfo &info) : Napi::ObjectWrap<Poller>(info)
   {
-  auto env = Env();
+  Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
   if (!info[0].IsNumber()) {
     Napi::TypeError::New(env, "First argument must be an int").ThrowAsJavaScriptException();
@@ -40,7 +40,7 @@ void Poller::onClose(uv_handle_t* poll_handle) {
 
 // Events can be UV_READABLE | UV_WRITABLE | UV_DISCONNECT
 void Poller::poll(int events) {
-  auto env = Env();
+  Napi::Env env = Env();
   // fprintf(stdout, "Poller:poll for %d\n", events);
   this->events = this->events | events;
   int status = uv_poll_start(poll_handle, events, Poller::onData);
@@ -51,7 +51,7 @@ void Poller::poll(int events) {
 }
 
 void Poller::stop() {
-  auto env = Env();
+  Napi::Env env = Env();
   int status = uv_poll_stop(poll_handle);
   if (0 != status) {
     Napi::TypeError::New(env, uv_strerror(status)).ThrowAsJavaScriptException();
@@ -64,9 +64,6 @@ int Poller::_stop() {
 }
 
 void Poller::onData(uv_poll_t* handle, int status, int events) {
-  // TODO FIX
-  // auto env = Env();
-  // Napi::HandleScope scope(env);
   Poller* obj = static_cast<Poller*>(handle->data);
   auto env = obj->Env();
   Napi::HandleScope scope(env);
@@ -111,28 +108,19 @@ Napi::Object Poller::Init(Napi::Env env, Napi::Object exports) {
 
 Napi::Value Poller::New(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-  if (!info.IsConstructCall()) {
-
-    Napi::FunctionReference* constructor = info.Env().GetInstanceData<Napi::FunctionReference>();
-    return constructor->New({info[0], info[1]});
-  }
 
   if (!info[0].IsNumber()) {
     Napi::TypeError::New(env, "fd must be an int").ThrowAsJavaScriptException();
     return env.Null();
   }
-  int fd = info[0].As<Napi::Number>().Int32Value();
-
+  Napi::Value  fd = info[0];
   if (!info[1].IsFunction()) {
     Napi::TypeError::New(env, "cb must be a function").ThrowAsJavaScriptException();
     return env.Null();
   }
-
   Napi::Function callback = info[1].As<Napi::Function>();
-  Poller *obj = new Poller(info); //, fd);
-  // TODO FIX
-  // ObjectReference obj->Wrap(info.This());
-  // return info.This();
+  Napi::FunctionReference* constructor = info.Env().GetInstanceData<Napi::FunctionReference>();
+  return constructor->New({fd, callback});
 }
 
 Napi::Value Poller::poll(const Napi::CallbackInfo& info) {
@@ -144,15 +132,18 @@ Napi::Value Poller::poll(const Napi::CallbackInfo& info) {
   }
   int events = info[0].As<Napi::Number>().Int32Value();
   obj->poll(events);
+  return env.Undefined();
 }
 
 Napi::Value Poller::stop(const Napi::CallbackInfo& info) {
   this->stop();
+  return info.Env().Undefined();
 }
 
 Napi::Value Poller::destroy(const Napi::CallbackInfo& info) {
   Poller* obj = this;
   delete obj;
+  return info.Env().Undefined();
 }
 
 inline Napi::FunctionReference & Poller::constructor() {
