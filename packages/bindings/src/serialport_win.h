@@ -9,9 +9,6 @@
 #include <list>
 #include <string>
 
-#define ERROR_STRING_SIZE 1024
-
-
 static inline HANDLE int2handle(int ptr) {
   return reinterpret_cast<HANDLE>(static_cast<uintptr_t>(ptr));
 }
@@ -55,11 +52,11 @@ struct WriteBaton : public Napi::AsyncWorker {
     }
   }
 
-  void OnError(Napi::Error const &error) override {
-    auto env = Env();
-    Napi::HandleScope scope(env);
-    Callback().Call({Napi::String::New(env, errorString)});
-  }
+  // void OnError(Napi::Error const &error) override {
+  //   auto env = Env();
+  //   Napi::HandleScope scope(env);
+  //   Callback().Call({Napi::String::New(env, errorString)});
+  // }
 
   void OnOK() override {
     auto env = Env();
@@ -121,11 +118,11 @@ struct ReadBaton : public Napi::AsyncWorker {
     }
   }
 
-  void OnError(Napi::Error const &error) override {
-    auto env = Env();
-    Napi::HandleScope scope(env);
-    Callback().Call({Napi::String::New(env, errorString), env.Undefined()});
-  }
+  // void OnError(Napi::Error const &error) override {
+  //   auto env = Env();
+  //   Napi::HandleScope scope(env);
+  //   Callback().Call({Napi::String::New(env, errorString), env.Undefined()});
+  // }
 
   void OnOK() override {
     auto env = Env();
@@ -160,11 +157,11 @@ struct ListBaton : public Napi::AsyncWorker {
   char errorString[ERROR_STRING_SIZE];
   void Execute();
 
-  void OnError(Napi::Error const &error) override {
-    auto env = Env();
-    Napi::HandleScope scope(env);
-    Callback().Call({Napi::String::New(env, errorString), env.Undefined()});
-  }
+  // void OnError(Napi::Error const &error) override {
+  //   auto env = Env();
+  //   Napi::HandleScope scope(env);
+  //   Callback().Call({Napi::String::New(env, errorString), env.Undefined()});
+  // }
 
   void OnOK() override {
     auto env = Env();
