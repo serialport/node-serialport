@@ -9,6 +9,8 @@
 #include <list>
 #include <string>
 
+#define ERROR_STRING_SIZE 1088
+
 static inline HANDLE int2handle(int ptr) {
   return reinterpret_cast<HANDLE>(static_cast<uintptr_t>(ptr));
 }
