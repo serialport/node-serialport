@@ -6,8 +6,6 @@
 #include <list>
 #include <string>
 
-#define ERROR_STRING_SIZE 1024
-
 Napi::Value List(const Napi::CallbackInfo& info);
 void setIfNotEmpty(Napi::Object item, std::string key, const char *value);
 
