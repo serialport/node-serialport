@@ -53,13 +53,13 @@ struct WriteBaton : public Napi::AsyncWorker {
   }
 
   // void OnError(Napi::Error const &error) override {
-  //   auto env = Env();
+  //   Napi::Env env = Env();
   //   Napi::HandleScope scope(env);
   //   Callback().Call({Napi::String::New(env, errorString)});
   // }
 
   void OnOK() override {
-    auto env = Env();
+    Napi::Env env = Env();
     Napi::HandleScope scope(env);
     Callback().Call({env.Null()});
   }
@@ -119,13 +119,13 @@ struct ReadBaton : public Napi::AsyncWorker {
   }
 
   // void OnError(Napi::Error const &error) override {
-  //   auto env = Env();
+  //   Napi::Env env = Env();
   //   Napi::HandleScope scope(env);
   //   Callback().Call({Napi::String::New(env, errorString), env.Undefined()});
   // }
 
   void OnOK() override {
-    auto env = Env();
+    Napi::Env env = Env();
     Napi::HandleScope scope(env);
     Callback().Call({env.Null(), Napi::Number::New(env, static_cast<int>(bytesRead))});
   }
@@ -158,13 +158,13 @@ struct ListBaton : public Napi::AsyncWorker {
   void Execute();
 
   // void OnError(Napi::Error const &error) override {
-  //   auto env = Env();
+  //   Napi::Env env = Env();
   //   Napi::HandleScope scope(env);
   //   Callback().Call({Napi::String::New(env, errorString), env.Undefined()});
   // }
 
   void OnOK() override {
-    auto env = Env();
+    Napi::Env env = Env();
     Napi::HandleScope scope(env);
     Napi::Array result = Napi::Array::New(env);
     int i = 0;

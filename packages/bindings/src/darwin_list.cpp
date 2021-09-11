@@ -32,6 +32,7 @@ Napi::Value List(const Napi::CallbackInfo& info) {
 }
 
 void setIfNotEmpty(Napi::Object item, std::string key, const char *value) {
+  Napi::Env env = item.Env();
   Napi::String v8key = Napi::String::New(env, key);
   if (strlen(value) > 0) {
     (item).Set(v8key, Napi::String::New(env, value));
@@ -274,7 +275,7 @@ static stDeviceListItem* GetSerialDevices() {
   return devices;
 }
 
-void ListBaton::Execute() {
+void ListBaton::Execute() override {
 
   if (!lockInitialised) {
     uv_mutex_init(&list_mutex);
@@ -306,7 +307,7 @@ void ListBaton::Execute() {
       if (*device.serialNumber) {
         resultItem->serialNumber = device.serialNumber;
       }
-      data->results.push_back(resultItem);
+      results.push_back(resultItem);
 
       stDeviceListItem* current = next;
 

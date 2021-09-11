@@ -26,14 +26,14 @@ struct ListBaton : public Napi::AsyncWorker {
   char errorString[ERROR_STRING_SIZE];
   void Execute();
 
-  void OnError(Napi::Error const &error) override {
-    auto env = Env();
-    Napi::HandleScope scope(env);
-    Callback().Call({Napi::String::New(env, errorString), env.Undefined()});
-  }
+  // void OnError(Napi::Error const &error) override {
+  //   Napi::Env env = Env();
+  //   Napi::HandleScope scope(env);
+  //   Callback().Call({Napi::String::New(env, errorString), env.Undefined()});
+  // }
 
   void OnOK() override {
-    auto env = Env();
+    Napi::Env env = Env();
     Napi::HandleScope scope(env);
     Napi::Array result = Napi::Array::New(env);
     int i = 0;
