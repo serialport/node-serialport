@@ -155,7 +155,7 @@ struct ListBaton : public Napi::AsyncWorker {
   errorString() {}
   std::list<ListResultItem*> results;
   char errorString[ERROR_STRING_SIZE];
-  void Execute();
+  void Execute() override;
 
   // void OnError(Napi::Error const &error) override {
   //   Napi::Env env = Env();

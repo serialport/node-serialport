@@ -53,7 +53,7 @@ void AsyncCloseCallback(uv_handle_t* handle) {
   delete async;
 }
 
-void OpenBaton::Execute() override {
+void OpenBaton::Execute() {
   char originalPath[1024];
   strncpy_s(originalPath, sizeof(originalPath), path, _TRUNCATE);
   // path is char[1024] but on Windows it has the form "COMx\0" or "COMxx\0"
@@ -192,7 +192,7 @@ void OpenBaton::Execute() override {
   result = static_cast<int>(reinterpret_cast<uintptr_t>(file));
 }
 
-void ConnectionOptionsBaton::Execute() override {
+void ConnectionOptionsBaton::Execute() {
   DCB dcb = { 0 };
   SecureZeroMemory(&dcb, sizeof(DCB));
   dcb.DCBlength = sizeof(DCB);
@@ -201,7 +201,6 @@ void ConnectionOptionsBaton::Execute() override {
     ErrorCodeToString("Update (GetCommState)", GetLastError(), errorString);
     this->SetError(errorString);
     return;
-
   }
 
   dcb.BaudRate = baudRate;
@@ -213,7 +212,7 @@ void ConnectionOptionsBaton::Execute() override {
   }
 }
 
-void SetBaton::Execute() override {
+void SetBaton::Execute() {
   if (rts) {
     EscapeCommFunction(int2handle(fd), SETRTS);
   } else {
@@ -253,7 +252,7 @@ void SetBaton::Execute() override {
   }
 }
 
-void GetBaton::Execute() override {
+void GetBaton::Execute() {
   DWORD bits = 0;
   if (!GetCommModemStatus(int2handle(fd), &bits)) {
     ErrorCodeToString("Getting control settings on COM port (GetCommModemStatus)", GetLastError(), errorString);
@@ -266,7 +265,7 @@ void GetBaton::Execute() override {
   dcd = bits & MS_RLSD_ON;
 }
 
-void GetBaudRateBaton::Execute() override {
+void GetBaudRateBaton::Execute() {
 
   DCB dcb = { 0 };
   SecureZeroMemory(&dcb, sizeof(DCB));
@@ -466,7 +465,7 @@ void __stdcall ReadIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAP
 }
 
 
-void CloseBaton::Execute() override {
+void CloseBaton::Execute() {
   g_closingHandles.push_back(fd);
 
   HMODULE hKernel32 = LoadLibrary("kernel32.dll");
@@ -664,7 +663,7 @@ void getSerialNumber(const char *vid,
   return;
 }
 
-void ListBaton::Execute() override {
+void ListBaton::Execute() {
 
   GUID *guidDev = (GUID*)& GUID_DEVCLASS_PORTS;  // NOLINT
   HDEVINFO hDevInfo = SetupDiGetClassDevs(guidDev, NULL, NULL, DIGCF_PRESENT | DIGCF_PROFILE);
@@ -780,7 +779,7 @@ void setIfNotEmpty(Napi::Object item, std::string key, const char *value) {
   }
 }
 
-void FlushBaton::Execute() override {
+void FlushBaton::Execute() {
   DWORD purge_all = PURGE_RXCLEAR | PURGE_TXABORT | PURGE_TXCLEAR;
   if (!PurgeComm(int2handle(fd), purge_all)) {
     ErrorCodeToString("Flushing connection (PurgeComm)", GetLastError(), errorString);
@@ -789,7 +788,7 @@ void FlushBaton::Execute() override {
   }
 }
 
-void DrainBaton::Execute() override {
+void DrainBaton::Execute() {
   if (!FlushFileBuffers(int2handle(fd))) {
     ErrorCodeToString("Draining connection (FlushFileBuffers)", GetLastError(), errorString);
     this->SetError(errorString);
