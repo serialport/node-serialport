@@ -65,7 +65,7 @@ int Poller::_stop() {
 
 void Poller::onData(uv_poll_t* handle, int status, int events) {
   Poller* obj = static_cast<Poller*>(handle->data);
-  auto env = obj->Env();
+  Napi::Env env = obj->Env();
   Napi::HandleScope scope(env);
   std::vector<napi_value> args;
   args.reserve(2);

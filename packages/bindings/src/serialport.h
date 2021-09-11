@@ -74,13 +74,13 @@ struct OpenBaton : public Napi::AsyncWorker {
   void Execute();
 
   // void OnError(Napi::Error const &error) override {
-  //   auto env = Env();
+  //   Napi::Env env = Env();
   //   Napi::HandleScope scope(env);
   //   Callback().Call({Napi::String::New(env, errorString), env.Undefined()});
   // }
 
   void OnOK() override {
-    auto env = Env();
+    Napi::Env env = Env();
     Napi::HandleScope scope(env);
     Callback().Call({env.Null(), Napi::Number::New(env, result)});
   }
@@ -98,13 +98,13 @@ struct ConnectionOptionsBaton : ConnectionOptions , Napi::AsyncWorker {
   void Execute();
 
   // void OnError(Napi::Error const &error) override {
-  //   auto env = Env();
+  //   Napi::Env env = Env();
   //   Napi::HandleScope scope(env);
   //   Callback().Call({Napi::String::New(env, errorString)});
   // }
 
   void OnOK() override {
-    auto env = Env();
+    Napi::Env env = Env();
     Napi::HandleScope scope(env);
     Callback().Call({env.Null()});
   }
@@ -126,13 +126,13 @@ struct SetBaton : public Napi::AsyncWorker {
   void Execute();
 
   // void OnError(Napi::Error const &error) override {
-  //   auto env = Env();
+  //   Napi::Env env = Env();
   //   Napi::HandleScope scope(env);
   //   Callback().Call({Napi::String::New(env, errorString)});
   // }
 
   void OnOK() override {
-    auto env = Env();
+    Napi::Env env = Env();
     Napi::HandleScope scope(env);
     Callback().Call({env.Null()});
   }
@@ -151,13 +151,13 @@ struct GetBaton : public Napi::AsyncWorker {
   void Execute();
 
   // void OnError(Napi::Error const &error) override {
-  //   auto env = Env();
+  //   Napi::Env env = Env();
   //   Napi::HandleScope scope(env);
   //   Callback().Call({Napi::String::New(env, errorString),env.Undefined()});
   // }
 
   void OnOK() override {
-    auto env = Env();
+    Napi::Env env = Env();
     Napi::HandleScope scope(env);
     Napi::Object results = Napi::Object::New(env);
     results.Set("cts", cts);
@@ -178,13 +178,13 @@ struct GetBaudRateBaton : public Napi::AsyncWorker {
   void Execute();
 
   // void OnError(Napi::Error const &error) override {
-  //   auto env = Env();
+  //   Napi::Env env = Env();
   //   Napi::HandleScope scope(env);
   //   Callback().Call({Napi::String::New(env, errorString),env.Undefined()});
   // }
 
   void OnOK() override {
-    auto env = Env();
+    Napi::Env env = Env();
     Napi::HandleScope scope(env);
     Napi::Object results = Napi::Object::New(env);
     (results).Set(Napi::String::New(env, "baudRate"), Napi::Number::New(env, baudRate));
@@ -199,13 +199,13 @@ struct VoidBaton : public Napi::AsyncWorker {
   char errorString[ERROR_STRING_SIZE];
   
   // void OnError(Napi::Error const &error) override {
-  //   auto env = Env();
+  //   Napi::Env env = Env();
   //   Napi::HandleScope scope(env);
   //   Callback().Call({Napi::String::New(env, errorString)});
   // }
 
   void OnOK() override {
-    auto env = Env();
+    Napi::Env env = Env();
     Napi::HandleScope scope(env);
     Callback().Call({env.Null()});
   }
