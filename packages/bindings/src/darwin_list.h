@@ -6,6 +6,8 @@
 #include <list>
 #include <string>
 
+#define ERROR_STRING_SIZE 1088
+
 Napi::Value List(const Napi::CallbackInfo& info);
 void setIfNotEmpty(Napi::Object item, std::string key, const char *value);
 
@@ -26,11 +28,11 @@ struct ListBaton : public Napi::AsyncWorker {
   char errorString[ERROR_STRING_SIZE];
   void Execute() override;
 
-  void OnError(Napi::Error const &error) override {
-    Napi::Env env = Env();
-    Napi::HandleScope scope(env);
-    Callback().Call({Napi::String::New(env, errorString), env.Undefined()});
-  }
+  // void OnError(Napi::Error const &error) override {
+  //   Napi::Env env = Env();
+  //   Napi::HandleScope scope(env);
+  //   Callback().Call({Napi::String::New(env, errorString), env.Undefined()});
+  // }
 
   void OnOK() override {
     Napi::Env env = Env();
