@@ -71,7 +71,7 @@ struct OpenBaton : public Napi::AsyncWorker {
   uint8_t vmin = 0;
   uint8_t vtime = 0;
 #endif
-  void Execute();
+  void Execute() override;
 
   // void OnError(Napi::Error const &error) override {
   //   Napi::Env env = Env();
@@ -95,7 +95,7 @@ struct ConnectionOptions {
 struct ConnectionOptionsBaton : ConnectionOptions , Napi::AsyncWorker {
   ConnectionOptionsBaton(Napi::Function& callback) : ConnectionOptions() , Napi::AsyncWorker(callback, "node-serialport:ConnectionOptionsBaton") {}
   
-  void Execute();
+  void Execute() override;
 
   // void OnError(Napi::Error const &error) override {
   //   Napi::Env env = Env();
@@ -123,7 +123,7 @@ struct SetBaton : public Napi::AsyncWorker {
   bool brk = false;
   bool lowLatency = false;
 
-  void Execute();
+  void Execute() override;
 
   // void OnError(Napi::Error const &error) override {
   //   Napi::Env env = Env();
@@ -148,7 +148,7 @@ struct GetBaton : public Napi::AsyncWorker {
   bool dcd = false;
   bool lowLatency = false;
 
-  void Execute();
+  void Execute() override;
 
   // void OnError(Napi::Error const &error) override {
   //   Napi::Env env = Env();
@@ -175,7 +175,7 @@ struct GetBaudRateBaton : public Napi::AsyncWorker {
   char errorString[ERROR_STRING_SIZE];
   int baudRate = 0;
   
-  void Execute();
+  void Execute() override;
 
   // void OnError(Napi::Error const &error) override {
   //   Napi::Env env = Env();
@@ -213,17 +213,17 @@ struct VoidBaton : public Napi::AsyncWorker {
 
 struct CloseBaton : VoidBaton {
   CloseBaton(Napi::Function& callback) : VoidBaton(callback, "node-serialport:CloseBaton") {}
-  void Execute();
+  void Execute() override;
 };
 
 struct DrainBaton : VoidBaton {
   DrainBaton(Napi::Function& callback) : VoidBaton(callback, "node-serialport:DrainBaton") {}
-  void Execute();
+  void Execute() override;
 };
 
 struct FlushBaton : VoidBaton {
   FlushBaton(Napi::Function& callback) : VoidBaton(callback, "node-serialport:FlushBaton") {}
-  void Execute();
+  void Execute() override;
 };
 
 int setup(int fd, OpenBaton *data);

@@ -79,7 +79,7 @@ int ToDataBitsConstant(int dataBits) {
   return -1;
 }
 
-void OpenBaton::Execute() override {
+void OpenBaton::Execute() {
 
   int flags = (O_RDWR | O_NOCTTY | O_NONBLOCK | O_CLOEXEC | O_SYNC);
   int fd = open(path, flags);
@@ -99,7 +99,7 @@ void OpenBaton::Execute() override {
   result = fd;
 }
 
-void ConnectionOptionsBaton::Execute() override {
+void ConnectionOptionsBaton::Execute() {
   // lookup the standard baudrates from the table
   int baudRate = ToBaudConstant(this->baudRate);
 
@@ -358,7 +358,7 @@ int setBaudRate(ConnectionOptions *data) {
   return 1;
 }
 
-void CloseBaton::Execute() override {
+void CloseBaton::Execute() {
 
   if (-1 == close(fd)) {
     snprintf(errorString, sizeof(errorString), "Error: %s, unable to close fd %d", strerror(errno), fd);
@@ -366,7 +366,7 @@ void CloseBaton::Execute() override {
   }
 }
 
-void SetBaton::Execute() override {
+void SetBaton::Execute() {
 
   int bits;
   ioctl(fd, TIOCMGET, &bits);
@@ -423,7 +423,7 @@ void SetBaton::Execute() override {
   #endif
 }
 
-void GetBaton::Execute() override {
+void GetBaton::Execute() {
   int bits;
   if (-1 == ioctl(fd, TIOCMGET, &bits)) {
     snprintf(errorString, sizeof(errorString), "Error: %s, cannot get", strerror(errno));
@@ -445,7 +445,7 @@ void GetBaton::Execute() override {
   #endif
 }
 
-void GetBaudRateBaton::Execute() override {
+void GetBaudRateBaton::Execute() {
   int outbaud = -1;
 
   #if defined(__linux__) && defined(ASYNC_SPD_CUST)
@@ -463,7 +463,7 @@ void GetBaudRateBaton::Execute() override {
   baudRate = outbaud;
 }
 
-void FlushBaton::Execute() override {
+void FlushBaton::Execute() {
 
   if (-1 == tcflush(fd, TCIOFLUSH)) {
     snprintf(errorString, sizeof(errorString), "Error: %s, cannot flush", strerror(errno));
@@ -472,7 +472,7 @@ void FlushBaton::Execute() override {
   }
 }
 
-void DrainBaton::Execute() override {
+void DrainBaton::Execute() {
 
   if (-1 == tcdrain(fd)) {
     snprintf(errorString, sizeof(errorString), "Error: %s, cannot drain", strerror(errno));
