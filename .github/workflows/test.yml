@@ -29,7 +29,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-        # Needed to convert coverage in gcov format to lcov format
+        # Install needed extra tooling
+
+        # Windows is handled a little differently throughout the workflow
+      - if: runner.os == 'Windows'
+        run: choco install OpenCppCoverage
+        # Needed to convert coverage in gcov format to lcov format and cleanup
       - if: runner.os == 'Linux'
         run: sudo apt-get install -y lcov
       - if: runner.os == 'macOS'
@@ -37,23 +42,39 @@ jobs:
 
       - run: npm ci
 
-      - run: npm run rebuild
+      # Rebuild the project with coverage instrumentation
+
+      - if: runner.os == 'Windows'
+        run: npm run rebuild -- -- --debug
+
+      - if: runner.os != 'Windows'
+        run: npm run rebuild
         env:
+          # Enable gcov in binaries
           GENERATE_COVERAGE: yes
 
-        # Run tests and generate coverage information
-      - run: npm test
+      # Run tests and generate coverage report
 
-        # No C/C++ coverage support on Windows, yet
-      - if: runner.os != 'Windows'
-        # Convert gcov `gcda` coverage information to lcov format, strip coverage info of external dependencies, and publish reports
-        run: npm run coverage
-        env:
-          CI: true
-
-        # No C/C++ coverage support on Windows, yet
       - if: runner.os == 'Windows'
-        # Just publish
-        run: npm run coverage:publish
+        # Runs tests and generates coverage report
+        run: npm run coverage:windows
         env:
           CI: true
+
+      - if: runner.os != 'Windows'
+        # Run tests and generate coverage information.
+        # Convert gcov `gcda` coverage information to lcov format.
+        run: |
+          npm test
+          npm run coverage:lcov
+        env:
+          CI: true
+
+      # Publish coverage information to codecov.io
+
+      - if: runner.os == 'Windows'
+        run: npm run coverage:publish:windows
+      - if: runner.os != 'Windows'
+        run: npm run coverage:publish:lcov
+
+      - run: npm run coverage:publish:node
