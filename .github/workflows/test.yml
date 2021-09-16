@@ -1,19 +1,21 @@
 name: Test / Lint
 on:
   push:
+  pull_request:
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
-      with:
-        node-version: 14
-    - run: npm ci
-    - run: npm run lint
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+      - run: npm ci
+      - run: npm run lint
   test:
     runs-on: ${{ matrix.config.os }}
     strategy:
+      fail-fast: false
       matrix:
         node-version: [10.x, 12.x, 14.x, 16.x]
         config:
@@ -22,13 +24,57 @@ jobs:
           - { os: ubuntu-latest, arch: x64 }
           - { os: windows-latest, arch: x64 }
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm ci
-    - run: npm run rebuild
-    - run: npm test
-    - run: npm run coverage
-      env:
-        CI: true
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+        # Install needed extra tooling
+
+        # Windows is handled a little differently throughout the workflow
+      - if: runner.os == 'Windows'
+        run: choco install OpenCppCoverage
+        # Needed to convert coverage in gcov format to lcov format and cleanup
+      - if: runner.os == 'Linux'
+        run: sudo apt-get install -y lcov
+      - if: runner.os == 'macOS'
+        run: brew install lcov
+
+      - run: npm ci
+
+      # Rebuild the project with coverage instrumentation
+
+      - if: runner.os == 'Windows'
+        run: npm run rebuild -- -- --debug
+
+      - if: runner.os != 'Windows'
+        run: npm run rebuild
+        env:
+          # Enable gcov in binaries
+          GENERATE_COVERAGE: yes
+
+      # Run tests and generate coverage report
+
+      - if: runner.os == 'Windows'
+        # Runs tests and generates coverage report
+        run: npm run coverage:windows
+        env:
+          CI: true
+
+      - if: runner.os != 'Windows'
+        # Run tests and generate coverage information.
+        # Convert gcov `gcda` coverage information to lcov format.
+        run: |
+          npm test
+          npm run coverage:lcov
+        env:
+          CI: true
+
+      # Publish coverage information to codecov.io
+
+      - if: runner.os == 'Windows'
+        run: npm run coverage:publish:windows
+      - if: runner.os != 'Windows'
+        run: npm run coverage:publish:lcov
+
+      - run: npm run coverage:publish:node
