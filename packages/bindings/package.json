@@ -9,9 +9,9 @@
     "@serialport/binding-abstract": "^9.0.7",
     "@serialport/parser-readline": "^9.0.7",
     "bindings": "^1.5.0",
-    "debug": "^4.3.1",
-    "nan": "^2.14.2",
-    "prebuild-install": "^6.0.1"
+    "debug": "^4.3.2",
+    "nan": "^2.15.0",
+    "prebuild-install": "^6.1.4"
   },
   "devDependencies": {
     "@serialport/binding-mock": "^9.0.7",
