@@ -10,10 +10,15 @@ updates:
     schedule:
       interval: "daily"
     allow:
-      # Allow updates for node-abi
+      # Allow updates for node-abi as quick as possible
       - dependency-name: "node-abi"
-    # Prefix all commit messages with "Composer"
-    # include a list of updated dependencies
+    commit-message:
+      prefix: "chore: "
+      include: "scope"
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "monthly"
     commit-message:
       prefix: "chore: "
       include: "scope"
