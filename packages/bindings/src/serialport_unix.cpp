@@ -351,13 +351,16 @@ void EIO_Set(uv_work_t* req) {
 
   #if defined(__linux__)
   int err = linuxSetLowLatencyMode(data->fd, data->lowLatency);
-  if (err == -1) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get low latency", strerror(errno));
-    return;
-  } else if(err == -2) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot set low latency", strerror(errno));
-    return;
-}
+  // Only report errors when the lowLatency is being set to true.  Attempting to set as false can error, since the default is false
+  if (data->lowLatency) {
+    if (err == -1) {
+      snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get low latency", strerror(errno));
+      return;
+    } else if(err == -2) {
+      snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot set low latency", strerror(errno));
+      return;
+    }
+  }
   #endif
 }
 
@@ -376,10 +379,8 @@ void EIO_Get(uv_work_t* req) {
 
   #if defined(__linux__) && defined(ASYNC_LOW_LATENCY)
   bool lowlatency = false;
-  if (-1 == linuxGetLowLatencyMode(data->fd, &lowlatency)) {
-    snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get low latency", strerror(errno));
-    return;
-  }
+  // Try to get low latency info, but we don't care if fails (a failure state will still return lowlatency = false)
+  linuxGetLowLatencyMode(data->fd, &lowlatency);
   data->lowLatency = lowlatency;
   #else
   data->lowLatency = false;
