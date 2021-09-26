@@ -15,16 +15,15 @@ class Poller : public Napi::ObjectWrap<Poller> {
 
  private:
   int fd;
-  uv_poll_t* poll_handle;
-  Napi::Function callback;
+  uv_poll_t* poll_handle = nullptr;
+	Napi::FunctionReference callback;
   bool uv_poll_init_success = false;
-  int status = 0;
 
   // can this be read off of poll_handle?
   int events = 0;
 
-  void poll(int events);
-  void stop();
+  void poll(Napi::Env env, int events);
+  void stop(Napi::Env env);
   int _stop();
 
   Napi::Value poll(const Napi::CallbackInfo& info);
