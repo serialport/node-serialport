@@ -6,7 +6,9 @@
     ],
     'include_dirs': ["<!(node -p \"require('node-addon-api').include_dir\")"],
     'dependencies': ["<!(node -p \"require('node-addon-api').gyp\")"],
-    "defines": ["NAPI_DISABLE_CPP_EXCEPTIONS", "NODE_ADDON_API_ENABLE_MAYBE"],
+    'cflags!': [ '-fno-exceptions' ],
+    'cflags_cc!': [ '-fno-exceptions' ],
+    "defines": ["NAPI_CPP_EXCEPTIONS"],
     'conditions': [
       ['OS=="win"',
         {
@@ -16,7 +18,7 @@
           ],
           'msvs_settings': {
             'VCCLCompilerTool': {
-              'ExceptionHandling': '2',
+              'ExceptionHandling': '1',
               'DisableSpecificWarnings': [ '4530', '4506' ],
             }
           }
@@ -30,6 +32,7 @@
             'src/darwin_list.cpp'
           ],
           'xcode_settings': {
+            'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
             'MACOSX_DEPLOYMENT_TARGET': '10.9',
             'OTHER_LDFLAGS': [
               '-framework CoreFoundation -framework IOKit'
