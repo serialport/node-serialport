@@ -409,14 +409,14 @@ void SetBaton::Execute() {
   }
 
   #if defined(__linux__)
-  int err = linuxSetLowLatencyMode(data->fd, data->lowLatency);
+  int err = linuxSetLowLatencyMode(fd, lowLatency);
   // Only report errors when the lowLatency is being set to true.  Attempting to set as false can error, since the default is false
-  if (data->lowLatency) {
+  if (lowLatency) {
     if (err == -1) {
-      snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot get low latency", strerror(errno));
+      snprintf(errorString, sizeof(errorString), "Error: %s, cannot get low latency", strerror(errno));
       return;
     } else if(err == -2) {
-      snprintf(data->errorString, sizeof(data->errorString), "Error: %s, cannot set low latency", strerror(errno));
+      snprintf(errorString, sizeof(errorString), "Error: %s, cannot set low latency", strerror(errno));
       return;
     }
   }
@@ -438,8 +438,8 @@ void GetBaton::Execute() {
   #if defined(__linux__) && defined(ASYNC_LOW_LATENCY)
   bool lowlatency = false;
   // Try to get low latency info, but we don't care if fails (a failure state will still return lowlatency = false)
-  linuxGetLowLatencyMode(data->fd, &lowlatency);
-  data->lowLatency = lowlatency;
+  linuxGetLowLatencyMode(fd, &lowlatency);
+  lowLatency = lowlatency;
   #else
   lowLatency = false;
   #endif
