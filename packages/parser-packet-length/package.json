@@ -1,7 +1,7 @@
 {
   "name": "@serialport/parser-packet-length",
   "main": "lib",
-  "version": "9.0.8",
+  "version": "9.2.4",
   "engines": {
     "node": ">=8.6.0"
   },

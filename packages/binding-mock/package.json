@@ -1,6 +1,6 @@
 {
   "name": "@serialport/binding-mock",
-  "version": "9.2.3",
+  "version": "9.2.4",
   "main": "lib",
   "keywords": [
     "serialport-binding"

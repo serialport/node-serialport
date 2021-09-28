@@ -1,20 +1,20 @@
 {
   "name": "@serialport/bindings",
-  "version": "9.2.3",
+  "version": "9.2.4",
   "main": "lib",
   "keywords": [
     "serialport-binding"
   ],
   "dependencies": {
     "@serialport/binding-abstract": "9.2.3",
-    "@serialport/parser-readline": "^9.0.7",
+    "@serialport/parser-readline": "9.2.4",
     "bindings": "^1.5.0",
     "debug": "^4.3.2",
     "nan": "^2.15.0",
     "prebuild-install": "^6.1.4"
   },
   "devDependencies": {
-    "@serialport/binding-mock": "9.2.3",
+    "@serialport/binding-mock": "9.2.4",
     "node-abi": "^3.0.0"
   },
   "engines": {
