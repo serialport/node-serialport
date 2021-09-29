@@ -798,6 +798,7 @@ void EIO_List(uv_work_t* req) {
   char serialNumber[MAX_REGISTRY_KEY_SIZE];
   bool isCom;
   while (true) {
+    isCom = false;
     pnpId = NULL;
     vendorId = NULL;
     productId = NULL;
