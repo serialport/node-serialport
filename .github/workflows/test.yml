@@ -33,7 +33,9 @@ jobs:
 
         # Windows is handled a little differently throughout the workflow
       - if: runner.os == 'Windows'
-        run: choco install OpenCppCoverage
+        run: |
+          choco install OpenCppCoverage
+          npm install npm@7
         # Needed to convert coverage in gcov format to lcov format and cleanup
       - if: runner.os == 'Linux'
         run: sudo apt-get install -y lcov
