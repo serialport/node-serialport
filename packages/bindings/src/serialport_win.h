@@ -60,6 +60,7 @@ struct ListResultItem {
   std::string serialNumber;
   std::string pnpId;
   std::string locationId;
+  std::string friendlyName;
   std::string vendorId;
   std::string productId;
 };

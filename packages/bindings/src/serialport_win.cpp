@@ -795,6 +795,7 @@ void EIO_List(uv_work_t* req) {
   char *name;
   char *manufacturer;
   char *locationId;
+  char *friendlyName;
   char serialNumber[MAX_REGISTRY_KEY_SIZE];
   bool isCom;
   while (true) {
@@ -805,6 +806,7 @@ void EIO_List(uv_work_t* req) {
     name = NULL;
     manufacturer = NULL;
     locationId = NULL;
+    friendlyName = NULL;
 
     ZeroMemory(&deviceInfoData, sizeof(SP_DEVINFO_DATA));
     deviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
@@ -840,6 +842,12 @@ void EIO_List(uv_work_t* req) {
       locationId = strdup(szBuffer);
     }
     if (SetupDiGetDeviceRegistryProperty(hDevInfo, &deviceInfoData,
+                                         SPDRP_FRIENDLYNAME, &dwPropertyRegDataType,
+                                         reinterpret_cast<BYTE*>(szBuffer),
+                                         sizeof(szBuffer), &dwSize)) {
+      friendlyName = strdup(szBuffer);
+    }
+    if (SetupDiGetDeviceRegistryProperty(hDevInfo, &deviceInfoData,
                                          SPDRP_MFG, &dwPropertyRegDataType,
                                          reinterpret_cast<BYTE*>(szBuffer),
                                          sizeof(szBuffer), &dwSize)) {
@@ -870,12 +878,16 @@ void EIO_List(uv_work_t* req) {
       if (locationId) {
         resultItem->locationId = locationId;
       }
+      if (friendlyName) {
+        resultItem->friendlyName = friendlyName;
+      }
       data->results.push_back(resultItem);
     }
     free(pnpId);
     free(vendorId);
     free(productId);
     free(locationId);
+    free(friendlyName);
     free(manufacturer);
     free(name);
 
@@ -916,6 +928,7 @@ void EIO_AfterList(uv_work_t* req) {
       setIfNotEmpty(item, "serialNumber", (*it)->serialNumber.c_str());
       setIfNotEmpty(item, "pnpId", (*it)->pnpId.c_str());
       setIfNotEmpty(item, "locationId", (*it)->locationId.c_str());
+      setIfNotEmpty(item, "friendlyName", (*it)->friendlyName.c_str());
       setIfNotEmpty(item, "vendorId", (*it)->vendorId.c_str());
       setIfNotEmpty(item, "productId", (*it)->productId.c_str());
 
