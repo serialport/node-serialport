@@ -799,12 +799,13 @@ void EIO_List(uv_work_t* req) {
   bool isCom;
   while (true) {
     isCom = false;
-    pnpId = NULL;
-    vendorId = NULL;
-    productId = NULL;
-    name = NULL;
-    manufacturer = NULL;
     locationId = NULL;
+    manufacturer = NULL;
+    name = NULL;
+    pnpId = NULL;
+    productId = NULL;
+    serialNumber = NULL;
+    vendorId = NULL;
 
     ZeroMemory(&deviceInfoData, sizeof(SP_DEVINFO_DATA));
     deviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
