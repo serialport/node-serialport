@@ -792,8 +792,9 @@ void ListBaton::Execute() {
   char *name;
   char *manufacturer;
   char *locationId;
+  char *friendlyName;
   char serialNumber[MAX_REGISTRY_KEY_SIZE];
-  bool isCom = false;
+  bool isCom;
   while (true) {
     isCom = false;
     pnpId = NULL;
@@ -802,6 +803,8 @@ void ListBaton::Execute() {
     name = NULL;
     manufacturer = NULL;
     locationId = NULL;
+    friendlyName = NULL;
+    isCom = false;
 
     ZeroMemory(&deviceInfoData, sizeof(SP_DEVINFO_DATA));
     deviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
@@ -837,6 +840,12 @@ void ListBaton::Execute() {
       locationId = strdup(szBuffer);
     }
     if (SetupDiGetDeviceRegistryProperty(hDevInfo, &deviceInfoData,
+                                         SPDRP_FRIENDLYNAME, &dwPropertyRegDataType,
+                                         reinterpret_cast<BYTE*>(szBuffer),
+                                         sizeof(szBuffer), &dwSize)) {
+      friendlyName = strdup(szBuffer);
+    }
+    if (SetupDiGetDeviceRegistryProperty(hDevInfo, &deviceInfoData,
                                          SPDRP_MFG, &dwPropertyRegDataType,
                                          reinterpret_cast<BYTE*>(szBuffer),
                                          sizeof(szBuffer), &dwSize)) {
@@ -866,6 +875,9 @@ void ListBaton::Execute() {
       resultItem->serialNumber = serialNumber;
       if (locationId) {
         resultItem->locationId = locationId;
+      }
+      if (friendlyName) {
+        resultItem->friendlyName = friendlyName;
       }
       results.push_back(resultItem);
     }

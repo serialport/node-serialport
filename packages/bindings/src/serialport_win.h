@@ -54,6 +54,7 @@ struct ListResultItem {
   std::string serialNumber;
   std::string pnpId;
   std::string locationId;
+  std::string friendlyName;
   std::string vendorId;
   std::string productId;
 };
@@ -78,6 +79,7 @@ struct ListBaton : public Napi::AsyncWorker {
       setIfNotEmpty(item, "serialNumber", (*it)->serialNumber.c_str());
       setIfNotEmpty(item, "pnpId", (*it)->pnpId.c_str());
       setIfNotEmpty(item, "locationId", (*it)->locationId.c_str());
+      setIfNotEmpty(item, "friendlyName", (*it)->friendlyName.c_str());
       setIfNotEmpty(item, "vendorId", (*it)->vendorId.c_str());
       setIfNotEmpty(item, "productId", (*it)->productId.c_str());
 
