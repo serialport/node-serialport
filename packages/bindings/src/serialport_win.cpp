@@ -290,6 +290,71 @@ bool IsClosingHandle(int fd) {
   return false;
 }
 
+void __stdcall WriteIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAPPED* ov) {
+  WriteBaton* baton = static_cast<WriteBaton*>(ov->hEvent);
+  DWORD bytesWritten;
+  if (!GetOverlappedResult(int2handle(baton->fd), ov, &bytesWritten, TRUE)) {
+    errorCode = GetLastError();
+    ErrorCodeToString("Writing to COM port (GetOverlappedResult)", errorCode, baton->errorString);
+    baton->complete = true;
+    return;
+  }
+  if (bytesWritten) {
+    baton->offset += bytesWritten;
+    if (baton->offset >= baton->bufferLength) {
+      baton->complete = true;
+    }
+  }
+}
+
+DWORD __stdcall WriteThread(LPVOID param) {
+  uv_async_t* async = static_cast<uv_async_t*>(param);
+  WriteBaton* baton = static_cast<WriteBaton*>(async->data);
+
+  OVERLAPPED* ov = new OVERLAPPED;
+  memset(ov, 0, sizeof(OVERLAPPED));
+  ov->hEvent = static_cast<void*>(baton);
+
+  while (!baton->complete) {
+    char* offsetPtr = baton->bufferData + baton->offset;
+    // WriteFileEx requires calling GetLastError even upon success. Clear the error beforehand.
+    SetLastError(0);
+    WriteFileEx(int2handle(baton->fd), offsetPtr,
+                static_cast<DWORD>(baton->bufferLength - baton->offset), ov, WriteIOCompletion);
+    // Error codes when call is successful, such as ERROR_MORE_DATA.
+    DWORD lastError = GetLastError();
+    if (lastError != ERROR_SUCCESS) {
+      ErrorCodeToString("Writing to COM port (WriteFileEx)", lastError, baton->errorString);
+      break;
+    }
+    // IOCompletion routine is only called once this thread is in an alertable wait state.
+    SleepEx(INFINITE, TRUE);
+  }
+  delete ov;
+  // Signal the main thread to run the callback.
+  uv_async_send(async);
+  ExitThread(0);
+}
+
+void EIO_AfterWrite(uv_async_t* req) {
+  WriteBaton* baton = static_cast<WriteBaton*>(req->data);
+  Napi::Env env = baton->callback.Env();
+  Napi::HandleScope scope(env);
+  WaitForSingleObject(baton->hThread, INFINITE);
+  CloseHandle(baton->hThread);
+  uv_close(reinterpret_cast<uv_handle_t*>(req), AsyncCloseCallback);
+
+  v8::Local<v8::Value> argv[1];
+  if (baton->errorString[0]) {
+    baton->callback.Call({Napi::Error::New(env, baton->errorString).Value()});
+  } else {
+    baton->callback.Call({env.Null()});
+  }
+  baton->buffer.Reset();
+  delete baton;
+}
+
+
 Napi::Value Write(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   // file descriptor
@@ -315,8 +380,8 @@ Napi::Value Write(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
-  Napi::Function callback = info[2].As<Napi::Function>();
-  WriteBaton* baton = new WriteBaton(callback);
+  WriteBaton* baton = new WriteBaton();
+  baton->callback = Napi::Persistent(info[2].As<Napi::Function>());
   baton->fd = fd;
   baton->buffer.Reset(buffer);
   baton->bufferData = bufferData;
@@ -324,78 +389,12 @@ Napi::Value Write(const Napi::CallbackInfo& info) {
   baton->offset = 0;
   baton->complete = false;
 
-  baton->Queue();
-  return env.Null();
-}
-
-void __stdcall WriteIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAPPED* ov) {
-  WriteBaton* baton = static_cast<WriteBaton*>(ov->hEvent);
-  DWORD bytesWritten;
-  if (!GetOverlappedResult(int2handle(baton->fd), ov, &bytesWritten, TRUE)) {
-    errorCode = GetLastError();
-    ErrorCodeToString("Writing to COM port (GetOverlappedResult)", errorCode, baton->errorString);
-    baton->complete = true;
-    return;
-  }
-  if (bytesWritten) {
-    baton->offset += bytesWritten;
-    if (baton->offset >= baton->bufferLength) {
-      baton->complete = true;
-    }
-  }
-}
-
-Napi::Value Read(const Napi::CallbackInfo& info) {
-    Napi::Env env = info.Env();
-  // file descriptor
-  if (!info[0].IsNumber()) {
-    Napi::TypeError::New(env, "First argument must be a fd").ThrowAsJavaScriptException();
-    return env.Null();
-  }
-  int fd = info[0].As<Napi::Number>().Int32Value();
-
-  // buffer
-  if (!info[1].IsObject() || !info[1].IsBuffer()) {
-    Napi::TypeError::New(env, "Second argument must be a buffer").ThrowAsJavaScriptException();
-    return env.Null();
-  }
-  Napi::Object buffer = info[1].ToObject();
-  size_t bufferLength = buffer.As<Napi::Buffer<char>>().Length();
-
-  // offset
-  if (!info[2].IsNumber()) {
-    Napi::TypeError::New(env, "Third argument must be an int").ThrowAsJavaScriptException();
-    return env.Null();
-  }
-  int offset = info[2].ToNumber().Int64Value();
-
-  // bytes to read
-  if (!info[3].IsNumber()) {
-    Napi::TypeError::New(env, "Fourth argument must be an int").ThrowAsJavaScriptException();
-    return env.Null();
-  }
-  size_t bytesToRead = info[3].ToNumber().Int64Value();
-
-  if ((bytesToRead + offset) > bufferLength) {
-    Napi::TypeError::New(env, "'bytesToRead' + 'offset' cannot be larger than the buffer's length").ThrowAsJavaScriptException();
-    return env.Null();
-  }
-
-  // callback
-  if (!info[4].IsFunction()) {
-    Napi::TypeError::New(env, "Fifth argument must be a function").ThrowAsJavaScriptException();
-    return env.Null();
-  }
-  Napi::Function callback = info[4].As<Napi::Function>();
-  ReadBaton* baton = new ReadBaton(callback);
-  baton->fd = fd;
-  baton->offset = offset;
-  baton->bytesToRead = bytesToRead;
-  baton->bufferLength = bufferLength;
-  baton->bufferData = buffer.As<Napi::Buffer<char>>().Data();
-  baton->complete = false;
-
-  baton->Queue();
+  uv_async_t* async = new uv_async_t;
+  uv_async_init(uv_default_loop(), async, EIO_AfterWrite);
+  async->data = baton;
+  // WriteFileEx requires a thread that can block. Create a new thread to
+  // run the write operation, saving the handle so it can be deallocated later.
+  baton->hThread = CreateThread(NULL, 0, WriteThread, async, 0, NULL);
   return env.Null();
 }
 
@@ -464,6 +463,121 @@ void __stdcall ReadIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAP
   baton->complete = true;
 }
 
+DWORD __stdcall ReadThread(LPVOID param) {
+  uv_async_t* async = static_cast<uv_async_t*>(param);
+  ReadBaton* baton = static_cast<ReadBaton*>(async->data);
+  DWORD lastError;
+
+  OVERLAPPED* ov = new OVERLAPPED;
+  memset(ov, 0, sizeof(OVERLAPPED));
+  ov->hEvent = static_cast<void*>(baton);
+
+  while (!baton->complete) {
+    // Reset the read timeout to 0, so that it will block until more data arrives.
+    COMMTIMEOUTS commTimeouts = {};
+    commTimeouts.ReadIntervalTimeout = 0;
+    if (!SetCommTimeouts(int2handle(baton->fd), &commTimeouts)) {
+      lastError = GetLastError();
+      ErrorCodeToString("Setting COM timeout (SetCommTimeouts)", lastError, baton->errorString);
+      break;
+    }
+    // ReadFileEx doesn't use overlapped's hEvent, so it is reserved for user data.
+    ov->hEvent = static_cast<HANDLE>(baton);
+    char* offsetPtr = baton->bufferData + baton->offset;
+    // ReadFileEx requires calling GetLastError even upon success. Clear the error beforehand.
+    SetLastError(0);
+    // Only read 1 byte, so that the callback will be triggered once any data arrives.
+    ReadFileEx(int2handle(baton->fd), offsetPtr, 1, ov, ReadIOCompletion);
+    // Error codes when call is successful, such as ERROR_MORE_DATA.
+    lastError = GetLastError();
+    if (lastError != ERROR_SUCCESS) {
+      ErrorCodeToString("Reading from COM port (ReadFileEx)", lastError, baton->errorString);
+      break;
+    }
+    // IOCompletion routine is only called once this thread is in an alertable wait state.
+    SleepEx(INFINITE, TRUE);
+  }
+  delete ov;
+  // Signal the main thread to run the callback.
+  uv_async_send(async);
+  ExitThread(0);
+}
+
+void EIO_AfterRead(uv_async_t* req) {
+  ReadBaton* baton = static_cast<ReadBaton*>(req->data);
+  Napi::Env env = baton->callback.Env();
+  Napi::HandleScope scope(env);
+  WaitForSingleObject(baton->hThread, INFINITE);
+  CloseHandle(baton->hThread);
+  uv_close(reinterpret_cast<uv_handle_t*>(req), AsyncCloseCallback);
+
+  if (baton->errorString[0]) {
+    baton->callback.Call({Napi::Error::New(env, baton->errorString).Value(), env.Undefined()});
+  } else {
+    baton->callback.Call({env.Null(), Napi::Number::New(env, static_cast<int>(baton->bytesRead))});
+  }
+  delete baton;
+}
+
+Napi::Value Read(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+  // file descriptor
+  if (!info[0].IsNumber()) {
+    Napi::TypeError::New(env, "First argument must be a fd").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+  int fd = info[0].As<Napi::Number>().Int32Value();
+
+  // buffer
+  if (!info[1].IsObject() || !info[1].IsBuffer()) {
+    Napi::TypeError::New(env, "Second argument must be a buffer").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+  Napi::Object buffer = info[1].ToObject();
+  size_t bufferLength = buffer.As<Napi::Buffer<char>>().Length();
+
+  // offset
+  if (!info[2].IsNumber()) {
+    Napi::TypeError::New(env, "Third argument must be an int").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+  int offset = info[2].ToNumber().Int64Value();
+
+  // bytes to read
+  if (!info[3].IsNumber()) {
+    Napi::TypeError::New(env, "Fourth argument must be an int").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+  size_t bytesToRead = info[3].ToNumber().Int64Value();
+
+  if ((bytesToRead + offset) > bufferLength) {
+    Napi::TypeError::New(env, "'bytesToRead' + 'offset' cannot be larger than the buffer's length").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  // callback
+  if (!info[4].IsFunction()) {
+    Napi::TypeError::New(env, "Fifth argument must be a function").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+  ReadBaton* baton = new ReadBaton();
+  baton->callback = Napi::Persistent(info[4].As<Napi::Function>());
+  baton->fd = fd;
+  baton->offset = offset;
+  baton->bytesToRead = bytesToRead;
+  baton->bufferLength = bufferLength;
+
+  baton->bufferData = buffer.As<Napi::Buffer<char>>().Data();
+  baton->complete = false;
+
+  uv_async_t* async = new uv_async_t;
+  uv_async_init(uv_default_loop(), async, EIO_AfterRead);
+  async->data = baton;
+  baton->hThread = CreateThread(NULL, 0, ReadThread, async, 0, NULL);
+  // ReadFileEx requires a thread that can block. Create a new thread to
+  // run the read operation, saving the handle so it can be deallocated later.
+  return env.Null();
+}
 
 void CloseBaton::Execute() {
   g_closingHandles.push_back(fd);
