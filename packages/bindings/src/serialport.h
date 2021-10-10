@@ -73,12 +73,6 @@ struct OpenBaton : public Napi::AsyncWorker {
 #endif
   void Execute() override;
 
-  // void OnError(Napi::Error const &error) override {
-  //   Napi::Env env = Env();
-  //   Napi::HandleScope scope(env);
-  //   Callback().Call({Napi::String::New(env, errorString), env.Undefined()});
-  // }
-
   void OnOK() override {
     Napi::Env env = Env();
     Napi::HandleScope scope(env);
@@ -96,12 +90,6 @@ struct ConnectionOptionsBaton : ConnectionOptions , Napi::AsyncWorker {
   ConnectionOptionsBaton(Napi::Function& callback) : ConnectionOptions() , Napi::AsyncWorker(callback, "node-serialport:ConnectionOptionsBaton") {}
   
   void Execute() override;
-
-  // void OnError(Napi::Error const &error) override {
-  //   Napi::Env env = Env();
-  //   Napi::HandleScope scope(env);
-  //   Callback().Call({Napi::String::New(env, errorString)});
-  // }
 
   void OnOK() override {
     Napi::Env env = Env();
@@ -125,12 +113,6 @@ struct SetBaton : public Napi::AsyncWorker {
 
   void Execute() override;
 
-  // void OnError(Napi::Error const &error) override {
-  //   Napi::Env env = Env();
-  //   Napi::HandleScope scope(env);
-  //   Callback().Call({Napi::String::New(env, errorString)});
-  // }
-
   void OnOK() override {
     Napi::Env env = Env();
     Napi::HandleScope scope(env);
@@ -149,12 +131,6 @@ struct GetBaton : public Napi::AsyncWorker {
   bool lowLatency = false;
 
   void Execute() override;
-
-  // void OnError(Napi::Error const &error) override {
-  //   Napi::Env env = Env();
-  //   Napi::HandleScope scope(env);
-  //   Callback().Call({Napi::String::New(env, errorString),env.Undefined()});
-  // }
 
   void OnOK() override {
     Napi::Env env = Env();
@@ -177,12 +153,6 @@ struct GetBaudRateBaton : public Napi::AsyncWorker {
   
   void Execute() override;
 
-  // void OnError(Napi::Error const &error) override {
-  //   Napi::Env env = Env();
-  //   Napi::HandleScope scope(env);
-  //   Callback().Call({Napi::String::New(env, errorString),env.Undefined()});
-  // }
-
   void OnOK() override {
     Napi::Env env = Env();
     Napi::HandleScope scope(env);
@@ -197,12 +167,6 @@ struct VoidBaton : public Napi::AsyncWorker {
   errorString() {}
   int fd = 0;
   char errorString[ERROR_STRING_SIZE];
-  
-  // void OnError(Napi::Error const &error) override {
-  //   Napi::Env env = Env();
-  //   Napi::HandleScope scope(env);
-  //   Callback().Call({Napi::String::New(env, errorString)});
-  // }
 
   void OnOK() override {
     Napi::Env env = Env();
