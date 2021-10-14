@@ -16,6 +16,9 @@
 #include <sys/ioctl.h>
 #include <IOKit/serial/ioss.h>
 
+#elif defined(__NetBSD__)
+#include <sys/ioctl.h>
+
 #elif defined(__OpenBSD__)
 #include <sys/ioctl.h>
 
