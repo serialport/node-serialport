@@ -12,71 +12,107 @@ jobs:
           node-version: 14
       - run: npm ci
       - run: npm run lint
-  test:
-    runs-on: ${{ matrix.config.os }}
+  test-windows:
+    runs-on: windows-latest
     strategy:
       fail-fast: false
       matrix:
         node-version: [10.x, 12.x, 14.x, 16.x]
-        config:
-          # arch isn't used and we have no way to use it currently
-          - { os: macos-latest, arch: x64 }
-          - { os: ubuntu-latest, arch: x64 }
-          - { os: windows-latest, arch: x64 }
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
 
-        # Install needed extra tooling
-
-        # Windows is handled a little differently throughout the workflow
-      - if: runner.os == 'Windows'
-        run: |
+      # Install needed extra tooling
+      - run: |
           choco install OpenCppCoverage
           npm install npm@7
-        # Needed to convert coverage in gcov format to lcov format and cleanup
-      - if: runner.os == 'Linux'
-        run: sudo apt-get install -y lcov
-      - if: runner.os == 'macOS'
-        run: brew install lcov
 
       - run: npm ci
 
       # Rebuild the project with coverage instrumentation
+      - run: npm run rebuild -- -- --debug
 
-      - if: runner.os == 'Windows'
-        run: npm run rebuild -- -- --debug
+      # Run tests and generate coverage report
+      - run: npm run coverage:windows
+        env:
+          CI: true
 
-      - if: runner.os != 'Windows'
-        run: npm run rebuild
+      # Publish coverage information to codecov.io
+      - run: npm run coverage:publish:windows
+      - run: npm run coverage:publish:node
+
+  test-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [10.x, 12.x, 14.x, 16.x]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Install needed extra tooling
+
+      # Needed to convert coverage in gcov format to lcov format and cleanup
+      - run: sudo apt-get install -y lcov
+
+      - run: npm ci
+
+      # Rebuild the project with coverage instrumentation
+      - run: npm run rebuild
         env:
           # Enable gcov in binaries
           GENERATE_COVERAGE: yes
 
       # Run tests and generate coverage report
 
-      - if: runner.os == 'Windows'
-        # Runs tests and generates coverage report
-        run: npm run coverage:windows
-        env:
-          CI: true
-
-      - if: runner.os != 'Windows'
-        # Run tests and generate coverage information.
-        # Convert gcov `gcda` coverage information to lcov format.
-        run: |
+      # Convert gcov `gcda` coverage information to lcov format.
+      - run: |
           npm test
           npm run coverage:lcov
         env:
           CI: true
 
       # Publish coverage information to codecov.io
+      - run: npm run coverage:publish:lcov
+      - run: npm run coverage:publish:node
 
-      - if: runner.os == 'Windows'
-        run: npm run coverage:publish:windows
-      - if: runner.os != 'Windows'
-        run: npm run coverage:publish:lcov
+  test-macos:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [10.x, 12.x, 14.x, 16.x]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
 
+      # Install needed extra tooling
+      - run: brew install lcov
+
+      - run: npm ci
+
+      # Rebuild the project with coverage instrumentation
+      - run: npm run rebuild
+        env:
+          # Enable gcov in binaries
+          GENERATE_COVERAGE: yes
+
+      # Run tests and generate coverage report
+
+      # Convert gcov `gcda` coverage information to lcov format.
+      - run: |
+          npm test
+          npm run coverage:lcov
+        env:
+          CI: true
+
+      # Publish coverage information to codecov.io
+      - run: npm run coverage:publish:lcov
       - run: npm run coverage:publish:node
