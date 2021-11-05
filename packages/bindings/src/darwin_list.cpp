@@ -237,26 +237,22 @@ static stDeviceListItem* GetSerialDevices() {
           kernResult = IOCreatePlugInInterfaceForService(device, kIOUSBDeviceUserClientTypeID, kIOCFPlugInInterfaceID,
                                &plugInInterface, &score);
 
-          if ((kIOReturnSuccess != kernResult) || !plugInInterface) {
-            continue;
+          if ((kIOReturnSuccess == kernResult) && plugInInterface) {
+            // Use the plugin interface to retrieve the device interface.
+            res = (*plugInInterface)->QueryInterface(plugInInterface, CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID),
+                                 reinterpret_cast<LPVOID*> (&deviceInterface));
+
+            // Now done with the plugin interface.
+            (*plugInInterface)->Release(plugInInterface);
+
+            if (!res && deviceInterface != NULL) {
+              // Extract the desired Information
+              ExtractUsbInformation(serialDevice, deviceInterface);
+
+              // Release the Interface
+              (*deviceInterface)->Release(deviceInterface);
+            }
           }
-
-          // Use the plugin interface to retrieve the device interface.
-          res = (*plugInInterface)->QueryInterface(plugInInterface, CFUUIDGetUUIDBytes(kIOUSBDeviceInterfaceID),
-                               reinterpret_cast<LPVOID*> (&deviceInterface));
-
-          // Now done with the plugin interface.
-          (*plugInInterface)->Release(plugInInterface);
-
-          if (res || deviceInterface == NULL) {
-            continue;
-          }
-
-          // Extract the desired Information
-          ExtractUsbInformation(serialDevice, deviceInterface);
-
-          // Release the Interface
-          (*deviceInterface)->Release(deviceInterface);
 
           // Release the device
           (void) IOObjectRelease(device);
