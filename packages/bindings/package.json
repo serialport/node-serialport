@@ -21,9 +21,9 @@
     "node": ">=10.0.0"
   },
   "scripts": {
-    "install": "prebuild-install --tag-prefix @serialport/bindings@ || node-gyp rebuild",
+    "install": "prebuild-install --tag-prefix v || node-gyp rebuild",
     "lint": "cc --verbose",
-    "prebuild": "prebuild --all --force --strip --verbose --tag-prefix @serialport/bindings@",
+    "prebuild": "prebuild --all --force --strip --verbose --tag-prefix v",
     "rebuild": "node-gyp rebuild"
   },
   "publishConfig": {
