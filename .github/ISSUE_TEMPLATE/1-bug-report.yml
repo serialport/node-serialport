@@ -1,0 +1,55 @@
+name: "\U0001F41B Bug report"
+description: Create a report to help us improve
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting an issue.
+
+        This issue tracker is for bugs and issues found within Node SerialPort.
+        If you require more general support please file an start a discussion on our discussion board https://github.com/serialport/node-serialport/discussions
+
+        Having trouble installing? Be sure to check out the installation docs! https://serialport.io/docs/guide-installation
+
+        Please fill in as much of the form below as you're able.
+  - type: input
+    attributes:
+      label: SerialPort Version
+  - type: input
+    attributes:
+      label: Node Version
+      description: Output of `node -v`
+  - type: input
+    attributes:
+      label: Electron Version
+      description: If applicable
+  - type: input
+    attributes:
+      label: Platform
+      description: |
+        UNIX: output of `uname -a`
+        Windows: output of `"$([Environment]::OSVersion | ForEach-Object VersionString) $(if ([Environment]::Is64BitOperatingSystem) { "x64" } else { "x86" })"` in PowerShell console
+  - type: input
+    attributes:
+      label: Architecture
+      description: i32/x86? x64? ARM?
+  - type: input
+    attributes:
+      label: Hardware or chipset of serialport
+      description: Prolific/FTDI/Etc
+  - type: textarea
+    attributes:
+      label: What steps will reproduce the bug?
+      description: Enter details about your bug, preferably a simple code snippet that can be run using `node` directly without installing third-party dependencies.
+  - type: textarea
+    attributes:
+      label: What happens?
+      description: If possible please provide textual output instead of screenshots.
+  - type: textarea
+    attributes:
+      label: What should have happened?
+      description: If possible please provide textual output instead of screenshots.
+  - type: textarea
+    attributes:
+      label: Additional information
+      description: Tell us anything else you think we should know.
