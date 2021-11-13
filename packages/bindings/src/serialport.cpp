@@ -483,4 +483,9 @@ NAN_MODULE_INIT(init) {
   #endif
 }
 
+#if NODE_MAJOR_VERSION >= 10
+NODE_MODULE_CONTEXT_AWARE(serialport, init)
+#else
 NODE_MODULE(serialport, init);
+#endif
+
