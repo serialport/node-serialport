@@ -23,7 +23,9 @@
   "scripts": {
     "install": "prebuild-install --tag-prefix @serialport/bindings@ || node-gyp rebuild",
     "lint": "cc --verbose",
-    "prebuild": "prebuild --all --force --strip --verbose --tag-prefix @serialport/bindings@",
+    "prebuild": "npm run prebuild-node && npm run prebuild-electron",
+    "prebuild-node": "prebuild --force --strip --verbose --tag-prefix @serialport/bindings@ -t 12.0.0 -t 14.0.0 -t 16.0.0",
+    "prebuild-electron": "prebuild --force --strip --verbose --tag-prefix @serialport/bindings@ -r electron -t 13.0.0 -t 14.0.0 -t 15.0.0 -t 16.0.0",
     "rebuild": "node-gyp rebuild"
   },
   "publishConfig": {
