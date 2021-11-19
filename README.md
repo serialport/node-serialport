@@ -10,7 +10,7 @@ Access serial ports with JavaScript. Linux, OSX and Windows. Welcome your roboti
 > Go to https://serialport.io/ to learn more, find guides and api documentation.
 
 ## Quick Links
-- [**Guides**](https://serialport.io/docs/guide-about)
+- [**Guides**](https://serialport.io/docs/)
 - [**API Docs**](https://serialport.io/docs/api-serialport)
 - [The `serialport` package api docs](https://serialport.io/docs/api-serialport)
 
