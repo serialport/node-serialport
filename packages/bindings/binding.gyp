@@ -73,6 +73,8 @@
         {
           'cflags+': ['--coverage'],
           'link_settings': {'libraries+': ['-lgcov']},
+          'conditions': [
+            ['OS=="mac"', {
           'xcode_settings': {
             'GCC_GENERATE_TEST_COVERAGE_FILES': ['YES'],
             'GCC_INSTRUMENT_PROGRAM_FLOW_ARCS': ['YES'],
@@ -80,9 +82,11 @@
             'OTHER_LDFLAGS+': [
               '-fprofile-arcs -ftest-coverage',
               # There has to be a better way to do this...
-              '-L<!(find /usr/local/lib/gcc -name libgcov.a -exec dirname {} \; -quit || :)',
+              '-L<!(find /usr/local/lib/gcc -name libgcov.a -exec dirname {} \; -quit)',
             ],
           },
+            }],
+          ],
         },
       ],
     ],
