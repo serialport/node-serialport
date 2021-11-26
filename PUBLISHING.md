@@ -6,29 +6,9 @@ This can be checked in the .travis.yml file and appveyor.yml file. Within these 
 Two factor auth is required for publishing.
 
 1. run `npm run publish`
-2. Let everyone know 🎉
-
-If publishing more than 3 packages at once and one of them is the bindings package, you'll need to figure out a way to get the ci's to build the binaries as github wont tell them about the new tags. You can do this by deleting the tag and pushing it again for the bindings package (only binary package as of this writing).
-
-CI will only prebuild binaries if the latest commit has tags that match the current branch and the `BINARY_BUILDER` environment variable is set to `true`.
-
-For example for version 2.0.3:
-
-Check the list of tags in the latest commit.
-
-```
-git tag --points-at HEAD
-```
-
-That should contain `@serialport/bindings@2.0.3`.
-
-If not, remove the remote tag and create the tag locally before updating the git remote.
-
-```
-git push --delete origin @serialport/bindings@2.0.3
-git push origin @serialport/bindings@2.0.3
-```
+2. if you released a new `@serialport/bindings` run `git tag @serialport/bindings@x.x.x` with the version you just released.
+3. Let everyone know 🎉
 
 Note:
 
-CI sets the `prebuild_upload` environment variable with a GitHub token to trigger `prebuild` to upload the binaries to the release tag. This is already configured on Travis and AppVeyor.
+CI sets the `prebuild_upload` environment variable with a GitHub token to trigger `prebuild` to upload the binaries to the release tag.
