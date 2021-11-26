@@ -80,7 +80,7 @@
             'OTHER_LDFLAGS+': [
               '-fprofile-arcs -ftest-coverage',
               # There has to be a better way to do this...
-              '-L<!(dirname $(find /usr/local/lib/gcc -name libgcov.a))',
+              '-L<!(dirname $(find /usr/local/lib/gcc -name libgcov.a -print -quit))',
             ],
           },
         },
