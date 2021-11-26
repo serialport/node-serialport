@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [9.2.8](https://github.com/serialport/node-serialport/compare/v9.2.7...v9.2.8) (2021-11-26)
+
+
+### Bug Fixes
+
+* drop node 17 builds ([#2356](https://github.com/serialport/node-serialport/issues/2356)) ([e2ad9fb](https://github.com/serialport/node-serialport/commit/e2ad9fb380f4fc587a6782c7cee5d335bad4aa2d))
+* Electron 14+ installs ([#2360](https://github.com/serialport/node-serialport/issues/2360)) ([9997085](https://github.com/serialport/node-serialport/commit/99970852c7a5189067fdc4d893029727d2385a47))
+* OSX List Make sure necessary cleanups such as uv_mutex_unlock are called always. ([#2343](https://github.com/serialport/node-serialport/issues/2343)) ([fc93cb6](https://github.com/serialport/node-serialport/commit/fc93cb6af83358f1104fc842e65ccda9b8320904))
+
+
+
+
+
 ## [9.2.7](https://github.com/serialport/node-serialport/compare/v9.2.5...v9.2.7) (2021-11-18)
 
 **Note:** Version bump only for package @serialport/bindings

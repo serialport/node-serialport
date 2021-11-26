@@ -1,6 +1,6 @@
 {
   "name": "serialport",
-  "version": "9.2.7",
+  "version": "9.2.8",
   "description": "Node.js package to access serial ports. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!",
   "main": "lib",
   "repository": {
@@ -46,7 +46,7 @@
   ],
   "dependencies": {
     "@serialport/binding-mock": "9.2.4",
-    "@serialport/bindings": "9.2.7",
+    "@serialport/bindings": "9.2.8",
     "@serialport/parser-byte-length": "9.2.4",
     "@serialport/parser-cctalk": "9.2.4",
     "@serialport/parser-delimiter": "9.2.4",

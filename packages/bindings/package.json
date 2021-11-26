@@ -1,6 +1,6 @@
 {
   "name": "@serialport/bindings",
-  "version": "9.2.7",
+  "version": "9.2.8",
   "main": "lib",
   "keywords": [
     "serialport-binding"
