@@ -22,9 +22,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+      - run: echo color = always > ~/.npmrc
       - run: npm ci
       - run: npm run rebuild
-      - run: npm test
+      - run: npm test -- --color
       - run: npm run coverage
         env:
           CI: true
@@ -39,9 +40,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+      - run: echo color = always > ~/.npmrc
       - run: npm ci
       - run: npm run rebuild
-      - run: npm test
+      - run: npm test -- --color
       - run: npm run coverage
         env:
           CI: true
@@ -56,9 +58,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
+      - run: echo color = always > ~/.npmrc
       - run: npm ci
       - run: npm run rebuild
-      - run: npm test
+      - run: npm test -- --color
       - run: npm run coverage
         env:
           CI: true
