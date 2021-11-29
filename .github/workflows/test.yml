@@ -35,7 +35,9 @@ jobs:
       - run: npm run rebuild -- -- --debug
 
       # Run tests and generate coverage report
-      - run: npm run coverage:windows -- --color
+      - name: Run npm test with coverage
+        run: |
+          C:\Progra~1\OpenCppCoverage\OpenCppCoverage.exe --quiet --cover_children --modules "*.node" --source "packages\bindings\src\*" --export_type=cobertura:coverage/cpp.xml -- npm.cmd test -- --color
         env:
           CI: true
 
