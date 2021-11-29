@@ -12,16 +12,45 @@ jobs:
         node-version: 14
     - run: npm ci
     - run: npm run lint
-  test:
-    runs-on: ${{ matrix.config.os }}
+  test-windows:
+    runs-on: windows-latest
     strategy:
       matrix:
         node-version: [10.x, 12.x, 14.x, 16.x]
-        config:
-          # arch isn't used and we have no way to use it currently
-          - { os: macos-latest, arch: x64 }
-          - { os: ubuntu-latest, arch: x64 }
-          - { os: windows-latest, arch: x64 }
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm ci
+    - run: npm run rebuild
+    - run: npm test
+    - run: npm run coverage
+      env:
+        CI: true
+
+  test-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x, 14.x, 16.x]
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm ci
+    - run: npm run rebuild
+    - run: npm test
+    - run: npm run coverage
+      env:
+        CI: true
+
+  test-macos:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x, 14.x, 16.x]
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
