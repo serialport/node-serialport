@@ -20,6 +20,7 @@ program
   .option('--parity <parity>', 'Parity default: none', 'none')
   .option('--stopbits <bits>', 'Stop bits default: 1', makeNumber, 1)
   .option('--no-echo', "Don't print characters as you type them.")
+  .option('--flow-ctl <mode>', "Enable flow control {XONOFF | RTSCTS}.")
   .parse(process.argv)
 
 const args = program.opts()
@@ -58,6 +59,9 @@ const createPort = path => {
     dataBits: args.databits,
     parity: args.parity,
     stopBits: args.stopbits,
+    rtscts: args.flowCtl === 'CTSRTS',
+    xon: args.flowCtl === 'XONOFF',
+    xoff: args.flowCtl === 'XONOFF'
   }
 
   const port = new SerialPort(path, openOptions)
