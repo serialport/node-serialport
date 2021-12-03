@@ -16,7 +16,7 @@
     "postinstall": "lerna bootstrap --no-ci",
     "prebuild": "lerna run --stream prebuild",
     "publish": "lerna publish --exact",
-    "coverage:publish:node": "codecov",
+    "coverage:publish:node": "codecov --disable=gcov --file=coverage/lcov.info",
     "test": "nyc --reporter=html --reporter=text --reporter=lcovonly mocha",
     "test:arduino": "TEST_PORT=$(./bin/find-arduino.js) npm test",
     "test:watch": "mocha -w"
