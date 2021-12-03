@@ -70,12 +70,11 @@ jobs:
 
       # Run tests and generate coverage report
 
-      # Convert gcov `gcda` coverage information to lcov format.
-      - run: |
-          npm test
-          npm run coverage:lcov
+      - run: npm test
         env:
           CI: true
+      - name: Convert gcov `gcda` coverage information to lcov format
+        run: npm run coverage:lcov
 
       # Publish coverage information to codecov.io
       - run: npm run coverage:publish:lcov
@@ -106,12 +105,11 @@ jobs:
 
       # Run tests and generate coverage report
 
-      # Convert gcov `gcda` coverage information to lcov format.
-      - run: |
-          npm test
-          npm run coverage:lcov
+      - run: npm test
         env:
           CI: true
+      - name: Convert gcov `gcda` coverage information to lcov format
+        run: npm run coverage:lcov
 
       # Publish coverage information to codecov.io
       - run: npm run coverage:publish:lcov
