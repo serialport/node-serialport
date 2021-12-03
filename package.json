@@ -14,7 +14,7 @@
     "coverage:lcov:strip-external": "lcov --extract coverage/gcc.lcov '*/packages/bindings/src/*' --output-file coverage/gcc.lcov",
     "coverage:publish:node": "codecov --disable=gcov --file=coverage/lcov.info",
     "coverage:publish:windows": "codecov --disable=gcov --file=coverage/cpp.xml",
-    "coverage:publish:lcov": "codecov --disable=gcov --file=coverage/gcc.lcov",
+    "coverage:publish:nix": "codecov --disable=gcov --file=coverage/gcc.lcov",
     "format": "eslint packages test --fix",
     "generate": "plop",
     "lint": "eslint packages test && lerna run --stream lint",

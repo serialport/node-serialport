@@ -24,26 +24,28 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      # Install needed extra tooling
-      - run: |
-          choco install OpenCppCoverage
-          npm install npm@7
+      - name: Install needed tools
+        run: choco install OpenCppCoverage
 
       - run: npm ci
 
-      # Rebuild the project with coverage instrumentation
-      - run: npm run rebuild -- -- --debug
+      - name: Rebuild the project with coverage instrumentation
+        run: npm run rebuild -- -- --debug
 
-      # Run tests and generate coverage report
+      - name: Workaround path issue with OpenCppCoverage
+        run: npm install npm@7
+
       - name: Run npm test with coverage
+        # Run tests using debug symbols for coverage on Windows
         run: |
           C:\Progra~1\OpenCppCoverage\OpenCppCoverage.exe --quiet --cover_children --modules "*.node" --source "packages\bindings\src\*" --export_type=cobertura:coverage/cpp.xml -- npm.cmd test -- --color
         env:
           CI: true
 
-      # Publish coverage information to codecov.io
-      - run: npm run coverage:publish:windows
-      - run: npm run coverage:publish:node
+      - name: Publish coverage information to codecov.io
+        run: |
+          npm run coverage:publish:windows
+          npm run coverage:publish:node
 
   test-linux:
     runs-on: ubuntu-latest
@@ -57,30 +59,30 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      # Install needed extra tooling
-
-      # Needed to convert coverage in gcov format to lcov format and cleanup
-      - run: sudo apt-get install -y lcov
+      - name: Install needed tools
+        run: sudo apt-get install -y lcov
 
       - run: npm ci
 
-      # Rebuild the project with coverage instrumentation
-      - run: npm run rebuild
+      - name: Rebuild the project with coverage instrumentation
+        run: npm run rebuild
         env:
           # Enable gcov in binaries
           GENERATE_COVERAGE: yes
 
-      # Run tests and generate coverage report
-
-      - run: npm test -- --color
+      - name: Run tests with GCC Gcov
+        run: npm test -- --color
         env:
           CI: true
+
       - name: Convert gcov `gcda` coverage information to lcov format
+        # Also strips coverage information for external modules
         run: npm run coverage:lcov
 
-      # Publish coverage information to codecov.io
-      - run: npm run coverage:publish:lcov
-      - run: npm run coverage:publish:node
+      - name: Publish coverage information to codecov.io
+        run: |
+          npm run coverage:publish:nix
+          npm run coverage:publish:node
 
   test-macos:
     runs-on: macos-latest
@@ -94,25 +96,27 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      # Install needed extra tooling
-      - run: brew install lcov
+      - name: Install needed tools
+        run: brew install lcov
 
       - run: npm ci
 
-      # Rebuild the project with coverage instrumentation
-      - run: npm run rebuild
+      - name: Rebuild the project with coverage instrumentation
+        run: npm run rebuild
         env:
           # Enable gcov in binaries
           GENERATE_COVERAGE: yes
 
-      # Run tests and generate coverage report
-
-      - run: npm test -- --color
+      - name: Run tests with LLVM Gcov
+        run: npm test -- --color
         env:
           CI: true
+
       - name: Convert gcov `gcda` coverage information to lcov format
+        # Also strips coverage information for external modules
         run: npm run coverage:lcov
 
-      # Publish coverage information to codecov.io
-      - run: npm run coverage:publish:lcov
-      - run: npm run coverage:publish:node
+      - name: Publish coverage information to codecov.io
+        run: |
+          npm run coverage:publish:nix
+          npm run coverage:publish:node
