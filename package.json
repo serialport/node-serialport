@@ -9,7 +9,6 @@
   "license": "MIT",
   "scripts": {
     "rebuild": "lerna run --stream rebuild",
-    "coverage": "codecov",
     "format": "eslint packages test --fix",
     "generate": "plop",
     "lint": "eslint packages test && lerna run --stream lint",
@@ -17,6 +16,7 @@
     "postinstall": "lerna bootstrap --no-ci",
     "prebuild": "lerna run --stream prebuild",
     "publish": "lerna publish --exact",
+    "publish:test-coverage": "codecov",
     "test": "nyc --reporter=html --reporter=text --reporter lcovonly mocha",
     "test:arduino": "TEST_PORT=$(./bin/find-arduino.js) npm test",
     "test:watch": "mocha -w"
