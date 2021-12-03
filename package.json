@@ -9,7 +9,7 @@
   "license": "MIT",
   "scripts": {
     "rebuild": "lerna run --stream rebuild",
-    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "coverage": "codecov",
     "format": "eslint packages test --fix",
     "generate": "plop",
     "lint": "eslint packages test && lerna run --stream lint",
