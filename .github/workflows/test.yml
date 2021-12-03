@@ -35,7 +35,7 @@ jobs:
       - run: npm run rebuild -- -- --debug
 
       # Run tests and generate coverage report
-      - run: npm run coverage:windows
+      - run: npm run coverage:windows -- --color
         env:
           CI: true
 
@@ -70,7 +70,7 @@ jobs:
 
       # Run tests and generate coverage report
 
-      - run: npm test
+      - run: npm test -- --color
         env:
           CI: true
       - name: Convert gcov `gcda` coverage information to lcov format
@@ -105,7 +105,7 @@ jobs:
 
       # Run tests and generate coverage report
 
-      - run: npm test
+      - run: npm test -- --color
         env:
           CI: true
       - name: Convert gcov `gcda` coverage information to lcov format
