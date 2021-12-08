@@ -1,7 +1,8 @@
 const debug = require('debug')
 const logger = debug('serialport/bindings/poller')
 const EventEmitter = require('events')
-const PollerBindings = require('bindings')('bindings.node').Poller
+const { join } = require('path')
+const PollerBindings = require('node-gyp-build')(join(__dirname, '../')).Poller
 
 const EVENTS = {
   UV_READABLE: 0b0001,

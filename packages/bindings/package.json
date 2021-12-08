@@ -8,23 +8,26 @@
   "dependencies": {
     "@serialport/binding-abstract": "10.0.0",
     "@serialport/parser-readline": "10.0.0",
-    "bindings": "^1.5.0",
     "debug": "^4.3.2",
     "node-addon-api": "4.2.0",
-    "prebuild-install": "^7.0.0"
+    "node-gyp-build": "^4.3.0"
   },
   "devDependencies": {
     "@serialport/binding-mock": "10.0.0",
-    "node-abi": "3.5.0"
+    "node-abi": "3.5.0",
+    "node-gyp": "^7.1.2",
+    "prebuildify": "^5.0.0",
+    "prebuildify-ci": "^1.0.5"
   },
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=10.20.0 <11, >=12.17.0 <13.0, >=14.0.0"
   },
   "scripts": {
-    "install": "prebuild-install --tag-prefix @serialport/bindings@ --runtime napi --target 4 --verbose || node-gyp rebuild",
+    "install": "node-gyp-build",
     "lint": "cc --verbose",
-    "prebuild": "prebuild --runtime napi --target 4 --force --strip --verbose --tag-prefix @serialport/bindings@",
-    "rebuild": "node-gyp rebuild"
+    "prebuild": "prebuildify --napi --target 14.0.0 --force --strip --verbose",
+    "rebuild": "node-gyp rebuild",
+    "prepublishOnly": "prebuildify-ci download"
   },
   "publishConfig": {
     "access": "public"

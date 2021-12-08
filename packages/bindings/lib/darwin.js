@@ -1,5 +1,6 @@
 const { promisify } = require('util')
-const binding = require('bindings')('bindings.node')
+const { join } = require('path')
+const binding = require('node-gyp-build')(join(__dirname, '../'))
 const AbstractBinding = require('@serialport/binding-abstract')
 const Poller = require('./poller')
 const unixRead = require('./unix-read')
