@@ -1,16 +1,19 @@
 #ifndef PACKAGES_SERIALPORT_SRC_SERIALPORT_WIN_H_
 #define PACKAGES_SERIALPORT_SRC_SERIALPORT_WIN_H_
-// #include <stdio.h>
-// #include <stdlib.h>
-// #include <string.h>
-#include <nan.h>
+#include <napi.h>
+#include <uv.h>
+#include <node_buffer.h>
 #include <list>
 #include <string>
 
-#define ERROR_STRING_SIZE 1024
+#define ERROR_STRING_SIZE 1088
 
-struct WriteBaton : public Nan::AsyncResource {
-  WriteBaton() : AsyncResource("node-serialport:WriteBaton"), bufferData(), errorString() {}
+static inline HANDLE int2handle(int ptr) {
+  return reinterpret_cast<HANDLE>(static_cast<uintptr_t>(ptr));
+}
+
+struct WriteBaton {
+   WriteBaton() :  bufferData(), errorString() {}
   int fd = 0;
   char* bufferData = nullptr;
   size_t bufferLength = 0;
@@ -18,20 +21,16 @@ struct WriteBaton : public Nan::AsyncResource {
   size_t bytesWritten = 0;
   void* hThread = nullptr;
   bool complete = false;
-  Nan::Persistent<v8::Object> buffer;
-  Nan::Callback callback;
+  Napi::ObjectReference buffer;
+	Napi::FunctionReference callback;
   int result = 0;
   char errorString[ERROR_STRING_SIZE];
 };
 
-NAN_METHOD(Write);
-void EIO_Write(uv_work_t* req);
-void EIO_AfterWrite(uv_async_t* req);
-DWORD __stdcall WriteThread(LPVOID param);
+Napi::Value Write(const Napi::CallbackInfo& info);
 
-
-struct ReadBaton : public Nan::AsyncResource {
-  ReadBaton() : AsyncResource("node-serialport:ReadBaton"), errorString() {}
+struct ReadBaton {
+  ReadBaton() :  errorString() {}
   int fd = 0;
   char* bufferData = nullptr;
   size_t bufferLength = 0;
@@ -39,20 +38,15 @@ struct ReadBaton : public Nan::AsyncResource {
   size_t bytesToRead = 0;
   size_t offset = 0;
   void* hThread = nullptr;
+	Napi::FunctionReference callback;
   bool complete = false;
   char errorString[ERROR_STRING_SIZE];
-  Nan::Callback callback;
 };
 
-NAN_METHOD(Read);
-void EIO_Read(uv_work_t* req);
-void EIO_AfterRead(uv_async_t* req);
-DWORD __stdcall ReadThread(LPVOID param);
+Napi::Value Read(const Napi::CallbackInfo& info);
 
-
-NAN_METHOD(List);
-void EIO_List(uv_work_t* req);
-void EIO_AfterList(uv_work_t* req);
+Napi::Value List(const Napi::CallbackInfo& info);
+void setIfNotEmpty(Napi::Object item, std::string key, const char *value);
 
 struct ListResultItem {
   std::string path;
@@ -60,15 +54,39 @@ struct ListResultItem {
   std::string serialNumber;
   std::string pnpId;
   std::string locationId;
+  std::string friendlyName;
   std::string vendorId;
   std::string productId;
 };
 
-struct ListBaton : public Nan::AsyncResource {
-  ListBaton() : AsyncResource("node-serialport:ListBaton") {}
-  Nan::Callback callback;
+struct ListBaton : public Napi::AsyncWorker {
+  ListBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:ListBaton"), 
+  errorString() {}
   std::list<ListResultItem*> results;
-  char errorString[ERROR_STRING_SIZE] = "";
+  char errorString[ERROR_STRING_SIZE];
+  void Execute() override;
+
+  void OnOK() override {
+    Napi::Env env = Env();
+    Napi::HandleScope scope(env);
+    Napi::Array result = Napi::Array::New(env);
+    int i = 0;
+    for (std::list<ListResultItem*>::iterator it = results.begin(); it != results.end(); ++it, i++) {
+      Napi::Object item = Napi::Object::New(env);
+
+      setIfNotEmpty(item, "path", (*it)->path.c_str());
+      setIfNotEmpty(item, "manufacturer", (*it)->manufacturer.c_str());
+      setIfNotEmpty(item, "serialNumber", (*it)->serialNumber.c_str());
+      setIfNotEmpty(item, "pnpId", (*it)->pnpId.c_str());
+      setIfNotEmpty(item, "locationId", (*it)->locationId.c_str());
+      setIfNotEmpty(item, "friendlyName", (*it)->friendlyName.c_str());
+      setIfNotEmpty(item, "vendorId", (*it)->vendorId.c_str());
+      setIfNotEmpty(item, "productId", (*it)->productId.c_str());
+
+      (result).Set(i, item);
+    }
+    Callback().Call({env.Null(), result});
+  }
 };
 
 #endif  // PACKAGES_SERIALPORT_SRC_SERIALPORT_WIN_H_

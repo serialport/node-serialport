@@ -1,15 +1,15 @@
 #ifndef PACKAGES_SERIALPORT_SRC_DARWIN_LIST_H_
 #define PACKAGES_SERIALPORT_SRC_DARWIN_LIST_H_
 #include <sys/param.h>  // For MAXPATHLEN
-#include <nan.h>
+#include <napi.h>
+#include <uv.h>
 #include <list>
 #include <string>
 
-#define ERROR_STRING_SIZE 1024
+#define ERROR_STRING_SIZE 1088
 
-NAN_METHOD(List);
-void EIO_List(uv_work_t* req);
-void EIO_AfterList(uv_work_t* req);
+Napi::Value List(const Napi::CallbackInfo& info);
+void setIfNotEmpty(Napi::Object item, std::string key, const char *value);
 
 struct ListResultItem {
   std::string path;
@@ -21,11 +21,33 @@ struct ListResultItem {
   std::string productId;
 };
 
-struct ListBaton : public Nan::AsyncResource {
-  ListBaton() : AsyncResource("node-serialport:ListBaton"), errorString() {}
-  Nan::Callback callback;
+struct ListBaton : public Napi::AsyncWorker {
+  ListBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:ListBaton"), 
+  errorString() {}
   std::list<ListResultItem*> results;
   char errorString[ERROR_STRING_SIZE];
+  void Execute() override;
+
+  void OnOK() override {
+    Napi::Env env = Env();
+    Napi::HandleScope scope(env);
+    Napi::Array result = Napi::Array::New(env);
+    int i = 0;
+    for (std::list<ListResultItem*>::iterator it = results.begin(); it != results.end(); ++it, i++) {
+      Napi::Object item = Napi::Object::New(env);
+
+      setIfNotEmpty(item, "path", (*it)->path.c_str());
+      setIfNotEmpty(item, "manufacturer", (*it)->manufacturer.c_str());
+      setIfNotEmpty(item, "serialNumber", (*it)->serialNumber.c_str());
+      setIfNotEmpty(item, "pnpId", (*it)->pnpId.c_str());
+      setIfNotEmpty(item, "locationId", (*it)->locationId.c_str());
+      setIfNotEmpty(item, "vendorId", (*it)->vendorId.c_str());
+      setIfNotEmpty(item, "productId", (*it)->productId.c_str());
+
+      (result).Set(i, item);
+    }
+    Callback().Call({env.Null(), result});
+  }
 };
 
 typedef struct SerialDevice {

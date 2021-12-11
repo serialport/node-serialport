@@ -11,50 +11,51 @@
   #include "./poller.h"
 #endif
 
-v8::Local<v8::Value> getValueFromObject(v8::Local<v8::Object> options, std::string key) {
-  v8::Local<v8::String> v8str = Nan::New<v8::String>(key).ToLocalChecked();
-  return Nan::Get(options, v8str).ToLocalChecked();
+Napi::Value getValueFromObject(Napi::Object options, std::string key) {
+  Napi::String str = Napi::String::New(options.Env(), key);
+  return (options).Get(str);
 }
 
-int getIntFromObject(v8::Local<v8::Object> options, std::string key) {
-  return Nan::To<v8::Int32>(getValueFromObject(options, key)).ToLocalChecked()->Value();
+int getIntFromObject(Napi::Object options, std::string key) {
+  return getValueFromObject(options, key).ToNumber().Int64Value();
 }
 
-bool getBoolFromObject(v8::Local<v8::Object> options, std::string key) {
-  return Nan::To<v8::Boolean>(getValueFromObject(options, key)).ToLocalChecked()->Value();
+bool getBoolFromObject(Napi::Object options, std::string key) {
+  return getValueFromObject(options, key).ToBoolean().Value();
 }
 
-v8::Local<v8::String> getStringFromObj(v8::Local<v8::Object> options, std::string key) {
-  return Nan::To<v8::String>(getValueFromObject(options, key)).ToLocalChecked();
+Napi::String getStringFromObj(Napi::Object options, std::string key) {
+  return getValueFromObject(options, key).ToString();
 }
 
-double getDoubleFromObject(v8::Local<v8::Object> options, std::string key) {
-  return Nan::To<double>(getValueFromObject(options, key)).FromMaybe(0);
+double getDoubleFromObject(Napi::Object options, std::string key) {
+  return getValueFromObject(options, key).ToNumber().DoubleValue();
 }
 
-NAN_METHOD(Open) {
+Napi::Value Open(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   // path
-  if (!info[0]->IsString()) {
-    Nan::ThrowTypeError("First argument must be a string");
-    return;
+  if (!info[0].IsString()) {
+    Napi::TypeError::New(env, "First argument must be a string").ThrowAsJavaScriptException();
+    return env.Null();
   }
-  Nan::Utf8String path(info[0]);
+  std::string path = info[0].ToString().Utf8Value();
 
   // options
-  if (!info[1]->IsObject()) {
-    Nan::ThrowTypeError("Second argument must be an object");
-    return;
+  if (!info[1].IsObject()) {
+    Napi::TypeError::New(env, "Second argument must be an object").ThrowAsJavaScriptException();
+    return env.Null();
   }
-  v8::Local<v8::Object> options = Nan::To<v8::Object>(info[1]).ToLocalChecked();
+  Napi::Object options = info[1].ToObject();
 
   // callback
-  if (!info[2]->IsFunction()) {
-    Nan::ThrowTypeError("Third argument must be a function");
-    return;
+  if (!info[2].IsFunction()) {
+    Napi::TypeError::New(env, "Third argument must be a function").ThrowAsJavaScriptException();
+    return env.Null();
   }
-
-  OpenBaton* baton = new OpenBaton();
-  snprintf(baton->path, sizeof(baton->path), "%s", *path);
+  Napi::Function callback = info[2].As<Napi::Function>();
+  OpenBaton* baton = new OpenBaton(callback);
+  snprintf(baton->path, sizeof(baton->path), "%s", path.c_str());
   baton->baudRate = getIntFromObject(options, "baudRate");
   baton->dataBits = getIntFromObject(options, "dataBits");
   baton->parity = ToParityEnum(getStringFromObj(options, "parity"));
@@ -65,391 +66,227 @@ NAN_METHOD(Open) {
   baton->xany = getBoolFromObject(options, "xany");
   baton->hupcl = getBoolFromObject(options, "hupcl");
   baton->lock = getBoolFromObject(options, "lock");
-  baton->callback.Reset(info[2].As<v8::Function>());
 
   #ifndef WIN32
     baton->vmin = getIntFromObject(options, "vmin");
     baton->vtime = getIntFromObject(options, "vtime");
   #endif
 
-  uv_work_t* req = new uv_work_t();
-  req->data = baton;
-
-  uv_queue_work(uv_default_loop(), req, EIO_Open, (uv_after_work_cb)EIO_AfterOpen);
+  baton->Queue();
+  return env.Undefined();
 }
 
-void EIO_AfterOpen(uv_work_t* req) {
-  Nan::HandleScope scope;
-
-  OpenBaton* data = static_cast<OpenBaton*>(req->data);
-
-  v8::Local<v8::Value> argv[2];
-  if (data->errorString[0]) {
-    argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
-    argv[1] = Nan::Undefined();
-  } else {
-    argv[0] = Nan::Null();
-    argv[1] = Nan::New<v8::Int32>(data->result);
-  }
-
-  data->callback.Call(2, argv, data);
-  delete data;
-  delete req;
-}
-
-NAN_METHOD(Update) {
+Napi::Value Update(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   // file descriptor
-  if (!info[0]->IsInt32()) {
-    Nan::ThrowTypeError("First argument must be an int");
-    return;
+  if (!info[0].IsNumber()) {
+    Napi::TypeError::New(env, "First argument must be an int").ThrowAsJavaScriptException();
+    return env.Null();
   }
-  int fd = Nan::To<int>(info[0]).FromJust();
+  int fd = info[0].As<Napi::Number>().Int32Value();
 
   // options
-  if (!info[1]->IsObject()) {
-    Nan::ThrowTypeError("Second argument must be an object");
-    return;
+  if (!info[1].IsObject()) {
+    Napi::TypeError::New(env, "Second argument must be an object").ThrowAsJavaScriptException();
+    return env.Null();
   }
-  v8::Local<v8::Object> options = Nan::To<v8::Object>(info[1]).ToLocalChecked();
+  Napi::Object options = info[1].ToObject();
 
-  if (!Nan::Has(options, Nan::New<v8::String>("baudRate").ToLocalChecked()).FromMaybe(false)) {
-    Nan::ThrowTypeError("\"baudRate\" must be set on options object");
-    return;
+  if (!(options).Has("baudRate")) {
+    Napi::TypeError::New(env, "\"baudRate\" must be set on options object").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
   // callback
-  if (!info[2]->IsFunction()) {
-    Nan::ThrowTypeError("Third argument must be a function");
-    return;
+  if (!info[2].IsFunction()) {
+    Napi::TypeError::New(env, "Third argument must be a function").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
-  ConnectionOptionsBaton* baton = new ConnectionOptionsBaton();
+  Napi::Function callback = info[2].As<Napi::Function>();
+  ConnectionOptionsBaton* baton = new ConnectionOptionsBaton(callback);
 
   baton->fd = fd;
   baton->baudRate = getIntFromObject(options, "baudRate");
-  baton->callback.Reset(info[2].As<v8::Function>());
 
-  uv_work_t* req = new uv_work_t();
-  req->data = baton;
-
-  uv_queue_work(uv_default_loop(), req, EIO_Update, (uv_after_work_cb)EIO_AfterUpdate);
+  baton->Queue();
+  return env.Undefined();
 }
 
-void EIO_AfterUpdate(uv_work_t* req) {
-  Nan::HandleScope scope;
-
-  ConnectionOptionsBaton* data = static_cast<ConnectionOptionsBaton*>(req->data);
-
-  v8::Local<v8::Value> argv[1];
-  if (data->errorString[0]) {
-    argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
-  } else {
-    argv[0] = Nan::Null();
-  }
-
-  data->callback.Call(1, argv, data);
-
-  delete data;
-  delete req;
-}
-
-NAN_METHOD(Close) {
+Napi::Value Close(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   // file descriptor
-  if (!info[0]->IsInt32()) {
-    Nan::ThrowTypeError("First argument must be an int");
-    return;
+  if (!info[0].IsNumber()) {
+    Napi::TypeError::New(env, "First argument must be an int").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
   // callback
-  if (!info[1]->IsFunction()) {
-    Nan::ThrowTypeError("Second argument must be a function");
-    return;
+  if (!info[1].IsFunction()) {
+    Napi::TypeError::New(env, "Second argument must be a function").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
-  VoidBaton* baton = new VoidBaton();
-  baton->fd = Nan::To<v8::Int32>(info[0]).ToLocalChecked()->Value();
-  baton->callback.Reset(info[1].As<v8::Function>());
-
-  uv_work_t* req = new uv_work_t();
-  req->data = baton;
-  uv_queue_work(uv_default_loop(), req, EIO_Close, (uv_after_work_cb)EIO_AfterClose);
+  Napi::Function callback = info[1].As<Napi::Function>();
+  CloseBaton* baton = new CloseBaton(callback);
+  baton->fd = info[0].ToNumber().Int64Value();;
+  
+  baton->Queue();
+  return env.Undefined();
 }
 
-void EIO_AfterClose(uv_work_t* req) {
-  Nan::HandleScope scope;
-  VoidBaton* data = static_cast<VoidBaton*>(req->data);
-
-  v8::Local<v8::Value> argv[1];
-  if (data->errorString[0]) {
-    argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
-  } else {
-    argv[0] = Nan::Null();
-  }
-  data->callback.Call(1, argv, data);
-
-  delete data;
-  delete req;
-}
-
-NAN_METHOD(Flush) {
+Napi::Value Flush(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   // file descriptor
-  if (!info[0]->IsInt32()) {
-    Nan::ThrowTypeError("First argument must be an int");
-    return;
+  if (!info[0].IsNumber()) {
+    Napi::TypeError::New(env, "First argument must be an int").ThrowAsJavaScriptException();
+    return env.Null();
   }
-  int fd = Nan::To<int>(info[0]).FromJust();
+  int fd = info[0].As<Napi::Number>().Int32Value();
 
   // callback
-  if (!info[1]->IsFunction()) {
-    Nan::ThrowTypeError("Second argument must be a function");
-    return;
+  if (!info[1].IsFunction()) {
+    Napi::TypeError::New(env, "Second argument must be a function").ThrowAsJavaScriptException();
+    return env.Null();
   }
-  v8::Local<v8::Function> callback = info[1].As<v8::Function>();
+  Napi::Function callback = info[1].As<Napi::Function>();
 
-  VoidBaton* baton = new VoidBaton();
+  FlushBaton* baton = new FlushBaton(callback);
   baton->fd = fd;
-  baton->callback.Reset(callback);
 
-  uv_work_t* req = new uv_work_t();
-  req->data = baton;
-  uv_queue_work(uv_default_loop(), req, EIO_Flush, (uv_after_work_cb)EIO_AfterFlush);
+  baton->Queue();
+  return env.Undefined();
 }
 
-void EIO_AfterFlush(uv_work_t* req) {
-  Nan::HandleScope scope;
-
-  VoidBaton* data = static_cast<VoidBaton*>(req->data);
-
-  v8::Local<v8::Value> argv[1];
-
-  if (data->errorString[0]) {
-    argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
-  } else {
-    argv[0] = Nan::Null();
-  }
-
-  data->callback.Call(1, argv, data);
-
-  delete data;
-  delete req;
-}
-
-NAN_METHOD(Set) {
+Napi::Value Set(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   // file descriptor
-  if (!info[0]->IsInt32()) {
-    Nan::ThrowTypeError("First argument must be an int");
-    return;
+  if (!info[0].IsNumber()) {
+    Napi::TypeError::New(env, "First argument must be an int").ThrowAsJavaScriptException();
+    return env.Null();
   }
-  int fd = Nan::To<int>(info[0]).FromJust();
+  int fd = info[0].As<Napi::Number>().Int32Value();
 
   // options
-  if (!info[1]->IsObject()) {
-    Nan::ThrowTypeError("Second argument must be an object");
-    return;
+  if (!info[1].IsObject()) {
+    Napi::TypeError::New(env, "Second argument must be an object").ThrowAsJavaScriptException();
+    return env.Null();
   }
-  v8::Local<v8::Object> options = Nan::To<v8::Object>(info[1]).ToLocalChecked();
+  Napi::Object options = info[1].ToObject();
 
   // callback
-  if (!info[2]->IsFunction()) {
-    Nan::ThrowTypeError("Third argument must be a function");
-    return;
+  if (!info[2].IsFunction()) {
+    Napi::TypeError::New(env, "Third argument must be a function").ThrowAsJavaScriptException();
+    return env.Null();
   }
-  v8::Local<v8::Function> callback = info[2].As<v8::Function>();
+  Napi::Function callback = info[2].As<Napi::Function>();
 
-  SetBaton* baton = new SetBaton();
+  SetBaton* baton = new SetBaton(callback);
   baton->fd = fd;
-  baton->callback.Reset(callback);
   baton->brk = getBoolFromObject(options, "brk");
   baton->rts = getBoolFromObject(options, "rts");
   baton->cts = getBoolFromObject(options, "cts");
   baton->dtr = getBoolFromObject(options, "dtr");
   baton->dsr = getBoolFromObject(options, "dsr");
   baton->lowLatency = getBoolFromObject(options, "lowLatency");
-
-  uv_work_t* req = new uv_work_t();
-  req->data = baton;
-  uv_queue_work(uv_default_loop(), req, EIO_Set, (uv_after_work_cb)EIO_AfterSet);
+  
+  baton->Queue();
+  return env.Undefined();
 }
 
-void EIO_AfterSet(uv_work_t* req) {
-  Nan::HandleScope scope;
-
-  SetBaton* data = static_cast<SetBaton*>(req->data);
-
-  v8::Local<v8::Value> argv[1];
-
-  if (data->errorString[0]) {
-    argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
-  } else {
-    argv[0] = Nan::Null();
-  }
-  data->callback.Call(1, argv, data);
-
-  delete data;
-  delete req;
-}
-
-NAN_METHOD(Get) {
+Napi::Value Get(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   // file descriptor
-  if (!info[0]->IsInt32()) {
-    Nan::ThrowTypeError("First argument must be an int");
-    return;
+  if (!info[0].IsNumber()) {
+    Napi::TypeError::New(env, "First argument must be an int").ThrowAsJavaScriptException();
+    return env.Null();
   }
-  int fd = Nan::To<int>(info[0]).FromJust();
+  int fd = info[0].As<Napi::Number>().Int32Value();
 
   // callback
-  if (!info[1]->IsFunction()) {
-    Nan::ThrowTypeError("Second argument must be a function");
-    return;
+  if (!info[1].IsFunction()) {
+    Napi::TypeError::New(env, "Second argument must be a function").ThrowAsJavaScriptException();
+    return env.Null();
   }
+  Napi::Function callback = info[1].As<Napi::Function>();
 
-  GetBaton* baton = new GetBaton();
+  GetBaton* baton = new GetBaton(callback);
   baton->fd = fd;
   baton->cts = false;
   baton->dsr = false;
   baton->dcd = false;
   baton->lowLatency = false;
-  baton->callback.Reset(info[1].As<v8::Function>());
 
-  uv_work_t* req = new uv_work_t();
-  req->data = baton;
-  uv_queue_work(uv_default_loop(), req, EIO_Get, (uv_after_work_cb)EIO_AfterGet);
+  baton->Queue();
+  return env.Undefined();
 }
 
-void EIO_AfterGet(uv_work_t* req) {
-  Nan::HandleScope scope;
-
-  GetBaton* data = static_cast<GetBaton*>(req->data);
-
-  v8::Local<v8::Value> argv[2];
-
-  if (data->errorString[0]) {
-    argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
-    argv[1] = Nan::Undefined();
-  } else {
-    v8::Local<v8::Object> results = Nan::New<v8::Object>();
-    Nan::Set(results, Nan::New<v8::String>("cts").ToLocalChecked(), Nan::New<v8::Boolean>(data->cts));
-    Nan::Set(results, Nan::New<v8::String>("dsr").ToLocalChecked(), Nan::New<v8::Boolean>(data->dsr));
-    Nan::Set(results, Nan::New<v8::String>("dcd").ToLocalChecked(), Nan::New<v8::Boolean>(data->dcd));
-    Nan::Set(results, Nan::New<v8::String>("lowLatency").ToLocalChecked(), Nan::New<v8::Boolean>(data->lowLatency));
-
-    argv[0] = Nan::Null();
-    argv[1] = results;
-  }
-  data->callback.Call(2, argv, data);
-
-  delete data;
-  delete req;
-}
-
-NAN_METHOD(GetBaudRate) {
+Napi::Value GetBaudRate(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   // file descriptor
-  if (!info[0]->IsInt32()) {
-    Nan::ThrowTypeError("First argument must be an int");
-    return;
+  if (!info[0].IsNumber()) {
+    Napi::TypeError::New(env, "First argument must be an int").ThrowAsJavaScriptException();
+    return env.Null();
   }
-  int fd = Nan::To<int>(info[0]).FromJust();
+  int fd = info[0].As<Napi::Number>().Int32Value();
 
   // callback
-  if (!info[1]->IsFunction()) {
-    Nan::ThrowTypeError("Second argument must be a function");
-    return;
+  if (!info[1].IsFunction()) {
+    Napi::TypeError::New(env, "Second argument must be a function").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
-  GetBaudRateBaton* baton = new GetBaudRateBaton();
+  Napi::Function callback = info[1].As<Napi::Function>();
+  GetBaudRateBaton* baton = new GetBaudRateBaton(callback);
   baton->fd = fd;
   baton->baudRate = 0;
-  baton->callback.Reset(info[1].As<v8::Function>());
 
-  uv_work_t* req = new uv_work_t();
-  req->data = baton;
-  uv_queue_work(uv_default_loop(), req, EIO_GetBaudRate, (uv_after_work_cb)EIO_AfterGetBaudRate);
+  baton->Queue();
+  return env.Undefined();
 }
 
-void EIO_AfterGetBaudRate(uv_work_t* req) {
-  Nan::HandleScope scope;
-
-  GetBaudRateBaton* data = static_cast<GetBaudRateBaton*>(req->data);
-
-  v8::Local<v8::Value> argv[2];
-
-  if (data->errorString[0]) {
-    argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
-    argv[1] = Nan::Undefined();
-  } else {
-    v8::Local<v8::Object> results = Nan::New<v8::Object>();
-    Nan::Set(results, Nan::New<v8::String>("baudRate").ToLocalChecked(), Nan::New<v8::Integer>(data->baudRate));
-
-    argv[0] = Nan::Null();
-    argv[1] = results;
-  }
-  data->callback.Call(2, argv, data);
-
-  delete data;
-  delete req;
-}
-
-NAN_METHOD(Drain) {
+Napi::Value Drain(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   // file descriptor
-  if (!info[0]->IsInt32()) {
-    Nan::ThrowTypeError("First argument must be an int");
-    return;
+  if (!info[0].IsNumber()) {
+    Napi::TypeError::New(env, "First argument must be an int").ThrowAsJavaScriptException();
+    return env.Null();
   }
-  int fd = Nan::To<int>(info[0]).FromJust();
+  int fd = info[0].As<Napi::Number>().Int32Value();
 
   // callback
-  if (!info[1]->IsFunction()) {
-    Nan::ThrowTypeError("Second argument must be a function");
-    return;
+  if (!info[1].IsFunction()) {
+    Napi::TypeError::New(env, "Second argument must be a function").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
-  VoidBaton* baton = new VoidBaton();
+  Napi::Function callback = info[1].As<Napi::Function>();
+  DrainBaton* baton = new DrainBaton(callback);
   baton->fd = fd;
-  baton->callback.Reset(info[1].As<v8::Function>());
-
-  uv_work_t* req = new uv_work_t();
-  req->data = baton;
-  uv_queue_work(uv_default_loop(), req, EIO_Drain, (uv_after_work_cb)EIO_AfterDrain);
+  
+  baton->Queue();
+  return env.Undefined();
 }
 
-void EIO_AfterDrain(uv_work_t* req) {
-  Nan::HandleScope scope;
-
-  VoidBaton* data = static_cast<VoidBaton*>(req->data);
-
-  v8::Local<v8::Value> argv[1];
-
-  if (data->errorString[0]) {
-    argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
-  } else {
-    argv[0] = Nan::Null();
-  }
-  data->callback.Call(1, argv, data);
-
-  delete data;
-  delete req;
-}
-
-SerialPortParity NAN_INLINE(ToParityEnum(const v8::Local<v8::String>& v8str)) {
-  Nan::HandleScope scope;
-  Nan::Utf8String str(v8str);
-  size_t count = strlen(*str);
+inline SerialPortParity ToParityEnum(const Napi::String& napistr) {
+  const char* str = napistr.Utf8Value().c_str();
+  size_t count = strlen(str);
   SerialPortParity parity = SERIALPORT_PARITY_NONE;
-  if (!strncasecmp(*str, "none", count)) {
+  if (!strncasecmp(str, "none", count)) {
     parity = SERIALPORT_PARITY_NONE;
-  } else if (!strncasecmp(*str, "even", count)) {
+  } else if (!strncasecmp(str, "even", count)) {
     parity = SERIALPORT_PARITY_EVEN;
-  } else if (!strncasecmp(*str, "mark", count)) {
+  } else if (!strncasecmp(str, "mark", count)) {
     parity = SERIALPORT_PARITY_MARK;
-  } else if (!strncasecmp(*str, "odd", count)) {
+  } else if (!strncasecmp(str, "odd", count)) {
     parity = SERIALPORT_PARITY_ODD;
-  } else if (!strncasecmp(*str, "space", count)) {
+  } else if (!strncasecmp(str, "space", count)) {
     parity = SERIALPORT_PARITY_SPACE;
   }
   return parity;
 }
 
-SerialPortStopBits NAN_INLINE(ToStopBitEnum(double stopBits)) {
+ inline SerialPortStopBits ToStopBitEnum(double stopBits) {
   if (stopBits > 1.4 && stopBits < 1.6) {
     return SERIALPORT_STOPBITS_ONE_FIVE;
   }
@@ -459,28 +296,28 @@ SerialPortStopBits NAN_INLINE(ToStopBitEnum(double stopBits)) {
   return SERIALPORT_STOPBITS_ONE;
 }
 
-NAN_MODULE_INIT(init) {
-  Nan::HandleScope scope;
-  Nan::SetMethod(target, "set", Set);
-  Nan::SetMethod(target, "get", Get);
-  Nan::SetMethod(target, "getBaudRate", GetBaudRate);
-  Nan::SetMethod(target, "open", Open);
-  Nan::SetMethod(target, "update", Update);
-  Nan::SetMethod(target, "close", Close);
-  Nan::SetMethod(target, "flush", Flush);
-  Nan::SetMethod(target, "drain", Drain);
+Napi::Object init(Napi::Env env, Napi::Object exports) {
+  exports.Set("set", Napi::Function::New(env, Set));
+  exports.Set("get", Napi::Function::New(env, Get));
+  exports.Set("getBaudRate", Napi::Function::New(env, GetBaudRate));
+  exports.Set("open", Napi::Function::New(env, Open));
+  exports.Set("update", Napi::Function::New(env, Update));
+  exports.Set("close", Napi::Function::New(env, Close));
+  exports.Set("flush", Napi::Function::New(env, Flush));
+  exports.Set("drain", Napi::Function::New(env, Drain));
 
   #ifdef __APPLE__
-  Nan::SetMethod(target, "list", List);
+  exports.Set("list", Napi::Function::New(env, List));
   #endif
 
   #ifdef WIN32
-  Nan::SetMethod(target, "write", Write);
-  Nan::SetMethod(target, "read", Read);
-  Nan::SetMethod(target, "list", List);
+  exports.Set("write", Napi::Function::New(env, Write));
+  exports.Set("read", Napi::Function::New(env, Read));
+  exports.Set("list", Napi::Function::New(env, List));
   #else
-  Poller::Init(target);
+  Poller::Init(env, exports);
   #endif
+  return exports;
 }
 
-NODE_MODULE(serialport, init);
+NODE_API_MODULE(serialport, init);

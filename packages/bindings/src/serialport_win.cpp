@@ -1,6 +1,7 @@
 #include "./serialport.h"
 #include "./serialport_win.h"
-#include <nan.h>
+#include <napi.h>
+#include <uv.h>
 #include <list>
 #include <vector>
 #include <string.h>
@@ -21,9 +22,6 @@
 // Declare type of pointer to CancelIoEx function
 typedef BOOL (WINAPI *CancelIoExType)(HANDLE hFile, LPOVERLAPPED lpOverlapped);
 
-static inline HANDLE int2handle(int ptr) {
-  return reinterpret_cast<HANDLE>(static_cast<uintptr_t>(ptr));
-}
 
 std::list<int> g_closingHandles;
 
@@ -55,24 +53,22 @@ void AsyncCloseCallback(uv_handle_t* handle) {
   delete async;
 }
 
-void EIO_Open(uv_work_t* req) {
-  OpenBaton* data = static_cast<OpenBaton*>(req->data);
-
+void OpenBaton::Execute() {
   char originalPath[1024];
-  strncpy_s(originalPath, sizeof(originalPath), data->path, _TRUNCATE);
-  // data->path is char[1024] but on Windows it has the form "COMx\0" or "COMxx\0"
+  strncpy_s(originalPath, sizeof(originalPath), path, _TRUNCATE);
+  // path is char[1024] but on Windows it has the form "COMx\0" or "COMxx\0"
   // We want to prepend "\\\\.\\" to it before we call CreateFile
-  strncpy(data->path + 20, data->path, 10);
-  strncpy(data->path, "\\\\.\\", 4);
-  strncpy(data->path + 4, data->path + 20, 10);
+  strncpy(path + 20, path, 10);
+  strncpy(path, "\\\\.\\", 4);
+  strncpy(path + 4, path + 20, 10);
 
   int shareMode = FILE_SHARE_READ | FILE_SHARE_WRITE;
-  if (data->lock) {
+  if (lock) {
     shareMode = 0;
   }
 
   HANDLE file = CreateFile(
-    data->path,
+    path,
     GENERIC_READ | GENERIC_WRITE,
     shareMode,  // dwShareMode 0 Prevents other processes from opening if they request delete, read, or write access
     NULL,
@@ -84,7 +80,8 @@ void EIO_Open(uv_work_t* req) {
     DWORD errorCode = GetLastError();
     char temp[100];
     _snprintf_s(temp, sizeof(temp), _TRUNCATE, "Opening %s", originalPath);
-    ErrorCodeToString(temp, errorCode, data->errorString);
+    ErrorCodeToString(temp, errorCode, errorString);
+    this->SetError(errorString);
     return;
   }
 
@@ -93,38 +90,38 @@ void EIO_Open(uv_work_t* req) {
   dcb.DCBlength = sizeof(DCB);
 
   if (!GetCommState(file, &dcb)) {
-    ErrorCodeToString("Open (GetCommState)", GetLastError(), data->errorString);
+    ErrorCodeToString("Open (GetCommState)", GetLastError(), errorString);
+    this->SetError(errorString);
     CloseHandle(file);
     return;
   }
 
-  if (data->hupcl) {
+  if (hupcl) {
     dcb.fDtrControl = DTR_CONTROL_ENABLE;
   } else {
     dcb.fDtrControl = DTR_CONTROL_DISABLE;  // disable DTR to avoid reset
   }
 
   dcb.Parity = NOPARITY;
-  dcb.ByteSize = 8;
   dcb.StopBits = ONESTOPBIT;
 
 
   dcb.fOutxDsrFlow = FALSE;
   dcb.fOutxCtsFlow = FALSE;
 
-  if (data->xon) {
+  if (xon) {
     dcb.fOutX = TRUE;
   } else {
     dcb.fOutX = FALSE;
   }
 
-  if (data->xoff) {
+  if (xoff) {
     dcb.fInX = TRUE;
   } else {
     dcb.fInX = FALSE;
   }
 
-  if (data->rtscts) {
+  if (rtscts) {
     dcb.fRtsControl = RTS_CONTROL_HANDSHAKE;
     dcb.fOutxCtsFlow = TRUE;
   } else {
@@ -132,10 +129,10 @@ void EIO_Open(uv_work_t* req) {
   }
 
   dcb.fBinary = true;
-  dcb.BaudRate = data->baudRate;
-  dcb.ByteSize = data->dataBits;
+  dcb.BaudRate = baudRate;
+  dcb.ByteSize = dataBits;
 
-  switch (data->parity) {
+  switch (parity) {
   case SERIALPORT_PARITY_NONE:
     dcb.Parity = NOPARITY;
     break;
@@ -153,7 +150,7 @@ void EIO_Open(uv_work_t* req) {
     break;
   }
 
-  switch (data->stopBits) {
+  switch (stopBits) {
   case SERIALPORT_STOPBITS_ONE:
     dcb.StopBits = ONESTOPBIT;
     break;
@@ -166,7 +163,8 @@ void EIO_Open(uv_work_t* req) {
   }
 
   if (!SetCommState(file, &dcb)) {
-    ErrorCodeToString("Open (SetCommState)", GetLastError(), data->errorString);
+    ErrorCodeToString("Open (SetCommState)", GetLastError(), errorString);
+    this->SetError(errorString);
     CloseHandle(file);
     return;
   }
@@ -181,7 +179,8 @@ void EIO_Open(uv_work_t* req) {
   commTimeouts.WriteTotalTimeoutMultiplier = 0;  // Variable part of write timeout (per byte)
 
   if (!SetCommTimeouts(file, &commTimeouts)) {
-    ErrorCodeToString("Open (SetCommTimeouts)", GetLastError(), data->errorString);
+    ErrorCodeToString("Open (SetCommTimeouts)", GetLastError(), errorString);
+    this->SetError(errorString);
     CloseHandle(file);
     return;
   }
@@ -190,97 +189,95 @@ void EIO_Open(uv_work_t* req) {
   PurgeComm(file, PURGE_RXCLEAR);
   PurgeComm(file, PURGE_TXCLEAR);
 
-  data->result = static_cast<int>(reinterpret_cast<uintptr_t>(file));
+  result = static_cast<int>(reinterpret_cast<uintptr_t>(file));
 }
 
-void EIO_Update(uv_work_t* req) {
-  ConnectionOptionsBaton* data = static_cast<ConnectionOptionsBaton*>(req->data);
-
+void ConnectionOptionsBaton::Execute() {
   DCB dcb = { 0 };
   SecureZeroMemory(&dcb, sizeof(DCB));
   dcb.DCBlength = sizeof(DCB);
 
-  if (!GetCommState(int2handle(data->fd), &dcb)) {
-    ErrorCodeToString("Update (GetCommState)", GetLastError(), data->errorString);
+  if (!GetCommState(int2handle(fd), &dcb)) {
+    ErrorCodeToString("Update (GetCommState)", GetLastError(), errorString);
+    this->SetError(errorString);
     return;
   }
 
-  dcb.BaudRate = data->baudRate;
+  dcb.BaudRate = baudRate;
 
-  if (!SetCommState(int2handle(data->fd), &dcb)) {
-    ErrorCodeToString("Update (SetCommState)", GetLastError(), data->errorString);
+  if (!SetCommState(int2handle(fd), &dcb)) {
+    ErrorCodeToString("Update (SetCommState)", GetLastError(), errorString);
+    this->SetError(errorString);
     return;
   }
 }
 
-void EIO_Set(uv_work_t* req) {
-  SetBaton* data = static_cast<SetBaton*>(req->data);
-
-  if (data->rts) {
-    EscapeCommFunction(int2handle(data->fd), SETRTS);
+void SetBaton::Execute() {
+  if (rts) {
+    EscapeCommFunction(int2handle(fd), SETRTS);
   } else {
-    EscapeCommFunction(int2handle(data->fd), CLRRTS);
+    EscapeCommFunction(int2handle(fd), CLRRTS);
   }
 
-  if (data->dtr) {
-    EscapeCommFunction(int2handle(data->fd), SETDTR);
+  if (dtr) {
+    EscapeCommFunction(int2handle(fd), SETDTR);
   } else {
-    EscapeCommFunction(int2handle(data->fd), CLRDTR);
+    EscapeCommFunction(int2handle(fd), CLRDTR);
   }
 
-  if (data->brk) {
-    EscapeCommFunction(int2handle(data->fd), SETBREAK);
+  if (brk) {
+    EscapeCommFunction(int2handle(fd), SETBREAK);
   } else {
-    EscapeCommFunction(int2handle(data->fd), CLRBREAK);
+    EscapeCommFunction(int2handle(fd), CLRBREAK);
   }
 
   DWORD bits = 0;
 
-  GetCommMask(int2handle(data->fd), &bits);
+  GetCommMask(int2handle(fd), &bits);
 
   bits &= ~(EV_CTS | EV_DSR);
 
-  if (data->cts) {
+  if (cts) {
     bits |= EV_CTS;
   }
 
-  if (data->dsr) {
+  if (dsr) {
     bits |= EV_DSR;
   }
 
-  if (!SetCommMask(int2handle(data->fd), bits)) {
-    ErrorCodeToString("Setting options on COM port (SetCommMask)", GetLastError(), data->errorString);
+  if (!SetCommMask(int2handle(fd), bits)) {
+    ErrorCodeToString("Setting options on COM port (SetCommMask)", GetLastError(), errorString);
+    this->SetError(errorString);
     return;
   }
 }
 
-void EIO_Get(uv_work_t* req) {
-  GetBaton* data = static_cast<GetBaton*>(req->data);
-
+void GetBaton::Execute() {
   DWORD bits = 0;
-  if (!GetCommModemStatus(int2handle(data->fd), &bits)) {
-    ErrorCodeToString("Getting control settings on COM port (GetCommModemStatus)", GetLastError(), data->errorString);
+  if (!GetCommModemStatus(int2handle(fd), &bits)) {
+    ErrorCodeToString("Getting control settings on COM port (GetCommModemStatus)", GetLastError(), errorString);
+    this->SetError(errorString);
     return;
   }
 
-  data->cts = bits & MS_CTS_ON;
-  data->dsr = bits & MS_DSR_ON;
-  data->dcd = bits & MS_RLSD_ON;
+  cts = bits & MS_CTS_ON;
+  dsr = bits & MS_DSR_ON;
+  dcd = bits & MS_RLSD_ON;
 }
 
-void EIO_GetBaudRate(uv_work_t* req) {
-  GetBaudRateBaton* data = static_cast<GetBaudRateBaton*>(req->data);
+void GetBaudRateBaton::Execute() {
 
   DCB dcb = { 0 };
   SecureZeroMemory(&dcb, sizeof(DCB));
   dcb.DCBlength = sizeof(DCB);
 
-  if (!GetCommState(int2handle(data->fd), &dcb)) {
-    ErrorCodeToString("Getting baud rate (GetCommState)", GetLastError(), data->errorString);
+  if (!GetCommState(int2handle(fd), &dcb)) {
+    ErrorCodeToString("Getting baud rate (GetCommState)", GetLastError(), errorString);
+    this->SetError(errorString);
     return;
   }
 
-  data->baudRate = static_cast<int>(dcb.BaudRate);
+  baudRate = static_cast<int>(dcb.BaudRate);
 }
 
 bool IsClosingHandle(int fd) {
@@ -291,46 +288,6 @@ bool IsClosingHandle(int fd) {
     }
   }
   return false;
-}
-
-NAN_METHOD(Write) {
-  // file descriptor
-  if (!info[0]->IsInt32()) {
-    Nan::ThrowTypeError("First argument must be an int");
-    return;
-  }
-  int fd = Nan::To<int>(info[0]).FromJust();
-
-  // buffer
-  if (!info[1]->IsObject() || !node::Buffer::HasInstance(info[1])) {
-    Nan::ThrowTypeError("Second argument must be a buffer");
-    return;
-  }
-  v8::Local<v8::Object> buffer = Nan::To<v8::Object>(info[1]).ToLocalChecked();
-  char* bufferData = node::Buffer::Data(buffer);
-  size_t bufferLength = node::Buffer::Length(buffer);
-
-  // callback
-  if (!info[2]->IsFunction()) {
-    Nan::ThrowTypeError("Third argument must be a function");
-    return;
-  }
-
-  WriteBaton* baton = new WriteBaton();
-  baton->fd = fd;
-  baton->buffer.Reset(buffer);
-  baton->bufferData = bufferData;
-  baton->bufferLength = bufferLength;
-  baton->offset = 0;
-  baton->callback.Reset(info[2].As<v8::Function>());
-  baton->complete = false;
-
-  uv_async_t* async = new uv_async_t;
-  uv_async_init(uv_default_loop(), async, EIO_AfterWrite);
-  async->data = baton;
-  // WriteFileEx requires a thread that can block. Create a new thread to
-  // run the write operation, saving the handle so it can be deallocated later.
-  baton->hThread = CreateThread(NULL, 0, WriteThread, async, 0, NULL);
 }
 
 void __stdcall WriteIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAPPED* ov) {
@@ -380,79 +337,65 @@ DWORD __stdcall WriteThread(LPVOID param) {
 }
 
 void EIO_AfterWrite(uv_async_t* req) {
-  Nan::HandleScope scope;
   WriteBaton* baton = static_cast<WriteBaton*>(req->data);
+  Napi::Env env = baton->callback.Env();
+  Napi::HandleScope scope(env);
   WaitForSingleObject(baton->hThread, INFINITE);
   CloseHandle(baton->hThread);
   uv_close(reinterpret_cast<uv_handle_t*>(req), AsyncCloseCallback);
 
   v8::Local<v8::Value> argv[1];
   if (baton->errorString[0]) {
-    argv[0] = v8::Exception::Error(Nan::New<v8::String>(baton->errorString).ToLocalChecked());
+    baton->callback.Call({Napi::Error::New(env, baton->errorString).Value()});
   } else {
-    argv[0] = Nan::Null();
+    baton->callback.Call({env.Null()});
   }
-  baton->callback.Call(1, argv, baton);
   baton->buffer.Reset();
   delete baton;
 }
 
-NAN_METHOD(Read) {
+
+Napi::Value Write(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   // file descriptor
-  if (!info[0]->IsInt32()) {
-    Nan::ThrowTypeError("First argument must be a fd");
-    return;
+  if (!info[0].IsNumber()) {
+    Napi::TypeError::New(env, "First argument must be an int").ThrowAsJavaScriptException();
+    return env.Null();
   }
-  int fd = Nan::To<int>(info[0]).FromJust();
+  int fd = info[0].As<Napi::Number>().Int32Value();
 
   // buffer
-  if (!info[1]->IsObject() || !node::Buffer::HasInstance(info[1])) {
-    Nan::ThrowTypeError("Second argument must be a buffer");
-    return;
+  if (!info[1].IsObject() || !info[1].IsBuffer()) {
+    Napi::TypeError::New(env, "Second argument must be a buffer").ThrowAsJavaScriptException();
+    return env.Null();
   }
-  v8::Local<v8::Object> buffer = Nan::To<v8::Object>(info[1]).ToLocalChecked();
-  size_t bufferLength = node::Buffer::Length(buffer);
-
-  // offset
-  if (!info[2]->IsInt32()) {
-    Nan::ThrowTypeError("Third argument must be an int");
-    return;
-  }
-  int offset = Nan::To<v8::Int32>(info[2]).ToLocalChecked()->Value();
-
-  // bytes to read
-  if (!info[3]->IsInt32()) {
-    Nan::ThrowTypeError("Fourth argument must be an int");
-    return;
-  }
-  size_t bytesToRead = Nan::To<v8::Int32>(info[3]).ToLocalChecked()->Value();
-
-  if ((bytesToRead + offset) > bufferLength) {
-    Nan::ThrowTypeError("'bytesToRead' + 'offset' cannot be larger than the buffer's length");
-    return;
-  }
+  Napi::Buffer<char> buffer = info[1].As<Napi::Buffer<char>>();
+  //getBufferFromObject(info[1].ToObject().ti);
+  char* bufferData = buffer.Data(); //.As<Napi::Buffer<char>>().Data();
+  size_t bufferLength = buffer.Length();//.As<Napi::Buffer<char>>().Length();
 
   // callback
-  if (!info[4]->IsFunction()) {
-    Nan::ThrowTypeError("Fifth argument must be a function");
-    return;
+  if (!info[2].IsFunction()) {
+    Napi::TypeError::New(env, "Third argument must be a function").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
-  ReadBaton* baton = new ReadBaton();
+  WriteBaton* baton = new WriteBaton();
+  baton->callback = Napi::Persistent(info[2].As<Napi::Function>());
   baton->fd = fd;
-  baton->offset = offset;
-  baton->bytesToRead = bytesToRead;
+  baton->buffer.Reset(buffer);
+  baton->bufferData = bufferData;
   baton->bufferLength = bufferLength;
-  baton->bufferData = node::Buffer::Data(buffer);
-  baton->callback.Reset(info[4].As<v8::Function>());
+  baton->offset = 0;
   baton->complete = false;
 
   uv_async_t* async = new uv_async_t;
-  uv_async_init(uv_default_loop(), async, EIO_AfterRead);
+  uv_async_init(uv_default_loop(), async, EIO_AfterWrite);
   async->data = baton;
-  // ReadFileEx requires a thread that can block. Create a new thread to
-  // run the read operation, saving the handle so it can be deallocated later.
-  baton->hThread = CreateThread(NULL, 0, ReadThread, async, 0, NULL);
+  // WriteFileEx requires a thread that can block. Create a new thread to
+  // run the write operation, saving the handle so it can be deallocated later.
+  baton->hThread = CreateThread(NULL, 0, WriteThread, async, 0, NULL);
+  return env.Null();
 }
 
 void __stdcall ReadIOCompletion(DWORD errorCode, DWORD bytesTransferred, OVERLAPPED* ov) {
@@ -561,29 +504,83 @@ DWORD __stdcall ReadThread(LPVOID param) {
 }
 
 void EIO_AfterRead(uv_async_t* req) {
-  Nan::HandleScope scope;
   ReadBaton* baton = static_cast<ReadBaton*>(req->data);
+  Napi::Env env = baton->callback.Env();
+  Napi::HandleScope scope(env);
   WaitForSingleObject(baton->hThread, INFINITE);
   CloseHandle(baton->hThread);
   uv_close(reinterpret_cast<uv_handle_t*>(req), AsyncCloseCallback);
 
-  v8::Local<v8::Value> argv[2];
   if (baton->errorString[0]) {
-    argv[0] = Nan::Error(baton->errorString);
-    argv[1] = Nan::Undefined();
+    baton->callback.Call({Napi::Error::New(env, baton->errorString).Value(), env.Undefined()});
   } else {
-    argv[0] = Nan::Null();
-    argv[1] = Nan::New<v8::Integer>(static_cast<int>(baton->bytesRead));
+    baton->callback.Call({env.Null(), Napi::Number::New(env, static_cast<int>(baton->bytesRead))});
   }
-
-  baton->callback.Call(2, argv, baton);
   delete baton;
 }
 
-void EIO_Close(uv_work_t* req) {
-  VoidBaton* data = static_cast<VoidBaton*>(req->data);
+Napi::Value Read(const Napi::CallbackInfo& info) {
+    Napi::Env env = info.Env();
+  // file descriptor
+  if (!info[0].IsNumber()) {
+    Napi::TypeError::New(env, "First argument must be a fd").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+  int fd = info[0].As<Napi::Number>().Int32Value();
 
-  g_closingHandles.push_back(data->fd);
+  // buffer
+  if (!info[1].IsObject() || !info[1].IsBuffer()) {
+    Napi::TypeError::New(env, "Second argument must be a buffer").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+  Napi::Object buffer = info[1].ToObject();
+  size_t bufferLength = buffer.As<Napi::Buffer<char>>().Length();
+
+  // offset
+  if (!info[2].IsNumber()) {
+    Napi::TypeError::New(env, "Third argument must be an int").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+  int offset = info[2].ToNumber().Int64Value();
+
+  // bytes to read
+  if (!info[3].IsNumber()) {
+    Napi::TypeError::New(env, "Fourth argument must be an int").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+  size_t bytesToRead = info[3].ToNumber().Int64Value();
+
+  if ((bytesToRead + offset) > bufferLength) {
+    Napi::TypeError::New(env, "'bytesToRead' + 'offset' cannot be larger than the buffer's length").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  // callback
+  if (!info[4].IsFunction()) {
+    Napi::TypeError::New(env, "Fifth argument must be a function").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+  ReadBaton* baton = new ReadBaton();
+  baton->callback = Napi::Persistent(info[4].As<Napi::Function>());
+  baton->fd = fd;
+  baton->offset = offset;
+  baton->bytesToRead = bytesToRead;
+  baton->bufferLength = bufferLength;
+
+  baton->bufferData = buffer.As<Napi::Buffer<char>>().Data();
+  baton->complete = false;
+
+  uv_async_t* async = new uv_async_t;
+  uv_async_init(uv_default_loop(), async, EIO_AfterRead);
+  async->data = baton;
+  baton->hThread = CreateThread(NULL, 0, ReadThread, async, 0, NULL);
+  // ReadFileEx requires a thread that can block. Create a new thread to
+  // run the read operation, saving the handle so it can be deallocated later.
+  return env.Null();
+}
+
+void CloseBaton::Execute() {
+  g_closingHandles.push_back(fd);
 
   HMODULE hKernel32 = LoadLibrary("kernel32.dll");
   // Look up function address
@@ -592,10 +589,11 @@ void EIO_Close(uv_work_t* req) {
   if (pCancelIoEx) {
     // Function exists so call it
     // Cancel all pending IO Requests for the current device
-    pCancelIoEx(int2handle(data->fd), NULL);
+    pCancelIoEx(int2handle(fd), NULL);
   }
-  if (!CloseHandle(int2handle(data->fd))) {
-    ErrorCodeToString("Closing connection (CloseHandle)", GetLastError(), data->errorString);
+  if (!CloseHandle(int2handle(fd))) {
+    ErrorCodeToString("Closing connection (CloseHandle)", GetLastError(), errorString);
+    this->SetError(errorString);
     return;
   }
 }
@@ -607,20 +605,20 @@ char *copySubstring(char *someString, int n) {
   return new_;
 }
 
-NAN_METHOD(List) {
+Napi::Value List(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
   // callback
-  if (!info[0]->IsFunction()) {
-    Nan::ThrowTypeError("First argument must be a function");
-    return;
+  if (!info[0].IsFunction()) {
+    Napi::TypeError::New(env, "First argument must be a function").ThrowAsJavaScriptException();
+    return env.Null();
   }
 
-  ListBaton* baton = new ListBaton();
+  Napi::Function callback = info[0].As<Napi::Function>();
+  ListBaton* baton = new ListBaton(callback);
   snprintf(baton->errorString, sizeof(baton->errorString), "");
-  baton->callback.Reset(info[0].As<v8::Function>());
 
-  uv_work_t* req = new uv_work_t();
-  req->data = baton;
-  uv_queue_work(uv_default_loop(), req, EIO_List, (uv_after_work_cb)EIO_AfterList);
+  baton->Queue();
+  return env.Undefined();
 }
 
 // It's possible that the s/n is a construct and not the s/n of the parent USB
@@ -754,7 +752,7 @@ void getSerialNumber(const char *vid,
                 DWORD readSize = sizeof(readUuid);
 
                 // Query VID_(vendorId)&PID_(productId)\(serialnumber)\ContainerID
-                DWORD retCode = RegQueryValueEx(deviceHKey, "ContainerID", NULL, NULL, (LPBYTE)&readUuid, &readSize);
+                retCode = RegQueryValueEx(deviceHKey, "ContainerID", NULL, NULL, (LPBYTE)&readUuid, &readSize);
                 if (retCode == ERROR_SUCCESS) {
                     readUuid[readSize] = '\0';
                     if (strcmp(wantedUuid, readUuid) == 0) {
@@ -779,8 +777,7 @@ void getSerialNumber(const char *vid,
   return;
 }
 
-void EIO_List(uv_work_t* req) {
-  ListBaton* data = static_cast<ListBaton*>(req->data);
+void ListBaton::Execute() {
 
   GUID *guidDev = (GUID*)& GUID_DEVCLASS_PORTS;  // NOLINT
   HDEVINFO hDevInfo = SetupDiGetClassDevs(guidDev, NULL, NULL, DIGCF_PRESENT | DIGCF_PROFILE);
@@ -795,6 +792,7 @@ void EIO_List(uv_work_t* req) {
   char *name;
   char *manufacturer;
   char *locationId;
+  char *friendlyName;
   char serialNumber[MAX_REGISTRY_KEY_SIZE];
   bool isCom;
   while (true) {
@@ -805,6 +803,8 @@ void EIO_List(uv_work_t* req) {
     name = NULL;
     manufacturer = NULL;
     locationId = NULL;
+    friendlyName = NULL;
+    isCom = false;
 
     ZeroMemory(&deviceInfoData, sizeof(SP_DEVINFO_DATA));
     deviceInfoData.cbSize = sizeof(SP_DEVINFO_DATA);
@@ -840,6 +840,12 @@ void EIO_List(uv_work_t* req) {
       locationId = strdup(szBuffer);
     }
     if (SetupDiGetDeviceRegistryProperty(hDevInfo, &deviceInfoData,
+                                         SPDRP_FRIENDLYNAME, &dwPropertyRegDataType,
+                                         reinterpret_cast<BYTE*>(szBuffer),
+                                         sizeof(szBuffer), &dwSize)) {
+      friendlyName = strdup(szBuffer);
+    }
+    if (SetupDiGetDeviceRegistryProperty(hDevInfo, &deviceInfoData,
                                          SPDRP_MFG, &dwPropertyRegDataType,
                                          reinterpret_cast<BYTE*>(szBuffer),
                                          sizeof(szBuffer), &dwSize)) {
@@ -870,7 +876,10 @@ void EIO_List(uv_work_t* req) {
       if (locationId) {
         resultItem->locationId = locationId;
       }
-      data->results.push_back(resultItem);
+      if (friendlyName) {
+        resultItem->friendlyName = friendlyName;
+      }
+      results.push_back(resultItem);
     }
     free(pnpId);
     free(vendorId);
@@ -887,68 +896,29 @@ void EIO_List(uv_work_t* req) {
   }
 }
 
-void setIfNotEmpty(v8::Local<v8::Object> item, std::string key, const char *value) {
-  v8::Local<v8::String> v8key = Nan::New<v8::String>(key).ToLocalChecked();
+void setIfNotEmpty(Napi::Object item, std::string key, const char *value) {
+  Napi::Env env = item.Env();
+  Napi::String v8key = Napi::String::New(env, key);
   if (strlen(value) > 0) {
-    Nan::Set(item, v8key, Nan::New<v8::String>(value).ToLocalChecked());
+    (item).Set(v8key, Napi::String::New(env, value));
   } else {
-    Nan::Set(item, v8key, Nan::Undefined());
+    (item).Set(v8key, env.Undefined());
   }
 }
 
-void EIO_AfterList(uv_work_t* req) {
-  Nan::HandleScope scope;
-
-  ListBaton* data = static_cast<ListBaton*>(req->data);
-
-  v8::Local<v8::Value> argv[2];
-  if (data->errorString[0]) {
-    argv[0] = v8::Exception::Error(Nan::New<v8::String>(data->errorString).ToLocalChecked());
-    argv[1] = Nan::Undefined();
-  } else {
-    v8::Local<v8::Array> results = Nan::New<v8::Array>();
-    int i = 0;
-    for (std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it, i++) {
-      v8::Local<v8::Object> item = Nan::New<v8::Object>();
-
-      setIfNotEmpty(item, "path", (*it)->path.c_str());
-      setIfNotEmpty(item, "manufacturer", (*it)->manufacturer.c_str());
-      setIfNotEmpty(item, "serialNumber", (*it)->serialNumber.c_str());
-      setIfNotEmpty(item, "pnpId", (*it)->pnpId.c_str());
-      setIfNotEmpty(item, "locationId", (*it)->locationId.c_str());
-      setIfNotEmpty(item, "vendorId", (*it)->vendorId.c_str());
-      setIfNotEmpty(item, "productId", (*it)->productId.c_str());
-
-      Nan::Set(results, i, item);
-    }
-    argv[0] = Nan::Null();
-    argv[1] = results;
-  }
-  data->callback.Call(2, argv, data);
-
-  for (std::list<ListResultItem*>::iterator it = data->results.begin(); it != data->results.end(); ++it) {
-    delete *it;
-  }
-  delete data;
-  delete req;
-}
-
-
-void EIO_Flush(uv_work_t* req) {
-  VoidBaton* data = static_cast<VoidBaton*>(req->data);
-
+void FlushBaton::Execute() {
   DWORD purge_all = PURGE_RXCLEAR | PURGE_TXABORT | PURGE_TXCLEAR;
-  if (!PurgeComm(int2handle(data->fd), purge_all)) {
-    ErrorCodeToString("Flushing connection (PurgeComm)", GetLastError(), data->errorString);
+  if (!PurgeComm(int2handle(fd), purge_all)) {
+    ErrorCodeToString("Flushing connection (PurgeComm)", GetLastError(), errorString);
+    this->SetError(errorString);
     return;
   }
 }
 
-void EIO_Drain(uv_work_t* req) {
-  VoidBaton* data = static_cast<VoidBaton*>(req->data);
-
-  if (!FlushFileBuffers(int2handle(data->fd))) {
-    ErrorCodeToString("Draining connection (FlushFileBuffers)", GetLastError(), data->errorString);
+void DrainBaton::Execute() {
+  if (!FlushFileBuffers(int2handle(fd))) {
+    ErrorCodeToString("Draining connection (FlushFileBuffers)", GetLastError(), errorString);
+    this->SetError(errorString);
     return;
   }
 }
