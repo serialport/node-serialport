@@ -1,20 +1,20 @@
 {
   "name": "@serialport/bindings",
-  "version": "9.2.8",
+  "version": "10.0.0",
   "main": "lib",
   "keywords": [
     "serialport-binding"
   ],
   "dependencies": {
-    "@serialport/binding-abstract": "9.2.3",
-    "@serialport/parser-readline": "9.2.4",
+    "@serialport/binding-abstract": "10.0.0",
+    "@serialport/parser-readline": "10.0.0",
     "bindings": "^1.5.0",
     "debug": "^4.3.2",
-    "prebuild-install": "^7.0.0",
-    "node-addon-api": "4.2.0"
+    "node-addon-api": "4.2.0",
+    "prebuild-install": "^7.0.0"
   },
   "devDependencies": {
-    "@serialport/binding-mock": "9.2.4",
+    "@serialport/binding-mock": "10.0.0",
     "node-abi": "3.5.0"
   },
   "engines": {

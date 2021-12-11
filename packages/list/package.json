@@ -1,12 +1,12 @@
 {
   "name": "@serialport/list",
-  "version": "9.2.8",
+  "version": "10.0.0",
   "main": "lib",
   "bin": {
     "serialport-list": "./lib/index.js"
   },
   "dependencies": {
-    "@serialport/bindings": "9.2.8",
+    "@serialport/bindings": "10.0.0",
     "commander": "^7.1.0"
   },
   "engines": {

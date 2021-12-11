@@ -1,12 +1,12 @@
 {
   "name": "@serialport/binding-mock",
-  "version": "9.2.4",
+  "version": "10.0.0",
   "main": "lib",
   "keywords": [
     "serialport-binding"
   ],
   "dependencies": {
-    "@serialport/binding-abstract": "9.2.3",
+    "@serialport/binding-abstract": "10.0.0",
     "debug": "^4.3.2"
   },
   "engines": {

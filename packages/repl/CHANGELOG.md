@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.0.0](https://github.com/serialport/node-serialport/compare/v9.2.8...v10.0.0) (2021-12-11)
+
+**Note:** Version bump only for package @serialport/repl
+
+
+
+
+
 ## [9.2.8](https://github.com/serialport/node-serialport/compare/v9.2.7...v9.2.8) (2021-11-26)
 
 **Note:** Version bump only for package @serialport/repl

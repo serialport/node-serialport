@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.0.0](https://github.com/serialport/node-serialport/compare/v9.2.8...v10.0.0) (2021-12-11)
+
+
+### Features
+
+* Node-API migration ([#2305](https://github.com/serialport/node-serialport/issues/2305)) ([2fe7d43](https://github.com/serialport/node-serialport/commit/2fe7d434ca087f95a09ed9a3274d8b5f24e09ab4))
+
+
+### BREAKING CHANGES
+
+* This release switches to NAPI which changes how many binaries are released and will potentially break your build system
+
+
+
+
+
 ## [9.2.4](https://github.com/serialport/node-serialport/compare/v9.2.3...v9.2.4) (2021-09-28)
 
 **Note:** Version bump only for package @serialport/stream
