@@ -3,6 +3,7 @@ on:
   push:
     tags:
     - '@serialport/bindings@*'
+    - 'v*'
     - 'force-build'
 jobs:
   test:
