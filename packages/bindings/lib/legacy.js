@@ -24,3 +24,5 @@ const wrapWithHiddenComName = async portsPromise => {
 module.exports = {
   wrapWithHiddenComName,
 }
+
+// kill this
