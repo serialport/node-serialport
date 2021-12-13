@@ -1,14 +1,6 @@
 {
-  "extends": [
-    "eslint:recommended",
-    "plugin:node/recommended",
-    "plugin:mocha/recommended",
-    "prettier"
-  ],
-  "plugins": [
-    "node",
-    "mocha"
-  ],
+  "extends": ["eslint:recommended", "plugin:node/recommended", "plugin:mocha/recommended", "prettier"],
+  "plugins": ["node", "mocha"],
   "env": {
     "node": true,
     "mocha": true,
@@ -28,7 +20,7 @@
   "rules": {
     "no-extra-semi": "off",
     "no-process-exit": "off",
-    "no-unused-vars": [ "error", { "vars": "all", "args": "after-used" }],
+    "no-unused-vars": ["error", { "vars": "all", "args": "after-used" }],
     "no-var": "error",
     "node/no-extraneous-require": "off",
     "node/no-unpublished-require": "off",
@@ -45,7 +37,7 @@
     "mocha/no-mocha-arrows": "off",
     "mocha/no-pending-tests": "error",
     "mocha/no-setup-in-describe": "off",
-    "strict": [ "error", "never" ],
+    "strict": ["error", "never"],
     "valid-jsdoc": "off"
   }
 }

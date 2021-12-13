@@ -1,4 +1,4 @@
-module.exports = function(plop) {
+module.exports = function (plop) {
   plop.setGenerator('package', {
     description: 'Make a new parser',
 

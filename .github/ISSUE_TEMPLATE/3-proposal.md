@@ -6,9 +6,11 @@ about: Propose a non-trivial change or new feature for SerialPort
 ## 💥 Proposal
 
 ### What feature you'd like to see
+
 (A clear and concise description of what the proposal is.)
 
 ## Motivation
+
 (Please outline the motivation for the proposal. It's interesting knowing what people are working on and also could help community members make suggestions for work-arounds until the feature is built)
 
 ## Pitch

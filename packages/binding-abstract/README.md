@@ -5,6 +5,7 @@ This Abstract binding class is the base for all serialport bindings. You wouldn'
 This is currently used for the win32, linux, darwin and mock bindings.
 
 This is how you use it.
+
 ```js
 class MockBinding extends AbstractBinding {
   constructor(opt) {

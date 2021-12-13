@@ -1,4 +1,5 @@
 ## SerialPort Terminal
+
 ```bash
 $ npx @serialport/terminal  -p <port> [options]
 # or

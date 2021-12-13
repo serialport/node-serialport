@@ -1,4 +1,5 @@
 ## SerialPort Repl
+
 ```bash
 $ npx @serialport/repl <port>
 # or
@@ -9,12 +10,14 @@ $ serialport-repl <port>
 The package `@serialport/repl` will install the `serialport-repl` cli tool which provides a nodejs repl for working with serialport. This is valuable when debugging.
 
 You can make use of the `serialport-repl` command with;
+
 ```bash
 $ serialport-repl # to auto detect an arduino
 $ serialport-repl /dev/tty.usbmodem1421 # to connect to a specific port
 ```
 
 It will load a serialport object with debugging turned on.
+
 ```bash
 $ serialport-repl
   serialport:binding:auto-detect loading DarwinBinding +0ms
