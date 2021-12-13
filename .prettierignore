@@ -1,0 +1,11 @@
+# Generated files
+package-lock.json
+CHANGELOG.md
+.nyc_output/
+/packages/**/build
+/packages/**/prebuilds
+coverage/
+
+# Not handled by Prettier properly
+.generators/lib/{{dashCase name}}.js
+.generators/lib/{{dashCase name}}.test.js

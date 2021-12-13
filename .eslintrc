@@ -2,10 +2,10 @@
   "extends": [
     "eslint:recommended",
     "plugin:node/recommended",
-    "plugin:mocha/recommended"
+    "plugin:mocha/recommended",
+    "prettier"
   ],
   "plugins": [
-    "prettier",
     "node",
     "mocha"
   ],
@@ -40,16 +40,6 @@
     "prefer-arrow-callback": "error",
     "prefer-const": "error",
     "prefer-template": "error",
-    "prettier/prettier": [
-      "error",
-      {
-        "singleQuote": true,
-        "trailingComma": "es5",
-        "semi": false,
-        "printWidth": 150,
-        "arrowParens": "avoid"
-      }
-    ],
     "mocha/no-exclusive-tests": "error",
     "mocha/no-hooks-for-single-case": "off",
     "mocha/no-mocha-arrows": "off",
