@@ -32,13 +32,8 @@ jobs:
       - name: Rebuild the project with coverage instrumentation
         run: npm run rebuild -- -- --debug
 
-      - name: Workaround path issue with OpenCppCoverage
-        run: npm install npm@7
-
-      - name: Run npm test with coverage
-        # Run tests using debug symbols for coverage on Windows
-        run: |
-          C:\Progra~1\OpenCppCoverage\OpenCppCoverage.exe --quiet --cover_children --modules "*.node" --source "packages\bindings\src\*" --export_type=cobertura:coverage/cpp.xml -- npm.cmd test -- --color
+      - name: Run npm test with OpenCppCoverage
+        run: C:\Progra~1\OpenCppCoverage\OpenCppCoverage.exe --cover_children --modules "*.node" --source "packages\bindings\src\*" --export_type=cobertura:coverage/cpp.xml -- C:\Progra~1\nodejs\npm.cmd test -- --color
         env:
           CI: true
 
