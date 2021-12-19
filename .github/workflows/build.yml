@@ -13,30 +13,40 @@ jobs:
         include:
           - name: darwin
             os: macos-11
-            arch: x64+arm64
             node: x64
+            command: prebuild
+            args: --arch x64+arm64
           - name: win32-x86
             os: windows-latest
-            arch: x64
             node: x86
+            command: prebuild
           - name: win32-x64
             os: windows-latest
-            arch: x64
             node: x64
+            command: prebuild
           - name: linux-x64
             os: ubuntu-latest
-            arch: x64
-            node: x64
+            command: prebuild-cross
+            args: -i centos7-devtoolset7 -i alpine
+          - name: linux-arm
+            os: ubuntu-latest
+            command: prebuild-cross
+            args: -i linux-arm64 -i linux-armv7 -i linux-armv6
+          - name: android-arm
+            os: ubuntu-latest
+            command: prebuild-cross
+            args: -i android-arm64 -i android-armv7
     name: Build ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/setup-node@v2
+      - if: matrix.node
+        uses: actions/setup-node@v2
         with:
           node-version: 14.x
           architecture: ${{ matrix.node }}
       - uses: actions/checkout@v2
       - run: npm ci
-      - run: npm run prebuild -- -- -- --arch ${{ matrix.arch }}
+      - run: npm run ${{ matrix.command }} -- -- -- ${{ matrix.args }}
       - run: tar -zcvf ${{ matrix.name }}.tar.gz -C packages/bindings/prebuilds .
       - uses: actions/upload-artifact@v2
         with:

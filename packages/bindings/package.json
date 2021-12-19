@@ -17,15 +17,17 @@
     "node-abi": "3.5.0",
     "node-gyp": "^7.1.2",
     "prebuildify": "^5.0.0",
-    "prebuildify-ci": "^1.0.5"
+    "prebuildify-ci": "^1.0.5",
+    "prebuildify-cross": "^4.0.1"
   },
   "engines": {
-    "node": ">=10.20.0 <11, >=12.17.0 <13.0, >=14.0.0"
+    "node": ">=12.17.0 <13.0, >=14.0.0"
   },
   "scripts": {
     "install": "node-gyp-build",
     "lint": "cc --verbose",
     "prebuild": "prebuildify --napi --target 14.0.0 --force --strip --verbose",
+    "prebuild-cross": "prebuildify-cross --napi --target 14.0.0 --force --strip --verbose",
     "rebuild": "node-gyp rebuild",
     "prepublishOnly": "prebuildify-ci download"
   },
@@ -52,7 +54,7 @@
   "funding": "https://opencollective.com/serialport/donate",
   "binary": {
     "napi_versions": [
-      4
+      6
     ]
   }
 }
