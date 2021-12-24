@@ -18,7 +18,7 @@
     "node-abi": "3.5.0"
   },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=12.0.0"
   },
   "scripts": {
     "install": "prebuild-install --tag-prefix @serialport/bindings@ --runtime napi --target 4 --verbose || node-gyp rebuild",
