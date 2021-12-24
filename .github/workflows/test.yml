@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.config.os }}
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x, 16.x]
+        node-version: [12.x, 14.x, 16.x]
         config:
           # arch isn't used and we have no way to use it currently
           - { os: macos-latest, arch: x64 }

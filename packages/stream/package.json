@@ -9,7 +9,7 @@
     "@serialport/binding-mock": "10.0.0"
   },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=12.0.0"
   },
   "publishConfig": {
     "access": "public"
