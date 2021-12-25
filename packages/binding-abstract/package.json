@@ -1,6 +1,6 @@
 {
   "name": "@serialport/binding-abstract",
-  "version": "10.0.0",
+  "version": "10.0.1",
   "main": "lib",
   "keywords": [
     "serialport-binding"
