@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.0.1](https://github.com/node-serialport/node-serialport/compare/v10.0.0...v10.0.1) (2021-12-25)
+
+
+### Bug Fixes
+
+* build binaries on every lerna release ([f400a90](https://github.com/node-serialport/node-serialport/commit/f400a9087069648dbb3119cb55046543b187d7c8))
+* link to discussions ([1738326](https://github.com/node-serialport/node-serialport/commit/17383269b1809a45d02ff88c09d73ee513712dbd))
+* Parity option broken in bindings ([#2377](https://github.com/node-serialport/node-serialport/issues/2377)) ([07a71f2](https://github.com/node-serialport/node-serialport/commit/07a71f2552b91ab6c895bccf73bd7357f9928977))
+* tag filtering on build job ([470bf1f](https://github.com/node-serialport/node-serialport/commit/470bf1fecd4ac9661d1e08c0dd7aa4941a834f3d))
+
+
+
+
+
 # [10.0.0](https://github.com/node-serialport/node-serialport/compare/v9.2.8...v10.0.0) (2021-12-11)
 
 

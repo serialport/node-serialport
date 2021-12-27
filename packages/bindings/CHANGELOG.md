@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.0.1](https://github.com/serialport/node-serialport/compare/v10.0.0...v10.0.1) (2021-12-25)
+
+
+### Bug Fixes
+
+* Parity option broken in bindings ([#2377](https://github.com/serialport/node-serialport/issues/2377)) ([07a71f2](https://github.com/serialport/node-serialport/commit/07a71f2552b91ab6c895bccf73bd7357f9928977))
+
+
+
+
+
 # [10.0.0](https://github.com/serialport/node-serialport/compare/v9.2.8...v10.0.0) (2021-12-11)
 
 

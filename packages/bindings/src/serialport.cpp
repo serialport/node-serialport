@@ -130,7 +130,7 @@ Napi::Value Close(const Napi::CallbackInfo& info) {
   Napi::Function callback = info[1].As<Napi::Function>();
   CloseBaton* baton = new CloseBaton(callback);
   baton->fd = info[0].ToNumber().Int64Value();;
-  
+
   baton->Queue();
   return env.Undefined();
 }
@@ -189,7 +189,7 @@ Napi::Value Set(const Napi::CallbackInfo& info) {
   baton->dtr = getBoolFromObject(options, "dtr");
   baton->dsr = getBoolFromObject(options, "dsr");
   baton->lowLatency = getBoolFromObject(options, "lowLatency");
-  
+
   baton->Queue();
   return env.Undefined();
 }
@@ -263,13 +263,15 @@ Napi::Value Drain(const Napi::CallbackInfo& info) {
   Napi::Function callback = info[1].As<Napi::Function>();
   DrainBaton* baton = new DrainBaton(callback);
   baton->fd = fd;
-  
+
   baton->Queue();
   return env.Undefined();
 }
 
 inline SerialPortParity ToParityEnum(const Napi::String& napistr) {
-  const char* str = napistr.Utf8Value().c_str();
+  auto tmp = napistr.Utf8Value();
+  const char* str = tmp.c_str();
+
   size_t count = strlen(str);
   SerialPortParity parity = SERIALPORT_PARITY_NONE;
   if (!strncasecmp(str, "none", count)) {
