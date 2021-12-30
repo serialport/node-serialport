@@ -1,0 +1,15 @@
+.DS_Store
+.nyc_output
+*.test.js
+bin
+build/
+CHANGELOG.md
+codecov.yml
+coverage
+lib/mocks
+npm-debug.log
+test
+.github
+.eslintrc
+.mocharc.js
+.node-version

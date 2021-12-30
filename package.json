@@ -1,32 +1,31 @@
 {
-  "name": "serialport-monorepo",
-  "private": true,
-  "version": "0.0.0",
-  "description": "Node.js packages to access serial ports, process data from them and speak many protocols",
-  "engines": {
-    "node": ">=12.0.0"
-  },
-  "license": "MIT",
-  "scripts": {
-    "rebuild": "lerna run --stream rebuild",
-    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
-    "format": "eslint packages test --fix",
-    "generate": "plop",
-    "lint": "eslint packages test && lerna run --stream lint",
-    "outdated": "lerna exec --no-bail npm outdated && npm outdated",
-    "postinstall": "lerna bootstrap --no-ci",
-    "prebuild": "lerna run --stream prebuild",
-    "prebuild-cross": "lerna run --stream prebuild-cross",
-    "publish": "lerna publish --exact",
-    "test": "nyc --reporter=html --reporter=text --reporter lcovonly mocha",
-    "test:arduino": "TEST_PORT=$(./bin/find-arduino.js) npm test",
-    "test:watch": "mocha -w"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/node-serialport/node-serialport.git"
+  "name": "@serialport/bindings-cpp",
+  "description": "SerialPort Hardware bindings for node serialport written in c++",
+  "version": "10.0.1",
+  "main": "lib",
+  "keywords": [
+    "serialport-binding",
+    "COM",
+    "com port",
+    "hardware",
+    "iot",
+    "modem",
+    "serial port",
+    "serial",
+    "serialport",
+    "tty",
+    "UART"
+  ],
+  "dependencies": {
+    "@serialport/binding-abstract": "10.0.1",
+    "@serialport/parser-readline": "10.0.1",
+    "debug": "^4.3.2",
+    "node-addon-api": "4.2.0",
+    "node-gyp-build": "^4.3.0"
   },
   "devDependencies": {
+    "@serialport/binding-mock": "10.0.1",
+    "node-abi": "3.5.0",
     "cc": "^3.0.1",
     "chai-subset": "^1.6.0",
     "chai": "^4.3.4",
@@ -38,15 +37,54 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-promise": "^5.1.1",
     "eslint": "^8.2.0",
-    "lerna-changelog": "^2.2.0",
-    "lerna": "^4.0.0",
     "mocha": "^9.1.3",
     "nyc": "^15.1.0",
     "plop": "^2.7.6",
     "prebuild": "^11.0.0",
     "prettier": "^2.4.1",
     "proxyquire": "^2.1.3",
-    "sinon": "^12.0.1"
+    "sinon": "^12.0.1",
+    "node-addon-api": "4.2.0"
+  },
+  "engines": {
+    "node": ">=12.17.0 <13.0 || >=14.0.0"
+  },
+  "scripts": {
+    "install": "node-gyp-build",
+    "prebuild": "prebuildify --napi --target 14.0.0 --force --strip --verbose",
+    "prebuild-cross": "prebuildify-cross --napi --target 14.0.0 --force --strip --verbose",
+    "rebuild": "node-gyp rebuild",
+    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "format": "eslint lib test --fix",
+    "lint": "eslint lib test && cc --verbose",
+    "test": "nyc --reporter=html --reporter=text --reporter lcovonly mocha",
+    "test:arduino": "TEST_PORT=$(./bin/find-arduino.js) npm test",
+    "test:watch": "mocha -w"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "gypfile": true,
+  "cc": {
+    "filter": [
+      "legal/copyright",
+      "build/include"
+    ],
+    "files": [
+      "src/*.cpp",
+      "src/*.h"
+    ],
+    "linelength": "120"
+  },
+  "binary": {
+    "napi_versions": [
+      6
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/node-serialport/bindings-cpp.git"
   },
   "funding": "https://opencollective.com/serialport/donate",
   "changelog": {

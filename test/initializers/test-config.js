@@ -1,4 +1,4 @@
-const testConfig = require('../../test-config.json')
+const testConfig = require('../test-config.json')
 
 global.makeTestFeature = function makeTestFeature(envName) {
   const config = { ...testConfig.all, ...testConfig[envName] }

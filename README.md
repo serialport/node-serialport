@@ -1,5 +1,5 @@
 # Node Serialport
-[![Backers on Open Collective](https://opencollective.com/serialport/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/serialport/sponsors/badge.svg)](#sponsors) [![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lernajs.io/)
+[![Backers on Open Collective](https://opencollective.com/serialport/backers/badge.svg)](#backers) [![Sponsors on Open Collective](https://opencollective.com/serialport/sponsors/badge.svg)](#sponsors)
 [![codecov](https://codecov.io/gh/serialport/node-serialport/branch/master/graph/badge.svg)](https://codecov.io/gh/serialport/node-serialport)
 [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fserialport%2Fnode-serialport%2Fbadge&style=flat-square)](https://actions-badge.atrox.dev/serialport/node-serialport/goto)
 [![Build Status](https://travis-ci.org/serialport/node-serialport.svg?branch=master)](https://travis-ci.org/serialport/node-serialport)
