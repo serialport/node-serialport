@@ -1,7 +1,7 @@
 {
   "name": "@serialport/bindings-cpp",
   "description": "SerialPort Hardware bindings for node serialport written in c++",
-  "version": "10.0.1",
+  "version": "0.0.0-development",
   "main": "lib",
   "keywords": [
     "serialport-binding",
@@ -25,26 +25,30 @@
   },
   "devDependencies": {
     "@serialport/binding-mock": "10.0.1",
-    "node-abi": "3.5.0",
     "cc": "^3.0.1",
-    "chai-subset": "^1.6.0",
     "chai": "^4.3.4",
+    "chai-subset": "^1.6.0",
     "codecov": "^3.8.3",
+    "eslint": "^8.2.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-mocha": "^9.0.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-promise": "^5.1.1",
-    "eslint": "^8.2.0",
     "mocha": "^9.1.3",
+    "node-abi": "3.5.0",
+    "node-addon-api": "4.2.0",
+    "node-gyp": "^8.4.1",
     "nyc": "^15.1.0",
     "plop": "^2.7.6",
     "prebuild": "^11.0.0",
+    "prebuildify": "^5.0.0",
+    "prebuildify-cross": "^4.0.2",
     "prettier": "^2.4.1",
     "proxyquire": "^2.1.3",
-    "sinon": "^12.0.1",
-    "node-addon-api": "4.2.0"
+    "semantic-release": "^18.0.1",
+    "sinon": "^12.0.1"
   },
   "engines": {
     "node": ">=12.17.0 <13.0 || >=14.0.0"
@@ -59,7 +63,8 @@
     "lint": "eslint lib test && cc --verbose",
     "test": "nyc --reporter=html --reporter=text --reporter lcovonly mocha",
     "test:arduino": "TEST_PORT=$(./bin/find-arduino.js) npm test",
-    "test:watch": "mocha -w"
+    "test:watch": "mocha -w",
+    "semantic-release": "semantic-release"
   },
   "publishConfig": {
     "access": "public"
@@ -84,7 +89,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/node-serialport/bindings-cpp.git"
+    "url": "https://github.com/serialport/bindings-cpp.git"
   },
   "funding": "https://opencollective.com/serialport/donate",
   "changelog": {

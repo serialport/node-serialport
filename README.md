@@ -1,4 +1,5 @@
-# Node Serialport
+# serialport/bindings-cpp
+
 [![Backers on Open Collective](https://opencollective.com/serialport/backers/badge.svg)](#backers)
 [![Sponsors on Open Collective](https://opencollective.com/serialport/sponsors/badge.svg)](#sponsors)
 [![codecov](https://codecov.io/gh/serialport/bindings-cpp/branch/master/graph/badge.svg)](https://codecov.io/gh/serialport/bindings-cpp)
@@ -12,7 +13,7 @@ Access serial ports with JavaScript. Linux, OSX and Windows. Welcome your roboti
 
 - [**Guides**](https://serialport.io/docs/)
 - [**API Docs**](https://serialport.io/docs/api-serialport)
-- [The `serialport` package api docs](https://serialport.io/docs/api-serialport)
+- [The `serialport` package api docs](https://serialport.io/docs/api-serialport) (most people start here)
 
 ### Bindings
 
@@ -26,15 +27,13 @@ The Bindings provide a low level interface to work with your serialport. It is p
 
 ### Developing node serialport projects
 
-1. Clone this repo `git clone git@github.com:serialport/node-serialport.git`
+1. Clone this repo `git clone git@github.com:serialport/bindings-cpp.git`
 1. Run `npm install` to setup local package dependencies (run this any time you depend on a package local to this repo)
 1. Run `npm test` to ensure everything is working properly
-1. Run `npm run generate` to generate a new project
-1. Add dev dependencies to the root package.json and package dependencies to the package's one.
 
 ### Developing Docs
 
-See https://github.com/node-serialport/website
+See https://github.com/serialport/website
 
 ## License
 
