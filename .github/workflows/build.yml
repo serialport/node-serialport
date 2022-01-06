@@ -22,14 +22,10 @@ jobs:
             os: windows-latest
             node: x64
             command: prebuild
-          - name: linux-x64 alpine
+          - name: linux-x64
             os: ubuntu-latest
             command: prebuild-cross
-            args: -i alpine --preinstall 'apk add python3'
-          - name: linux-x64 centos7
-            os: ubuntu-latest
-            command: prebuild-cross
-            args: -i centos7-devtoolset7 --preinstall 'yum install -y python3'
+            args: -i centos7-devtoolset7 -i alpine
           - name: linux-arm
             os: ubuntu-latest
             command: prebuild-cross
