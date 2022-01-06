@@ -14,7 +14,7 @@ body:
         Please fill in as much of the form below as you're able.
   - type: input
     attributes:
-      label: SerialPort Version
+      label: SerialPort Bindings Version
     validations:
       required: true
   - type: input
