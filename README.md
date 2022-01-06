@@ -1,4 +1,4 @@
-# serialport/bindings-cpp
+# @serialport/bindings-cpp
 
 [![Backers on Open Collective](https://opencollective.com/serialport/backers/badge.svg)](#backers)
 [![Sponsors on Open Collective](https://opencollective.com/serialport/sponsors/badge.svg)](#sponsors)
@@ -14,6 +14,7 @@ Access serial ports with JavaScript. Linux, OSX and Windows. Welcome your roboti
 - [**Guides**](https://serialport.io/docs/)
 - [**API Docs**](https://serialport.io/docs/api-serialport)
 - [The `serialport` package api docs](https://serialport.io/docs/api-serialport) (most people start here)
+- [`@serialport/bindings-cpp`](https://www.npmjs.com/package/@serialport/bindings-cpp)
 
 ### Bindings
 
