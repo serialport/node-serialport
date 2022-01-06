@@ -11,10 +11,7 @@
       "@semantic-release/github",
       {
         "assets": [
-          {
-            "path": "prebuilds/**/*",
-            "label": "Binary distributions"
-          }
+          "prebuilds/**/*"
         ]
       }
     ]
