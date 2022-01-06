@@ -62,6 +62,7 @@ jobs:
         with:
           name: build-artifacts
           path: prebuilds
+      - run: npm ci
       - run: npm run semantic-release
         env:
           GH_TOKEN: ${{ secrets.RELEASE_GITHUB_TOKEN }}
