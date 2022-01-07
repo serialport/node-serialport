@@ -11,15 +11,11 @@
       "@semantic-release/github",
       {
         "assets": [
-          [
-            [
-              "prebuilds"
-            ],
-            {
-              "path": "prebuilds.zip",
-              "label": "Binary Downloads"
-            }
-          ]
+          {
+            "path": "prebuilds",
+            "name": "prebuilds.zip",
+            "label": "Binary modules included in the npm package"
+          }
         ]
       }
     ]
