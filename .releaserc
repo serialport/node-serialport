@@ -15,7 +15,7 @@
       {
         "assets": [
           {
-            "path": "prebuilds-${nextRelease.version}.tar.gz",
+            "path": "prebuilds-*.tar.gz",
             "label": "Binary modules (from npm @serialport/bindings-cpp)"
           }
         ]
