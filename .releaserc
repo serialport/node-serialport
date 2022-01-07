@@ -7,14 +7,16 @@
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     "@semantic-release/npm",
+    ["@semantic-release/exec", {
+      "publishCmd": "tar czfv prebuilds-${nextRelease.version}.tar.gz prebuilds"
+    }],
     [
       "@semantic-release/github",
       {
         "assets": [
           {
-            "path": "prebuilds",
-            "name": "prebuilds.zip",
-            "label": "Binary modules included in the npm package"
+            "path": "prebuilds-${nextRelease.version}.tar.gz",
+            "label": "Binary modules (from npm @serialport/bindings-cpp)"
           }
         ]
       }

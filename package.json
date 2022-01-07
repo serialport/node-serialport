@@ -24,6 +24,7 @@
     "node-gyp-build": "^4.3.0"
   },
   "devDependencies": {
+    "@semantic-release/exec": "^6.0.3",
     "@serialport/binding-mock": "10.0.1",
     "cc": "^3.0.1",
     "chai": "^4.3.4",
