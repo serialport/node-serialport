@@ -3,26 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [10.0.1](https://github.com/node-serialport/node-serialport/compare/v10.0.0...v10.0.1) (2021-12-25)
+## [10.0.1](https://github.com/serialport/node-serialport/compare/v10.0.0...v10.0.1) (2021-12-25)
 
 
 ### Bug Fixes
 
-* build binaries on every lerna release ([f400a90](https://github.com/node-serialport/node-serialport/commit/f400a9087069648dbb3119cb55046543b187d7c8))
-* link to discussions ([1738326](https://github.com/node-serialport/node-serialport/commit/17383269b1809a45d02ff88c09d73ee513712dbd))
-* Parity option broken in bindings ([#2377](https://github.com/node-serialport/node-serialport/issues/2377)) ([07a71f2](https://github.com/node-serialport/node-serialport/commit/07a71f2552b91ab6c895bccf73bd7357f9928977))
-* tag filtering on build job ([470bf1f](https://github.com/node-serialport/node-serialport/commit/470bf1fecd4ac9661d1e08c0dd7aa4941a834f3d))
+* build binaries on every lerna release ([f400a90](https://github.com/serialport/node-serialport/commit/f400a9087069648dbb3119cb55046543b187d7c8))
+* link to discussions ([1738326](https://github.com/serialport/node-serialport/commit/17383269b1809a45d02ff88c09d73ee513712dbd))
+* Parity option broken in bindings ([#2377](https://github.com/serialport/node-serialport/issues/2377)) ([07a71f2](https://github.com/serialport/node-serialport/commit/07a71f2552b91ab6c895bccf73bd7357f9928977))
+* tag filtering on build job ([470bf1f](https://github.com/serialport/node-serialport/commit/470bf1fecd4ac9661d1e08c0dd7aa4941a834f3d))
 
 
 
 
 
-# [10.0.0](https://github.com/node-serialport/node-serialport/compare/v9.2.8...v10.0.0) (2021-12-11)
+# [10.0.0](https://github.com/serialport/node-serialport/compare/v9.2.8...v10.0.0) (2021-12-11)
 
 
 ### Features
 
-* Node-API migration ([#2305](https://github.com/node-serialport/node-serialport/issues/2305)) ([2fe7d43](https://github.com/node-serialport/node-serialport/commit/2fe7d434ca087f95a09ed9a3274d8b5f24e09ab4))
+* Node-API migration ([#2305](https://github.com/serialport/node-serialport/issues/2305)) ([2fe7d43](https://github.com/serialport/node-serialport/commit/2fe7d434ca087f95a09ed9a3274d8b5f24e09ab4))
 
 
 ### BREAKING CHANGES
@@ -33,28 +33,20 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [9.2.8](https://github.com/node-serialport/node-serialport/compare/v9.2.7...v9.2.8) (2021-11-26)
+## [9.2.8](https://github.com/serialport/node-serialport/compare/v9.2.7...v9.2.8) (2021-11-26)
 
 
 ### Bug Fixes
 
-* drop node 17 builds ([#2356](https://github.com/node-serialport/node-serialport/issues/2356)) ([e2ad9fb](https://github.com/node-serialport/node-serialport/commit/e2ad9fb380f4fc587a6782c7cee5d335bad4aa2d))
-* Electron 14+ installs ([#2360](https://github.com/node-serialport/node-serialport/issues/2360)) ([9997085](https://github.com/node-serialport/node-serialport/commit/99970852c7a5189067fdc4d893029727d2385a47))
-* OSX List Make sure necessary cleanups such as uv_mutex_unlock are called always. ([#2343](https://github.com/node-serialport/node-serialport/issues/2343)) ([fc93cb6](https://github.com/node-serialport/node-serialport/commit/fc93cb6af83358f1104fc842e65ccda9b8320904))
+* drop node 17 builds ([#2356](https://github.com/serialport/node-serialport/issues/2356)) ([e2ad9fb](https://github.com/serialport/node-serialport/commit/e2ad9fb380f4fc587a6782c7cee5d335bad4aa2d))
+* Electron 14+ installs ([#2360](https://github.com/serialport/node-serialport/issues/2360)) ([9997085](https://github.com/serialport/node-serialport/commit/99970852c7a5189067fdc4d893029727d2385a47))
+* OSX List Make sure necessary cleanups such as uv_mutex_unlock are called always. ([#2343](https://github.com/serialport/node-serialport/issues/2343)) ([fc93cb6](https://github.com/serialport/node-serialport/commit/fc93cb6af83358f1104fc842e65ccda9b8320904))
 
 
 
 
 
-## [9.2.7](https://github.com/node-serialport/node-serialport/compare/v9.2.5...v9.2.7) (2021-11-18)
-
-**Note:** Version bump only for package serialport-monorepo
-
-
-
-
-
-## [9.2.6](https://github.com/node-serialport/node-serialport/compare/v9.2.5...v9.2.6) (2021-11-18)
+## [9.2.7](https://github.com/serialport/node-serialport/compare/v9.2.5...v9.2.7) (2021-11-18)
 
 **Note:** Version bump only for package serialport-monorepo
 
@@ -62,7 +54,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [9.2.5](https://github.com/node-serialport/node-serialport/compare/v9.2.4...v9.2.5) (2021-10-31)
+## [9.2.6](https://github.com/serialport/node-serialport/compare/v9.2.5...v9.2.6) (2021-11-18)
 
 **Note:** Version bump only for package serialport-monorepo
 
@@ -70,7 +62,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [9.2.4](https://github.com/node-serialport/node-serialport/compare/v9.2.3...v9.2.4) (2021-09-28)
+## [9.2.5](https://github.com/serialport/node-serialport/compare/v9.2.4...v9.2.5) (2021-10-31)
 
 **Note:** Version bump only for package serialport-monorepo
 
@@ -78,7 +70,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [9.2.3](https://github.com/node-serialport/node-serialport/compare/v9.2.1...v9.2.3) (2021-09-24)
+## [9.2.4](https://github.com/serialport/node-serialport/compare/v9.2.3...v9.2.4) (2021-09-28)
 
 **Note:** Version bump only for package serialport-monorepo
 
@@ -86,7 +78,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [9.2.2](https://github.com/node-serialport/node-serialport/compare/v9.2.1...v9.2.2) (2021-09-24)
+## [9.2.3](https://github.com/serialport/node-serialport/compare/v9.2.1...v9.2.3) (2021-09-24)
 
 **Note:** Version bump only for package serialport-monorepo
 
@@ -94,7 +86,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [9.2.1](https://github.com/node-serialport/node-serialport/compare/v9.2.0...v9.2.1) (2021-09-03)
+## [9.2.2](https://github.com/serialport/node-serialport/compare/v9.2.1...v9.2.2) (2021-09-24)
 
 **Note:** Version bump only for package serialport-monorepo
 
@@ -102,115 +94,123 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-# [9.2.0](https://github.com/node-serialport/node-serialport/compare/v9.1.0...v9.2.0) (2021-06-19)
+## [9.2.1](https://github.com/serialport/node-serialport/compare/v9.2.0...v9.2.1) (2021-09-03)
+
+**Note:** Version bump only for package serialport-monorepo
+
+
+
+
+
+# [9.2.0](https://github.com/serialport/node-serialport/compare/v9.1.0...v9.2.0) (2021-06-19)
 
 
 ### Features
 
-* combine lint and test workflows and clean them up ([#2261](https://github.com/node-serialport/node-serialport/issues/2261)) ([0461285](https://github.com/node-serialport/node-serialport/commit/0461285f04b93034008cf6c22ac566d0a1a09571))
-* Pin version numbers for all monorepo packages ([#2275](https://github.com/node-serialport/node-serialport/issues/2275)) ([4fbb973](https://github.com/node-serialport/node-serialport/commit/4fbb973e9ea7de4dd00494b9293a428ac1c3a1e2))
+* combine lint and test workflows and clean them up ([#2261](https://github.com/serialport/node-serialport/issues/2261)) ([0461285](https://github.com/serialport/node-serialport/commit/0461285f04b93034008cf6c22ac566d0a1a09571))
+* Pin version numbers for all monorepo packages ([#2275](https://github.com/serialport/node-serialport/issues/2275)) ([4fbb973](https://github.com/serialport/node-serialport/commit/4fbb973e9ea7de4dd00494b9293a428ac1c3a1e2))
 
 
 
 
 
-# [9.1.0](https://github.com/node-serialport/node-serialport/compare/v9.0.8...v9.1.0) (2021-05-28)
+# [9.1.0](https://github.com/serialport/node-serialport/compare/v9.0.8...v9.1.0) (2021-05-28)
 
 
 ### Bug Fixes
 
-* linux baudRate and latency errors ([#2253](https://github.com/node-serialport/node-serialport/issues/2253)) ([015bc17](https://github.com/node-serialport/node-serialport/commit/015bc17996721c92746e44e797b1a3d899076af1))
-* Linux low latency allow seting without changing low latency mode ([#2241](https://github.com/node-serialport/node-serialport/issues/2241)) ([fb53b99](https://github.com/node-serialport/node-serialport/commit/fb53b99d4ab63bf0b50409a2f9e0c7c29715699b))
-* parser-slip-encoder had a breaking change ([#2254](https://github.com/node-serialport/node-serialport/issues/2254)) ([c89b600](https://github.com/node-serialport/node-serialport/commit/c89b6004308ede97c10e18f1b2fb4d40041ff752))
+* linux baudRate and latency errors ([#2253](https://github.com/serialport/node-serialport/issues/2253)) ([015bc17](https://github.com/serialport/node-serialport/commit/015bc17996721c92746e44e797b1a3d899076af1))
+* Linux low latency allow seting without changing low latency mode ([#2241](https://github.com/serialport/node-serialport/issues/2241)) ([fb53b99](https://github.com/serialport/node-serialport/commit/fb53b99d4ab63bf0b50409a2f9e0c7c29715699b))
+* parser-slip-encoder had a breaking change ([#2254](https://github.com/serialport/node-serialport/issues/2254)) ([c89b600](https://github.com/serialport/node-serialport/commit/c89b6004308ede97c10e18f1b2fb4d40041ff752))
 
 
 ### Features
 
-* Add slip decoder to parser-slip-encoder ([#2196](https://github.com/node-serialport/node-serialport/issues/2196)) ([85297bc](https://github.com/node-serialport/node-serialport/commit/85297bc3d13cdc3beeee52e5badb0016ee6f24f5))
+* Add slip decoder to parser-slip-encoder ([#2196](https://github.com/serialport/node-serialport/issues/2196)) ([85297bc](https://github.com/serialport/node-serialport/commit/85297bc3d13cdc3beeee52e5badb0016ee6f24f5))
 
 
 
 
 
-## [9.0.8](https://github.com/node-serialport/node-serialport/compare/v9.0.9...v9.0.8) (2021-05-24)
-
-
-### Bug Fixes
-
-* electron 11 prebuilds were broken ([#2237](https://github.com/node-serialport/node-serialport/issues/2237)) ([ac25b3a](https://github.com/node-serialport/node-serialport/commit/ac25b3ad5393f8c398824c46c411509b91fb3755))
-
-
-
-
-
-## [9.0.7](https://github.com/node-serialport/node-serialport/compare/v9.0.6...v9.0.7) (2021-02-22)
-
-**Note:** Version bump only for package serialport-monorepo
-
-
-
-
-
-## [9.0.6](https://github.com/node-serialport/node-serialport/compare/v9.0.5...v9.0.6) (2021-01-20)
-
-**Note:** Version bump only for package serialport-monorepo
-
-
-
-
-
-## [9.0.5](https://github.com/node-serialport/node-serialport/compare/v9.0.4...v9.0.5) (2020-12-20)
-
-**Note:** Version bump only for package serialport-monorepo
-
-
-
-
-
-## [9.0.4](https://github.com/node-serialport/node-serialport/compare/v9.0.3...v9.0.4) (2020-12-17)
-
-**Note:** Version bump only for package serialport-monorepo
-
-
-
-
-
-## [9.0.3](https://github.com/node-serialport/node-serialport/compare/v9.0.2...v9.0.3) (2020-12-04)
-
-**Note:** Version bump only for package serialport-monorepo
-
-
-
-
-
-## [9.0.2](https://github.com/node-serialport/node-serialport/compare/v9.0.1...v9.0.2) (2020-10-16)
+## [9.0.8](https://github.com/serialport/node-serialport/compare/v9.0.9...v9.0.8) (2021-05-24)
 
 
 ### Bug Fixes
 
-* while validating for offset, check for offset's value for NaN instead length ([#2124](https://github.com/node-serialport/node-serialport/issues/2124)) ([4215122](https://github.com/node-serialport/node-serialport/commit/42151228240c5c818ac5327d6ff5c01398805564))
+* electron 11 prebuilds were broken ([#2237](https://github.com/serialport/node-serialport/issues/2237)) ([ac25b3a](https://github.com/serialport/node-serialport/commit/ac25b3ad5393f8c398824c46c411509b91fb3755))
 
 
 
 
 
-## [9.0.1](https://github.com/node-serialport/node-serialport/compare/v9.0.0...v9.0.1) (2020-08-08)
+## [9.0.7](https://github.com/serialport/node-serialport/compare/v9.0.6...v9.0.7) (2021-02-22)
+
+**Note:** Version bump only for package serialport-monorepo
+
+
+
+
+
+## [9.0.6](https://github.com/serialport/node-serialport/compare/v9.0.5...v9.0.6) (2021-01-20)
+
+**Note:** Version bump only for package serialport-monorepo
+
+
+
+
+
+## [9.0.5](https://github.com/serialport/node-serialport/compare/v9.0.4...v9.0.5) (2020-12-20)
+
+**Note:** Version bump only for package serialport-monorepo
+
+
+
+
+
+## [9.0.4](https://github.com/serialport/node-serialport/compare/v9.0.3...v9.0.4) (2020-12-17)
+
+**Note:** Version bump only for package serialport-monorepo
+
+
+
+
+
+## [9.0.3](https://github.com/serialport/node-serialport/compare/v9.0.2...v9.0.3) (2020-12-04)
+
+**Note:** Version bump only for package serialport-monorepo
+
+
+
+
+
+## [9.0.2](https://github.com/serialport/node-serialport/compare/v9.0.1...v9.0.2) (2020-10-16)
 
 
 ### Bug Fixes
 
-* disconnects should now work again on unix based systems ([#2120](https://github.com/node-serialport/node-serialport/issues/2120)) ([2801301](https://github.com/node-serialport/node-serialport/commit/2801301d1467152753c2012c7968947cf7f49c82))
+* while validating for offset, check for offset's value for NaN instead length ([#2124](https://github.com/serialport/node-serialport/issues/2124)) ([4215122](https://github.com/serialport/node-serialport/commit/42151228240c5c818ac5327d6ff5c01398805564))
 
 
 
 
 
-# [9.0.0](https://github.com/node-serialport/node-serialport/compare/v8.0.8...v9.0.0) (2020-05-10)
+## [9.0.1](https://github.com/serialport/node-serialport/compare/v9.0.0...v9.0.1) (2020-08-08)
+
+
+### Bug Fixes
+
+* disconnects should now work again on unix based systems ([#2120](https://github.com/serialport/node-serialport/issues/2120)) ([2801301](https://github.com/serialport/node-serialport/commit/2801301d1467152753c2012c7968947cf7f49c82))
+
+
+
+
+
+# [9.0.0](https://github.com/serialport/node-serialport/compare/v8.0.8...v9.0.0) (2020-05-10)
 
 
 ### chore
 
-* build on node 14 and drop node 8 and 32bit linux builds ([#2079](https://github.com/node-serialport/node-serialport/issues/2079)) ([e0c232c](https://github.com/node-serialport/node-serialport/commit/e0c232c77ade7ab188dade1dc0cc7af134ce3a95))
+* build on node 14 and drop node 8 and 32bit linux builds ([#2079](https://github.com/serialport/node-serialport/issues/2079)) ([e0c232c](https://github.com/serialport/node-serialport/commit/e0c232c77ade7ab188dade1dc0cc7af134ce3a95))
 
 
 ### BREAKING CHANGES
@@ -221,52 +221,52 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-## [8.0.8](https://github.com/node-serialport/node-serialport/compare/v8.0.7...v8.0.8) (2020-05-07)
+## [8.0.8](https://github.com/serialport/node-serialport/compare/v8.0.7...v8.0.8) (2020-05-07)
 
 
 ### Bug Fixes
 
-* reject on non-zero exit codes ([#2046](https://github.com/node-serialport/node-serialport/issues/2046)) ([6ee5c84](https://github.com/node-serialport/node-serialport/commit/6ee5c8471fd1e041ebfba736f1eb708d2764b63e))
+* reject on non-zero exit codes ([#2046](https://github.com/serialport/node-serialport/issues/2046)) ([6ee5c84](https://github.com/serialport/node-serialport/commit/6ee5c8471fd1e041ebfba736f1eb708d2764b63e))
 
 
 
 
 
-## [8.0.7](https://github.com/node-serialport/node-serialport/compare/v8.0.6...v8.0.7) (2020-01-30)
-
-
-### Bug Fixes
-
-* uncomment node shebang line in terminal package ([#2023](https://github.com/node-serialport/node-serialport/issues/2023)) ([2a59726](https://github.com/node-serialport/node-serialport/commit/2a5972684367083595cf75e489f1165d24844423))
-
-
-
-
-
-## [8.0.6](https://github.com/node-serialport/node-serialport/compare/v8.0.5...v8.0.6) (2019-12-25)
+## [8.0.7](https://github.com/serialport/node-serialport/compare/v8.0.6...v8.0.7) (2020-01-30)
 
 
 ### Bug Fixes
 
-* bindings.close() should cause a canceled read error ([#1972](https://github.com/node-serialport/node-serialport/issues/1972)) ([50f967e](https://github.com/node-serialport/node-serialport/commit/50f967e788f362da57d782829712542c8f15f8c8))
-* No prebuilt binaries found with electron-builder ([#2003](https://github.com/node-serialport/node-serialport/issues/2003)) ([16f9662](https://github.com/node-serialport/node-serialport/commit/16f966233930bc7c7302d2b7a53d70282b42e165))
-* stream required bindings-mock as a dep ([#1970](https://github.com/node-serialport/node-serialport/issues/1970)) ([e978b7e](https://github.com/node-serialport/node-serialport/commit/e978b7eb244b87a6be2ae914965adeb1f4562935))
-* upgrade npm on GitHub actions to fix bug ([#1973](https://github.com/node-serialport/node-serialport/issues/1973)) ([d500a5b](https://github.com/node-serialport/node-serialport/commit/d500a5b1ba6e6600e0a3f4486a3c496304f95c3f))
+* uncomment node shebang line in terminal package ([#2023](https://github.com/serialport/node-serialport/issues/2023)) ([2a59726](https://github.com/serialport/node-serialport/commit/2a5972684367083595cf75e489f1165d24844423))
 
 
 
 
 
-## [8.0.5](https://github.com/node-serialport/node-serialport/compare/v8.0.4...v8.0.5) (2019-10-27)
+## [8.0.6](https://github.com/serialport/node-serialport/compare/v8.0.5...v8.0.6) (2019-12-25)
 
 
 ### Bug Fixes
 
-* cctalk wasn’t upgraded in serialport ([3e568f7](https://github.com/node-serialport/node-serialport/commit/3e568f7ca4b8e1c0743b780860532e5998091b86))
+* bindings.close() should cause a canceled read error ([#1972](https://github.com/serialport/node-serialport/issues/1972)) ([50f967e](https://github.com/serialport/node-serialport/commit/50f967e788f362da57d782829712542c8f15f8c8))
+* No prebuilt binaries found with electron-builder ([#2003](https://github.com/serialport/node-serialport/issues/2003)) ([16f9662](https://github.com/serialport/node-serialport/commit/16f966233930bc7c7302d2b7a53d70282b42e165))
+* stream required bindings-mock as a dep ([#1970](https://github.com/serialport/node-serialport/issues/1970)) ([e978b7e](https://github.com/serialport/node-serialport/commit/e978b7eb244b87a6be2ae914965adeb1f4562935))
+* upgrade npm on GitHub actions to fix bug ([#1973](https://github.com/serialport/node-serialport/issues/1973)) ([d500a5b](https://github.com/serialport/node-serialport/commit/d500a5b1ba6e6600e0a3f4486a3c496304f95c3f))
 
 
 
-## [8.0.4](https://github.com/node-serialport/node-serialport/compare/v8.0.3...v8.0.4) (2019-10-27)
+
+
+## [8.0.5](https://github.com/serialport/node-serialport/compare/v8.0.4...v8.0.5) (2019-10-27)
+
+
+### Bug Fixes
+
+* cctalk wasn’t upgraded in serialport ([3e568f7](https://github.com/serialport/node-serialport/commit/3e568f7ca4b8e1c0743b780860532e5998091b86))
+
+
+
+## [8.0.4](https://github.com/serialport/node-serialport/compare/v8.0.3...v8.0.4) (2019-10-27)
 
 This is the first non beta release of serialport version 8! 🎉  The biggest change in 8x is our version numbers. We now user lerna's ["fixed versioning"](https://github.com/lerna/lerna#fixedlocked-mode-default) to allow for a much easier documentation experience. This makes all our packages share a version number when they're released. Our website now has versioned docs so you can see what they looked like for the version of serialport you're using today. (Check out our [7x docs](https://deploy-preview-24--serialport.netlify.com/docs/7.x.x/guide-about) if you still need them.)
 
@@ -288,76 +288,76 @@ And Thanks to our first 5 open collective backers! https://opencollective.com/se
 
 ### Bug Fixes
 
-* improve the options and output of terminal ([#1962](https://github.com/node-serialport/node-serialport/issues/1962)) ([4b23928](https://github.com/node-serialport/node-serialport/commit/4b23928cd276d60df7c13ec32084a99752b2c3c1))
-* learn now needs the package-lock.json files ([4b8fc24](https://github.com/node-serialport/node-serialport/commit/4b8fc248778b69f7afde17ab9ef791ef8867c4a5))
-* npmignore should ignore .DS_Store files ([#1954](https://github.com/node-serialport/node-serialport/issues/1954)) ([eb6b57b](https://github.com/node-serialport/node-serialport/commit/eb6b57bffe33c9bc7775bb6b0fdf1081db86ebcc))
+* improve the options and output of terminal ([#1962](https://github.com/serialport/node-serialport/issues/1962)) ([4b23928](https://github.com/serialport/node-serialport/commit/4b23928cd276d60df7c13ec32084a99752b2c3c1))
+* learn now needs the package-lock.json files ([4b8fc24](https://github.com/serialport/node-serialport/commit/4b8fc248778b69f7afde17ab9ef791ef8867c4a5))
+* npmignore should ignore .DS_Store files ([#1954](https://github.com/serialport/node-serialport/issues/1954)) ([eb6b57b](https://github.com/serialport/node-serialport/commit/eb6b57bffe33c9bc7775bb6b0fdf1081db86ebcc))
 
 
 
 
 
-## [8.0.3](https://github.com/node-serialport/node-serialport/compare/v8.0.2...v8.0.3) (2019-10-03)
+## [8.0.3](https://github.com/serialport/node-serialport/compare/v8.0.2...v8.0.3) (2019-10-03)
 
 
 ### Chores
 
-* Test merges with master ([#1952](https://github.com/node-serialport/node-serialport/issues/1952)) ([bfb47c7](https://github.com/node-serialport/node-serialport/commit/bfb47c7))
+* Test merges with master ([#1952](https://github.com/serialport/node-serialport/issues/1952)) ([bfb47c7](https://github.com/serialport/node-serialport/commit/bfb47c7))
 
 
 ### BREAKING CHANGES
 
-* drop callback argument on SerialPort.list() ([#1943](https://github.com/node-serialport/node-serialport/issues/1943)) ([145b906](https://github.com/node-serialport/node-serialport/commit/145b906))
+* drop callback argument on SerialPort.list() ([#1943](https://github.com/serialport/node-serialport/issues/1943)) ([145b906](https://github.com/serialport/node-serialport/commit/145b906))
 
 
-## [8.0.2](https://github.com/node-serialport/node-serialport/compare/v8.0.1...v8.0.2) (2019-09-24)
+## [8.0.2](https://github.com/serialport/node-serialport/compare/v8.0.1...v8.0.2) (2019-09-24)
 
 
 ### Bug Fixes
 
-* stop polling if the poller has an error ([#1936](https://github.com/node-serialport/node-serialport/issues/1936)) ([c57b6e9](https://github.com/node-serialport/node-serialport/commit/c57b6e9)), closes [#1803](https://github.com/node-serialport/node-serialport/issues/1803)
-* we weren’t running all the tests ([#1937](https://github.com/node-serialport/node-serialport/issues/1937)) ([a5f7d60](https://github.com/node-serialport/node-serialport/commit/a5f7d60))
+* stop polling if the poller has an error ([#1936](https://github.com/serialport/node-serialport/issues/1936)) ([c57b6e9](https://github.com/serialport/node-serialport/commit/c57b6e9)), closes [#1803](https://github.com/serialport/node-serialport/issues/1803)
+* we weren’t running all the tests ([#1937](https://github.com/serialport/node-serialport/issues/1937)) ([a5f7d60](https://github.com/serialport/node-serialport/commit/a5f7d60))
 
 
 ### Features
 
-* add optional end event for piping ([#1926](https://github.com/node-serialport/node-serialport/issues/1926)) ([275315a](https://github.com/node-serialport/node-serialport/commit/275315a))
+* add optional end event for piping ([#1926](https://github.com/serialport/node-serialport/issues/1926)) ([275315a](https://github.com/serialport/node-serialport/commit/275315a))
 
 
 
 
 
-## [8.0.1](https://github.com/node-serialport/node-serialport/compare/v6.2.2...v8.0.1) (2019-09-18)
+## [8.0.1](https://github.com/serialport/node-serialport/compare/v6.2.2...v8.0.1) (2019-09-18)
 
 
 ### Bug Fixes
 
-* Add missing `return` statement ([#1911](https://github.com/node-serialport/node-serialport/issues/1911)) ([288e6ac](https://github.com/node-serialport/node-serialport/commit/288e6ac))
-* bindings no longer error when closed during empty writes ([#1872](https://github.com/node-serialport/node-serialport/issues/1872)) ([9d01492](https://github.com/node-serialport/node-serialport/commit/9d01492))
-* fix open collective link ([#1928](https://github.com/node-serialport/node-serialport/issues/1928)) ([6426214](https://github.com/node-serialport/node-serialport/commit/6426214))
-* missing maintainer name ([a626103](https://github.com/node-serialport/node-serialport/commit/a626103))
-* readme badges and images for backers and contributors ([#1881](https://github.com/node-serialport/node-serialport/issues/1881)) ([1fd88e1](https://github.com/node-serialport/node-serialport/commit/1fd88e1))
-* remove PURGE_RXABORT flag on flush for Windows ([#1817](https://github.com/node-serialport/node-serialport/issues/1817)) ([1daa919](https://github.com/node-serialport/node-serialport/commit/1daa919))
-* RTS/CTS flow control for Windows ([#1809](https://github.com/node-serialport/node-serialport/issues/1809)) ([cd112ca](https://github.com/node-serialport/node-serialport/commit/cd112ca))
-* **packages/bindings#write:** do not call native binding for empty buffers ([d347f3b](https://github.com/node-serialport/node-serialport/commit/d347f3b))
-* stream read not working past 1 read ([#1925](https://github.com/node-serialport/node-serialport/issues/1925)) ([3a13279](https://github.com/node-serialport/node-serialport/commit/3a13279))
-* use correct casts to/from HANDLE/int ([#1766](https://github.com/node-serialport/node-serialport/issues/1766)) ([ce503b3](https://github.com/node-serialport/node-serialport/commit/ce503b3))
-* writing issue on Linux ([#1908](https://github.com/node-serialport/node-serialport/issues/1908)) ([a7d1937](https://github.com/node-serialport/node-serialport/commit/a7d1937))
+* Add missing `return` statement ([#1911](https://github.com/serialport/node-serialport/issues/1911)) ([288e6ac](https://github.com/serialport/node-serialport/commit/288e6ac))
+* bindings no longer error when closed during empty writes ([#1872](https://github.com/serialport/node-serialport/issues/1872)) ([9d01492](https://github.com/serialport/node-serialport/commit/9d01492))
+* fix open collective link ([#1928](https://github.com/serialport/node-serialport/issues/1928)) ([6426214](https://github.com/serialport/node-serialport/commit/6426214))
+* missing maintainer name ([a626103](https://github.com/serialport/node-serialport/commit/a626103))
+* readme badges and images for backers and contributors ([#1881](https://github.com/serialport/node-serialport/issues/1881)) ([1fd88e1](https://github.com/serialport/node-serialport/commit/1fd88e1))
+* remove PURGE_RXABORT flag on flush for Windows ([#1817](https://github.com/serialport/node-serialport/issues/1817)) ([1daa919](https://github.com/serialport/node-serialport/commit/1daa919))
+* RTS/CTS flow control for Windows ([#1809](https://github.com/serialport/node-serialport/issues/1809)) ([cd112ca](https://github.com/serialport/node-serialport/commit/cd112ca))
+* **packages/bindings#write:** do not call native binding for empty buffers ([d347f3b](https://github.com/serialport/node-serialport/commit/d347f3b))
+* stream read not working past 1 read ([#1925](https://github.com/serialport/node-serialport/issues/1925)) ([3a13279](https://github.com/serialport/node-serialport/commit/3a13279))
+* use correct casts to/from HANDLE/int ([#1766](https://github.com/serialport/node-serialport/issues/1766)) ([ce503b3](https://github.com/serialport/node-serialport/commit/ce503b3))
+* writing issue on Linux ([#1908](https://github.com/serialport/node-serialport/issues/1908)) ([a7d1937](https://github.com/serialport/node-serialport/commit/a7d1937))
 
 
 ### Chores
 
-* remove node6 support and upgrade codebase ([#1851](https://github.com/node-serialport/node-serialport/issues/1851)) ([d4f15c0](https://github.com/node-serialport/node-serialport/commit/d4f15c0))
-* add eslint mocha ([#1922](https://github.com/node-serialport/node-serialport/issues/1922)) ([afbc431](https://github.com/node-serialport/node-serialport/commit/afbc431))
-* test on node 12 ([#1846](https://github.com/node-serialport/node-serialport/issues/1846)) ([46da21f](https://github.com/node-serialport/node-serialport/commit/46da21f))
-* Use GitHub actions for linting ([#1927](https://github.com/node-serialport/node-serialport/issues/1927)) ([fb05c2d](https://github.com/node-serialport/node-serialport/commit/fb05c2d))
+* remove node6 support and upgrade codebase ([#1851](https://github.com/serialport/node-serialport/issues/1851)) ([d4f15c0](https://github.com/serialport/node-serialport/commit/d4f15c0))
+* add eslint mocha ([#1922](https://github.com/serialport/node-serialport/issues/1922)) ([afbc431](https://github.com/serialport/node-serialport/commit/afbc431))
+* test on node 12 ([#1846](https://github.com/serialport/node-serialport/issues/1846)) ([46da21f](https://github.com/serialport/node-serialport/commit/46da21f))
+* Use GitHub actions for linting ([#1927](https://github.com/serialport/node-serialport/issues/1927)) ([fb05c2d](https://github.com/serialport/node-serialport/commit/fb05c2d))
 
 
 ### Features
 
-* Added packet timeout for cctalk parser ([#1887](https://github.com/node-serialport/node-serialport/issues/1887)) ([714e438](https://github.com/node-serialport/node-serialport/commit/714e438))
-* Make it possible to compile on vanilla Android ([#1912](https://github.com/node-serialport/node-serialport/issues/1912)) ([ba2b69c](https://github.com/node-serialport/node-serialport/commit/ba2b69c))
-* reset info.serialNumber when resetting mock ports ([#1899](https://github.com/node-serialport/node-serialport/issues/1899)) ([6acaac1](https://github.com/node-serialport/node-serialport/commit/6acaac1))
-* support Exar ttyXRUSB ([#1893](https://github.com/node-serialport/node-serialport/issues/1893)) ([3d34d0f](https://github.com/node-serialport/node-serialport/commit/3d34d0f))
+* Added packet timeout for cctalk parser ([#1887](https://github.com/serialport/node-serialport/issues/1887)) ([714e438](https://github.com/serialport/node-serialport/commit/714e438))
+* Make it possible to compile on vanilla Android ([#1912](https://github.com/serialport/node-serialport/issues/1912)) ([ba2b69c](https://github.com/serialport/node-serialport/commit/ba2b69c))
+* reset info.serialNumber when resetting mock ports ([#1899](https://github.com/serialport/node-serialport/issues/1899)) ([6acaac1](https://github.com/serialport/node-serialport/commit/6acaac1))
+* support Exar ttyXRUSB ([#1893](https://github.com/serialport/node-serialport/issues/1893)) ([3d34d0f](https://github.com/serialport/node-serialport/commit/3d34d0f))
 
 
 ### BREAKING CHANGES

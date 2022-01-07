@@ -1,5 +1,5 @@
 const SerialPort = require('@serialport/stream')
-const Binding = require('@serialport/bindings')
+const Binding = require('@serialport/bindings-cpp')
 const parsers = require('./parsers')
 
 /**

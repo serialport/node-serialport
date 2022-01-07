@@ -8,6 +8,7 @@ To be used in conjunction with the Arduino sketch ArduinoEcho.ino
 */
 
 const SerialPort = require('../')
+// eslint-disable-next-line node/no-missing-require
 const args = require('commander')
 
 args

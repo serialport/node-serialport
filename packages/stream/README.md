@@ -8,7 +8,7 @@ This is how you use it.
 ```js
 
 const SerialPort = require('@serialport/stream')
-const Binding = require('@serialport/bindings')
+const Binding = require('@serialport/bindings-cpp')
 SerialPort.Binding = Binding
 const port = new Serialport('/dev/ttyay')
 ```

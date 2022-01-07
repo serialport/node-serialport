@@ -5,7 +5,7 @@ const { program } = require('commander')
 const SerialPort = require('@serialport/stream')
 const { version } = require('../package.json')
 const { OutputTranslator } = require('./output-translator')
-SerialPort.Binding = require('@serialport/bindings')
+SerialPort.Binding = require('@serialport/bindings-cpp')
 
 const makeNumber = input => Number(input)
 
