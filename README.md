@@ -11,10 +11,10 @@ Access serial ports with JavaScript. Linux, OSX and Windows. Welcome your roboti
 
 ## Quick Links
 
-- [**Guides**](https://serialport.io/docs/)
+- 📚 [**Guides**](https://serialport.io/docs/)
 - [**API Docs**](https://serialport.io/docs/api-serialport)
-- [The `serialport` package api docs](https://serialport.io/docs/api-serialport) (most people start here)
 - [`@serialport/bindings-cpp`](https://www.npmjs.com/package/@serialport/bindings-cpp)
+- 🐛 [Help and Bugs](https://github.com/serialport/node-serialport/issues/new/choose) All serialport issues are pointed to the main serialport repo.
 
 ### Bindings
 
