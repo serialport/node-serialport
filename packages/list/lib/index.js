@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const bindings = require('@serialport/bindings')
+const bindings = require('@serialport/bindings-cpp')
 const { version } = require('../package.json')
 const { program, Option } = require('commander')
 
