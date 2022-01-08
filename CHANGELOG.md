@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.0.2](https://github.com/serialport/node-serialport/compare/v10.0.1...v10.0.2) (2022-01-08)
+
+
+### Features
+
+* Introduce prebuildify ([#2368](https://github.com/serialport/node-serialport/issues/2368)) ([d50673f](https://github.com/serialport/node-serialport/commit/d50673fe7403093ed9a3bcea927ac0a4a83f1b07))
+
+
+
+
+
 ## [10.0.1](https://github.com/serialport/node-serialport/compare/v10.0.0...v10.0.1) (2021-12-25)
 
 

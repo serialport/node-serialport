@@ -1,6 +1,6 @@
 {
   "name": "serialport",
-  "version": "10.0.1",
+  "version": "10.0.2",
   "description": "Node.js package to access serial ports. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!",
   "main": "lib",
   "repository": {
@@ -55,7 +55,7 @@
     "@serialport/parser-readline": "10.0.1",
     "@serialport/parser-ready": "10.0.1",
     "@serialport/parser-regex": "10.0.1",
-    "@serialport/stream": "10.0.1",
+    "@serialport/stream": "10.0.2",
     "debug": "^4.3.2"
   },
   "engines": {

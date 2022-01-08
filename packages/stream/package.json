@@ -1,6 +1,6 @@
 {
   "name": "@serialport/stream",
-  "version": "10.0.1",
+  "version": "10.0.2",
   "main": "lib",
   "dependencies": {
     "debug": "^4.3.2"
