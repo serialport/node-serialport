@@ -1,0 +1,12 @@
+{
+  "extends": [
+    "config:base"
+  ],
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 20,
+  "timezone": "America/New_York",
+  "schedule": [
+    "on the 1st day of the month",
+    "on the 15th day of the month"
+  ]
+}
