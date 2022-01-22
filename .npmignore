@@ -13,3 +13,7 @@ coverage
 lib/mocks
 npm-debug.log
 test
+lib/*
+tsconfig-build.json
+tsconfig.json
+.tool-versions

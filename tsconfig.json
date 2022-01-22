@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "allowJs": false,
+    "target": "es2017",
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "declaration": true,
+    "importHelpers": false,
+    "forceConsistentCasingInFileNames": true,
+    "useUnknownInCatchVariables": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true
+  },
+  "include": [
+    "lib/**/*.ts",
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

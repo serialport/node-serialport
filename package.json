@@ -26,17 +26,19 @@
   "devDependencies": {
     "@semantic-release/exec": "^6.0.3",
     "@serialport/binding-mock": "10.0.1",
+    "@types/chai": "^4.3.0",
+    "@types/chai-subset": "^1.3.3",
+    "@types/debug": "^4.1.7",
+    "@types/mocha": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.10.0",
+    "@typescript-eslint/parser": "^5.10.0",
     "cc": "^3.0.1",
     "chai": "^4.3.4",
     "chai-subset": "^1.6.0",
     "codecov": "^3.8.3",
+    "esbuild": "^0.14.12",
+    "esbuild-register": "^3.3.2",
     "eslint": "^8.2.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.25.3",
-    "eslint-plugin-mocha": "^9.0.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^4.0.0",
-    "eslint-plugin-promise": "^5.1.1",
     "mocha": "^9.1.3",
     "node-abi": "3.5.0",
     "node-gyp": "^7.1.2",
@@ -44,15 +46,15 @@
     "plop": "^2.7.6",
     "prebuildify": "^5.0.0",
     "prebuildify-cross": "^4.0.2",
-    "prettier": "^2.4.1",
-    "proxyquire": "^2.1.3",
     "semantic-release": "^18.0.1",
-    "sinon": "^12.0.1"
+    "sinon": "^12.0.1",
+    "typescript": "^4.5.4"
   },
   "engines": {
     "node": ">=12.17.0 <13.0 || >=14.0.0"
   },
   "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig-build.json",
     "install": "node-gyp-build",
     "prebuild": "prebuildify --napi --target 14.0.0 --force --strip --verbose",
     "prebuild-cross": "prebuildify-cross --napi --target 14.0.0 --force --strip --verbose",
@@ -63,7 +65,8 @@
     "test": "nyc --reporter=html --reporter=text --reporter lcovonly mocha",
     "test:arduino": "TEST_PORT=$(./bin/find-arduino.js) npm test",
     "test:watch": "mocha -w",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "typecheck": "tsc"
   },
   "publishConfig": {
     "access": "public"
@@ -99,5 +102,12 @@
       "docs": "Documentation",
       "internal": "Chores"
     }
+  },
+  "mocha": {
+    "bail": true,
+    "require": [
+      "esbuild-register"
+    ],
+    "spec": "lib/**/*.test.*"
   }
 }

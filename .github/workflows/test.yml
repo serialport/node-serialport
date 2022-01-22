@@ -12,6 +12,7 @@ jobs:
         node-version: 14
     - run: npm ci
     - run: npm run lint
+    - run: npm run typecheck
   test:
     runs-on: ${{ matrix.config.os }}
     strategy:

@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "noEmit": false,
+    "module": "commonjs"
+  },
+  "exclude": [
+    "node_modules",
+    "**/*.test.ts",
+    "lib/mocks/*"
+  ]
+}

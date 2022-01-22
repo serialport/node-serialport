@@ -1,16 +1,19 @@
-const debug = require('debug')
-const logger = debug('serialport/bindings/poller')
-const EventEmitter = require('events')
-const { join } = require('path')
-const PollerBindings = require('node-gyp-build')(join(__dirname, '../')).Poller
+import debug from 'debug'
+import { EventEmitter } from 'events'
+import { join } from 'path'
+import nodeGypBuild from 'node-gyp-build'
+import { CanceledError } from './errors'
 
-const EVENTS = {
+const { Poller: PollerBindings } = nodeGypBuild(join(__dirname, '../')) as any
+const logger = debug('serialport/bindings/poller')
+
+export const EVENTS = {
   UV_READABLE: 0b0001,
   UV_WRITABLE: 0b0010,
   UV_DISCONNECT: 0b0100,
 }
 
-function handleEvent(error, eventFlag) {
+function handleEvent(error: Error, eventFlag: number) {
   if (error) {
     logger('error', error)
     this.emit('readable', error)
@@ -35,8 +38,9 @@ function handleEvent(error, eventFlag) {
 /**
  * Polls unix systems for readable or writable states of a file or serialport
  */
-class Poller extends EventEmitter {
-  constructor(fd, FDPoller = PollerBindings) {
+export class Poller extends EventEmitter {
+  poller: any
+  constructor(fd: number, FDPoller = PollerBindings) {
     logger('Creating poller')
     super()
     this.poller = new FDPoller(fd, handleEvent.bind(this))
@@ -46,17 +50,17 @@ class Poller extends EventEmitter {
    * @param {string} event ('readable'|'writable'|'disconnect')
    * @returns {Poller} returns itself
    */
-  once(event, callback) {
+  once(event: 'readable' | 'writable' | 'disconnect', callback: (err: null | Error) => void): this {
     switch (event) {
-      case 'readable':
-        this.poll(EVENTS.UV_READABLE)
-        break
-      case 'writable':
-        this.poll(EVENTS.UV_WRITABLE)
-        break
-      case 'disconnect':
-        this.poll(EVENTS.UV_DISCONNECT)
-        break
+    case 'readable':
+      this.poll(EVENTS.UV_READABLE)
+      break
+    case 'writable':
+      this.poll(EVENTS.UV_WRITABLE)
+      break
+    case 'disconnect':
+      this.poll(EVENTS.UV_DISCONNECT)
+      break
     }
     return super.once(event, callback)
   }
@@ -64,11 +68,8 @@ class Poller extends EventEmitter {
   /**
    * Ask the bindings to listen for an event, it is recommend to use `.once()` for easy use
    * @param {EVENTS} eventFlag polls for an event or group of events based upon a flag.
-   * @returns {undefined}
    */
-  poll(eventFlag) {
-    eventFlag = eventFlag || 0
-
+  poll(eventFlag = 0) {
     if (eventFlag & EVENTS.UV_READABLE) {
       logger('Polling for "readable"')
     }
@@ -84,29 +85,23 @@ class Poller extends EventEmitter {
 
   /**
    * Stop listening for events and cancel all outstanding listening with an error
-   * @returns {undefined}
    */
-  stop() {
+  stop(): void {
     logger('Stopping poller')
     this.poller.stop()
     this.emitCanceled()
   }
 
-  destroy() {
+  destroy(): void {
     logger('Destroying poller')
     this.poller.destroy()
     this.emitCanceled()
   }
 
-  emitCanceled() {
-    const err = new Error('Canceled')
-    err.canceled = true
+  emitCanceled(): void {
+    const err = new CanceledError('Canceled')
     this.emit('readable', err)
     this.emit('writable', err)
     this.emit('disconnect', err)
   }
 }
-
-Poller.EVENTS = EVENTS
-
-module.exports = Poller

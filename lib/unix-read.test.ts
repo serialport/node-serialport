@@ -1,24 +1,29 @@
-const unixRead = require('./unix-read')
+import { assert, shouldReject } from '../test/assert'
+import { LinuxBinding } from './linux'
+import { unixRead } from './unix-read'
 
-const makeFsRead = (bytesRead, fill) => (fd, buffer, offset, length) => {
-  buffer.fill(fill, offset, Math.min(length, bytesRead))
-  return {
-    buffer,
-    bytesRead,
-  }
-}
+const makeFsRead =
+  (bytesRead: number, fill: number): any =>
+    (fd: number, buffer: Buffer, offset: number, length: number) => {
+      buffer.fill(fill, offset, Math.min(length, bytesRead))
+      return {
+        buffer,
+        bytesRead,
+      }
+    }
 
-const makeFsReadError = code => {
+const makeFsReadError = (code: string) => {
   const err = new Error(`Error: ${code}`)
-  err.code = code
+  ;(err as any).code = code
   return () => {
     throw err
   }
 }
 
-const sequenceCalls = (...functions) => {
+// eslint-disable-next-line @typescript-eslint/ban-types
+const sequenceCalls = (...functions: Function[]) => {
   const funcs = [...functions]
-  return (...args) => {
+  return (...args: any[]) => {
     const func = funcs.shift()
     if (func) {
       return func(...args)
@@ -28,25 +33,25 @@ const sequenceCalls = (...functions) => {
   }
 }
 
-const makeMockBinding = () => {
+const makeMockBinding = (): LinuxBinding => {
   return {
     isOpen: true,
     fd: 1,
     poller: {
-      once(event, func) {
+      once(event: any, func: () => void) {
         setImmediate(func)
       },
     },
-  }
+  } as any
 }
 
 describe('unixRead', () => {
-  let mock
+  let mock: LinuxBinding
   beforeEach(() => {
     mock = makeMockBinding()
   })
   it('rejects when not open', async () => {
-    mock.isOpen = false
+    (mock as any).isOpen = false
     const readBuffer = Buffer.alloc(8, 0)
     await shouldReject(unixRead({ binding: mock, buffer: readBuffer, offset: 0, length: 8, fsReadAsync: makeFsRead(8, 255) }))
   })
@@ -88,8 +93,8 @@ describe('unixRead', () => {
   })
   it('rejects a canceled error if port closes after read a retryable error', async () => {
     const readBuffer = Buffer.alloc(8, 0)
-    const fsReadAsync = () => {
-      mock.isOpen = false
+    const fsReadAsync: any = () => {
+      (mock as any).isOpen = false
       makeFsReadError('EAGAIN')()
     }
     const err = await shouldReject(unixRead({ binding: mock, buffer: readBuffer, offset: 0, length: 8, fsReadAsync }))

@@ -1,6 +1,7 @@
-const unixWrite = require('./unix-write')
-const { randomBytes } = require('crypto')
-const { promisify } = require('util')
+import { assert, shouldReject } from '../test/assert'
+import { unixWrite } from './unix-write'
+import { randomBytes } from 'crypto'
+import { promisify } from 'util'
 const randomBytesAsync = promisify(randomBytes)
 
 const makeMockBinding = () => {
@@ -9,11 +10,11 @@ const makeMockBinding = () => {
     fd: 1,
     poller: {
       error: null,
-      once(event, func) {
+      once(event: any, func: (err: null | Error) => void) {
         setImmediate(() => func(this.error))
       },
     },
-  }
+  } as any
 }
 
 const makeFsWrite = (maxBytesToWrite = Infinity) => {
@@ -22,7 +23,7 @@ const makeFsWrite = (maxBytesToWrite = Infinity) => {
     writeBuffer: Buffer.alloc(0),
     writes: 0,
   }
-  const fsWriteAsync = (fd, buffer, offset, bytesToWrite) => {
+  const fsWriteAsync: any = (fd: number, buffer: Buffer, offset: number, bytesToWrite: number) => {
     const bytesWritten = Math.min(maxBytesToWrite, bytesToWrite)
     info.bytesWritten += bytesWritten
     info.writeBuffer = Buffer.concat([info.writeBuffer, buffer.slice(offset, offset + bytesWritten)])
@@ -39,9 +40,10 @@ const makeFsWrite = (maxBytesToWrite = Infinity) => {
   }
 }
 
-const sequenceCalls = (...functions) => {
+// eslint-disable-next-line @typescript-eslint/ban-types
+const sequenceCalls = (...functions: Function[]) => {
   const funcs = [...functions]
-  return (...args) => {
+  return (...args: any[]) => {
     const func = funcs.shift()
     if (func) {
       return func(...args)
@@ -51,16 +53,16 @@ const sequenceCalls = (...functions) => {
   }
 }
 
-const makeFsWriteError = code => {
+const makeFsWriteError = (code: string) => {
   const err = new Error(`Error: ${code}`)
-  err.code = code
+  ;(err as any).code = code
   return () => {
     throw err
   }
 }
 
 describe('unixWrite', () => {
-  let mock
+  let mock: ReturnType<typeof makeMockBinding>
   beforeEach(() => {
     mock = makeMockBinding()
   })
@@ -88,7 +90,7 @@ describe('unixWrite', () => {
   it('errors if the port closes after a partial write', async () => {
     const writeBuffer = await randomBytesAsync(16)
     const { fsWriteAsync: realFsWrite, info } = makeFsWrite(8)
-    const fsWriteAsync = (...args) => {
+    const fsWriteAsync = (...args: any[]) => {
       mock.isOpen = false
       return realFsWrite(...args)
     }
@@ -98,7 +100,7 @@ describe('unixWrite', () => {
   })
   it('errors if the poller errors after a partial write', async () => {
     const writeBuffer = await randomBytesAsync(16)
-    const fsWriteAsync = () => {
+    const fsWriteAsync: any = () => {
       mock.poller.error = new Error('PollerError')
       makeFsWriteError('EAGAIN')()
     }
@@ -114,7 +116,7 @@ describe('unixWrite', () => {
       makeFsWriteError('EAGAIN'),
       makeFsWriteError('EWOULDBLOCK'),
       makeFsWriteError('EINTR'),
-      fsWriteAsyncReal
+      fsWriteAsyncReal,
     )
 
     await unixWrite({ binding: mock, buffer: writeBuffer, fsWriteAsync })
@@ -128,7 +130,7 @@ describe('unixWrite', () => {
   })
   it('rejects an error if port closes after read a retryable error', async () => {
     const writeBuffer = Buffer.alloc(8, 0)
-    const fsWriteAsync = () => {
+    const fsWriteAsync: any = () => {
       mock.isOpen = false
       makeFsWriteError('EAGAIN')()
     }

@@ -1,6 +1,7 @@
-const listLinux = require('./mocks/linux-list')
+import { assert, shouldReject } from '../test/assert'
+import { mockLinuxList as linuxList, mockLinuxListError } from './mocks/linux-list'
 
-const ports = String.raw`
+const mockUdevOutput = String.raw`
 P: /devices/platform/serial8250/tty/ttyS0
 N: ttyS0
 E: DEVNAME=/dev/ttyS0
@@ -103,28 +104,13 @@ const portOutput = [
 ]
 
 describe('listLinux', () => {
-  beforeEach(() => {
-    listLinux.reset()
+  it('lists available serialports', async () => {
+    const ports = await linuxList(mockUdevOutput)
+    assert.containSubset(ports, portOutput)
   })
 
-  it('lists available serialports', () => {
-    listLinux.setPorts(ports)
-    return listLinux().then(ports => {
-      assert.containSubset(ports, portOutput)
-    })
-  })
-
-  it('rejects on non-zero exit codes', () => {
-    const list = listLinux()
-    listLinux.emit('close', 1)
-
-    list.then(
-      () => {
-        assert.fail('should not resolve for non-zero exit codes')
-      },
-      error => {
-        assert(error, new Error('Error listing ports udevadm exited with error code: 1'))
-      }
-    )
+  it('rejects on non-zero exit codes', async () => {
+    const list = mockLinuxListError('1')
+    await shouldReject(list, Error, 'Error listing ports udevadm exited with error code: 1')
   })
 })

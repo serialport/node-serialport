@@ -1,22 +1,29 @@
-const Poller = require('./poller')
+import { Poller } from './poller'
+import { assert } from '../test/assert'
 
-class MockPollerBidnings {
-  constructor(fd, callback) {
+class MockPollerBindings {
+  fd: number
+  callback: any
+  lastPollFlag: string
+  constructor(fd: number, callback: any) {
     this.fd = fd
     this.callback = callback
   }
-  poll(flag) {
+  poll(flag: string) {
     this.lastPollFlag = flag
     setImmediate(() => this.callback(null, flag))
   }
 }
 
 class ErrorPollerBindings {
-  constructor(fd, callback) {
+  fd: number
+  callback: any
+  lastPollFlag: string
+  constructor(fd: number, callback: any) {
     this.fd = fd
     this.callback = callback
   }
-  poll(flag) {
+  poll(flag: string) {
     this.lastPollFlag = flag
     setImmediate(() => this.callback(new Error('oh no!'), flag))
   }
@@ -24,10 +31,10 @@ class ErrorPollerBindings {
 
 describe('Poller', () => {
   it('constructs', () => {
-    new Poller(1, MockPollerBidnings)
+    new Poller(1, MockPollerBindings)
   })
   it('can listen to the readable event', done => {
-    const poller = new Poller(1, MockPollerBidnings)
+    const poller = new Poller(1, MockPollerBindings)
     poller.once('readable', err => {
       assert.equal(err, null)
       assert.equal(poller.poller.lastPollFlag, 1)
@@ -35,7 +42,7 @@ describe('Poller', () => {
     })
   })
   it('can listen to the writable event', done => {
-    const poller = new Poller(1, MockPollerBidnings)
+    const poller = new Poller(1, MockPollerBindings)
     poller.once('writable', err => {
       assert.equal(err, null)
       assert.equal(poller.poller.lastPollFlag, 2)
@@ -43,7 +50,7 @@ describe('Poller', () => {
     })
   })
   it('can listen to the disconnect event', done => {
-    const poller = new Poller(1, MockPollerBidnings)
+    const poller = new Poller(1, MockPollerBindings)
     poller.once('disconnect', err => {
       assert.equal(err, null)
       assert.equal(poller.poller.lastPollFlag, 4)

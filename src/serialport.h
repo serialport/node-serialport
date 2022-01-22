@@ -50,7 +50,7 @@ SerialPortParity ToParityEnum(const Napi::String& str);
 SerialPortStopBits ToStopBitEnum(double stopBits);
 
 struct OpenBaton : public Napi::AsyncWorker {
-  OpenBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:OpenBaton"), 
+  OpenBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:OpenBaton"),
   errorString(), path() {}
   char errorString[ERROR_STRING_SIZE];
   char path[1024];
@@ -62,7 +62,6 @@ struct OpenBaton : public Napi::AsyncWorker {
   bool xon = false;
   bool xoff = false;
   bool xany = false;
-  bool dsrdtr = false;
   bool hupcl = false;
   bool lock = false;
   SerialPortParity parity;
@@ -88,7 +87,7 @@ struct ConnectionOptions {
 };
 struct ConnectionOptionsBaton : ConnectionOptions , Napi::AsyncWorker {
   ConnectionOptionsBaton(Napi::Function& callback) : ConnectionOptions() , Napi::AsyncWorker(callback, "node-serialport:ConnectionOptionsBaton") {}
-  
+
   void Execute() override;
 
   void OnOK() override {
@@ -99,7 +98,7 @@ struct ConnectionOptionsBaton : ConnectionOptions , Napi::AsyncWorker {
 };
 
 struct SetBaton : public Napi::AsyncWorker {
-  SetBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:SetBaton"), 
+  SetBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:SetBaton"),
   errorString() {}
   int fd = 0;
   int result = 0;
@@ -121,7 +120,7 @@ struct SetBaton : public Napi::AsyncWorker {
 };
 
 struct GetBaton : public Napi::AsyncWorker {
-  GetBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:GetBaton"), 
+  GetBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:GetBaton"),
   errorString() {}
   int fd = 0;
   char errorString[ERROR_STRING_SIZE];
@@ -145,12 +144,12 @@ struct GetBaton : public Napi::AsyncWorker {
 };
 
 struct GetBaudRateBaton : public Napi::AsyncWorker {
-  GetBaudRateBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:GetBaudRateBaton"), 
+  GetBaudRateBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:GetBaudRateBaton"),
   errorString() {}
   int fd = 0;
   char errorString[ERROR_STRING_SIZE];
   int baudRate = 0;
-  
+
   void Execute() override;
 
   void OnOK() override {
@@ -163,7 +162,7 @@ struct GetBaudRateBaton : public Napi::AsyncWorker {
 };
 
 struct VoidBaton : public Napi::AsyncWorker {
-  VoidBaton(Napi::Function& callback, const char *resource_name) : Napi::AsyncWorker(callback, resource_name), 
+  VoidBaton(Napi::Function& callback, const char *resource_name) : Napi::AsyncWorker(callback, resource_name),
   errorString() {}
   int fd = 0;
   char errorString[ERROR_STRING_SIZE];

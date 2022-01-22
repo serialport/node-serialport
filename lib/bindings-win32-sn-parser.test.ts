@@ -1,6 +1,7 @@
-const serialNumParser = require('./win32-sn-parser')
+import { assert } from '../test/assert'
+import { serialNumParser } from './win32-sn-parser'
 
-const devices = Object.freeze({
+const devices = {
   'FTDI Device': {
     pnpId: 'FTDIBUS\\VID_0403+PID_6015+DO004ZB7A\\0000',
     serialNumber: 'DO004ZB7',
@@ -25,14 +26,17 @@ const devices = Object.freeze({
     pnpId: 'WATEVER\\Whoever\\However!',
     serialNumber: null,
   },
-})
+  'bad data': {
+    pnpId: undefined,
+    serialNumber: null,
+  },
+}
 
 describe('serialNumParser', () => {
-  Object.entries(devices).forEach(([device, info]) => {
+  for (const [device, info] of Object.entries(devices)) {
     it(`parses pnp id for ${device}`, () => {
-      const pnpId = info.pnpId
-      const serialNumber = info.serialNumber
+      const { pnpId, serialNumber } = info
       assert.equal(serialNumParser(pnpId), serialNumber)
     })
-  })
+  }
 })

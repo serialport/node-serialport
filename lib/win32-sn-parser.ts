@@ -1,6 +1,6 @@
 const PARSERS = [/USB\\(?:.+)\\(.+)/, /FTDIBUS\\(?:.+)\+(.+?)A?\\.+/]
 
-module.exports = pnpId => {
+export const serialNumParser = (pnpId?: string) => {
   if (!pnpId) {
     return null
   }

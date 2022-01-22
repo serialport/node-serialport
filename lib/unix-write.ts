@@ -1,20 +1,29 @@
-const fs = require('fs')
-const debug = require('debug')
-const logger = debug('serialport/bindings/unixWrite')
-const { promisify } = require('util')
+import { write } from 'fs'
+import debugFactory from 'debug'
+import { promisify } from 'util'
+import { LinuxBinding } from './linux'
+import { DarwinBinding } from './darwin'
+const logger = debugFactory('serialport/bindings-cpp/unixWrite')
 
-const writeAsync = promisify(fs.write)
+const writeAsync = promisify(write)
 
-const writable = binding => {
-  return new Promise((resolve, reject) => {
-    binding.poller.once('writable', err => (err ? reject(err) : resolve()))
+const writable = (binding: LinuxBinding | DarwinBinding) => {
+  return new Promise<void>((resolve, reject) => {
+    binding.poller?.once('writable', err => (err ? reject(err) : resolve()))
   })
 }
 
-const unixWrite = async ({ binding, buffer, offset = 0, fsWriteAsync = writeAsync }) => {
+interface UnixWriteOptions {
+  binding: LinuxBinding | DarwinBinding
+  buffer: Buffer
+  offset?: number
+  fsWriteAsync?: typeof writeAsync
+}
+
+export const unixWrite = async ({ binding, buffer, offset = 0, fsWriteAsync = writeAsync }: UnixWriteOptions): Promise<void> => {
   const bytesToWrite = buffer.length - offset
   logger('Starting write', buffer.length, 'bytes offset', offset, 'bytesToWrite', bytesToWrite)
-  if (!binding.isOpen) {
+  if (!binding.isOpen || !binding.fd) {
     throw new Error('Port is not open')
   }
   try {
@@ -54,4 +63,3 @@ const unixWrite = async ({ binding, buffer, offset = 0, fsWriteAsync = writeAsyn
     throw err
   }
 }
-module.exports = unixWrite

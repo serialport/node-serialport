@@ -1,22 +1,40 @@
-const fs = require('fs')
-const debug = require('debug')
-const logger = debug('serialport/bindings/unixRead')
-const { promisify } = require('util')
+import { promisify } from 'util'
+import { read as fsRead } from 'fs'
+import { CanceledError } from './errors'
+import debugFactory from 'debug'
+import { LinuxBinding } from './linux'
+import { DarwinBinding } from './darwin'
 
-const readAsync = promisify(fs.read)
+const logger = debugFactory('serialport/bindings-cpp/unixRead')
+const readAsync = promisify(fsRead)
 
-const readable = binding => {
-  return new Promise((resolve, reject) => {
+const readable = (binding: LinuxBinding | DarwinBinding) => {
+  return new Promise<void>((resolve, reject) => {
+    if (!binding.poller) {
+      throw new Error('No poller on bindings')
+    }
     binding.poller.once('readable', err => (err ? reject(err) : resolve()))
   })
 }
 
-const unixRead = async ({ binding, buffer, offset, length, fsReadAsync = readAsync }) => {
+interface UnixReadOptions {
+  binding: LinuxBinding | DarwinBinding
+  buffer: Buffer
+  offset: number
+  length: number
+  fsReadAsync?: typeof readAsync
+}
+
+export const unixRead = async ({
+  binding,
+  buffer,
+  offset,
+  length,
+  fsReadAsync = readAsync,
+}: UnixReadOptions): Promise<{ buffer: Buffer; bytesRead: number }> => {
   logger('Starting read')
-  if (!binding.isOpen) {
-    const err = new Error('Port is not open')
-    err.canceled = true
-    throw err
+  if (!binding.isOpen || !binding.fd) {
+    throw new CanceledError('Port is not open')
   }
 
   try {
@@ -30,9 +48,7 @@ const unixRead = async ({ binding, buffer, offset, length, fsReadAsync = readAsy
     logger('read error', err)
     if (err.code === 'EAGAIN' || err.code === 'EWOULDBLOCK' || err.code === 'EINTR') {
       if (!binding.isOpen) {
-        const err = new Error('Port is not open')
-        err.canceled = true
-        throw err
+        throw new CanceledError('Port is not open')
       }
       logger('waiting for readable because of code:', err.code)
       await readable(binding)
@@ -53,5 +69,3 @@ const unixRead = async ({ binding, buffer, offset, length, fsReadAsync = readAsy
     throw err
   }
 }
-
-module.exports = unixRead

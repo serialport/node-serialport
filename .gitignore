@@ -4,3 +4,5 @@ coverage
 node_modules
 npm-debug.log
 prebuilds
+.tool-versions
+dist
