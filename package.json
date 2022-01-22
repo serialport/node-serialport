@@ -56,8 +56,8 @@
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig-build.json",
     "install": "node-gyp-build",
-    "prebuild": "prebuildify --napi --target 14.0.0 --force --strip --verbose",
-    "prebuild-cross": "prebuildify-cross --napi --target 14.0.0 --force --strip --verbose",
+    "prebuildify": "prebuildify --napi --target 14.0.0 --force --strip --verbose",
+    "prebuildify-cross": "prebuildify-cross --napi --target 14.0.0 --force --strip --verbose",
     "rebuild": "node-gyp rebuild",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "format": "eslint lib test --fix",
