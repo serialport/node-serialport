@@ -2,7 +2,7 @@
 
 [![Backers on Open Collective](https://opencollective.com/serialport/backers/badge.svg)](#backers)
 [![Sponsors on Open Collective](https://opencollective.com/serialport/sponsors/badge.svg)](#sponsors)
-[![codecov](https://codecov.io/gh/serialport/bindings-cpp/branch/master/graph/badge.svg)](https://codecov.io/gh/serialport/bindings-cpp)
+[![codecov](https://codecov.io/gh/serialport/bindings-cpp/branch/main/graph/badge.svg?token=rsGeOmdnsV)](https://codecov.io/gh/serialport/bindings-cpp)
 [![Test / Lint](https://github.com/serialport/bindings-cpp/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/serialport/bindings-cpp/actions/workflows/test.yml)
 
 Access serial ports with JavaScript. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!
