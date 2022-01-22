@@ -2,7 +2,8 @@
   "name": "@serialport/bindings-cpp",
   "description": "SerialPort Hardware bindings for node serialport written in c++",
   "version": "0.0.0-development",
-  "main": "lib",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "keywords": [
     "serialport-binding",
     "COM",
