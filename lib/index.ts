@@ -12,19 +12,20 @@ export * from './binding-interface'
 
 export type AllBindingClasses = typeof WindowsBinding | typeof DarwinBinding | typeof LinuxBinding
 export type AllBindings = WindowsBinding | DarwinBinding | LinuxBinding
-let binding: AllBindingClasses
-switch (process.platform) {
-case 'win32':
-  debug('loading WindowsBinding')
-  binding = WindowsBinding
-  break
-case 'darwin':
-  debug('loading DarwinBinding')
-  binding = DarwinBinding
-  break
-default:
-  debug('loading LinuxBinding')
-  binding = LinuxBinding
-}
 
-export default binding
+/**
+ * This is an auto detected binding for your current platform
+ */
+export const autoDetect = (): AllBindingClasses => {
+  switch (process.platform) {
+  case 'win32':
+    debug('loading WindowsBinding')
+    return WindowsBinding
+  case 'darwin':
+    debug('loading DarwinBinding')
+    return DarwinBinding
+  default:
+    debug('loading LinuxBinding')
+    return LinuxBinding
+  }
+}

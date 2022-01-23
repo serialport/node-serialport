@@ -1,7 +1,7 @@
 import { assert, shouldReject } from '../test/assert'
 import { makeTestFeature } from '../test/makeTestFeature'
 import { BindingInterface, OpenOptions, PortInfo, SetOptions } from './binding-interface'
-import Binding, { AllBindingClasses } from './index'
+import { autoDetect, AllBindingClasses } from './index'
 import MockBinding from '@serialport/binding-mock'
 
 const defaultOpenOptions: OpenOptions = Object.freeze({
@@ -37,7 +37,7 @@ const listFields = ['path', 'manufacturer', 'serialNumber', 'pnpId', 'locationId
 const readyData = Buffer.from('READY')
 
 testBinding('mock', MockBinding, '/dev/exists')
-testBinding(process.platform, Binding, process.env.TEST_PORT)
+testBinding(process.platform, autoDetect(), process.env.TEST_PORT)
 
 function testBinding(bindingName: string, Binding: AllBindingClasses, testPort?: string) {
   const { testFeature, testHardware, describeHardware } = makeTestFeature(bindingName, testPort)
@@ -52,7 +52,6 @@ function testBinding(bindingName: string, Binding: AllBindingClasses, testPort?:
     describe('static method', () => {
       describe('.list', () => {
         it('returns an array', async () => {
-          console.log({ Binding })
           const ports = await Binding.list()
           assert.isArray(ports)
         })
