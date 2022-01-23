@@ -1,6 +1,5 @@
 const AbstractBinding = require('@serialport/binding-abstract')
 const debug = require('debug')('serialport/binding-mock')
-const { wrapWithHiddenComName } = require('./legacy')
 
 let ports = {}
 let serialNumber = 0
@@ -67,7 +66,7 @@ class MockBinding extends AbstractBinding {
   }
 
   static async list() {
-    return wrapWithHiddenComName(Object.values(ports).map(port => port.info))
+    return Object.values(ports).map(port => port.info)
   }
 
   // Emit data on a mock port
