@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const bindings = require('@serialport/bindings-cpp')
+const { autoDetect } = require('@serialport/bindings-cpp')
 const { version } = require('../package.json')
 const { program, Option } = require('commander')
 
@@ -29,7 +29,7 @@ const formatters = {
 
 const args = program.opts()
 
-bindings
+autoDetect()
   .list()
   .then(ports => {
     const formatter = formatters[args.format]
