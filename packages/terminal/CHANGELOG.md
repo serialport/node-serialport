@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.1.0](https://github.com/serialport/node-serialport/compare/v10.0.2...v10.1.0) (2022-01-23)
+
+
+### Bug Fixes
+
+* lint ([d7e81a0](https://github.com/serialport/node-serialport/commit/d7e81a0f25fbed3b005759a5a67743f53ece0fb9))
+
+
+### Features
+
+* **terminal:** Add flow control mode ([#2361](https://github.com/serialport/node-serialport/issues/2361)) ([311527e](https://github.com/serialport/node-serialport/commit/311527e9c6059f2d06873d932b025b940c5cfda7))
+
+
+
+
+
 ## [10.0.2](https://github.com/serialport/node-serialport/compare/v10.0.1...v10.0.2) (2022-01-08)
 
 **Note:** Version bump only for package @serialport/terminal
