@@ -1,11 +1,11 @@
 const SerialPort = require('@serialport/stream')
-const Binding = require('@serialport/bindings-cpp')
+const { autoDetect } = require('@serialport/bindings-cpp')
 const parsers = require('./parsers')
 
 /**
  * @type {AbstractBinding}
  */
-SerialPort.Binding = Binding
+SerialPort.Binding = autoDetect()
 
 /**
  * @type {Parsers}

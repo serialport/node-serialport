@@ -188,7 +188,7 @@ The in progress writes must error when the port is closed with an error object t
    * @rejects {TypeError} When given invalid arguments, a `TypeError` is rejected.
    */
   async getBaudRate() {
-    debug('getbaudRate')
+    debug('getBaudRate')
     if (!this.isOpen) {
       throw new Error('Port is not open')
     }
