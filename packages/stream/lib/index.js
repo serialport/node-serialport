@@ -214,7 +214,7 @@ SerialPort.prototype._asyncError = function (error, callback) {
  * Opens a connection to the given serial port.
  * @param {errorCallback=} openCallback - Called after a connection is opened. If this is not provided and an error occurs, it will be emitted on the port's `error` event.
  * @emits open
- * @returns {undefined}
+ * @returns {void}
  */
 SerialPort.prototype.open = function (openCallback) {
   if (this.isOpen) {

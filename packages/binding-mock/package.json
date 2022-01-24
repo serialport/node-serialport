@@ -1,13 +1,18 @@
 {
   "name": "@serialport/binding-mock",
   "version": "10.1.0",
-  "main": "lib",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "keywords": [
-    "serialport-binding"
+    "serialport-binding",
+    "debug"
   ],
   "dependencies": {
-    "@serialport/binding-abstract": "10.1.0",
+    "@serialport/bindings-cpp": "^10.4.0",
     "debug": "^4.3.2"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.5"
   },
   "engines": {
     "node": ">=12.0.0"
@@ -16,6 +21,9 @@
     "access": "public"
   },
   "license": "MIT",
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig-build.json"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/serialport/node-serialport.git"
