@@ -1,13 +1,16 @@
-{
+module.exports = {
   "extends": [
     "eslint:recommended",
     "plugin:node/recommended",
-    "plugin:mocha/recommended"
+    "plugin:mocha/recommended",
+    "plugin:@typescript-eslint/recommended",
   ],
+  "parser": "@typescript-eslint/parser",
   "plugins": [
     "prettier",
     "node",
-    "mocha"
+    "mocha",
+    "@typescript-eslint",
   ],
   "env": {
     "node": true,
@@ -15,10 +18,7 @@
     "es6": true
   },
   "parserOptions": {
-    "ecmaVersion": 2018,
-    "ecmaFeatures": {
-      "jsx": true
-    }
+    "ecmaVersion": 12,
   },
   "globals": {
     "assert": false,
@@ -28,12 +28,14 @@
   "rules": {
     "no-extra-semi": "off",
     "no-process-exit": "off",
-    "no-unused-vars": [ "error", { "vars": "all", "args": "after-used" }],
     "no-var": "error",
     "node/no-extraneous-require": "off",
+    "node/no-missing-import": "off",
+    "node/no-missing-require": "off",
+    "node/no-unpublished-import": "off",
     "node/no-unpublished-require": "off",
     "node/no-unsupported-features/es-builtins": "error",
-    "node/no-unsupported-features/es-syntax": "error",
+    "node/no-unsupported-features/es-syntax": "off",
     "node/no-unsupported-features/node-builtins": "error",
     "node/shebang": "off",
     "object-shorthand": "error",
@@ -55,7 +57,9 @@
     "mocha/no-mocha-arrows": "off",
     "mocha/no-pending-tests": "error",
     "mocha/no-setup-in-describe": "off",
-    "strict": [ "error", "never" ],
-    "valid-jsdoc": "off"
+    "strict": ["error", "never"],
+    "valid-jsdoc": "off",
+    "@typescript-eslint/no-var-requires": "off", // until we get all js ported over
+    "@typescript-eslint/no-empty-function": "off",
   }
 }
