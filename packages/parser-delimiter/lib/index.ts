@@ -13,9 +13,9 @@ export interface DelimiterOptions extends TransformOptions {
  * To use the `Delimiter` parser, provide a delimiter as a string, buffer, or array of bytes. Runs in O(n) time.
  * @example
 const SerialPort = require('serialport')
-const Delimiter = require('@serialport/parser-delimiter')
+const {DelimiterParser} = require('@serialport/parser-delimiter')
 const port = new SerialPort('/dev/tty-usbserial1')
-const parser = port.pipe(new Delimiter({ delimiter: '\n' }))
+const parser = port.pipe(new DelimiterParser({ delimiter: '\n' }))
 parser.on('data', console.log)
  */
 export class DelimiterParser extends Transform {

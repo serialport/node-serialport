@@ -1,4 +1,4 @@
-const DelimiterParser = require('@serialport/parser-delimiter')
+const {DelimiterParser} = require('@serialport/parser-delimiter')
 
 /**
  *  A transform stream that emits data after a newline delimiter is received.
