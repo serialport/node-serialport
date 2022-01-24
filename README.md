@@ -57,7 +57,6 @@ Parsers are traditionally Transform streams, but Duplex streams and other non st
 1. Clone this repo `git clone git@github.com:serialport/node-serialport.git`
 1. Run `npm install` to setup local package dependencies (run this any time you depend on a package local to this repo)
 1. Run `npm test` to ensure everything is working properly
-1. Run `npm run generate` to generate a new project
 1. Add dev dependencies to the root package.json and package dependencies to the package's one.
 
 ### Developing Docs
