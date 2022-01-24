@@ -1,20 +1,21 @@
 #!/usr/bin/env node
 
-const { autoDetect } = require('@serialport/bindings-cpp')
+import { autoDetect, PortInfo } from '@serialport/bindings-cpp'
+import { program, Option } from 'commander'
+
 const { version } = require('../package.json')
-const { program, Option } = require('commander')
 
 const formatOption = new Option('-f, --format <type>', 'Format the output').choices(['text', 'json', 'jsonline', 'jsonl']).default('text')
 
 program.version(version).description('List available serial ports').addOption(formatOption).parse(process.argv)
 
-function jsonl(ports) {
+function jsonl(ports: PortInfo[]) {
   ports.forEach(port => {
     console.log(JSON.stringify(port))
   })
 }
 
-const formatters = {
+const formatters: { [key: string]: undefined | ((ports: PortInfo[]) => void) } = {
   text(ports) {
     ports.forEach(port => {
       console.log(`${port.path}\t${port.pnpId || ''}\t${port.manufacturer || ''}`)
@@ -32,7 +33,7 @@ const args = program.opts()
 autoDetect()
   .list()
   .then(ports => {
-    const formatter = formatters[args.format]
+    const formatter = formatters[args.format as string]
     if (!formatter) {
       throw new Error(`Invalid formatter "${args.format}"`)
     }

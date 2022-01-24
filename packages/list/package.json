@@ -1,9 +1,10 @@
 {
   "name": "@serialport/list",
   "version": "10.1.0",
-  "main": "lib",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "bin": {
-    "serialport-list": "./lib/index.js"
+    "serialport-list": "./dist/index.js"
   },
   "dependencies": {
     "@serialport/bindings-cpp": "10.4.0",
@@ -16,6 +17,9 @@
     "access": "public"
   },
   "license": "MIT",
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig-build.json"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/serialport/node-serialport.git"

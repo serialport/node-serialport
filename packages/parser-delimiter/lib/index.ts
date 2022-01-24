@@ -1,9 +1,16 @@
-const { Transform } = require('stream')
+import { Transform, TransformCallback, TransformOptions } from 'stream'
+
+export interface DelimiterOptions extends TransformOptions {
+  includeDelimiter?: boolean
+  /** the number of bytes on each data event */
+  delimiter: string | Buffer | number[]
+}
 
 /**
  * A transform stream that emits data each time a byte sequence is received.
  * @extends Transform
- * @summary To use the `Delimiter` parser, provide a delimiter as a string, buffer, or array of bytes. Runs in O(n) time.
+ *
+ * To use the `Delimiter` parser, provide a delimiter as a string, buffer, or array of bytes. Runs in O(n) time.
  * @example
 const SerialPort = require('serialport')
 const Delimiter = require('@serialport/parser-delimiter')
@@ -11,8 +18,11 @@ const port = new SerialPort('/dev/tty-usbserial1')
 const parser = port.pipe(new Delimiter({ delimiter: '\n' }))
 parser.on('data', console.log)
  */
-class DelimiterParser extends Transform {
-  constructor(options = {}) {
+export class DelimiterParser extends Transform {
+  includeDelimiter: boolean
+  delimiter: Buffer
+  buffer: Buffer
+  constructor(options: DelimiterOptions) {
     super(options)
 
     if (options.delimiter === undefined) {
@@ -28,7 +38,7 @@ class DelimiterParser extends Transform {
     this.buffer = Buffer.alloc(0)
   }
 
-  _transform(chunk, encoding, cb) {
+  _transform(chunk: Buffer, encoding: any, cb: TransformCallback) {
     let data = Buffer.concat([this.buffer, chunk])
     let position
     while ((position = data.indexOf(this.delimiter)) !== -1) {
@@ -39,11 +49,9 @@ class DelimiterParser extends Transform {
     cb()
   }
 
-  _flush(cb) {
+  _flush(cb: TransformCallback) {
     this.push(this.buffer)
     this.buffer = Buffer.alloc(0)
     cb()
   }
 }
-
-module.exports = DelimiterParser

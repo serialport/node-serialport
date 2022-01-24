@@ -1,5 +1,6 @@
-const sinon = require('sinon')
-const CCTalkParser = require('../')
+import sinon from 'sinon'
+import { CCTalkParser } from '../'
+import { assert } from '../../../test/initializers/assert'
 
 describe('CCTalkParser', () => {
   it('constructs', () => {

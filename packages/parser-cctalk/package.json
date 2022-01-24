@@ -1,7 +1,8 @@
 {
   "name": "@serialport/parser-cctalk",
   "version": "10.0.1",
-  "main": "lib",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "engines": {
     "node": ">=12.0.0"
   },
@@ -9,9 +10,15 @@
     "access": "public"
   },
   "license": "MIT",
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig-build.json"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/serialport/node-serialport.git"
   },
-  "funding": "https://opencollective.com/serialport/donate"
+  "funding": "https://opencollective.com/serialport/donate",
+  "devDependencies": {
+    "typescript": "^4.5.5"
+  }
 }

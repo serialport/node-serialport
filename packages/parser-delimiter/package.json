@@ -1,6 +1,7 @@
 {
   "name": "@serialport/parser-delimiter",
-  "main": "lib",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "version": "10.0.1",
   "engines": {
     "node": ">=12.0.0"
@@ -9,6 +10,9 @@
     "access": "public"
   },
   "license": "MIT",
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig-build.json"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/serialport/node-serialport.git"

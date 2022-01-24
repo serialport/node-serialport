@@ -2,7 +2,8 @@
   "name": "serialport",
   "version": "10.1.0",
   "description": "Node.js package to access serial ports. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!",
-  "main": "lib",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "git://github.com/serialport/node-serialport.git"
@@ -45,6 +46,9 @@
       "url": "https://github.com/node-serialport"
     }
   ],
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig-build.json"
+  },
   "dependencies": {
     "@serialport/binding-mock": "10.1.0",
     "@serialport/bindings-cpp": "10.4.0",
@@ -63,5 +67,8 @@
   },
   "license": "MIT",
   "funding": "https://opencollective.com/serialport/donate",
-  "preferUnplugged": false
+  "preferUnplugged": false,
+  "devDependencies": {
+    "typescript": "^4.5.5"
+  }
 }

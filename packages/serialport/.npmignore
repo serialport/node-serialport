@@ -1,5 +1,4 @@
 .DS_Store
-*.test.js
 CHANGELOG.md
 examples/
 node_modules
@@ -9,3 +8,6 @@ test-electron
 test-manual
 test/
 UPGRADE_GUIDE.md
+lib
+tsconfig.json
+tsconfig-build.json

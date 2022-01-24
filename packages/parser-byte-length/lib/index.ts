@@ -1,11 +1,14 @@
-const { Transform } = require('stream')
+import { Transform, TransformCallback, TransformOptions } from 'stream'
+
+export interface ByteLengthOptions extends TransformOptions {
+  /** the number of bytes on each data event */
+  length: number
+}
 
 /**
  * Emit data every number of bytes
- * @extends Transform
- * @param {Object} options parser options object
- * @param {Number} options.length the number of bytes on each data event
- * @summary A transform stream that emits data as a buffer after a specific number of bytes are received. Runs in O(n) time.
+ *
+ * A transform stream that emits data as a buffer after a specific number of bytes are received. Runs in O(n) time.
  * @example
 const SerialPort = require('serialport')
 const ByteLength = require('@serialport/parser-byte-length')
@@ -13,8 +16,11 @@ const port = new SerialPort('/dev/tty-usbserial1')
 const parser = port.pipe(new ByteLength({length: 8}))
 parser.on('data', console.log) // will have 8 bytes per data event
  */
-class ByteLengthParser extends Transform {
-  constructor(options = {}) {
+export class ByteLengthParser extends Transform {
+  length: number
+  private position: number
+  private buffer: Buffer
+  constructor(options: ByteLengthOptions) {
     super(options)
 
     if (typeof options.length !== 'number') {
@@ -30,7 +36,7 @@ class ByteLengthParser extends Transform {
     this.buffer = Buffer.alloc(this.length)
   }
 
-  _transform(chunk, encoding, cb) {
+  _transform(chunk: Buffer, _encoding: any, cb: TransformCallback) {
     let cursor = 0
     while (cursor < chunk.length) {
       this.buffer[this.position] = chunk[cursor]
@@ -45,11 +51,9 @@ class ByteLengthParser extends Transform {
     cb()
   }
 
-  _flush(cb) {
+  _flush(cb: TransformCallback) {
     this.push(this.buffer.slice(0, this.position))
     this.buffer = Buffer.alloc(this.length)
     cb()
   }
 }
-
-module.exports = ByteLengthParser

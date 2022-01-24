@@ -1,7 +1,8 @@
 /* eslint-disable no-new */
 
-const sinon = require('sinon')
-const DelimiterParser = require('../')
+import sinon from 'sinon'
+import { DelimiterParser } from './'
+import { assert } from '../../../test/initializers/assert'
 
 describe('DelimiterParser', () => {
   it('transforms data to strings split on a delimiter', () => {
@@ -51,10 +52,10 @@ describe('DelimiterParser', () => {
 
   it('throws when not provided with a delimiter', () => {
     assert.throws(() => {
-      new DelimiterParser({})
+      new DelimiterParser({} as any)
     })
     assert.throws(() => {
-      new DelimiterParser()
+      new (DelimiterParser as any)()
     })
   })
 

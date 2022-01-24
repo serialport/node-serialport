@@ -1,7 +1,8 @@
 /* eslint-disable no-new */
 
-const sinon = require('sinon')
-const ByteLengthParser = require('../')
+import sinon from 'sinon'
+import { ByteLengthParser } from './'
+import { assert } from '../../../test/initializers/assert'
 
 describe('ByteLengthParser', () => {
   it('emits data events every 8 bytes', () => {
@@ -18,10 +19,10 @@ describe('ByteLengthParser', () => {
 
   it('throws when not provided with a length', () => {
     assert.throws(() => {
-      new ByteLengthParser()
+      new (ByteLengthParser as any)()
     })
     assert.throws(() => {
-      new ByteLengthParser({})
+      new ByteLengthParser({} as any)
     })
   })
 
@@ -37,7 +38,7 @@ describe('ByteLengthParser', () => {
     assert.throws(() => {
       new ByteLengthParser({
         length: 'foop',
-      })
+      } as any)
     })
   })
 

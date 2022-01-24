@@ -1,17 +1,23 @@
-const { Transform } = require('stream')
+import { Transform, TransformCallback } from 'stream'
 
 /**
  * Parse the CCTalk protocol
  * @extends Transform
- * @summary A transform stream that emits CCTalk packets as they are received.
+ *
+ * A transform stream that emits CCTalk packets as they are received.
  * @example
+import { CCTalkParser } from '@serialport/parser-cctalk'
 const SerialPort = require('serialport')
-const CCTalk = require('@serialport/parser-cctalk')
 const port = new SerialPort('/dev/ttyUSB0')
 const parser = port.pipe(new CCtalk())
 parser.on('data', console.log)
  */
-class CCTalkParser extends Transform {
+export class CCTalkParser extends Transform {
+  array: number[]
+  cursor: number
+  lastByteFetchTime: number
+  maxDelayBetweenBytesMs: number
+
   constructor(maxDelayBetweenBytesMs = 50) {
     super()
     this.array = []
@@ -19,7 +25,8 @@ class CCTalkParser extends Transform {
     this.lastByteFetchTime = 0
     this.maxDelayBetweenBytesMs = maxDelayBetweenBytesMs
   }
-  _transform(buffer, _, cb) {
+
+  _transform(buffer: Buffer, _: any, cb: TransformCallback) {
     if (this.maxDelayBetweenBytesMs > 0) {
       const now = Date.now()
       if (now - this.lastByteFetchTime > this.maxDelayBetweenBytesMs) {
@@ -48,5 +55,3 @@ class CCTalkParser extends Transform {
     cb()
   }
 }
-
-module.exports = CCTalkParser

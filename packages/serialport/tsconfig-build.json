@@ -4,6 +4,9 @@
     "rootDir": "lib",
     "outDir": "dist",
   },
+  "include": [
+    "lib",
+  ],
   "exclude": [
     "node_modules",
     "**/*.test.ts",
