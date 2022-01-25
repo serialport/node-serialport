@@ -1,8 +1,8 @@
 /* eslint-disable no-new */
 
-const sinon = require('sinon')
-
-const ReadlineParser = require('../')
+import sinon from 'sinon'
+import { ReadlineParser } from './'
+import { assert } from '../../../test/initializers/assert'
 
 describe('ReadlineParser', () => {
   it('transforms data to strings split on a delimiter', () => {
