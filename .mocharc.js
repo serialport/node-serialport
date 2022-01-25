@@ -6,5 +6,5 @@ module.exports = {
     'esbuild-register',
     './test/initializers'
   ],
-  'spec': ['packages/**/*.test.js'],
+  'spec': ['packages/**/*.test.js', 'packages/**/*.test.ts'],
 }
