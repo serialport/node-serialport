@@ -33,8 +33,15 @@
           'xcode_settings': {
             'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
             'MACOSX_DEPLOYMENT_TARGET': '10.9',
+            'OTHER_CFLAGS': [
+              '-arch x86_64',
+              '-arch arm64'
+            ],
             'OTHER_LDFLAGS': [
-              '-framework CoreFoundation -framework IOKit'
+              '-framework CoreFoundation',
+              '-framework IOKit',
+              '-arch x86_64',
+              '-arch arm64'
             ]
           }
         }
