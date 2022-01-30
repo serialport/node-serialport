@@ -4,6 +4,9 @@ on:
     branches:
       - main
       - beta
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   prebuild:
     strategy:
