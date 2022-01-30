@@ -24,8 +24,7 @@ export interface OpenOptions {
   lock?: boolean
   /** defaults to 1 - TODO should be a string */
   stopBits?: 1 | 2 | 3
-  /** Device parity defaults to none */
-  parity?: 'none' | 'event' | 'mark' | 'odd' | 'space'
+  parity?: string
   /** Flow control Setting. Defaults to false */
   rtscts?: boolean
   /** Flow control Setting. Defaults to false */

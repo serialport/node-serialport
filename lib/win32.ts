@@ -6,7 +6,12 @@ import { serialNumParser } from './win32-sn-parser'
 
 const debug = debugFactory('serialport/bindings-cpp')
 
-export const WindowsBinding: BindingInterface<WindowsPortBinding> = {
+export interface WindowsOpenOptions extends OpenOptions {
+  /** Device parity defaults to none */
+  parity?: 'none' | 'even' | 'odd' | 'mark' |'space'
+}
+
+export const WindowsBinding: BindingInterface<WindowsPortBinding, WindowsOpenOptions> = {
   async list() {
     const ports: PortInfo[] = await asyncList()
     // Grab the serial number from the pnp id

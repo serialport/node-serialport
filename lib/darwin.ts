@@ -9,6 +9,8 @@ import { unixWrite } from './unix-write'
 const debug = debugFactory('serialport/bindings-cpp')
 
 export interface DarwinOpenOptions extends OpenOptions {
+  /** Defaults to none */
+  parity?: 'none' | 'even' | 'odd'
   /** see [`man termios`](http://linux.die.net/man/3/termios) defaults to 1 */
   vmin?: number
   /** see [`man termios`](http://linux.die.net/man/3/termios) defaults to 0 */
@@ -60,8 +62,8 @@ export const DarwinBinding: BindingInterface<DarwinPortBinding, DarwinOpenOption
 export class DarwinPortBinding implements BindingPortInterface {
   readonly openOptions: Required<DarwinOpenOptions>
   readonly poller: Poller
+  private writeOperation: Promise<void> | null
   fd: null | number
-  writeOperation: Promise<void> | null
 
   constructor(fd:number, options: Required<DarwinOpenOptions>) {
     this.fd = fd
