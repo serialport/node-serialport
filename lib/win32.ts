@@ -1,19 +1,13 @@
 import debugFactory from 'debug'
+import { BindingPortInterface } from '.'
 import { BindingInterface, OpenOptions, PortInfo, PortStatus, SetOptions, UpdateOptions } from './binding-interface'
 import { asyncClose, asyncDrain, asyncFlush, asyncGet, asyncGetBaudRate, asyncList, asyncOpen, asyncRead, asyncSet, asyncUpdate, asyncWrite } from './load-bindings'
 import { serialNumParser } from './win32-sn-parser'
 
 const debug = debugFactory('serialport/bindings-cpp')
 
-/**
- * The Windows binding layer
- */
-export class WindowsBinding extends BindingInterface {
-  fd: null | number
-  writeOperation: Promise<void> | null
-  openOptions: OpenOptions | null
-
-  static async list() {
+export const WindowsBinding: BindingInterface<WindowsPortBinding> = {
+  async list() {
     const ports: PortInfo[] = await asyncList()
     // Grab the serial number from the pnp id
     return ports.map(port => {
@@ -28,34 +22,56 @@ export class WindowsBinding extends BindingInterface {
       }
       return port
     })
-  }
+  },
+  async open(options) {
+    if (!options || typeof options !== 'object' || Array.isArray(options)) {
 
-  constructor() {
-    super()
-    this.fd = null
+      throw new TypeError('"options" is not an object')
+    }
+
+    if (!options.path) {
+      throw new TypeError('"path" is not a valid port')
+    }
+
+    if (!options.baudRate) {
+      throw new TypeError('"baudRate" is not a valid baudRate')
+    }
+
+    debug('open')
+    const openOptions: Required<OpenOptions> = {
+      dataBits: 8,
+      lock: true,
+      stopBits: 1,
+      parity: 'none',
+      rtscts: false,
+      xon: false,
+      xoff: false,
+      xany: false,
+      hupcl: true,
+      ...options,
+    }
+
+    const fd = await asyncOpen(openOptions.path, openOptions)
+    return new WindowsPortBinding(fd, openOptions)
+  },
+}
+
+/**
+ * The Windows binding layer
+ */
+export class WindowsPortBinding implements BindingPortInterface {
+  fd: null | number
+  writeOperation: Promise<void> | null
+  openOptions: Required<OpenOptions>
+
+  constructor(fd: number, options: Required<OpenOptions>) {
+    this.fd = fd
+    this.openOptions = options
     this.writeOperation = null
   }
 
   get isOpen() {
     return this.fd !== null
-  }
-
-  async open(path: string, options?: OpenOptions) {
-    if (!path) {
-      throw new TypeError('"path" is not a valid port')
-    }
-
-    if (typeof options !== 'object') {
-      throw new TypeError('"options" is not an object')
-    }
-    debug('open')
-
-    if (this.isOpen) {
-      throw new Error('Already open')
-    }
-    this.openOptions = { ...options }
-    const fd = await asyncOpen(path, this.openOptions)
-    this.fd = fd
   }
 
   async close(): Promise<void> {
@@ -127,7 +143,8 @@ export class WindowsBinding extends BindingInterface {
   }
 
   async update(options: UpdateOptions): Promise<void> {
-    if (typeof options !== 'object') {
+    if (!options || typeof options !== 'object' || Array.isArray(options)) {
+
       throw TypeError('"options" is not an object')
     }
 
@@ -143,7 +160,8 @@ export class WindowsBinding extends BindingInterface {
   }
 
   async set(options: SetOptions): Promise<void> {
-    if (typeof options !== 'object') {
+    if (!options || typeof options !== 'object' || Array.isArray(options)) {
+
       throw new TypeError('"options" is not an object')
     }
     debug('set', options)

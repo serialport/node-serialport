@@ -1,5 +1,5 @@
 import { assert, shouldReject } from '../test/assert'
-import { LinuxBinding } from './linux'
+import { LinuxPortBinding } from './linux'
 import { unixRead } from './unix-read'
 
 const makeFsRead =
@@ -33,7 +33,7 @@ const sequenceCalls = (...functions: Function[]) => {
   }
 }
 
-const makeMockBinding = (): LinuxBinding => {
+const makeMockBinding = (): LinuxPortBinding => {
   return {
     isOpen: true,
     fd: 1,
@@ -46,7 +46,7 @@ const makeMockBinding = (): LinuxBinding => {
 }
 
 describe('unixRead', () => {
-  let mock: LinuxBinding
+  let mock: LinuxPortBinding
   beforeEach(() => {
     mock = makeMockBinding()
   })

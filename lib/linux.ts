@@ -5,10 +5,11 @@ import { unixRead } from './unix-read'
 import { unixWrite } from './unix-write'
 import { BindingInterface, OpenOptions, PortStatus, SetOptions, UpdateOptions } from './binding-interface'
 import { asyncOpen, asyncClose, asyncUpdate, asyncSet, asyncGet, asyncGetBaudRate, asyncFlush, asyncDrain } from './load-bindings'
+import { BindingPortInterface } from '.'
 
 const debug = debugFactory('serialport/bindings-cpp')
 
-export interface LinuxBindingOptions {
+export interface LinuxOpenOptions extends OpenOptions {
   /** see [`man termios`](http://linux.die.net/man/3/termios) defaults to 1 */
   vmin?: number
   /** see [`man termios`](http://linux.die.net/man/3/termios) defaults to 0 */
@@ -25,53 +26,63 @@ export interface LinuxSetOptions extends SetOptions {
   lowLatency?: boolean
 }
 
+export const LinuxBinding: BindingInterface<LinuxPortBinding, LinuxOpenOptions> = {
+  list() {
+    debug('list')
+    return linuxList()
+  },
+  async open(options) {
+    if (!options || typeof options !== 'object' || Array.isArray(options)) {
+
+      throw new TypeError('"options" is not an object')
+    }
+    if (!options.path) {
+      throw new TypeError('"path" is not a valid port')
+    }
+    if (!options.baudRate) {
+      throw new TypeError('"baudRate" is not a valid baudRate')
+    }
+
+    debug('open')
+
+    const openOptions: Required<LinuxOpenOptions> = {
+      vmin: 1,
+      vtime: 0,
+      dataBits: 8,
+      lock: true,
+      stopBits: 1,
+      parity: 'none',
+      rtscts: false,
+      xon: false,
+      xoff: false,
+      xany: false,
+      hupcl: true,
+      ...options,
+    }
+    const fd: number = await asyncOpen(openOptions.path, openOptions)
+    this.fd = fd
+    return new LinuxPortBinding(fd, openOptions)
+  },
+}
+
 /**
  * The linux binding layer
  */
-export class LinuxBinding extends BindingInterface {
-  bindingOptions: LinuxBindingOptions
-  fd: null | number
-  writeOperation: Promise<void> | null
-  openOptions: (LinuxBindingOptions & OpenOptions) | null
-  poller: Poller | null
+export class LinuxPortBinding implements BindingPortInterface {
+  readonly openOptions: Required<LinuxOpenOptions>
+  readonly poller: Poller
+  private writeOperation: Promise<void> | null
+  public fd: number | null
 
-  static list() {
-    debug('list')
-    return linuxList()
-  }
-
-  constructor(opt?: LinuxBindingOptions) {
-    super()
-    this.bindingOptions = {
-      vmin: 1,
-      vtime: 0,
-      ...opt,
-    }
-    this.fd = null
+  constructor(fd: number, openOptions: Required<LinuxOpenOptions>) {
+    this.fd = fd
+    this.openOptions = openOptions
+    this.poller = new Poller(fd)
     this.writeOperation = null
   }
 
   get isOpen() {
     return this.fd !== null
-  }
-
-  async open(path: string, options?: OpenOptions) {
-    if (!path) {
-      throw new TypeError('"path" is not a valid port')
-    }
-
-    if (typeof options !== 'object') {
-      throw new TypeError('"options" is not an object')
-    }
-    debug('open')
-
-    if (this.isOpen) {
-      throw new Error('Already open')
-    }
-    this.openOptions = { ...this.bindingOptions, ...options }
-    const fd: number = await asyncOpen(path, this.openOptions)
-    this.fd = fd
-    this.poller = new Poller(fd)
   }
 
   async close(): Promise<void> {
@@ -81,10 +92,8 @@ export class LinuxBinding extends BindingInterface {
     }
 
     const fd = this.fd
-    this.poller?.stop()
-    this.poller?.destroy()
-    this.poller = null
-    this.openOptions = null
+    this.poller.stop()
+    this.poller.destroy()
     this.fd = null
     await asyncClose(fd)
   }
@@ -129,7 +138,6 @@ export class LinuxBinding extends BindingInterface {
     debug('write', buffer.length, 'bytes')
     if (!this.isOpen) {
       debug('write', 'error port is not open')
-
       throw new Error('Port is not open')
     }
 
@@ -144,7 +152,8 @@ export class LinuxBinding extends BindingInterface {
   }
 
   async update(options: UpdateOptions): Promise<void> {
-    if (typeof options !== 'object') {
+    if (!options || typeof options !== 'object' || Array.isArray(options)) {
+
       throw TypeError('"options" is not an object')
     }
 
@@ -160,7 +169,8 @@ export class LinuxBinding extends BindingInterface {
   }
 
   async set(options: LinuxSetOptions): Promise<void> {
-    if (typeof options !== 'object') {
+    if (!options || typeof options !== 'object' || Array.isArray(options)) {
+
       throw new TypeError('"options" is not an object')
     }
     debug('set')

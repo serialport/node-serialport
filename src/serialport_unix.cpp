@@ -90,7 +90,7 @@ void OpenBaton::Execute() {
     return;
   }
 
-  if (-1 == setup(fd, this)) {  
+  if (-1 == setup(fd, this)) {
     this->SetError(errorString);
     close(fd);
     return;

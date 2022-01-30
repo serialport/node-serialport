@@ -2,13 +2,13 @@ import { promisify } from 'util'
 import { read as fsRead } from 'fs'
 import { CanceledError } from './errors'
 import debugFactory from 'debug'
-import { LinuxBinding } from './linux'
-import { DarwinBinding } from './darwin'
+import { LinuxPortBinding } from './linux'
+import { DarwinPortBinding } from './darwin'
 
 const logger = debugFactory('serialport/bindings-cpp/unixRead')
 const readAsync = promisify(fsRead)
 
-const readable = (binding: LinuxBinding | DarwinBinding) => {
+const readable = (binding: LinuxPortBinding | DarwinPortBinding) => {
   return new Promise<void>((resolve, reject) => {
     if (!binding.poller) {
       throw new Error('No poller on bindings')
@@ -18,7 +18,7 @@ const readable = (binding: LinuxBinding | DarwinBinding) => {
 }
 
 interface UnixReadOptions {
-  binding: LinuxBinding | DarwinBinding
+  binding: LinuxPortBinding | DarwinPortBinding
   buffer: Buffer
   offset: number
   length: number

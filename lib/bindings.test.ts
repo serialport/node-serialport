@@ -1,13 +1,18 @@
 import { assert, shouldReject } from '../test/assert'
 import { makeTestFeature } from '../test/makeTestFeature'
 import { BindingInterface, OpenOptions, PortInfo, SetOptions } from './binding-interface'
-import { autoDetect, AllBindingClasses } from './index'
+import { autoDetect } from './index'
 import MockBinding from '@serialport/binding-mock'
 
-const defaultOpenOptions: OpenOptions = Object.freeze({
-  baudRate: 9600,
+// All bindings are required to work with an "echo" firmware
+const TEST_PORT = process.env.TEST_PORT
+const TEST_BAUD = Number(process.env.TEST_BAUDRATE) || 115200
+
+const defaultOpenOptions: OpenOptions = {
+  path: 'bad path',
+  baudRate: TEST_BAUD,
   dataBits: 8,
-  hupcl: true,
+  hupcl: false,
   lock: true,
   parity: 'none',
   rtscts: false,
@@ -15,37 +20,31 @@ const defaultOpenOptions: OpenOptions = Object.freeze({
   xany: false,
   xoff: false,
   xon: false,
-})
+}
 
-const defaultSetFlags: SetOptions = Object.freeze({
+const defaultSetFlags: SetOptions = {
   brk: false,
   cts: false,
   dtr: true,
-  dts: false,
   rts: true,
-  lowLatency: false,
-})
+}
 
-type MockBinding = any
+interface MockBinding extends BindingInterface {
+  createPort(path: string, options: any): void
+}
 
 const listFields = ['path', 'manufacturer', 'serialNumber', 'pnpId', 'locationId', 'vendorId', 'productId']
 
-// All bindings are required to work with an "echo" firmware
-// The echo firmware should respond with this data when it's
-// ready to echo. This allows for remote device boot up.
-// the default firmware is called arduinoEcho.ino
-const readyData = Buffer.from('READY')
+// testBinding('mock', MockBinding, '/dev/exists')
+testBinding(process.platform, autoDetect(), TEST_PORT)
 
-testBinding('mock', MockBinding, '/dev/exists')
-testBinding(process.platform, autoDetect(), process.env.TEST_PORT)
-
-function testBinding(bindingName: string, Binding: AllBindingClasses, testPort?: string) {
-  const { testFeature, testHardware, describeHardware } = makeTestFeature(bindingName, testPort)
+function testBinding(bindingName: string, Binding: BindingInterface, testPort?: string) {
+  const { testFeature, describeHardware } = makeTestFeature(bindingName, testPort)
 
   describe(`bindings/${bindingName}`, () => {
     before(() => {
       if (bindingName === 'mock') {
-        (Binding as MockBinding).createPort(testPort, { echo: true, readyData })
+        (Binding as MockBinding).createPort(testPort!, { echo: true })
       }
     })
 
@@ -72,430 +71,301 @@ function testBinding(bindingName: string, Binding: AllBindingClasses, testPort?:
           })
         })
       })
-    })
 
-    describe('constructor', () => {
-      it('creates a binding object', () => {
-        const binding = new Binding()
-        assert.instanceOf(binding, Binding)
-      })
-    })
-
-    describe('instance property', () => {
-      describe('#isOpen', () => {
-        if (!testPort) {
-          it('Cannot be tested. Set the TEST_PORT env var with an available serialport for more testing.')
-          return
-        }
-
-        let binding: BindingInterface
-        beforeEach(() => {
-          binding = new Binding()
-        })
-
-        it('is true after open and false after close', async () => {
-          assert.equal(binding.isOpen, false)
-          await binding.open(testPort, defaultOpenOptions)
-          assert.equal(binding.isOpen, true)
-          await binding.close()
-          assert.equal(binding.isOpen, false)
-        })
-      })
-    })
-
-    describe('instance method', () => {
-      describe('#open', () => {
-        let binding: BindingInterface
-        beforeEach(() => {
-          binding = new Binding()
-        })
-
+      describeHardware('.open', () => {
         it('errors when providing a bad port', async () => {
-          const err = await shouldReject(binding.open('COMBAD', defaultOpenOptions))
+          const err = await shouldReject(Binding.open({
+            path: 'COMBAD',
+            baudRate: 115200,
+          }))
           assert.include(err.message, 'COMBAD')
-          assert.equal(binding.isOpen, false)
         })
 
         it('throws when not given a path', async () => {
-          await shouldReject(binding.open(''), TypeError)
+          await shouldReject(Binding.open({
+            path: '',
+            baudRate: 115200,
+          }), TypeError)
+        })
+
+        it('throws when not given a baudRate', async () => {
+          const err = await shouldReject(Binding.open({
+            path: 'COMBAD',
+            baudRate: undefined,
+          } as any))
+          assert.include(err.message, 'baudRate')
         })
 
         it('throws when not given options', async () => {
-          await shouldReject(binding.open('COMBAD'), TypeError)
+          const err = await shouldReject(Binding.open(undefined as any))
+          assert.include(err.message, 'options')
         })
 
-        if (!testPort) {
-          it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.')
-          return
-        }
 
         describeHardware('with hardware', () => {
-          it('cannot open if already open', async () => {
-            const options = { ...defaultOpenOptions, lock: false }
-            await binding.open(testPort, options)
-            await shouldReject(binding.open(testPort, options))
-            await binding.close()
-          })
-
           it('keeps open state', async () => {
-            await binding.open(testPort, defaultOpenOptions)
-            assert.equal(binding.isOpen, true)
-            await binding.close()
+            const port = await Binding.open({ ...defaultOpenOptions, path: testPort! })
+            assert.equal(port.isOpen, true)
+            await port.close()
+            assert.equal(port.isOpen, false)
           })
         })
 
         describeHardware('arbitrary baud rates', () => {
           [25000, 1000000, 250000].forEach(testBaud => {
             describe(`${testBaud} baud`, () => {
-              const customRates = { ...defaultOpenOptions, baudRate: testBaud }
+              const customRates = { ...defaultOpenOptions, baudRate: testBaud, path: testPort! }
+
               testFeature(`baudrate.${testBaud}`, `opens at ${testBaud} baud`, async () => {
-                await binding.open(testPort, customRates)
-                assert.equal(binding.isOpen, true)
-                await binding.close()
+                const port = await Binding.open(customRates)
+                assert.equal(port.isOpen, true)
+                await port.close()
               })
 
               testFeature(`baudrate.${testBaud}_check`, `sets ${testBaud} baud successfully`, async () => {
-                await binding.open(testPort, customRates)
-                const { baudRate } = await binding.getBaudRate()
+                const port = await Binding.open(customRates)
+                const { baudRate } = await port.getBaudRate()
                 assert.equal(baudRate, customRates.baudRate)
-                return binding.close()
+                await port.close()
               })
             })
           })
         })
 
         describeHardware('optional locking', () => {
+          const options = { ...defaultOpenOptions, path: testPort!, lock: true }
           it('locks the port by default', async () => {
-            const binding2 = new Binding()
-            await binding.open(testPort, defaultOpenOptions)
-            assert.equal(binding.isOpen, true)
-            await shouldReject(binding2.open(testPort, defaultOpenOptions))
-            assert.equal(binding2.isOpen, false)
-            await binding.close()
+            const port = await Binding.open(options)
+            assert.equal(port.isOpen, true)
+            await shouldReject(Binding.open(options))
+            await port.close()
           })
 
           testFeature('open.unlock', 'can unlock the port', async () => {
-            const noLock = { ...defaultOpenOptions, lock: false }
-            const binding2 = new Binding()
+            const noLock = { ...options, lock: false }
 
-            await binding.open(testPort, noLock)
-            assert.equal(binding.isOpen, true)
+            const port = await Binding.open(noLock)
+            assert.equal(port.isOpen, true)
 
-            await binding2.open(testPort, noLock)
-            assert.equal(binding2.isOpen, true)
+            const port2 = await Binding.open(noLock)
+            assert.equal(port2.isOpen, true)
 
-            await Promise.all([binding.close(), binding2.close()])
+            await Promise.all([port.close(), port2.close()])
           })
+        })
+      })
+    })
+
+    describeHardware('PortInstance', () => {
+      const options = { ...defaultOpenOptions, path: testPort! }
+      describe('#isOpen', () => {
+        it('is true after open and false after close', async () => {
+          const port = await Binding.open(options)
+          assert.equal(port.isOpen, true)
+          await port.close()
+          assert.equal(port.isOpen, false)
         })
       })
 
       describe('#close', () => {
-        let binding: BindingInterface
-        beforeEach(() => {
-          binding = new Binding()
-        })
-
         it('errors when already closed', async () => {
-          await shouldReject(binding.close())
+          const port = await Binding.open(options)
+          assert.equal(port.isOpen, true)
+          await port.close()
+          assert.equal(port.isOpen, false)
+          await shouldReject(port.close())
         })
 
-        testHardware('closes an open file descriptor', () => {
-          return binding.open(testPort!, defaultOpenOptions).then(() => {
-            assert.equal(binding.isOpen, true)
-            return binding.close()
-          })
+        it('closes an open port', async () => {
+          const port = await Binding.open(options)
+          await port.close()
+          assert.equal(port.isOpen, false)
         })
       })
 
       describe('#update', () => {
-        it('throws when not given an object', async () => {
-          const binding = new Binding()
-          await shouldReject((binding as any).update(), TypeError)
+        it('errors when not given an object', async () => {
+          const port = await Binding.open(options)
+          await shouldReject(port.update(undefined as any), TypeError)
+          await port.close()
         })
 
-        it('errors asynchronously when not open', done => {
-          const binding = new Binding()
-          let noZalgo = false
-          binding.update({ baudRate: 9600 }).catch(err => {
-            assert.instanceOf(err, Error)
-            assert(noZalgo)
-            done()
-          })
-          noZalgo = true
+        it('errors when updating nothing', async () => {
+          const port = await Binding.open(options)
+          await shouldReject(port.update({} as any), Error)
+          await port.close()
         })
 
-        describeHardware('update with hardware', () => {
-          let binding: BindingInterface
-          beforeEach(() => {
-            binding = new Binding()
-            return binding.open(testPort!, defaultOpenOptions)
-          })
+        it('errors when closed', async () => {
+          const port = await Binding.open(options)
+          await port.close()
+          await shouldReject(port.update({ baudRate: 57600 }), Error)
+        })
 
-          afterEach(() => binding.close())
 
-          it('throws errors when updating nothing', async () => {
-            await shouldReject((binding as any).update({}), Error)
-          })
-
-          it('errors when not called with options', async () => {
-            await shouldReject(
-              (binding as any).set(() => { }),
-              Error,
-            )
-          })
-
-          it('updates baudRate', () => {
-            return binding.update({ baudRate: 57600 })
-          })
+        testFeature('getBaudRate', 'updates baudRate', async () => {
+          const port = await Binding.open(options)
+          await port.update({ baudRate: 57600 })
+          const { baudRate } = await port.getBaudRate()
+          assert.equal(baudRate, 57600)
+          await port.close()
         })
       })
 
-      describe('#write', () => {
-        it('errors asynchronously when not open', done => {
-          const binding = new Binding()
-          let noZalgo = false
-          binding
-            .write(Buffer.from([]))
-            .then(
-              data => {
-                console.log({ data })
-                throw new Error('Should have errored')
-              },
-              err => {
-                assert.instanceOf(err, Error)
-                assert(noZalgo)
-                done()
-              },
-            )
-            .catch(done)
-          noZalgo = true
-        })
-
-        it('rejects when not given a buffer', async () => {
-          const binding = new Binding()
-          await shouldReject((binding as any).write(null), TypeError)
-        })
-
-        describeHardware('with hardware', () => {
-          let binding: BindingInterface
-          beforeEach(() => {
-            binding = new Binding()
-            return binding.open(testPort!, defaultOpenOptions)
-          })
-
-          afterEach(() => binding.close())
-
-          it('resolves after a small write', () => {
-            const data = Buffer.from('simple write of 24 bytes')
-            return binding.write(data)
-          })
-
-          it('resolves after a large write (2k)', function () {
-            this.timeout(20000)
-            const data = Buffer.alloc(1024 * 2)
-            return binding.write(data)
-          })
-
-          it('resolves after an empty write', () => {
-            const data = Buffer.from([])
-            return binding.write(data)
-          })
-        })
-      })
-
-      describe('#drain', () => {
-        it('errors asynchronously when not open', done => {
-          const binding = new Binding()
-          let noZalgo = false
-          binding.drain().catch(err => {
-            assert.instanceOf(err, Error)
-            assert(noZalgo)
-            done()
-          })
-          noZalgo = true
-        })
-
-        if (!testPort) {
-          it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.')
-          return
-        }
-
-        let binding: BindingInterface
-        beforeEach(() => {
-          binding = new Binding()
-          return binding.open(testPort, defaultOpenOptions)
-        })
-
-        afterEach(() => binding.close())
-
-        it('drains the port', () => {
-          return binding.drain()
-        })
-
-        it('waits for in progress writes to finish', async () => {
-          let finishedWrite = false
-          const write = binding.write(Buffer.alloc(1024 * 2)).then(() => {
-            finishedWrite = true
-          })
-          await binding.drain()
-          assert.isTrue(finishedWrite)
-          await write
-        })
-      })
-
-      describe('#flush', () => {
-        it('errors asynchronously when not open', done => {
-          const binding = new Binding()
-          let noZalgo = false
-          binding.flush().catch(err => {
-            assert.instanceOf(err, Error)
-            assert(noZalgo)
-            done()
-          })
-          noZalgo = true
-        })
-
-        if (!testPort) {
-          it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.')
-          return
-        }
-
-        let binding: BindingInterface
-        beforeEach(() => {
-          binding = new Binding()
-          return binding.open(testPort, defaultOpenOptions)
-        })
-
-        afterEach(() => binding.close())
-
-        it('flushes the port', () => {
-          return binding.flush()
-        })
-      })
-
-      describe('#set', () => {
-        it('errors asynchronously when not open', done => {
-          const binding = new Binding()
-          let noZalgo = false
-          binding.set(defaultSetFlags).catch(err => {
-            assert.instanceOf(err, Error)
-            assert(noZalgo)
-            done()
-          })
-          noZalgo = true
-        })
-
-        it('throws when not called with options', async () => {
-          const binding = new Binding()
-          await shouldReject(
-            (binding as any).set(() => { }),
-            TypeError,
-          )
-        })
-
-        if (!testPort) {
-          it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.')
-          return
-        }
-
-        let binding: BindingInterface
-        beforeEach(() => {
-          binding = new Binding()
-          return binding.open(testPort, defaultOpenOptions)
-        })
-
-        afterEach(() => binding.close())
-
-        testFeature('set.set', 'sets flags on the port', () => {
-          return binding.set(defaultSetFlags)
-        })
-      })
 
       // because of the nature of opening and closing the ports a fair amount of data
       // is left over on the pipe and isn't cleared when flushed on unix
       describe('#read', () => {
-        it('errors asynchronously when not open', done => {
-          const binding = new Binding()
+        const smallSampleData = Buffer.from('12345')
+
+        it('errors when closed', async () => {
           const buffer = Buffer.alloc(5)
-          let noZalgo = false
-          binding.read(buffer, 0, buffer.length).catch(err => {
-            assert.instanceOf(err, Error)
-            assert(noZalgo)
-            done()
-          })
-          noZalgo = true
+          const port = await Binding.open(options)
+          await port.close()
+          await shouldReject(port.read(buffer, 0, buffer.length), Error)
         })
 
-        if (!testPort) {
-          it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.')
-          return
-        }
-
-        let binding: BindingInterface
-        let buffer: Buffer
-        beforeEach(async () => {
-          buffer = Buffer.alloc(readyData.length)
-          binding = new Binding()
-          await binding.open(testPort, defaultOpenOptions)
-        })
-
-        afterEach(() => binding.isOpen && binding.close())
-
-        it('doesn\'t throw if the port is open', async () => {
-          await binding.read(buffer, 0, buffer.length)
+        it('reads requested number of bytes', async () => {
+          const buffer = Buffer.alloc(smallSampleData.length)
+          const port = await Binding.open(options)
+          await port.write(smallSampleData)
+          await port.read(buffer, 0, buffer.length)
+          assert.deepEqual(smallSampleData, buffer, 'Data matches')
+          await port.close()
         })
 
         it('returns at maximum the requested number of bytes and the buffer', async () => {
-          const { bytesRead, buffer: returnedBuffer } = await binding.read(buffer, 0, 1)
+          const buffer = Buffer.alloc(smallSampleData.length)
+          const port = await Binding.open(options)
+          await port.write(smallSampleData)
+          const { bytesRead, buffer: returnedBuffer } = await port.read(buffer, 0, 1)
           assert.equal(bytesRead, 1)
-          assert.equal(buffer, returnedBuffer)
+          assert.strictEqual(buffer, returnedBuffer)
+          assert.deepEqual(buffer, Buffer.from([smallSampleData[0], 0, 0, 0, 0]))
+          await port.close()
         })
 
         it('cancels the read when the port is closed', async () => {
-          let bytesToRead = 0
-          while (bytesToRead < readyData.length) {
-            const { bytesRead } = await binding.read(buffer, 0, readyData.length)
-            bytesToRead += bytesRead
-          }
-          const readError = shouldReject(binding.read(Buffer.allocUnsafe(100), 0, 100))
-          await binding.close()
+          const port = await Binding.open(options)
+          const readError = shouldReject(port.read(Buffer.alloc(100), 0, 100))
+          await port.close()
           const err = await readError
           assert.isTrue(err.canceled)
         })
       })
 
+      describe('#write', () => {
+        it('errors when not given a buffer', async () => {
+          const port = await Binding.open(options)
+          await shouldReject(port.write(null as any), TypeError)
+          await port.close()
+        })
+
+        it('errors when closed', async () => {
+          const data = Buffer.from('data!')
+          const port = await Binding.open(options)
+          await port.close()
+          await shouldReject(port.write(data), Error)
+        })
+
+        it('resolves after a small write', async () => {
+          const data = Buffer.from('simple write of 24 bytes')
+          const port = await Binding.open(options)
+          await port.write(data)
+          await port.close()
+        })
+
+        it('resolves after a large write (2k)', async function () {
+          this.timeout(20000)
+          const data = Buffer.alloc(1024 * 2)
+          const port = await Binding.open(options)
+          await port.write(data)
+          await port.close()
+        })
+
+        it('resolves after an empty write', async () => {
+          const data = Buffer.from([])
+          const port = await Binding.open(options)
+          await port.write(data)
+          await port.close()
+        })
+      })
+
+      describe('#drain', () => {
+        it('errors when closed', async () => {
+          const port = await Binding.open(options)
+          await port.close()
+          await shouldReject(port.drain(), Error)
+        })
+
+        it('drains the port', async () => {
+          const port = await Binding.open(options)
+          await port.drain()
+          await port.close()
+        })
+
+        it('waits for in progress writes to finish', async () => {
+          const port = await Binding.open(options)
+          let finishedWrite = false
+          const write = port.write(Buffer.alloc(1024 * 2)).then(() => {
+            finishedWrite = true
+          })
+          await port.drain()
+          assert.isTrue(finishedWrite)
+          await write
+          await port.close()
+        })
+      })
+
+      describe('#flush', () => {
+        it('errors when closed', async () => {
+          const port = await Binding.open(options)
+          await port.close()
+          await shouldReject(port.flush(), Error)
+        })
+
+        it('flushes the port', async () => {
+          const port = await Binding.open(options)
+          await port.flush()
+          await port.close()
+        })
+      })
+
+      describe('#set', () => {
+        it('errors when closed', async () => {
+          const port = await Binding.open(options)
+          await port.close()
+          await shouldReject(port.set(defaultSetFlags), Error)
+        })
+
+        it('throws when not called with options', async () => {
+          const port = await Binding.open(options)
+          await shouldReject(port.set(undefined as any), TypeError)
+          await port.close()
+        })
+
+        it('sets flags on the port', async () => {
+          const port = await Binding.open(options)
+          await port.set(defaultSetFlags)
+          await port.close()
+        })
+      })
+
       describe('#get', () => {
-        it('errors asynchronously when not open', done => {
-          const binding = new Binding()
-          let noZalgo = false
-          binding.get().catch(err => {
-            assert.instanceOf(err, Error)
-            assert(noZalgo)
-            done()
-          })
-          noZalgo = true
+        it('errors when closed', async () => {
+          const port = await Binding.open(options)
+          await port.close()
+          await shouldReject(port.get(), Error)
         })
 
-        if (!testPort) {
-          it('Cannot be tested further. Set the TEST_PORT env var with an available serialport for more testing.')
-          return
-        }
-
-        let binding: BindingInterface
-        beforeEach(() => {
-          binding = new Binding()
-          return binding.open(testPort, defaultOpenOptions)
-        })
-
-        afterEach(() => binding.close())
-
-        testFeature('get.get', 'gets modem line status from the port', () => {
-          return binding.get().then(status => {
-            assert.isObject(status)
-            assert.isBoolean(status.cts)
-            assert.isBoolean(status.dsr)
-            assert.isBoolean(status.dcd)
-          })
+        it('gets modem line status from the port', async () => {
+          const port = await Binding.open(options)
+          const status = await port.get()
+          assert.isObject(status)
+          assert.isBoolean(status.cts)
+          assert.isBoolean(status.dsr)
+          assert.isBoolean(status.dcd)
+          await port.close()
         })
       })
     })

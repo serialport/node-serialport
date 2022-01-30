@@ -1,20 +1,20 @@
 import { write } from 'fs'
 import debugFactory from 'debug'
 import { promisify } from 'util'
-import { LinuxBinding } from './linux'
-import { DarwinBinding } from './darwin'
+import { LinuxPortBinding } from './linux'
+import { DarwinPortBinding } from './darwin'
 const logger = debugFactory('serialport/bindings-cpp/unixWrite')
 
 const writeAsync = promisify(write)
 
-const writable = (binding: LinuxBinding | DarwinBinding) => {
+const writable = (binding: LinuxPortBinding | DarwinPortBinding) => {
   return new Promise<void>((resolve, reject) => {
-    binding.poller?.once('writable', err => (err ? reject(err) : resolve()))
+    binding.poller.once('writable', err => (err ? reject(err) : resolve()))
   })
 }
 
 interface UnixWriteOptions {
-  binding: LinuxBinding | DarwinBinding
+  binding: LinuxPortBinding | DarwinPortBinding
   buffer: Buffer
   offset?: number
   fsWriteAsync?: typeof writeAsync

@@ -1,67 +1,77 @@
 import debugFactory from 'debug'
-import { BindingInterface, OpenOptions, PortInfo, PortStatus, SetOptions, UpdateOptions } from './binding-interface'
-import { asyncClose, asyncDrain, asyncFlush, asyncGet, asyncGetBaudRate, asyncList, asyncOpen, asyncSet, asyncUpdate } from './load-bindings'
+import { BindingPortInterface } from '.'
+import { BindingInterface, OpenOptions, PortStatus, SetOptions, UpdateOptions } from './binding-interface'
+import { asyncClose, asyncDrain, asyncFlush, asyncGet, asyncList, asyncOpen, asyncSet, asyncUpdate } from './load-bindings'
 import { Poller } from './poller'
 import { unixRead } from './unix-read'
 import { unixWrite } from './unix-write'
 
 const debug = debugFactory('serialport/bindings-cpp')
 
-export interface DarwinBindingOptions {
+export interface DarwinOpenOptions extends OpenOptions {
   /** see [`man termios`](http://linux.die.net/man/3/termios) defaults to 1 */
   vmin?: number
   /** see [`man termios`](http://linux.die.net/man/3/termios) defaults to 0 */
   vtime?: number
 }
 
+export const DarwinBinding: BindingInterface<DarwinPortBinding, DarwinOpenOptions> = {
+  list() {
+    debug('list')
+    return asyncList()
+  },
+  async open(options) {
+    if (!options || typeof options !== 'object' || Array.isArray(options)) {
+      throw new TypeError('"options" is not an object')
+    }
+
+    if (!options.path) {
+      throw new TypeError('"path" is not a valid port')
+    }
+
+    if (!options.baudRate) {
+      throw new TypeError('"baudRate" is not a valid baudRate')
+    }
+
+    debug('open')
+
+    const openOptions: Required<DarwinOpenOptions> = {
+      vmin: 1,
+      vtime: 0,
+      dataBits: 8,
+      lock: true,
+      stopBits: 1,
+      parity: 'none',
+      rtscts: false,
+      xon: false,
+      xoff: false,
+      xany: false,
+      hupcl: true,
+      ...options,
+    }
+    const fd: number = await asyncOpen(openOptions.path, openOptions)
+    return new DarwinPortBinding(fd, openOptions)
+  },
+}
+
 /**
  * The Darwin binding layer for OSX
  */
-export class DarwinBinding extends BindingInterface {
-  bindingOptions: DarwinBindingOptions
+export class DarwinPortBinding implements BindingPortInterface {
+  readonly openOptions: Required<DarwinOpenOptions>
+  readonly poller: Poller
   fd: null | number
   writeOperation: Promise<void> | null
-  openOptions: (DarwinBindingOptions & OpenOptions) | null
-  poller: Poller | null
 
-  static async list(): Promise<PortInfo[]> {
-    debug('list')
-    return asyncList()
-  }
-
-  constructor(opt?: DarwinBindingOptions) {
-    super()
-    this.bindingOptions = {
-      vmin: 1,
-      vtime: 0,
-      ...opt,
-    }
-    this.fd = null
+  constructor(fd:number, options: Required<DarwinOpenOptions>) {
+    this.fd = fd
+    this.openOptions = options
+    this.poller = new Poller(fd)
     this.writeOperation = null
   }
 
   get isOpen() {
     return this.fd !== null
-  }
-
-  async open(path: string, options?: OpenOptions) {
-    if (!path) {
-      throw new TypeError('"path" is not a valid port')
-    }
-
-    if (typeof options !== 'object') {
-      throw new TypeError('"options" is not an object')
-    }
-    debug('open')
-
-    if (this.isOpen) {
-      throw new Error('Already open')
-    }
-
-    this.openOptions = { ...this.bindingOptions, ...options }
-    const fd: number = await asyncOpen(path, this.openOptions)
-    this.fd = fd
-    this.poller = new Poller(fd)
   }
 
   async close(): Promise<void> {
@@ -71,10 +81,8 @@ export class DarwinBinding extends BindingInterface {
     }
 
     const fd = this.fd
-    this.poller?.stop()
-    this.poller?.destroy()
-    this.poller = null
-    this.openOptions = null
+    this.poller.stop()
+    this.poller.destroy()
     this.fd = null
     await asyncClose(fd)
   }
@@ -117,9 +125,9 @@ export class DarwinBinding extends BindingInterface {
     }
 
     debug('write', buffer.length, 'bytes')
+
     if (!this.isOpen) {
       debug('write', 'error port is not open')
-
       throw new Error('Port is not open')
     }
 
@@ -134,7 +142,8 @@ export class DarwinBinding extends BindingInterface {
   }
 
   async update(options: UpdateOptions): Promise<void> {
-    if (typeof options !== 'object') {
+    if (!options || typeof options !== 'object' || Array.isArray(options)) {
+
       throw TypeError('"options" is not an object')
     }
 
@@ -150,7 +159,8 @@ export class DarwinBinding extends BindingInterface {
   }
 
   async set(options: SetOptions): Promise<void> {
-    if (typeof options !== 'object') {
+    if (!options || typeof options !== 'object' || Array.isArray(options)) {
+
       throw new TypeError('"options" is not an object')
     }
     debug('set', options)
@@ -173,7 +183,7 @@ export class DarwinBinding extends BindingInterface {
     if (!this.isOpen) {
       throw new Error('Port is not open')
     }
-    return asyncGetBaudRate(this.fd)
+    throw new Error('getBaudRate is not implemented on darwin')
   }
 
   async flush(): Promise<void> {

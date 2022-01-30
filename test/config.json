@@ -7,6 +7,7 @@
     "port.update-baudrate": false
   },
   "darwin": {
+    "getBaudRate": false,
     "baudrate.25000_check": false,
     "baudrate.1000000_check": false,
     "baudrate.250000_check": false

@@ -28,7 +28,7 @@ function decodeHexEscape(str: string) {
 function propVal(name: string, val: string) {
   if (name === 'pnpId') {
     const match = val.match(/\/by-id\/([^\s]+)/)
-    return (match && match[1]) || undefined
+    return (match?.[1]) || undefined
   }
   if (name === 'manufacturer') {
     return decodeHexEscape(val)

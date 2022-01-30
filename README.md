@@ -31,6 +31,7 @@ The Bindings provide a low level interface to work with your serialport. It is p
 1. Clone this repo `git clone git@github.com:serialport/bindings-cpp.git`
 1. Run `npm install` to setup local package dependencies (run this any time you depend on a package local to this repo)
 1. Run `npm test` to ensure everything is working properly
+1. If you have a serial loopback device (TX to RX) you can run run `TEST_PORT=/path/to/port npm test` for a more comprehensive test suite. (Defaults to 115200 baud customize with the TEST_BAUD env.) You can use an arduino with the `test/arduino-echo` sketch.
 
 ### Developing Docs
 
