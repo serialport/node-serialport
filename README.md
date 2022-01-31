@@ -21,7 +21,7 @@ Access serial ports with JavaScript. Linux, OSX and Windows. Welcome your roboti
 The Bindings provide a low level interface to work with your serialport. It is possible to use them alone but it's usually easier to use them with an interface.
 
 - [`@serialport/bindings`](https://serialport.io/docs/api-bindings) bindings for Linux, Mac and Windows
-- [`@serialport/binding-abstract`](https://serialport.io/docs/api-bindings-abstract) as an abstract class to use if you're making your own bindings
+- [`@serialport/binding-interface`](https://serialport.io/docs/api-bindings-interface) as an interface to use if you're making your own bindings
 - [`@serialport/binding-mock`](https://serialport.io/docs/api-binding-mock) for a mock binding package for testing
 
 ## Developing

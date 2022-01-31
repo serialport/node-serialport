@@ -18,7 +18,6 @@
     "UART"
   ],
   "dependencies": {
-    "@serialport/binding-abstract": "10.0.1",
     "@serialport/bindings-interface": "1.0.0",
     "@serialport/parser-readline": "10.0.1",
     "debug": "^4.3.2",
