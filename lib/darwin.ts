@@ -1,6 +1,6 @@
 import debugFactory from 'debug'
 import { BindingPortInterface } from '.'
-import { BindingInterface, OpenOptions, PortStatus, SetOptions, UpdateOptions } from './binding-interface'
+import { BindingInterface, OpenOptions, PortStatus, SetOptions, UpdateOptions } from '@serialport/bindings-interface'
 import { asyncClose, asyncDrain, asyncFlush, asyncGet, asyncList, asyncOpen, asyncSet, asyncUpdate } from './load-bindings'
 import { Poller } from './poller'
 import { unixRead } from './unix-read'

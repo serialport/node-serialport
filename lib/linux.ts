@@ -3,7 +3,7 @@ import { linuxList } from './linux-list'
 import { Poller } from './poller'
 import { unixRead } from './unix-read'
 import { unixWrite } from './unix-write'
-import { BindingInterface, OpenOptions, PortStatus, SetOptions, UpdateOptions } from './binding-interface'
+import { BindingInterface, OpenOptions, PortStatus, SetOptions, UpdateOptions } from '@serialport/bindings-interface'
 import { asyncOpen, asyncClose, asyncUpdate, asyncSet, asyncGet, asyncGetBaudRate, asyncFlush, asyncDrain } from './load-bindings'
 import { BindingPortInterface } from '.'
 

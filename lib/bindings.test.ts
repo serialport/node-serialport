@@ -1,6 +1,6 @@
 import { assert, shouldReject } from '../test/assert'
 import { makeTestFeature } from '../test/makeTestFeature'
-import { BindingInterface, OpenOptions, PortInfo, SetOptions } from './binding-interface'
+import { BindingInterface, OpenOptions, PortInfo, SetOptions } from '@serialport/bindings-interface'
 import { autoDetect } from './index'
 import MockBinding from '@serialport/binding-mock'
 

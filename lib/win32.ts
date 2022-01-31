@@ -1,6 +1,6 @@
 import debugFactory from 'debug'
 import { BindingPortInterface } from '.'
-import { BindingInterface, OpenOptions, PortInfo, PortStatus, SetOptions, UpdateOptions } from './binding-interface'
+import { BindingInterface, OpenOptions, PortInfo, PortStatus, SetOptions, UpdateOptions } from '@serialport/bindings-interface'
 import { asyncClose, asyncDrain, asyncFlush, asyncGet, asyncGetBaudRate, asyncList, asyncOpen, asyncRead, asyncSet, asyncUpdate, asyncWrite } from './load-bindings'
 import { serialNumParser } from './win32-sn-parser'
 

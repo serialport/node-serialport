@@ -1,4 +1,4 @@
-import { PortInfo } from './binding-interface'
+import { PortInfo } from '@serialport/bindings-interface'
 
 import { spawn } from 'child_process'
 import Readline from '@serialport/parser-readline'
