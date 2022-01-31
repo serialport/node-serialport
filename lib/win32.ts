@@ -11,7 +11,9 @@ export interface WindowsOpenOptions extends OpenOptions {
   parity?: 'none' | 'even' | 'odd' | 'mark' |'space'
 }
 
-export const WindowsBinding: BindingInterface<WindowsPortBinding, WindowsOpenOptions> = {
+export type WindowsBindingInterface = BindingInterface<WindowsPortBinding, WindowsOpenOptions>
+
+export const WindowsBinding: WindowsBindingInterface = {
   async list() {
     const ports: PortInfo[] = await asyncList()
     // Grab the serial number from the pnp id

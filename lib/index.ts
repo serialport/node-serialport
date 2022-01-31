@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import debugFactory from 'debug'
-import { BindingInterface } from '@serialport/bindings-interface'
-import { DarwinBinding, DarwinPortBinding, DarwinOpenOptions } from './darwin'
-import { LinuxBinding, LinuxPortBinding, LinuxOpenOptions } from './linux'
-import { WindowsBinding, WindowsPortBinding } from './win32'
+import { DarwinBinding, DarwinBindingInterface } from './darwin'
+import { LinuxBinding, LinuxBindingInterface } from './linux'
+import { WindowsBinding, WindowsBindingInterface } from './win32'
 const debug = debugFactory('serialport/bindings-cpp')
 
 export * from '@serialport/bindings-interface'
@@ -12,13 +11,12 @@ export * from './linux'
 export * from './win32'
 export * from './errors'
 
-export type AutoDetectTypes = BindingInterface<DarwinPortBinding, DarwinOpenOptions> | BindingInterface<WindowsPortBinding> | BindingInterface<LinuxPortBinding, LinuxOpenOptions>
+export type AutoDetectTypes = DarwinBindingInterface | WindowsBindingInterface | LinuxBindingInterface
 
 /**
  * This is an auto detected binding for your current platform
  */
-export function autoDetect(): AutoDetectTypes
-{
+export function autoDetect(): AutoDetectTypes {
   switch (process.platform) {
   case 'win32':
     debug('loading WindowsBinding')

@@ -17,7 +17,9 @@ export interface DarwinOpenOptions extends OpenOptions {
   vtime?: number
 }
 
-export const DarwinBinding: BindingInterface<DarwinPortBinding, DarwinOpenOptions> = {
+export type DarwinBindingInterface = BindingInterface<DarwinPortBinding, DarwinOpenOptions>
+
+export const DarwinBinding: DarwinBindingInterface = {
   list() {
     debug('list')
     return asyncList()

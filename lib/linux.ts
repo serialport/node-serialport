@@ -28,7 +28,9 @@ export interface LinuxSetOptions extends SetOptions {
   lowLatency?: boolean
 }
 
-export const LinuxBinding: BindingInterface<LinuxPortBinding, LinuxOpenOptions> = {
+export type LinuxBindingInterface = BindingInterface<LinuxPortBinding, LinuxOpenOptions>
+
+export const LinuxBinding: LinuxBindingInterface = {
   list() {
     debug('list')
     return linuxList()
