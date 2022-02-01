@@ -1,3 +1,4 @@
+import { BindingsError } from '.'
 import { assert, shouldReject } from '../test/assert'
 import { LinuxPortBinding } from './linux'
 import { unixRead } from './unix-read'
@@ -97,7 +98,7 @@ describe('unixRead', () => {
       (mock as any).isOpen = false
       makeFsReadError('EAGAIN')()
     }
-    const err = await shouldReject(unixRead({ binding: mock, buffer: readBuffer, offset: 0, length: 8, fsReadAsync }))
+    const err: BindingsError = await shouldReject(unixRead({ binding: mock, buffer: readBuffer, offset: 0, length: 8, fsReadAsync }))
     assert.isTrue(err.canceled)
   })
   it('rejects a disconnected error when fsread errors a disconnect error', async () => {

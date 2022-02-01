@@ -3,6 +3,7 @@ import { makeTestFeature } from '../test/makeTestFeature'
 import { BindingInterface, OpenOptions, PortInfo, SetOptions } from '@serialport/bindings-interface'
 import { autoDetect } from './index'
 import MockBinding from '@serialport/binding-mock'
+import { BindingsError } from './errors'
 
 // All bindings are required to work with an "echo" firmware
 const TEST_PORT = process.env.TEST_PORT
@@ -249,7 +250,7 @@ function testBinding(bindingName: string, Binding: BindingInterface, testPort?: 
           const port = await Binding.open(options)
           const readError = shouldReject(port.read(Buffer.alloc(100), 0, 100))
           await port.close()
-          const err = await readError
+          const err: BindingsError = await readError
           assert.isTrue(err.canceled)
         })
       })

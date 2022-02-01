@@ -2,7 +2,7 @@ import debug from 'debug'
 import { EventEmitter } from 'events'
 import { join } from 'path'
 import nodeGypBuild from 'node-gyp-build'
-import { CanceledError } from './errors'
+import { BindingsError } from './errors'
 
 const { Poller: PollerBindings } = nodeGypBuild(join(__dirname, '../')) as any
 const logger = debug('serialport/bindings/poller')
@@ -99,7 +99,7 @@ export class Poller extends EventEmitter {
   }
 
   emitCanceled(): void {
-    const err = new CanceledError('Canceled')
+    const err = new BindingsError('Canceled', { canceled: true })
     this.emit('readable', err)
     this.emit('writable', err)
     this.emit('disconnect', err)

@@ -1,6 +1,6 @@
 import { promisify } from 'util'
 import { read as fsRead } from 'fs'
-import { CanceledError } from './errors'
+import { BindingsError } from './errors'
 import debugFactory from 'debug'
 import { LinuxPortBinding } from './linux'
 import { DarwinPortBinding } from './darwin'
@@ -34,7 +34,7 @@ export const unixRead = async ({
 }: UnixReadOptions): Promise<{ buffer: Buffer; bytesRead: number }> => {
   logger('Starting read')
   if (!binding.isOpen || !binding.fd) {
-    throw new CanceledError('Port is not open')
+    throw new BindingsError('Port is not open', { canceled: true })
   }
 
   try {
@@ -48,7 +48,7 @@ export const unixRead = async ({
     logger('read error', err)
     if (err.code === 'EAGAIN' || err.code === 'EWOULDBLOCK' || err.code === 'EINTR') {
       if (!binding.isOpen) {
-        throw new CanceledError('Port is not open')
+        throw new BindingsError('Port is not open', { canceled: true })
       }
       logger('waiting for readable because of code:', err.code)
       await readable(binding)
