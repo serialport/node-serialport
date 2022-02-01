@@ -1,6 +1,6 @@
 import sinon from 'sinon'
 import { CCTalkParser } from '../'
-import { assert } from '../../../test/initializers/assert'
+import { assert } from '../../../test/assert'
 
 describe('CCTalkParser', () => {
   it('constructs', () => {

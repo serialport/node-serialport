@@ -1,3 +1,4 @@
+// What to do?
 const SerialPort = require('@serialport/stream')
 const Binding = require('@serialport/binding-mock')
 const parsers = require('./lib/parsers')

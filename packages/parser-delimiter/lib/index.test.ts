@@ -1,8 +1,6 @@
-/* eslint-disable no-new */
-
 import sinon from 'sinon'
 import { DelimiterParser } from './'
-import { assert } from '../../../test/initializers/assert'
+import { assert } from '../../../test/assert'
 
 describe('DelimiterParser', () => {
   it('transforms data to strings split on a delimiter', () => {

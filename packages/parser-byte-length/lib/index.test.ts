@@ -2,7 +2,7 @@
 
 import sinon from 'sinon'
 import { ByteLengthParser } from './'
-import { assert } from '../../../test/initializers/assert'
+import { assert } from '../../../test/assert'
 
 describe('ByteLengthParser', () => {
   it('emits data events every 8 bytes', () => {

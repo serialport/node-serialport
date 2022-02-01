@@ -2,7 +2,6 @@
 CHANGELOG.md
 examples/
 node_modules
-test-arduino
 test-config.json
 test-electron
 test-manual

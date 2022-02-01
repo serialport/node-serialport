@@ -1,3 +1,22 @@
+Upgading from 9x to 10x
+-------------
+
+- Serialport no longer supports Node 10
+- `baudRate` on `serialport` and `@serialport/stream` packages is no longer defaulted to 9600
+- All parser packages now have named exports
+- Typscript types are now availalbe for all packages
+- Bindings have moved from `@serialport/bindings` to `@serialport/bindings-cpp` they are shipped with `prebuildify` and no longer require a download.
+- `@serialport/bindings-cpp` now leverages N-API and shouldn't need to be upgraded for every node release.
+
+stop bits are incorrect
+baudRate is now required
+mock bindings no longer has a concept of "ready"
+bindings now have a new interface with bindings-cpp
+stream no longer has a list method
+
+serialport package no longer has a static bindings property
+
+
 Upgrading from 8.x to 9.x
 -------------
 - Serialport no longer supports Node 8

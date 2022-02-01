@@ -2,7 +2,7 @@
 
 import sinon from 'sinon'
 import { ReadlineParser } from './'
-import { assert } from '../../../test/initializers/assert'
+import { assert } from '../../../test/assert'
 
 describe('ReadlineParser', () => {
   it('transforms data to strings split on a delimiter', () => {

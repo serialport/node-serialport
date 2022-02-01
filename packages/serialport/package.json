@@ -4,6 +4,9 @@
   "description": "Node.js package to access serial ports. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig-build.json"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/serialport/node-serialport.git"
@@ -46,12 +49,9 @@
       "url": "https://github.com/node-serialport"
     }
   ],
-  "scripts": {
-    "build": "rm -rf dist && tsc -p tsconfig-build.json"
-  },
   "dependencies": {
     "@serialport/binding-mock": "10.1.0",
-    "@serialport/bindings-cpp": "10.4.0",
+    "@serialport/bindings-cpp": "^10.5.2",
     "@serialport/parser-byte-length": "10.0.1",
     "@serialport/parser-cctalk": "10.0.1",
     "@serialport/parser-delimiter": "10.0.1",

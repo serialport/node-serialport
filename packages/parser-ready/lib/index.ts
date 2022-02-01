@@ -1,39 +1,42 @@
-const { Transform } = require('stream')
+import { Transform, TransformCallback, TransformOptions } from 'stream'
+
+export interface ReadyParserOptions extends TransformOptions {
+  delimiter: string | Buffer | number[]
+}
 
 /**
  * A transform stream that waits for a sequence of "ready" bytes before emitting a ready event and emitting data events
- * @summary To use the `Ready` parser provide a byte start sequence. After the bytes have been received a ready event is fired and data events are passed through.
- * @extends Transform
+ *
+ * To use the `Ready` parser provide a byte start sequence. After the bytes have been received a ready event is fired and data events are passed through.
  * @example
 const SerialPort = require('serialport')
-const Ready = require('@serialport/parser-ready')
+const { ReadyParser } = require('@serialport/parser-ready')
 const port = new SerialPort('/dev/tty-usbserial1')
-const parser = port.pipe(new Ready({ delimiter: 'READY' }))
+const parser = port.pipe(new ReadyParser({ delimiter: 'READY' }))
 parser.on('ready', () => console.log('the ready byte sequence has been received'))
 parser.on('data', console.log) // all data after READY is received
  */
-class ReadyParser extends Transform {
-  /**
-   *
-   * @param {object} options options for the parser
-   * @param {string|Buffer|array} options.delimiter data to look for before emitted "ready"
-   */
-  constructor(options = {}) {
-    if (options.delimiter === undefined) {
+export class ReadyParser extends Transform {
+  delimiter: Buffer
+  readOffset: number
+  ready: boolean
+
+  constructor({ delimiter, ...options}: ReadyParserOptions) {
+    if (delimiter === undefined) {
       throw new TypeError('"delimiter" is not a bufferable object')
     }
 
-    if (options.delimiter.length === 0) {
+    if (delimiter.length === 0) {
       throw new TypeError('"delimiter" has a 0 or undefined length')
     }
 
     super(options)
-    this.delimiter = Buffer.from(options.delimiter)
+    this.delimiter = Buffer.from(delimiter)
     this.readOffset = 0
     this.ready = false
   }
 
-  _transform(chunk, encoding, cb) {
+  _transform(chunk: Buffer, encoding: any, cb: TransformCallback) {
     if (this.ready) {
       this.push(chunk)
       return cb()
@@ -59,5 +62,3 @@ class ReadyParser extends Transform {
     cb()
   }
 }
-
-module.exports = ReadyParser

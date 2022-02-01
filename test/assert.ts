@@ -13,5 +13,3 @@ export const shouldReject = async (promise: Promise<any>, errType = Error, messa
 }
 
 export { assert }
-;(global as any).assert = assert
-;(global as any).shouldReject = shouldReject

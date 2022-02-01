@@ -1,8 +1,6 @@
-/* eslint-disable no-new */
-
-const sinon = require('sinon')
-
-const RegexParser = require('../')
+import sinon from 'sinon'
+import { RegexParser } from './'
+import { assert } from '../../../test/assert'
 
 describe('RegexParser', () => {
   it('transforms data to strings split on either carriage return or new line', () => {
@@ -35,7 +33,7 @@ describe('RegexParser', () => {
 
   it('throws when not provided with a regex', () => {
     assert.throws(() => {
-      new RegexParser({})
+      new RegexParser({} as any)
     })
   })
 

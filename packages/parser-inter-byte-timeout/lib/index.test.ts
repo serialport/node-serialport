@@ -1,9 +1,8 @@
-/* eslint-disable no-new */
+import sinon from 'sinon'
+import { InterByteTimeoutParser } from './'
+import { assert } from '../../../test/assert'
 
-const sinon = require('sinon')
-const InterByteTimeoutParser = require('../')
-
-function wait(interval) {
+function wait(interval: number) {
   return new Promise((resolve, reject) => {
     setTimeout(resolve, interval)
     if (interval < 1) reject()
@@ -34,10 +33,10 @@ describe('InterByteTimeoutParser', () => {
       new InterByteTimeoutParser({ interval: NaN })
     })
     assert.throws(() => {
-      new InterByteTimeoutParser({ interval: 'hello' })
+      new InterByteTimeoutParser({ interval: 'hello' } as any)
     })
     assert.throws(() => {
-      new InterByteTimeoutParser()
+      new (InterByteTimeoutParser as any)()
     })
   })
 
@@ -49,7 +48,7 @@ describe('InterByteTimeoutParser', () => {
       new InterByteTimeoutParser({ maxBufferSize: NaN, interval: 15 })
     })
     assert.throws(() => {
-      new InterByteTimeoutParser({ maxBufferSize: 'hello', interval: 15 })
+      new InterByteTimeoutParser({ maxBufferSize: 'hello', interval: 15 } as any)
     })
   })
 
@@ -71,6 +70,7 @@ describe('InterByteTimeoutParser', () => {
     parser.end()
     assert(spy.calledOnce, 'expecting 1 data event')
   })
+
   it('handles not having any buffered data when stream ends', () => {
     const spy = sinon.spy()
     const parser = new InterByteTimeoutParser({ interval: 15 })

@@ -7,7 +7,7 @@
     "serialport-list": "./dist/index.js"
   },
   "dependencies": {
-    "@serialport/bindings-cpp": "10.4.0",
+    "@serialport/bindings-cpp": "10.5.2",
     "commander": "^7.1.0"
   },
   "engines": {
@@ -24,5 +24,8 @@
     "type": "git",
     "url": "git://github.com/serialport/node-serialport.git"
   },
-  "funding": "https://opencollective.com/serialport/donate"
+  "funding": "https://opencollective.com/serialport/donate",
+  "devDependencies": {
+    "typescript": "^4.5.5"
+  }
 }

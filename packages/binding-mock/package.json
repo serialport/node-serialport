@@ -8,7 +8,7 @@
     "debug"
   ],
   "dependencies": {
-    "@serialport/bindings-cpp": "^10.4.0",
+    "@serialport/bindings-interface": "1.1.0",
     "debug": "^4.3.2"
   },
   "devDependencies": {

@@ -2,7 +2,6 @@ import { Transform, TransformCallback, TransformOptions } from 'stream'
 
 export interface DelimiterOptions extends TransformOptions {
   includeDelimiter?: boolean
-  /** the number of bytes on each data event */
   delimiter: string | Buffer | number[]
 }
 
@@ -22,19 +21,20 @@ export class DelimiterParser extends Transform {
   includeDelimiter: boolean
   delimiter: Buffer
   buffer: Buffer
-  constructor(options: DelimiterOptions) {
+
+  constructor({ delimiter, includeDelimiter = false, ...options}: DelimiterOptions) {
     super(options)
 
-    if (options.delimiter === undefined) {
+    if (delimiter === undefined) {
       throw new TypeError('"delimiter" is not a bufferable object')
     }
 
-    if (options.delimiter.length === 0) {
+    if (delimiter.length === 0) {
       throw new TypeError('"delimiter" has a 0 or undefined length')
     }
 
-    this.includeDelimiter = options.includeDelimiter !== undefined ? options.includeDelimiter : false
-    this.delimiter = Buffer.from(options.delimiter)
+    this.includeDelimiter = includeDelimiter
+    this.delimiter = Buffer.from(delimiter)
     this.buffer = Buffer.alloc(0)
   }
 

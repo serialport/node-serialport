@@ -1,8 +1,6 @@
-/* eslint-disable no-new */
-
-const sinon = require('sinon')
-
-const ReadyParser = require('../')
+import sinon from 'sinon'
+import { ReadyParser } from './'
+import { assert } from '../../../test/assert'
 
 describe('ReadyParser', () => {
   it('emits data received after the ready data', () => {
@@ -44,10 +42,10 @@ describe('ReadyParser', () => {
 
   it('throws when not provided with a delimiter', () => {
     assert.throws(() => {
-      new ReadyParser()
+      new (ReadyParser as any)()
     })
     assert.throws(() => {
-      new ReadyParser({})
+      new ReadyParser({} as any)
     })
   })
 
