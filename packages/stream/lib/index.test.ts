@@ -820,6 +820,7 @@ describe('SerialPort', () => {
 
     it('reads more data than the high water mark', async () => {
       const testData = randomBytes((64 * 1024) / 2 + 1)
+      MockBinding.createPort('/dev/exists', { echo: true, maxReadSize: testData.length })
       const port = new SerialPortStream(openOpts)
       await new Promise(resolve => port.on('open', resolve))
       await new Promise(resolve => port.write(testData, resolve))
@@ -835,6 +836,7 @@ describe('SerialPort', () => {
 
     it('reads more data than the high water mark at once', async () => {
       const testData = randomBytes(64 * 1024 + 1)
+      MockBinding.createPort('/dev/exists', { echo: true, maxReadSize: testData.length })
       const port = new SerialPortStream(openOpts)
       await new Promise(resolve => port.on('open', resolve))
       await new Promise(resolve => port.write(testData, resolve))

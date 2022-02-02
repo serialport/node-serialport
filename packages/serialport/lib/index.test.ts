@@ -186,7 +186,7 @@ function testSerialPortClass(
         let readData = Buffer.alloc(0)
         port.on('data', data => {
           readData = Buffer.concat([readData, data])
-          console.log('got data', data.length, 'read data', readData.length)
+          // console.log('got data', data.length, 'read data', readData.length)
           if (readData.length >= input.length) {
             console.log('probably done')
             try {
