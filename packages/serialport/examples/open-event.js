@@ -1,8 +1,8 @@
 /* eslint-disable node/no-missing-require */
 
 // Open event example
-const SerialPort = require('serialport')
-const port = new SerialPort('/dev/tty-usbserial1')
+const { SerialPort } = require('serialport')
+const port = new SerialPort({ path: '/dev/tty-usbserial1', baudRate: 9600 })
 
 port.on('open', () => {
   console.log('Port Opened')

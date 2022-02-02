@@ -5,5 +5,5 @@ module.exports = {
   require: [
     'esbuild-register'
   ],
-  'spec': ['packages/**/*.test.js', 'packages/**/*.test.ts'],
+  'spec': ['packages/**/*.test.ts'],
 }

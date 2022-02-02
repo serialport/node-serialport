@@ -1,5 +1,5 @@
 import sinon from 'sinon'
-import { CCTalkParser } from '../'
+import { CCTalkParser } from './'
 import { assert } from '../../../test/assert'
 
 describe('CCTalkParser', () => {

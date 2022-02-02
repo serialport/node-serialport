@@ -1,4 +1,17 @@
-const { Transform } = require('stream')
+import { Transform, TransformCallback, TransformOptions } from 'stream'
+
+export interface PacketLengthOptions extends TransformOptions {
+  /** defaults to 0xaa */
+  delimiter?: number
+  /** defaults to 2 */
+  packetOverhead?: number
+  /** defaults to 1 */
+  lengthBytes?: number
+  /** defaults to 1 */
+  lengthOffset?: number
+  /**  max packet length defaults to 0xff */
+  maxLen?: number
+}
 
 /**
 * A transform stream that decodes packets with a delimiter and length of payload
@@ -24,26 +37,34 @@ const parser = port.pipe(new PacketLengthParser({
   lengthOffset: 2,
 }))
 */
-class PacketLengthParser extends Transform {
-  constructor(options = {}) {
+export class PacketLengthParser extends Transform {
+  buffer: Buffer
+  start: boolean
+  opts: { delimiter: number; packetOverhead: number; lengthBytes: number; lengthOffset: number; maxLen: number }
+  constructor(options: PacketLengthOptions = {}) {
     super(options)
 
-    const opts = {
-      delimiter: 0xaa,
-      packetOverhead: 2,
-      lengthBytes: 1,
-      lengthOffset: 1,
-      maxLen: 0xff,
+    const {
+      delimiter = 0xaa,
+      packetOverhead = 2,
+      lengthBytes = 1,
+      lengthOffset = 1,
+      maxLen = 0xff,
+    } = options
 
-      ...options,
+    this.opts = {
+      delimiter,
+      packetOverhead,
+      lengthBytes,
+      lengthOffset,
+      maxLen,
     }
-    this.opts = opts
 
     this.buffer = Buffer.alloc(0)
     this.start = false
   }
 
-  _transform(chunk, encoding, cb) {
+  _transform(chunk: Buffer, encoding: BufferEncoding, cb: TransformCallback) {
     for (let ndx = 0; ndx < chunk.length; ndx++) {
       const byte = chunk[ndx]
 
@@ -69,11 +90,9 @@ class PacketLengthParser extends Transform {
     cb()
   }
 
-  _flush(cb) {
+  _flush(cb: TransformCallback) {
     this.push(this.buffer)
     this.buffer = Buffer.alloc(0)
     cb()
   }
 }
-
-module.exports = PacketLengthParser

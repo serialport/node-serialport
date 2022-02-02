@@ -1,7 +1,6 @@
-const { expect } = require('chai')
-const sinon = require('sinon')
-
-const SpacePacketParser = require('./index')
+import { expect } from 'chai'
+import sinon from 'sinon'
+import { SpacePacketParser } from './'
 
 const VERSION = '000'
 const TYPE = '0'
@@ -13,7 +12,7 @@ const COUNT = '00000000000001'
 const DATA_LENGTH = '0000000000000101'
 const DATA_LENGTH_WITH_2ARY_HEADER = '0000000000010001'
 
-const buildSixCharacterBasicSpacePacket = text => {
+const buildSixCharacterBasicSpacePacket = (text: string) => {
   const data = text.slice(0, 6)
   const baseArray = []
   let headerAsString = `${VERSION}${TYPE}${NO_SECONDARY_HEADER}${API_ID}${UNSEGMENTED}${COUNT}${DATA_LENGTH}`
@@ -46,7 +45,7 @@ const buildSixCharacterBasicSpacePacket = text => {
   }
 }
 
-const buildSixCharacterBasicSpacePacketWithSecondaryHeaderLength6 = text => {
+const buildSixCharacterBasicSpacePacketWithSecondaryHeaderLength6 = (text: string) => {
   const data = text.slice(0, 6)
   const baseArray = []
   const TIMECO = 'TIMECO'
@@ -87,13 +86,8 @@ const buildSixCharacterBasicSpacePacketWithSecondaryHeaderLength6 = text => {
 }
 
 describe('SpacePacketParser', () => {
-  let test
-
-  beforeEach(() => {
-    test = new SpacePacketParser()
-  })
-
   it('handles a complete space packet buffer sent at once', () => {
+    const test = new SpacePacketParser()
     const { buffer, expected } = buildSixCharacterBasicSpacePacket('123456')
 
     test.on('data', data => {
@@ -104,6 +98,7 @@ describe('SpacePacketParser', () => {
   })
 
   it('flushes a partial packet if end is called', () => {
+    const test = new SpacePacketParser()
     const { buffer } = buildSixCharacterBasicSpacePacket('things')
 
     test.on('data', data => {
@@ -116,6 +111,7 @@ describe('SpacePacketParser', () => {
   })
 
   it('handles receiving two space packets at the same time', () => {
+    const test = new SpacePacketParser()
     const { buffer, expected } = buildSixCharacterBasicSpacePacket('first1')
     const { buffer: buff2, expected: expect2 } = buildSixCharacterBasicSpacePacket('second')
     const dataCallbackSpy = sinon.stub()
@@ -129,6 +125,7 @@ describe('SpacePacketParser', () => {
   })
 
   it('handles receiving parts of a space packet in chunks', () => {
+    const test = new SpacePacketParser()
     const { buffer, expected } = buildSixCharacterBasicSpacePacket('partsy')
     const dataCallbackSpy = sinon.stub()
 
@@ -143,6 +140,7 @@ describe('SpacePacketParser', () => {
   })
 
   it('handles receiving a complete plus a partial packet at once', () => {
+    const test = new SpacePacketParser()
     const { buffer, expected } = buildSixCharacterBasicSpacePacket('part_1')
     const { buffer: buff2 } = buildSixCharacterBasicSpacePacket('part_2')
     const onePoint5ishPackets = Buffer.concat([buffer, buff2]).slice(0, 16)
@@ -157,13 +155,13 @@ describe('SpacePacketParser', () => {
   })
 
   it('includes timeCode and ancillaryData fields in a secondary header object', () => {
-    const test2 = new SpacePacketParser({ timeCodeFieldLength: 6, ancillaryDataFieldLength: 6 })
+    const test = new SpacePacketParser({ timeCodeFieldLength: 6, ancillaryDataFieldLength: 6 })
     const { buffer, expected } = buildSixCharacterBasicSpacePacketWithSecondaryHeaderLength6('123456')
 
-    test2.on('data', data => {
+    test.on('data', data => {
       expect(data).to.deep.equal(expected)
     })
 
-    test2.write(buffer)
+    test.write(buffer)
   })
 })

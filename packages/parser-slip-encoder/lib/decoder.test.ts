@@ -1,8 +1,6 @@
-/* eslint-disable no-new */
-
-const sinon = require('sinon')
-
-const SlipDecoder = require('./decoder')
+import sinon from 'sinon'
+import { SlipDecoder } from './decoder'
+import { assert } from '../../../test/assert'
 
 describe('SlipDecoder', () => {
   it('Decodes one-byte messages', () => {

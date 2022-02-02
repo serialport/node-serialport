@@ -1,11 +1,9 @@
-const HEADER_LENGTH = 6
+export const HEADER_LENGTH = 6
 
 /**
- * For numbers less than 255, will ensure that their string representation is at least 8
- * characters long.
- * @param {Number} num Any number
+ * For numbers less than 255, will ensure that their string representation is at least 8 characters long.
  */
-const toOctetStr = num => {
+const toOctetStr = (num: number) => {
   let str = Number(num).toString(2)
 
   while (str.length < 8) {
@@ -15,12 +13,36 @@ const toOctetStr = num => {
   return str
 }
 
+export interface SpacePacketHeader {
+  versionNumber: string | number
+  identification: {
+    apid: number
+    secondaryHeader: number
+    type: number
+  }
+  sequenceControl: {
+    packetName: number
+    sequenceFlags: number
+  }
+  dataLength: number
+}
+
+
+export interface SpacePacket {
+  header: SpacePacketHeader
+  secondaryHeader?: {
+    timeCode?: string
+    ancillaryData?: string
+  }
+  data: string
+}
+
 /**
  * Converts a Buffer of any length to an Object representation of a Space Packet header, provided
  * the received data is in the correct format.
- * @param {Buffer} buf The buffer containing the Space Packet Header Data
+ * @param buf - The buffer containing the Space Packet Header Data
  */
-const convertHeaderBufferToObj = buf => {
+export const convertHeaderBufferToObj = (buf: Buffer): SpacePacketHeader => {
   const headerStr = Array.from(buf.slice(0, HEADER_LENGTH)).reduce((accum, curr) => `${accum}${toOctetStr(curr)}`, '')
   const isVersion1 = headerStr.slice(0, 3) === '000'
   const versionNumber = isVersion1 ? 1 : 'UNKNOWN_VERSION'
@@ -44,10 +66,4 @@ const convertHeaderBufferToObj = buf => {
     },
     dataLength,
   }
-}
-
-module.exports = {
-  HEADER_LENGTH,
-  toOctetStr,
-  convertHeaderBufferToObj,
 }

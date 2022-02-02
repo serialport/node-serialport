@@ -1,14 +1,28 @@
-const { Transform } = require('stream')
+import { Transform, TransformCallback, TransformOptions } from 'stream'
+import { HEADER_LENGTH, convertHeaderBufferToObj, SpacePacket, SpacePacketHeader } from './utils'
 
-const { HEADER_LENGTH, convertHeaderBufferToObj } = require('./utils')
+export { SpacePacket, SpacePacketHeader }
+
+export interface PacketLengthOptions extends Omit<TransformOptions, 'objectMode'> {
+  timeCodeFieldLength?: number
+  ancillaryDataFieldLength?: number
+}
 
 /**
  * A Transform stream that accepts a stream of octet data and converts it into an object
  * representation of a CCSDS Space Packet. See https://public.ccsds.org/Pubs/133x0b2e1.pdf for a
  * description of the Space Packet format.
- * @extends Transform
  */
-class SpacePacketParser extends Transform {
+export class SpacePacketParser extends Transform {
+  timeCodeFieldLength: number
+  ancillaryDataFieldLength: number
+  dataBuffer: Buffer
+  headerBuffer: Buffer
+  dataLength: number
+  expectingHeader: boolean
+  dataSlice: number
+  header?: SpacePacketHeader
+
   /**
    * A Transform stream that accepts a stream of octet data and emits object representations of
    * CCSDS Space Packets once a packet has been completely received.
@@ -16,7 +30,7 @@ class SpacePacketParser extends Transform {
    * @param {Number} options.timeCodeFieldLength The length of the time code field within the data
    * @param {Number} options.ancillaryDataFieldLength The length of the ancillary data field within the data
    */
-  constructor(options = {}) {
+  constructor(options: PacketLengthOptions = {}) {
     super({ ...options, objectMode: true })
     // Set the constants for this Space Packet Connection; these will help us parse incoming data
     // fields:
@@ -36,10 +50,17 @@ class SpacePacketParser extends Transform {
    * packet(s).
    */
   pushCompletedPacket() {
-    const completedPacket = { header: { ...this.header } }
+    if (!this.header) {
+      throw new Error('Missing header')
+    }
     const timeCode = Buffer.from(this.dataBuffer.slice(0, this.timeCodeFieldLength))
     const ancillaryData = Buffer.from(this.dataBuffer.slice(this.timeCodeFieldLength, this.timeCodeFieldLength + this.ancillaryDataFieldLength))
     const data = Buffer.from(this.dataBuffer.slice(this.dataSlice, this.dataLength))
+
+    const completedPacket: SpacePacket = {
+      header: { ...this.header },
+      data: data.toString(),
+   }
 
     if (timeCode.length > 0 || ancillaryData.length > 0) {
       completedPacket.secondaryHeader = {}
@@ -53,7 +74,6 @@ class SpacePacketParser extends Transform {
       }
     }
 
-    completedPacket.data = data.toString()
     this.push(completedPacket)
 
     // If there is an overflow (i.e. we have more data than the packet we just pushed) begin parsing
@@ -67,7 +87,7 @@ class SpacePacketParser extends Transform {
       this.dataBuffer = Buffer.alloc(0)
       this.expectingHeader = true
       this.dataLength = 0
-      this.header = {}
+      this.header = undefined
     }
   }
 
@@ -75,9 +95,9 @@ class SpacePacketParser extends Transform {
    * Build the Stream's headerBuffer property from the received Buffer chunk; extract data from it
    * if it's complete. If there's more to the chunk than just the header, initiate handling the
    * packet data.
-   * @param {Buffer} chunk Build the Stream's headerBuffer property from
+   * @param chunk -  Build the Stream's headerBuffer property from
    */
-  extractHeader(chunk) {
+  extractHeader(chunk: Buffer) {
     const headerAsBuffer = Buffer.concat([this.headerBuffer, chunk])
     const startOfDataBuffer = headerAsBuffer.slice(HEADER_LENGTH)
 
@@ -99,7 +119,7 @@ class SpacePacketParser extends Transform {
     }
   }
 
-  _transform(chunk, _, cb) {
+  _transform(chunk: Buffer, encoding: BufferEncoding, cb: TransformCallback) {
     if (this.expectingHeader) {
       this.extractHeader(chunk)
     } else {
@@ -113,7 +133,7 @@ class SpacePacketParser extends Transform {
     cb()
   }
 
-  _flush(cb) {
+  _flush(cb: TransformCallback) {
     const remaining = Buffer.concat([this.headerBuffer, this.dataBuffer])
     const remainingArray = Array.from(remaining)
 
@@ -121,5 +141,3 @@ class SpacePacketParser extends Transform {
     cb()
   }
 }
-
-module.exports = SpacePacketParser

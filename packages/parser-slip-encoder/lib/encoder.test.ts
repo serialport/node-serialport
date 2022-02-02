@@ -1,5 +1,6 @@
-const sinon = require('sinon')
-const SlipEncoder = require('./encoder')
+import sinon from 'sinon'
+import { SlipEncoder } from './encoder'
+import { assert } from '../../../test/assert'
 
 describe('SlipEncoder', () => {
   it('Adds one delimiter to one-byte messages', () => {

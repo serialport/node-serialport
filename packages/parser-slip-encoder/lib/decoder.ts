@@ -1,4 +1,14 @@
-const { Transform } = require('stream')
+import { Transform, TransformCallback, TransformOptions } from 'stream'
+
+export interface SlipDecoderOptions extends TransformOptions {
+  START?: number
+  ESC?: number
+  END?: number
+  ESC_START?: number,
+  ESC_END?: number
+  ESC_ESC?: number
+}
+
 
 /**
 * A transform stream that decodes slip encoded data.
@@ -13,29 +23,38 @@ const port = new SerialPort('/dev/tty-usbserial1')
 const parser = port.pipe(new SlipDecoder())
 parser.on('data', console.log)
 */
-class SlipDecoder extends Transform {
-  constructor(options = {}) {
+export class SlipDecoder extends Transform {
+  opts: { START: number | undefined; ESC: number; END: number; ESC_START: number | undefined; ESC_END: number; ESC_ESC: number }
+  buffer: Buffer
+  escape: boolean
+  start: boolean
+  constructor(options: SlipDecoderOptions = {}) {
     super(options)
 
-    const opts = {
-      START: undefined,
-      ESC: 0xdb,
-      END: 0xc0,
+    const {
+      START,
+      ESC = 0xdb,
+      END = 0xc0,
+      ESC_START,
+      ESC_END = 0xdc,
+      ESC_ESC = 0xdd,
+    } = options
 
-      ESC_START: undefined,
-      ESC_END: 0xdc,
-      ESC_ESC: 0xdd,
-
-      ...options,
+    this.opts = {
+      START,
+      ESC,
+      END,
+      ESC_START,
+      ESC_END,
+      ESC_ESC,
     }
-    this.opts = opts
 
     this.buffer = Buffer.alloc(0)
     this.escape = false
     this.start = false
   }
 
-  _transform(chunk, encoding, cb) {
+  _transform(chunk: Buffer, encoding: BufferEncoding, cb: TransformCallback) {
     for (let ndx = 0; ndx < chunk.length; ndx++) {
       let byte = chunk[ndx]
 
@@ -76,7 +95,7 @@ class SlipDecoder extends Transform {
 
       this.escape = false
 
-      if (true === this.start) {
+      if (this.start) {
         this.buffer = Buffer.concat([this.buffer, Buffer.from([byte])])
       }
     }
@@ -84,11 +103,9 @@ class SlipDecoder extends Transform {
     cb()
   }
 
-  _flush(cb) {
+  _flush(cb: TransformCallback) {
     this.push(this.buffer)
     this.buffer = Buffer.alloc(0)
     cb()
   }
 }
-
-module.exports = SlipDecoder

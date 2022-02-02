@@ -1,4 +1,14 @@
-const { Transform } = require('stream')
+import { Transform, TransformCallback, TransformOptions } from 'stream'
+
+export interface SlipEncoderOptions extends TransformOptions {
+  START?: number
+  ESC?: number
+  END?: number
+  ESC_START?: number,
+  ESC_END?: number
+  ESC_ESC?: number
+  bluetoothQuirk?: boolean
+}
 
 /**
 * A transform stream that emits SLIP-encoded data for each incoming packet.
@@ -19,25 +29,42 @@ const lineParser = fileReader.pipe(new Readline({ delimiter: '\r\n' }));
 const encoder = fileReader.pipe(new SlipEncoder({ bluetoothQuirk: false }));
 encoder.pipe(port);
 */
-class SlipEncoder extends Transform {
-  constructor(options = {}) {
-    super(options)
-
-    const opts = {
-      START: undefined,
-      ESC: 0xdb,
-      END: 0xc0,
-
-      ESC_START: undefined,
-      ESC_END: 0xdc,
-      ESC_ESC: 0xdd,
-
-      ...options,
-    }
-    this.opts = opts
+export class SlipEncoder extends Transform {
+  opts: {
+    START: number | undefined
+    ESC: number
+    END: number
+    ESC_START: number | undefined
+    ESC_END: number
+    ESC_ESC: number
+    bluetoothQuirk: boolean
   }
 
-  _transform(chunk, encoding, cb) {
+  constructor(options: SlipEncoderOptions = {}) {
+    super(options)
+
+    const {
+      START,
+      ESC = 0xdb,
+      END = 0xc0,
+      ESC_START,
+      ESC_END = 0xdc,
+      ESC_ESC = 0xdd,
+      bluetoothQuirk = false
+    } = options
+
+    this.opts = {
+      START,
+      ESC,
+      END,
+      ESC_START,
+      ESC_END,
+      ESC_ESC,
+      bluetoothQuirk,
+    }
+  }
+
+  _transform(chunk: Buffer, encoding: BufferEncoding, cb: TransformCallback) {
     const chunkLength = chunk.length
 
     if (this.opts.bluetoothQuirk && chunkLength === 0) {
@@ -81,5 +108,3 @@ class SlipEncoder extends Transform {
     cb(null, encoded.slice(0, j))
   }
 }
-
-module.exports = SlipEncoder

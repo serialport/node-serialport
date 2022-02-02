@@ -1,7 +1,6 @@
-/* eslint-disable no-new */
-
-const sinon = require('sinon')
-const PacketLengthParser = require('../')
+import sinon from 'sinon'
+import { PacketLengthParser } from './'
+import { assert } from '../../../test/assert'
 
 describe('DelimiterParser', () => {
   it('transforms data to packets of correct length starting with delimiter', () => {

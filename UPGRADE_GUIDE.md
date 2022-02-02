@@ -11,6 +11,7 @@ Upgading from 9x to 10x
 - bindings and mock bindings now have a new interface with bindings-cpp
 - stream no longer has a list method
 - serialport package no longer has a static bindings property
+- serialport now exports a SerialPortMock class with the mock binding instead of the serialport/test file
 
 TODO
 - stop bits are incorrect
