@@ -9,10 +9,7 @@ describe('SerialPort', () => {
   const openOpts: OpenOptions<MockBindingInterface> = { path: '/dev/exists', baudRate: 9600, binding: MockBinding }
 
   beforeEach(() => {
-    MockBinding.createPort('/dev/exists', {
-      echo: true,
-      readyData: Buffer.from([]),
-    })
+    MockBinding.createPort('/dev/exists', { echo: true })
   })
 
   afterEach(() => {
@@ -80,7 +77,7 @@ describe('SerialPort', () => {
 
     it('errors with a non number baudRate even with a callback', done => {
       try {
-        new SerialPortStream({ path: '/dev/exists', baudRate: 'whatever' } as any, () => {})
+        new SerialPortStream({ path: '/dev/exists', baudRate: 'whatever' } as any, () => { })
       } catch (err) {
         assert.instanceOf(err, Error)
         done()
@@ -89,7 +86,7 @@ describe('SerialPort', () => {
 
     it('throws an error when given bad baudrate option even with a callback', () => {
       assert.throws(() => {
-        new SerialPortStream({ ...openOpts, baudrate: 9600 } as any, () => {})
+        new SerialPortStream({ path: 'foobar', baudrate: 9600 } as any, () => { })
       })
     })
 
@@ -127,13 +124,13 @@ describe('SerialPort', () => {
           ...openOpts,
           autoOpen: false,
         })
-        assert.equal(port.baudRate, 14400)
+        assert.equal(port.baudRate, 9600)
         try {
-          ;(port as any).baudRate = 9600
+          ; (port as any).baudRate = 14400
         } catch (e) {
           assert.instanceOf(e, TypeError)
         }
-        assert.equal(port.baudRate, 14400)
+        assert.equal(port.baudRate, 9600)
       })
     })
 
@@ -145,7 +142,7 @@ describe('SerialPort', () => {
         })
         assert.equal(port.path, '/dev/exists')
         try {
-          ;(port as any).path = 'foo'
+          ; (port as any).path = 'foo'
         } catch (e) {
           assert.instanceOf(e, TypeError)
         }
@@ -161,7 +158,7 @@ describe('SerialPort', () => {
         })
         assert.equal(port.isOpen, false)
         try {
-          ;(port as any).isOpen = 'foo'
+          ; (port as any).isOpen = 'foo'
         } catch (e) {
           assert.instanceOf(e, TypeError)
         }
@@ -200,11 +197,11 @@ describe('SerialPort', () => {
 
       it('returns false when the port is closing', done => {
         const port = new SerialPortStream(openOpts, () => {
+          sandbox.stub((port as any).port, 'close').callsFake(async () => {
+            assert.isFalse(port.isOpen)
+            done()
+          })
           port.close()
-        })
-        sandbox.stub((port as any).port, 'close').callsFake(async () => {
-          assert.isFalse(port.isOpen)
-          done()
         })
       })
 
@@ -222,37 +219,15 @@ describe('SerialPort', () => {
 
   describe('instance method', () => {
     describe('#open', () => {
-      it('passes the port to the bindings', done => {
-        const port = new SerialPortStream({ ...openOpts, autoOpen: false })
-        const openSpy = sandbox.spy((port as any).port, 'open')
-        assert.isFalse(port.isOpen)
-        port.open(err => {
-          assert.isNull(err)
-          assert.isTrue(port.isOpen)
-          assert.isTrue(openSpy.calledWith('/dev/exists'))
+      it('passes the open options to the bindings without the stream stuff', done => {
+        sandbox.stub(MockBinding, 'open').callsFake(((opt: any) => {
+          assert.deepEqual(opt, {
+            path: '/dev/exists',
+            baudRate: 9600
+          })
           done()
-        })
-      })
-
-      it('passes default options to the bindings', done => {
-        const defaultOptions = {
-          baudRate: 9600,
-          parity: 'none',
-          xon: false,
-          xoff: false,
-          xany: false,
-          rtscts: false,
-          hupcl: true,
-          dataBits: 8,
-          stopBits: 1,
-        }
-        const port = new SerialPortStream({ ...openOpts, autoOpen: false })
-        sandbox.stub((port as any).port, 'open').callsFake((path, opt) => {
-          assert.equal(path, '/dev/exists')
-          assert.containSubset(opt, defaultOptions)
-          done()
-        })
-        port.open()
+        }) as any)
+        new SerialPortStream(openOpts)
       })
 
       it('calls back an error when opening an invalid port', done => {
@@ -367,8 +342,8 @@ describe('SerialPort', () => {
 
       it('combines many writes into one', done => {
         const port = new SerialPortStream({ ...openOpts, autoOpen: false })
-        const spy = sinon.spy(port.port!, 'write')
         port.open(() => {
+          const spy = sinon.spy(port.port!, 'write')
           port.cork()
           port.write('abc')
           port.write(Buffer.from('123'), () => {
@@ -467,7 +442,7 @@ describe('SerialPort', () => {
       })
 
       it('errors when the port is not open', done => {
-        const cb = function () {}
+        const cb = function () { }
         const port = new SerialPortStream({ ...openOpts, autoOpen: false }, cb)
         port.close(err => {
           assert.instanceOf(err, Error)
@@ -477,10 +452,10 @@ describe('SerialPort', () => {
 
       it('handles errors in callback', done => {
         const port = new SerialPortStream(openOpts)
-        sinon.stub(port.port!, 'close').callsFake(() => {
-          return Promise.reject(new Error('like tears in the rain'))
-        })
         port.on('open', () => {
+          sinon.stub(port.port!, 'close').callsFake(async () => {
+            throw new Error('like tears in the rain')
+          })
           port.close(err => {
             assert.instanceOf(err, Error)
             done()
@@ -490,10 +465,10 @@ describe('SerialPort', () => {
 
       it('handles errors in event', done => {
         const port = new SerialPortStream(openOpts)
-        sinon.stub(port.port!, 'close').callsFake(() => {
-          return Promise.reject(new Error('attack ships on fire off the shoulder of Orion'))
-        })
         port.on('open', () => {
+          sinon.stub(port.port!, 'close').callsFake(async () => {
+            throw new Error('attack ships on fire off the shoulder of Orion')
+          })
           port.close()
         })
         port.on('error', err => {
@@ -512,24 +487,14 @@ describe('SerialPort', () => {
         })
       })
 
-      it('errors when called without options', done => {
-        const port = new SerialPortStream({ ...openOpts, autoOpen: false })
-        let errors = 0
-        try {
-          port.update(undefined as any)
-        } catch (e) {
-          errors += 1
-          assert.instanceOf(e, TypeError)
-        }
-
-        try {
-          port.update((() => {}) as any)
-        } catch (e) {
-          errors += 1
-          assert.instanceOf(e, TypeError)
-        }
-        assert.equal(errors, 2)
-        done()
+      it('errors when called with bad options', done => {
+        const port = new SerialPortStream(openOpts)
+        port.once('open', () => {
+          port.update({} as any, err => {
+            assert.instanceOf(err, Error)
+            done()
+          })
+        })
       })
 
       it('can be called without callback', done => {
@@ -553,10 +518,10 @@ describe('SerialPort', () => {
 
       it('handles errors in callback', done => {
         const port = new SerialPortStream(openOpts)
-        sinon.stub(port.port!, 'update').callsFake(() => {
-          return Promise.reject(new Error('like tears in the rain'))
-        })
         port.on('open', () => {
+          sinon.stub(port.port!, 'update').callsFake(() => {
+            return Promise.reject(new Error('like tears in the rain'))
+          })
           port.update({} as any, err => {
             assert.instanceOf(err, Error)
             done()
@@ -566,10 +531,10 @@ describe('SerialPort', () => {
 
       it('handles errors in event', done => {
         const port = new SerialPortStream(openOpts)
-        sinon.stub(port.port!, 'update').callsFake(() => {
-          return Promise.reject(new Error('attack ships on fire off the shoulder of Orion'))
-        })
         port.on('open', () => {
+          sinon.stub(port.port!, 'update').callsFake(() => {
+            return Promise.reject(new Error('attack ships on fire off the shoulder of Orion'))
+          })
           port.update({} as any)
         })
         port.on('error', err => {
@@ -586,16 +551,6 @@ describe('SerialPort', () => {
           assert.instanceOf(err, Error)
           done()
         })
-      })
-
-      it('errors without an options object', done => {
-        const port = new SerialPortStream({ ...openOpts, autoOpen: false })
-        try {
-          port.set(undefined as any)
-        } catch (e) {
-          assert.instanceOf(e, TypeError)
-          done()
-        }
       })
 
       it('sets the flags on the ports bindings', done => {
@@ -659,10 +614,10 @@ describe('SerialPort', () => {
 
       it('handles errors in callback', done => {
         const port = new SerialPortStream(openOpts)
-        sinon.stub(port.port!, 'set').callsFake(() => {
-          return Promise.reject(new Error('like tears in the rain'))
-        })
-        port.on('open', () => {
+        port.once('open', () => {
+          sinon.stub(port.port!, 'set').callsFake(() => {
+            return Promise.reject(new Error('like tears in the rain'))
+          })
           port.set({}, err => {
             assert.instanceOf(err, Error)
             done()
@@ -672,10 +627,10 @@ describe('SerialPort', () => {
 
       it('handles errors in event', done => {
         const port = new SerialPortStream(openOpts)
-        sinon.stub(port.port!, 'set').callsFake(() => {
-          return Promise.reject(new Error('attack ships on fire off the shoulder of Orion'))
-        })
-        port.on('open', () => {
+        port.once('open', () => {
+          sinon.stub(port.port!, 'set').callsFake(() => {
+            return Promise.reject(new Error('attack ships on fire off the shoulder of Orion'))
+          })
           port.set({})
         })
         port.on('error', err => {
@@ -696,8 +651,8 @@ describe('SerialPort', () => {
 
       it('calls flush on the bindings', done => {
         const port = new SerialPortStream(openOpts)
-        const spy = sinon.spy(port.port!, 'flush')
         port.on('open', () => {
+          const spy = sinon.spy(port.port!, 'flush')
           port.flush(err => {
             assert.isNull(err)
             assert(spy.calledOnce)
@@ -708,10 +663,10 @@ describe('SerialPort', () => {
 
       it('handles errors in callback', done => {
         const port = new SerialPortStream(openOpts)
-        sinon.stub(port.port!, 'flush').callsFake(() => {
-          return Promise.reject(new Error('like tears in the rain'))
-        })
         port.on('open', () => {
+          sinon.stub(port.port!, 'flush').callsFake(() => {
+            return Promise.reject(new Error('like tears in the rain'))
+          })
           port.flush(err => {
             assert.instanceOf(err, Error)
             done()
@@ -721,10 +676,10 @@ describe('SerialPort', () => {
 
       it('handles errors in event', done => {
         const port = new SerialPortStream(openOpts)
-        sinon.stub(port.port!, 'flush').callsFake(() => {
-          return Promise.reject(new Error('attack ships on fire off the shoulder of Orion'))
-        })
         port.on('open', () => {
+          sinon.stub(port.port!, 'flush').callsFake(() => {
+            return Promise.reject(new Error('attack ships on fire off the shoulder of Orion'))
+          })
           port.flush()
         })
         port.on('error', err => {
@@ -746,8 +701,8 @@ describe('SerialPort', () => {
 
       it('calls drain on the bindings', done => {
         const port = new SerialPortStream(openOpts)
-        const spy = sinon.spy(port.port!, 'drain')
         port.on('open', () => {
+          const spy = sinon.spy(port.port!, 'drain')
           port.drain(err => {
             assert.isNull(err)
             assert(spy.calledOnce)
@@ -758,10 +713,10 @@ describe('SerialPort', () => {
 
       it('handles errors in callback', done => {
         const port = new SerialPortStream(openOpts)
-        sinon.stub(port.port!, 'drain').callsFake(() => {
-          return Promise.reject(new Error('like tears in the rain'))
-        })
         port.on('open', () => {
+          sinon.stub(port.port!, 'drain').callsFake(() => {
+            return Promise.reject(new Error('like tears in the rain'))
+          })
           port.drain(err => {
             assert.instanceOf(err, Error)
             done()
@@ -771,10 +726,10 @@ describe('SerialPort', () => {
 
       it('handles errors in event', done => {
         const port = new SerialPortStream(openOpts)
-        sinon.stub(port.port!, 'drain').callsFake(() => {
-          return Promise.reject(new Error('attack ships on fire off the shoulder of Orion'))
-        })
         port.on('open', () => {
+          sinon.stub(port.port!, 'drain').callsFake(() => {
+            return Promise.reject(new Error('attack ships on fire off the shoulder of Orion'))
+          })
           port.drain()
         })
         port.on('error', err => {
@@ -824,10 +779,10 @@ describe('SerialPort', () => {
 
       it('handles errors in callback', done => {
         const port = new SerialPortStream(openOpts)
-        sinon.stub(port.port!, 'get').callsFake(() => {
-          return Promise.reject(new Error('like tears in the rain'))
-        })
         port.on('open', () => {
+          sinon.stub(port.port!, 'get').callsFake(() => {
+            return Promise.reject(new Error('like tears in the rain'))
+          })
           port.get(err => {
             assert.instanceOf(err, Error)
             done()
@@ -903,9 +858,11 @@ describe('SerialPort', () => {
 
   describe('disconnect close errors', () => {
     it('emits as a disconnected close event on a bad read', done => {
-      const port = new SerialPortStream(openOpts)
-      sinon.stub(port.port!, 'read').callsFake(async () => {
-        throw new Error('EBAD_ERR')
+      const port = new SerialPortStream(openOpts, () => {
+        sinon.stub(port.port!, 'read').callsFake(async () => {
+          throw new Error('EBAD_ERR')
+        })
+        port.read()
       })
       port.on('close', (err: DisconnectedError | undefined) => {
         assert.instanceOf(err, DisconnectedError)
@@ -913,7 +870,6 @@ describe('SerialPort', () => {
         done()
       })
       port.on('error', done) // this shouldn't be called
-      port.read()
     })
   })
 })

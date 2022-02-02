@@ -22,7 +22,7 @@ interface PoolBuffer extends Buffer {
 
 function allocNewReadPool(poolSize: number): PoolBuffer {
   const pool = Buffer.allocUnsafe(poolSize)
-  ;(pool as PoolBuffer).used = 0
+    ; (pool as PoolBuffer).used = 0
   return pool as PoolBuffer
 }
 
@@ -110,7 +110,6 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
       throw new TypeError(`"baudRate" must be a number: ${settings.baudRate}`)
     }
 
-    // todo make these getters
     this.settings = settings
 
     this.opening = false
@@ -123,16 +122,16 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
     }
   }
 
-  get path() {
+  get path(): string {
     return this.settings.path
   }
 
-  get baudRate() {
+  get baudRate(): number {
     return this.settings.baudRate
   }
 
-  get isOpen() {
-    return this.port?.isOpen && !this.closing
+  get isOpen(): boolean {
+    return this.port?.isOpen && !this.closing || false
   }
 
   private _error(error: Error, callback?: ErrorCallback) {
@@ -161,9 +160,17 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
       return this._asyncError(new Error('Port is opening'), openCallback)
     }
 
+    const {
+      highWaterMark,
+      binding,
+      autoOpen,
+      endOnClose,
+      ...openOptions
+    } = this.settings
+
     this.opening = true
     debug('opening', `path: ${this.path}`)
-    this.settings.binding.open(this.settings).then(
+    this.settings.binding.open(openOptions).then(
       port => {
         debug('opened', `path: ${this.path}`)
         this.port = port as PortInterfaceFromBinding<T>
@@ -182,13 +189,14 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
   }
 
   /**
-   * Changes the baud rate for an open port. Throws if you provide a bad argument. Emits an error or calls the callback if the baud rate isn't supported.
+   * Changes the baud rate for an open port. Emits an error or calls the callback if the baud rate isn't supported.
    * @param {object=} options Only supports `baudRate`.
    * @param {number=} [options.baudRate] The baud rate of the port to be opened. This should match one of the commonly available baud rates, such as 110, 300, 1200, 2400, 4800, 9600, 14400, 19200, 38400, 57600, or 115200. Custom rates are supported best effort per platform. The device connected to the serial port is not guaranteed to support the requested baud rate, even if the port itself supports that baud rate.
    * @param {ErrorCallback=} [callback] Called once the port's baud rate changes. If `.update` is called without a callback, and there is an error, an error event is emitted.
    * @returns {undefined}
    */
   update(options: { baudRate: number }, callback?: ErrorCallback) {
+    console.log('yo')
     if (!this.isOpen || !this.port) {
       debug('update attempted, but port is not open')
       return this._asyncError(new Error('Port is not open'), callback)
@@ -371,10 +379,6 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
    * All options are operating system default when the port is opened. Every flag is set on each call to the provided or default values. If options isn't provided default options is used.
    */
   set(options: SetOptions, callback?: ErrorCallback): void {
-    if (typeof options !== 'object') {
-      throw TypeError('"options" is not an object')
-    }
-
     if (!this.isOpen || !this.port) {
       debug('set attempted, but port is not open')
       return this._asyncError(new Error('Port is not open'), callback)
