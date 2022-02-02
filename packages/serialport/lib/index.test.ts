@@ -1,4 +1,4 @@
-const { randomBytes } = require('crypto')
+import { randomBytes } from 'crypto'
 import { SerialPort as SerialPortAutoDetect, SerialPortMock, ReadyParser } from './'
 import { assert } from '../../../test/assert'
 import { testOnPlatform } from '../../../test/testOnPlatform'
@@ -13,7 +13,7 @@ const TEST_BAUD = Number(process.env.TEST_BAUDRATE) || 115200
 
 // Be careful to close the ports when you're done with them
 // Ports are by default exclusively locked so a failure fails all tests
-testSerialPortClass(SerialPortMock, 'mock', '/dev/exists', 9600)
+testSerialPortClass(SerialPortMock, 'mock', '/dev/exists', 115200)
 testSerialPortClass(SerialPortAutoDetect, platform, TEST_PORT, TEST_BAUD)
 
 function testSerialPortClass(SerialPort: typeof SerialPortAutoDetect | typeof SerialPortMock, platform: string, path: string | undefined, baudRate: number) {
@@ -25,7 +25,7 @@ function testSerialPortClass(SerialPort: typeof SerialPortAutoDetect | typeof Se
 
     beforeEach(() => {
       if (platform === 'mock') {
-        SerialPortMock.MockBinding.createPort('/dev/exists', { echo: true })
+        SerialPortMock.MockBinding.createPort('/dev/exists', { echo: true, maxReadSize: 50 })
       }
     })
 
@@ -172,16 +172,17 @@ function testSerialPortClass(SerialPort: typeof SerialPortAutoDetect | typeof Se
       it('2k test', function (done) {
         this.timeout(20000)
         // 2k of random data
-        const input = randomBytes(1024 * 2)
+        const input = Buffer.from(randomBytes(1024).toString('hex'))
         const port = new SerialPort(openOptions)
         port.on('error', done)
         port.write(input)
 
-        const readData = Buffer.alloc(input.length, 0)
-        let bytesRead = 0
+        let readData = Buffer.alloc(0)
         port.on('data', data => {
-          bytesRead += data.copy(readData, bytesRead)
-          if (bytesRead >= input.length) {
+          readData = Buffer.concat([readData, data])
+          console.log('got data', data.length, 'read data', readData.length)
+          if (readData.length >= input.length) {
+            console.log('probably done')
             try {
               assert.equal(readData.length, input.length, 'write length matches')
               assert.deepEqual(readData, input, 'read data matches expected readData')

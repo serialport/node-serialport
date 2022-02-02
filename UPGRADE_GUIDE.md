@@ -13,6 +13,7 @@ Upgading from 9x to 10x
 - serialport package no longer has a static bindings property
 - serialport now exports a SerialPortMock class with the mock binding instead of the serialport/test file
 - SerialPortStream methods no longer throw when called with invalid input, their callbacks or the error event will convey the errors. This is because the binding layer now handles input validation as it's different on each platform.
+- `DEBUG=serialport*` for everything, as the `serialport` package doesn't do any logging of it's own
 
 TODO
 - stop bits are incorrect

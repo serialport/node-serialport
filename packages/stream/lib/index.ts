@@ -1,7 +1,7 @@
 import { Duplex } from 'stream'
 import debugFactory from 'debug'
 import { SetOptions, BindingInterface, PortInterfaceFromBinding, OpenOptions as BindingOpenOptions } from '@serialport/bindings-interface'
-const debug = debugFactory('@serialport/stream')
+const debug = debugFactory('serialport/stream')
 
 interface InternalSettings<T extends BindingInterface> extends OpenOptions<T> {
   autoOpen: boolean
@@ -196,7 +196,6 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
    * @returns {undefined}
    */
   update(options: { baudRate: number }, callback?: ErrorCallback) {
-    console.log('yo')
     if (!this.isOpen || !this.port) {
       debug('update attempted, but port is not open')
       return this._asyncError(new Error('Port is not open'), callback)

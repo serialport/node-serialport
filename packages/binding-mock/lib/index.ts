@@ -1,12 +1,13 @@
 import debugFactory from 'debug'
 import { BindingInterface, BindingPortInterface, PortStatus, SetOptions, UpdateOptions, OpenOptions, PortInfo } from '@serialport/bindings-interface'
-const debug = debugFactory('@serialport/bindings-mock')
+const debug = debugFactory('serialport/bindings-mock')
 
 interface MockPortInternal {
   data: Buffer
   echo: boolean
   record: boolean
   info: PortInfo
+  maxReadSize: number
   readyData?: Buffer
   openOpt?: OpenOptions
 }
@@ -15,6 +16,7 @@ interface CreatePortOptions {
   echo?: boolean
   record?: boolean
   readyData?: Buffer
+  maxReadSize?: number
   manufacturer?: string
   vendorId?: string
   productId?: string
@@ -57,6 +59,7 @@ export const MockBinding: MockBindingInterface = {
       manufacturer: 'The J5 Robotics Company',
       vendorId: undefined,
       productId: undefined,
+      maxReadSize: 1024,
       ...options,
     }
 
@@ -65,6 +68,7 @@ export const MockBinding: MockBindingInterface = {
       echo: optWithDefaults.echo,
       record: optWithDefaults.record,
       readyData: optWithDefaults.readyData,
+      maxReadSize: optWithDefaults.maxReadSize,
       info: {
         path,
         manufacturer: optWithDefaults.manufacturer,
@@ -246,9 +250,12 @@ export class MockPortBinding implements BindingPortInterface {
         }
       })
     }
-    const data = this.port.data.slice(0, length)
+
+    const lengthToRead = this.port.maxReadSize > length ? length : this.port.maxReadSize
+
+    const data = this.port.data.slice(0, lengthToRead)
     const bytesRead = data.copy(buffer, offset)
-    this.port.data = this.port.data.slice(length)
+    this.port.data = this.port.data.slice(lengthToRead)
     debug(this.serialNumber, 'read', bytesRead, 'bytes')
     return { bytesRead, buffer }
   }
