@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any */
 import sinon from 'sinon'
 import { randomBytes } from 'crypto'
 import { MockBinding, MockBindingInterface } from '@serialport/binding-mock'
@@ -77,7 +78,7 @@ describe('SerialPort', () => {
 
     it('errors with a non number baudRate even with a callback', done => {
       try {
-        new SerialPortStream({ path: '/dev/exists', baudRate: 'whatever' } as any, () => { })
+        new SerialPortStream({ path: '/dev/exists', baudRate: 'whatever' } as any, () => {})
       } catch (err) {
         assert.instanceOf(err, Error)
         done()
@@ -86,7 +87,7 @@ describe('SerialPort', () => {
 
     it('throws an error when given bad baudrate option even with a callback', () => {
       assert.throws(() => {
-        new SerialPortStream({ path: 'foobar', baudrate: 9600 } as any, () => { })
+        new SerialPortStream({ path: 'foobar', baudrate: 9600 } as any, () => {})
       })
     })
 
@@ -126,7 +127,7 @@ describe('SerialPort', () => {
         })
         assert.equal(port.baudRate, 9600)
         try {
-          ; (port as any).baudRate = 14400
+          ;(port as any).baudRate = 14400
         } catch (e) {
           assert.instanceOf(e, TypeError)
         }
@@ -142,7 +143,7 @@ describe('SerialPort', () => {
         })
         assert.equal(port.path, '/dev/exists')
         try {
-          ; (port as any).path = 'foo'
+          ;(port as any).path = 'foo'
         } catch (e) {
           assert.instanceOf(e, TypeError)
         }
@@ -158,7 +159,7 @@ describe('SerialPort', () => {
         })
         assert.equal(port.isOpen, false)
         try {
-          ; (port as any).isOpen = 'foo'
+          ;(port as any).isOpen = 'foo'
         } catch (e) {
           assert.instanceOf(e, TypeError)
         }
@@ -223,7 +224,7 @@ describe('SerialPort', () => {
         sandbox.stub(MockBinding, 'open').callsFake(((opt: any) => {
           assert.deepEqual(opt, {
             path: '/dev/exists',
-            baudRate: 9600
+            baudRate: 9600,
           })
           done()
         }) as any)
@@ -442,7 +443,7 @@ describe('SerialPort', () => {
       })
 
       it('errors when the port is not open', done => {
-        const cb = function () { }
+        const cb = function () {}
         const port = new SerialPortStream({ ...openOpts, autoOpen: false }, cb)
         port.close(err => {
           assert.instanceOf(err, Error)

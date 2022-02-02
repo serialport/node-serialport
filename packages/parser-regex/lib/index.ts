@@ -39,7 +39,7 @@ export class RegexParser extends Transform {
     this.data = ''
   }
 
-  _transform(chunk: string, encoding: any, cb: TransformCallback) {
+  _transform(chunk: string, encoding: BufferEncoding, cb: TransformCallback) {
     const data = this.data + chunk
     const parts = data.split(this.regex)
     this.data = parts.pop() || ''

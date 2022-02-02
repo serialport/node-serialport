@@ -60,7 +60,7 @@ export class SpacePacketParser extends Transform {
     const completedPacket: SpacePacket = {
       header: { ...this.header },
       data: data.toString(),
-   }
+    }
 
     if (timeCode.length > 0 || ancillaryData.length > 0) {
       completedPacket.secondaryHeader = {}

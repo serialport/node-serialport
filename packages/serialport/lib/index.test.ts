@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { randomBytes } from 'crypto'
-import { SerialPort as SerialPortAutoDetect, SerialPortMock, ReadyParser } from './'
+import { SerialPort as SerialPortAutoDetect, SerialPortMock } from './'
 import { assert } from '../../../test/assert'
 import { testOnPlatform } from '../../../test/testOnPlatform'
 
@@ -16,7 +17,12 @@ const TEST_BAUD = Number(process.env.TEST_BAUDRATE) || 115200
 testSerialPortClass(SerialPortMock, 'mock', '/dev/exists', 115200)
 testSerialPortClass(SerialPortAutoDetect, platform, TEST_PORT, TEST_BAUD)
 
-function testSerialPortClass(SerialPort: typeof SerialPortAutoDetect | typeof SerialPortMock, platform: string, path: string | undefined, baudRate: number) {
+function testSerialPortClass(
+  SerialPort: typeof SerialPortAutoDetect | typeof SerialPortMock,
+  platform: string,
+  path: string | undefined,
+  baudRate: number
+) {
   describe(`${platform} SerialPort Integration Tests`, () => {
     if (!path) {
       it(`${platform} tests requires a loopback serialport set to the TEST_PORT env var and it's baudrate set on TEST_BAUDRATE (defaults to 115200)`)

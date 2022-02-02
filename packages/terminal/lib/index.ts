@@ -50,6 +50,8 @@ const askForPort = async () => {
     process.exit(2)
   }
 
+  // Error in Enquirer types
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const answer = await new (Enquirer as any).Select({
     name: 'serial-port-selection',
     message: 'Select a serial port to open',

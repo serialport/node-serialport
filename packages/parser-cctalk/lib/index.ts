@@ -26,7 +26,7 @@ export class CCTalkParser extends Transform {
     this.maxDelayBetweenBytesMs = maxDelayBetweenBytesMs
   }
 
-  _transform(buffer: Buffer, _: any, cb: TransformCallback) {
+  _transform(buffer: Buffer, encoding: BufferEncoding, cb: TransformCallback) {
     if (this.maxDelayBetweenBytesMs > 0) {
       const now = Date.now()
       if (now - this.lastByteFetchTime > this.maxDelayBetweenBytesMs) {

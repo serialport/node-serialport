@@ -3,7 +3,6 @@
 // Use a Readline parser
 
 const { SerialPort, ReadlineParser } = require('serialport')
-const parsers = SerialPort.parsers
 
 // Use a `\r\n` as a line terminator
 const parser = new ReadlineParser({

@@ -52,7 +52,7 @@ export class InterByteTimeoutParser extends Transform {
     this.interval = interval
   }
 
-  _transform(chunk: Buffer, encoding: any, cb: TransformCallback) {
+  _transform(chunk: Buffer, encoding: BufferEncoding, cb: TransformCallback) {
     if (this.intervalID) {
       clearTimeout(this.intervalID)
     }

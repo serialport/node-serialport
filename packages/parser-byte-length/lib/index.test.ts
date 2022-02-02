@@ -1,4 +1,4 @@
-/* eslint-disable no-new */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import sinon from 'sinon'
 import { ByteLengthParser } from './'

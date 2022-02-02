@@ -27,7 +27,6 @@ export interface SpacePacketHeader {
   dataLength: number
 }
 
-
 export interface SpacePacket {
   header: SpacePacketHeader
   secondaryHeader?: {

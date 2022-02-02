@@ -44,13 +44,7 @@ export class PacketLengthParser extends Transform {
   constructor(options: PacketLengthOptions = {}) {
     super(options)
 
-    const {
-      delimiter = 0xaa,
-      packetOverhead = 2,
-      lengthBytes = 1,
-      lengthOffset = 1,
-      maxLen = 0xff,
-    } = options
+    const { delimiter = 0xaa, packetOverhead = 2, lengthBytes = 1, lengthOffset = 1, maxLen = 0xff } = options
 
     this.opts = {
       delimiter,

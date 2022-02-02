@@ -12,9 +12,10 @@ const http = require('http').Server(app)
 const io = require('socket.io')(http)
 const tcpPort = process.env.PORT || 3000
 
-const SerialPort = require('serialport')
+const { SerialPort } = require('serialport')
 
-const port = new SerialPort('/dev/cu.usbmodem1411', {
+const port = new SerialPort({
+  path: '/dev/cu.usbmodem1411',
   baudRate: 9600,
 })
 

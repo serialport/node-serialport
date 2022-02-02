@@ -22,7 +22,7 @@ interface PoolBuffer extends Buffer {
 
 function allocNewReadPool(poolSize: number): PoolBuffer {
   const pool = Buffer.allocUnsafe(poolSize)
-    ; (pool as PoolBuffer).used = 0
+  ;(pool as PoolBuffer).used = 0
   return pool as PoolBuffer
 }
 
@@ -131,7 +131,7 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
   }
 
   get isOpen(): boolean {
-    return this.port?.isOpen && !this.closing || false
+    return (this.port?.isOpen ?? false) && !this.closing
   }
 
   private _error(error: Error, callback?: ErrorCallback) {
@@ -160,13 +160,8 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
       return this._asyncError(new Error('Port is opening'), openCallback)
     }
 
-    const {
-      highWaterMark,
-      binding,
-      autoOpen,
-      endOnClose,
-      ...openOptions
-    } = this.settings
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { highWaterMark, binding, autoOpen, endOnClose, ...openOptions } = this.settings
 
     this.opening = true
     debug('opening', `path: ${this.path}`)
@@ -237,7 +232,9 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
    * @returns {boolean} `false` if the stream wishes for the calling code to wait for the `'drain'` event to be emitted before continuing to write additional data; otherwise `true`.
    */
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   write(chunk: any, encoding?: BufferEncoding, cb?: (error: Error | null | undefined) => void): boolean
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   write(chunk: any, cb?: (error: Error | null | undefined) => void): boolean
   write(
     data: string | Buffer | number[],

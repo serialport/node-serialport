@@ -4,7 +4,7 @@ export interface SlipEncoderOptions extends TransformOptions {
   START?: number
   ESC?: number
   END?: number
-  ESC_START?: number,
+  ESC_START?: number
   ESC_END?: number
   ESC_ESC?: number
   bluetoothQuirk?: boolean
@@ -43,15 +43,7 @@ export class SlipEncoder extends Transform {
   constructor(options: SlipEncoderOptions = {}) {
     super(options)
 
-    const {
-      START,
-      ESC = 0xdb,
-      END = 0xc0,
-      ESC_START,
-      ESC_END = 0xdc,
-      ESC_ESC = 0xdd,
-      bluetoothQuirk = false
-    } = options
+    const { START, ESC = 0xdb, END = 0xc0, ESC_START, ESC_END = 0xdc, ESC_ESC = 0xdd, bluetoothQuirk = false } = options
 
     this.opts = {
       START,

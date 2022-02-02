@@ -1,5 +1,5 @@
 import { ErrorCallback, OpenOptions, SerialPortStream } from '@serialport/stream'
-import { MockBinding, MockBindingInterface} from '@serialport/binding-mock'
+import { MockBinding, MockBindingInterface } from '@serialport/binding-mock'
 
 export type SerialPortMockOpenOptions = Omit<OpenOptions<MockBindingInterface>, 'binding'>
 

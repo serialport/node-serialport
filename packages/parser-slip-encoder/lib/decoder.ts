@@ -4,11 +4,10 @@ export interface SlipDecoderOptions extends TransformOptions {
   START?: number
   ESC?: number
   END?: number
-  ESC_START?: number,
+  ESC_START?: number
   ESC_END?: number
   ESC_ESC?: number
 }
-
 
 /**
 * A transform stream that decodes slip encoded data.
@@ -31,14 +30,7 @@ export class SlipDecoder extends Transform {
   constructor(options: SlipDecoderOptions = {}) {
     super(options)
 
-    const {
-      START,
-      ESC = 0xdb,
-      END = 0xc0,
-      ESC_START,
-      ESC_END = 0xdc,
-      ESC_ESC = 0xdd,
-    } = options
+    const { START, ESC = 0xdb, END = 0xc0, ESC_START, ESC_END = 0xdc, ESC_ESC = 0xdd } = options
 
     this.opts = {
       START,

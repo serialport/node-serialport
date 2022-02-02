@@ -38,7 +38,7 @@ export class DelimiterParser extends Transform {
     this.buffer = Buffer.alloc(0)
   }
 
-  _transform(chunk: Buffer, encoding: any, cb: TransformCallback) {
+  _transform(chunk: Buffer, encoding: BufferEncoding, cb: TransformCallback) {
     let data = Buffer.concat([this.buffer, chunk])
     let position
     while ((position = data.indexOf(this.delimiter)) !== -1) {

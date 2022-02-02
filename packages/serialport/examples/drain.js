@@ -1,7 +1,7 @@
 /* eslint-disable node/no-missing-require */
 
-const SerialPort = require('serialport')
-const port = new SerialPort('/dev/my-great-device')
+const { SerialPort } = require('serialport')
+const port = new SerialPort({ path: '/dev/my-great-device', baudRate: 9600 })
 
 port.on('open', () => {
   console.log('port opened')

@@ -36,7 +36,7 @@ export class ReadyParser extends Transform {
     this.ready = false
   }
 
-  _transform(chunk: Buffer, encoding: any, cb: TransformCallback) {
+  _transform(chunk: Buffer, encoding: BufferEncoding, cb: TransformCallback) {
     if (this.ready) {
       this.push(chunk)
       return cb()

@@ -2,8 +2,8 @@
 
 // Load Serialport with mock bindings
 // const SerialPort = require('../test'); // from inside the serialport repo
-const SerialPort = require('serialport/test') // when installed as a package
-const MockBinding = SerialPort.Binding
+const { SerialPortMock: SerialPort } = require('serialport') // when installed as a package
+const { MockBinding } = SerialPort
 
 const portPath = 'COM_ANYTHING'
 
@@ -18,7 +18,7 @@ const portPath = 'COM_ANYTHING'
 // Create a port
 MockBinding.createPort(portPath, { echo: false, record: false })
 
-const port = new SerialPort(portPath)
+const port = new SerialPort({ path: portPath, baudRate: 9600 })
 port.on('open', () => {
   console.log('Port opened:\t', port.path)
 })
