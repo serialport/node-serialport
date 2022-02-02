@@ -5,7 +5,7 @@ import nodeGypBuild from 'node-gyp-build'
 import { BindingsError } from './errors'
 
 const { Poller: PollerBindings } = nodeGypBuild(join(__dirname, '../')) as any
-const logger = debug('serialport/bindings/poller')
+const logger = debug('serialport/bindings-cpp/poller')
 
 export const EVENTS = {
   UV_READABLE: 0b0001,
