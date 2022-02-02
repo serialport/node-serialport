@@ -81,7 +81,7 @@ export class SlipEncoder extends Transform {
     for (let i = 0; i < chunkLength; i++) {
       let byte = chunk[i]
 
-      if (byte === this.opts.START) {
+      if (byte === this.opts.START && this.opts.ESC_START) {
         encoded[j++] = this.opts.ESC
         byte = this.opts.ESC_START
       } else if (byte === this.opts.END) {

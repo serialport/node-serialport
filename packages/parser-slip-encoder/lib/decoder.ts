@@ -58,7 +58,7 @@ export class SlipDecoder extends Transform {
       }
 
       if (this.escape) {
-        if (byte === this.opts.ESC_START) {
+        if (byte === this.opts.ESC_START && this.opts.START) {
           byte = this.opts.START
         } else if (byte === this.opts.ESC_ESC) {
           byte = this.opts.ESC
