@@ -6,9 +6,12 @@
   "bin": {
     "serialport-list": "./dist/index.js"
   },
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig-build.json"
+  },
   "dependencies": {
-    "@serialport/bindings-cpp": "10.5.2",
-    "commander": "^7.1.0"
+    "@serialport/bindings-cpp": "10.6.1",
+    "commander": "^9.0.0"
   },
   "engines": {
     "node": ">=12.0.0"
@@ -17,9 +20,6 @@
     "access": "public"
   },
   "license": "MIT",
-  "scripts": {
-    "build": "rm -rf dist && tsc -p tsconfig-build.json"
-  },
   "repository": {
     "type": "git",
     "url": "git://github.com/serialport/node-serialport.git"

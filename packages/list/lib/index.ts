@@ -28,12 +28,14 @@ const formatters: Record<string, undefined | ((ports: PortInfo[]) => void)> = {
   jsonline: jsonl,
 }
 
-const args = program.opts()
+const args = program.opts<{
+  format: 'text' | 'json' | 'jsonline' | 'jsonl'
+}>()
 
 autoDetect()
   .list()
   .then(ports => {
-    const formatter = formatters[args.format as string]
+    const formatter = formatters[args.format]
     if (!formatter) {
       throw new Error(`Invalid formatter "${args.format}"`)
     }
