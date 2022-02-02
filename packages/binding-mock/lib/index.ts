@@ -133,7 +133,6 @@ export const MockBinding: MockBindingInterface = {
   },
 }
 
-
 /**
  * Mock bindings for pretend serialport access
  */

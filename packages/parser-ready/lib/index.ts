@@ -21,7 +21,7 @@ export class ReadyParser extends Transform {
   readOffset: number
   ready: boolean
 
-  constructor({ delimiter, ...options}: ReadyParserOptions) {
+  constructor({ delimiter, ...options }: ReadyParserOptions) {
     if (delimiter === undefined) {
       throw new TypeError('"delimiter" is not a bufferable object')
     }

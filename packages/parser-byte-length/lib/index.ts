@@ -36,7 +36,7 @@ export class ByteLengthParser extends Transform {
     this.buffer = Buffer.alloc(this.length)
   }
 
-  _transform(chunk: Buffer, _encoding: any, cb: TransformCallback) {
+  _transform(chunk: Buffer, _encoding: BufferEncoding, cb: TransformCallback) {
     let cursor = 0
     while (cursor < chunk.length) {
       this.buffer[this.position] = chunk[cursor]

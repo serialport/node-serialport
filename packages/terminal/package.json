@@ -1,15 +1,19 @@
 {
   "name": "@serialport/terminal",
   "version": "10.1.0",
-  "main": "lib",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig-build.json"
+  },
   "bin": {
-    "serialport-terminal": "./lib/index.js"
+    "serialport-terminal": "./dist/index.js"
   },
   "dependencies": {
     "@serialport/bindings-cpp": "10.5.2",
     "@serialport/stream": "10.1.0",
-    "commander": "^8.3.0",
-    "enquirer": "^2.3.5"
+    "commander": "9.0.0",
+    "enquirer": "2.3.6"
   },
   "engines": {
     "node": ">=12.0.0"

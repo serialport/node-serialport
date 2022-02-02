@@ -25,7 +25,7 @@ export class InterByteTimeoutParser extends Transform {
   interval: number
   intervalID: NodeJS.Timeout | undefined
 
-  constructor({ maxBufferSize = 65536, interval, ...transformOptions}: InterByteTimeoutOptions) {
+  constructor({ maxBufferSize = 65536, interval, ...transformOptions }: InterByteTimeoutOptions) {
     super(transformOptions)
     if (!interval) {
       throw new TypeError('"interval" is required')

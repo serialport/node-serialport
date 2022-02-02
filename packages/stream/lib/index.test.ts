@@ -80,7 +80,7 @@ describe('SerialPort', () => {
 
     it('errors with a non number baudRate even with a callback', done => {
       try {
-        new SerialPortStream({ path: '/dev/exists', baudRate: 'whatever' } as any, () => { })
+        new SerialPortStream({ path: '/dev/exists', baudRate: 'whatever' } as any, () => {})
       } catch (err) {
         assert.instanceOf(err, Error)
         done()
@@ -89,7 +89,7 @@ describe('SerialPort', () => {
 
     it('throws an error when given bad baudrate option even with a callback', () => {
       assert.throws(() => {
-        new SerialPortStream({ ...openOpts, baudrate: 9600 } as any, () => { })
+        new SerialPortStream({ ...openOpts, baudrate: 9600 } as any, () => {})
       })
     })
 
@@ -129,7 +129,7 @@ describe('SerialPort', () => {
         })
         assert.equal(port.baudRate, 14400)
         try {
-          (port as any).baudRate = 9600
+          ;(port as any).baudRate = 9600
         } catch (e) {
           assert.instanceOf(e, TypeError)
         }
@@ -145,7 +145,7 @@ describe('SerialPort', () => {
         })
         assert.equal(port.path, '/dev/exists')
         try {
-          (port as any).path = 'foo'
+          ;(port as any).path = 'foo'
         } catch (e) {
           assert.instanceOf(e, TypeError)
         }
@@ -161,7 +161,7 @@ describe('SerialPort', () => {
         })
         assert.equal(port.isOpen, false)
         try {
-          (port as any).isOpen = 'foo'
+          ;(port as any).isOpen = 'foo'
         } catch (e) {
           assert.instanceOf(e, TypeError)
         }
@@ -467,7 +467,7 @@ describe('SerialPort', () => {
       })
 
       it('errors when the port is not open', done => {
-        const cb = function () { }
+        const cb = function () {}
         const port = new SerialPortStream({ ...openOpts, autoOpen: false }, cb)
         port.close(err => {
           assert.instanceOf(err, Error)
@@ -523,7 +523,7 @@ describe('SerialPort', () => {
         }
 
         try {
-          port.update((() => { }) as any)
+          port.update((() => {}) as any)
         } catch (e) {
           errors += 1
           assert.instanceOf(e, TypeError)

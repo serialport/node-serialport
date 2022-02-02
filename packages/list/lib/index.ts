@@ -15,7 +15,7 @@ function jsonl(ports: PortInfo[]) {
   })
 }
 
-const formatters: { [key: string]: undefined | ((ports: PortInfo[]) => void) } = {
+const formatters: Record<string, undefined | ((ports: PortInfo[]) => void)> = {
   text(ports) {
     ports.forEach(port => {
       console.log(`${port.path}\t${port.pnpId || ''}\t${port.manufacturer || ''}`)

@@ -74,7 +74,7 @@ export class SerialPort extends SerialPortStream<AutoDetectTypes> {
   constructor(options: SerialPortOpenOptions, openCallback?: ErrorCallback) {
     const opts: OpenOptions<AutoDetectTypes> = {
       binding: DetectedBinding,
-      ...options
+      ...options,
     }
     super(opts, openCallback)
   }

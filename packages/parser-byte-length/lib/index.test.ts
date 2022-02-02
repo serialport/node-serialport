@@ -19,7 +19,7 @@ describe('ByteLengthParser', () => {
 
   it('throws when not provided with a length', () => {
     assert.throws(() => {
-      new (ByteLengthParser as any)()
+      new ByteLengthParser(undefined as any)
     })
     assert.throws(() => {
       new ByteLengthParser({} as any)

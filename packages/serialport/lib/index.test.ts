@@ -22,7 +22,7 @@ describe(`${platform} SerialPort Integration Tests`, () => {
     return
   }
 
-  const openOptions: SerialPortOpenOptions = { path: TEST_PORT, baudRate: TEST_BAUD}
+  const openOptions: SerialPortOpenOptions = { path: TEST_PORT, baudRate: TEST_BAUD }
 
   describe('static Method', () => {
     describe('.list', () => {
@@ -80,7 +80,7 @@ describe(`${platform} SerialPort Integration Tests`, () => {
     })
 
     it('cannot be opened while opening', done => {
-      const port = new SerialPort({...openOptions, autoOpen: false })
+      const port = new SerialPort({ ...openOptions, autoOpen: false })
       port.open(err => {
         assert.isNull(err)
       })
@@ -93,7 +93,7 @@ describe(`${platform} SerialPort Integration Tests`, () => {
     })
 
     it('can open and close ports repetitively', done => {
-      const port = new SerialPort({...openOptions, autoOpen: false })
+      const port = new SerialPort({ ...openOptions, autoOpen: false })
       port.open(err => {
         assert.isNull(err)
         port.close(err => {
@@ -108,7 +108,7 @@ describe(`${platform} SerialPort Integration Tests`, () => {
 
     it('can be read after closing and opening', function (done) {
       this.timeout(6000)
-      const port = new SerialPort({...openOptions, autoOpen: false })
+      const port = new SerialPort({ ...openOptions, autoOpen: false })
       port.on('error', done)
 
       port.open(err => {
@@ -130,7 +130,7 @@ describe(`${platform} SerialPort Integration Tests`, () => {
     })
 
     it('errors if closing during a write', done => {
-      const port = new SerialPort({...openOptions, autoOpen: false })
+      const port = new SerialPort({ ...openOptions, autoOpen: false })
       port.open(() => {
         port.on('error', err => {
           assert.instanceOf(err, Error)

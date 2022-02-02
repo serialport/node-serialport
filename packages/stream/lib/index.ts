@@ -22,7 +22,7 @@ interface PoolBuffer extends Buffer {
 
 function allocNewReadPool(poolSize: number): PoolBuffer {
   const pool = Buffer.allocUnsafe(poolSize)
-    ; (pool as PoolBuffer).used = 0
+  ;(pool as PoolBuffer).used = 0
   return pool as PoolBuffer
 }
 
@@ -31,7 +31,7 @@ function allocNewReadPool(poolSize: number): PoolBuffer {
  */
 export type ErrorCallback = (err: Error | null) => void
 
-export type ModemBitsCallback = (err: Error | null, options?: { cts: boolean, dsr: boolean, dcd: boolean }) => void
+export type ModemBitsCallback = (err: Error | null, options?: { cts: boolean; dsr: boolean; dcd: boolean }) => void
 
 /**
  * Options to open a port
@@ -40,7 +40,7 @@ export interface OpenOptions<T extends BindingInterface> extends BindingOpenOpti
   /**
    * The hardware access binding. `Bindings` are how Node-Serialport talks to the underlying system. By default we auto detect Windows (`WindowsBinding`), Linux (`LinuxBinding`) and OS X (`DarwinBinding`) and load the appropriate module for your system.
    */
-  binding: T;
+  binding: T
 
   /** Automatically opens the port defaults to true*/
   autoOpen?: boolean
@@ -63,7 +63,6 @@ export class DisconnectedError extends Error {
     this.disconnected = true
   }
 }
-
 
 export class SerialPortStream<T extends BindingInterface = BindingInterface> extends Duplex {
   port?: PortInterfaceFromBinding<T>
@@ -92,7 +91,7 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
       autoOpen: true,
       endOnClose: false,
       highWaterMark: 64 * 1024,
-      ...options
+      ...options,
     }
 
     super({
@@ -165,7 +164,7 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
     this.opening = true
     debug('opening', `path: ${this.path}`)
     this.settings.binding.open(this.settings).then(
-      (port) => {
+      port => {
         debug('opened', `path: ${this.path}`)
         this.port = port as PortInterfaceFromBinding<T>
         this.opening = false
@@ -231,10 +230,13 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
    * @returns {boolean} `false` if the stream wishes for the calling code to wait for the `'drain'` event to be emitted before continuing to write additional data; otherwise `true`.
    */
 
-
-  write(chunk: any, encoding?: BufferEncoding, cb?: (error: Error | null | undefined) => void): boolean;
-  write(chunk: any, cb?: (error: Error | null | undefined) => void): boolean;
-  write(data: string | Buffer | number[], encoding?: BufferEncoding | ((error: Error | null | undefined) => void), callback?: (error: Error | null | undefined) => void) {
+  write(chunk: any, encoding?: BufferEncoding, cb?: (error: Error | null | undefined) => void): boolean
+  write(chunk: any, cb?: (error: Error | null | undefined) => void): boolean
+  write(
+    data: string | Buffer | number[],
+    encoding?: BufferEncoding | ((error: Error | null | undefined) => void),
+    callback?: (error: Error | null | undefined) => void
+  ) {
     if (Array.isArray(data)) {
       data = Buffer.from(data)
     }
@@ -243,7 +245,6 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
     }
     return super.write(data, encoding, callback)
   }
-
 
   _write(data: Buffer, encoding: BufferEncoding | undefined, callback: (error: Error | null) => void) {
     if (!this.isOpen || !this.port) {
@@ -268,16 +269,14 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
     )
   }
 
-
-  _writev(data: Array<{ chunk: Buffer; encoding: BufferEncoding; }>, callback: ErrorCallback) {
+  _writev(data: Array<{ chunk: Buffer; encoding: BufferEncoding }>, callback: ErrorCallback) {
     debug('_writev', `${data.length} chunks of data`)
     const dataV = data.map(write => write.chunk)
     this._write(Buffer.concat(dataV), undefined, callback)
   }
 
-
   _read(bytesToRead: number) {
-    if (!this.isOpen || ! this.port) {
+    if (!this.isOpen || !this.port) {
       debug('_read', 'queueing _read for after open')
       this.once('open', () => {
         this._read(bytesToRead)
@@ -365,7 +364,6 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
       }
     )
   }
-
 
   /**
    * Set control flags on an open port. Uses [`SetCommMask`](https://msdn.microsoft.com/en-us/library/windows/desktop/aa363257(v=vs.85).aspx) for Windows and [`ioctl`](http://linux.die.net/man/4/tty_ioctl) for OS X and Linux.
@@ -481,7 +479,6 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
   }
 }
 
-
 /**
  * The `error` event's callback is called with an error object whenever there is an error.
  * @event error
@@ -522,4 +519,3 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
  * @see pause
  * @returns `this`
  */
-

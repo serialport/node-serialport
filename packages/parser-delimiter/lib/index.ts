@@ -22,7 +22,7 @@ export class DelimiterParser extends Transform {
   delimiter: Buffer
   buffer: Buffer
 
-  constructor({ delimiter, includeDelimiter = false, ...options}: DelimiterOptions) {
+  constructor({ delimiter, includeDelimiter = false, ...options }: DelimiterOptions) {
     super(options)
 
     if (delimiter === undefined) {

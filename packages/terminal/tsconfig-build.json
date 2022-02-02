@@ -9,6 +9,7 @@
     "**/*.test.ts",
   ],
   "references": [
-    { "path": "../parser-delimiter/tsconfig-build.json"}
+    { "path": "../parser-delimiter/tsconfig-build.json"},
+    { "path": "../stream/tsconfig-build.json"}
   ]
 }

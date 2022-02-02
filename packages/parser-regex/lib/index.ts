@@ -20,7 +20,7 @@ export class RegexParser extends Transform {
   regex: RegExp
   data: string
 
-  constructor({regex, ...options}: RegexParserOptions) {
+  constructor({ regex, ...options }: RegexParserOptions) {
     const opts = {
       encoding: 'utf8' as BufferEncoding,
       ...options,
