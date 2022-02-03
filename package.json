@@ -15,7 +15,7 @@
     "outdated": "lerna exec --no-bail npm outdated && npm outdated",
     "postinstall": "lerna bootstrap --no-ci",
     "publish": "lerna publish --exact",
-    "test:arduino": "TEST_PORT=$(./bin/find-arduino.js) npm test",
+    "test:arduino": "TEST_PORT=$(./bin/find-arduino.ts) npm test",
     "test:watch": "mocha -w",
     "test": "nyc --reporter=html --reporter=text --reporter lcovonly mocha",
     "typecheck": "lerna exec tsc"
