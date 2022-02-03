@@ -10,7 +10,6 @@
     "serialport-repl": "./dist/index.js"
   },
   "dependencies": {
-    "debug": "^4.3.3",
     "promirepl": "^2.0.1",
     "serialport": "10.1.0"
   },

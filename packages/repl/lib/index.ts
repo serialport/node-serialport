@@ -3,9 +3,6 @@
 import { promirepl } from 'promirepl'
 import repl from 'repl'
 import { SerialPort, SerialPortMock } from 'serialport'
-import debug from 'debug'
-
-debug.enable(process.env.DEBUG || '*')
 
 const baudRate = Number(process.env.BAUDRATE) || 9600
 
@@ -28,7 +25,8 @@ async function findArduino() {
 
 findArduino()
   .then(portName => {
-    console.log(`port = SerialPort("${portName}", { autoOpen: false })`)
+    console.log(`DEBUG=${process.env.DEBUG || ''} # enable debugging with DEBUG=serialport*`)
+    console.log(`port = SerialPort({ path: "${portName}", autoOpen: false })`)
     console.log('globals { SerialPort, SerialPortMock, portName, port }')
     const port = new SerialPort({ path: portName, baudRate, autoOpen: false })
     const spRepl = repl.start({ prompt: '> ' })
