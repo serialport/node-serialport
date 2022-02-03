@@ -1,6 +1,7 @@
 {
   "name": "@serialport/parser-readline",
-  "main": "lib",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "version": "10.0.1",
   "dependencies": {
     "@serialport/parser-delimiter": "10.0.1"
@@ -12,9 +13,15 @@
     "access": "public"
   },
   "license": "MIT",
+  "scripts": {
+    "build": "tsc --build tsconfig-build.json"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/serialport/node-serialport.git"
   },
-  "funding": "https://opencollective.com/serialport/donate"
+  "funding": "https://opencollective.com/serialport/donate",
+  "devDependencies": {
+    "typescript": "^4.5.5"
+  }
 }

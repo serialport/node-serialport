@@ -8,7 +8,7 @@
     "debug"
   ],
   "dependencies": {
-    "@serialport/bindings-cpp": "^10.4.0",
+    "@serialport/bindings-interface": "1.2.0",
     "debug": "^4.3.2"
   },
   "devDependencies": {
@@ -22,7 +22,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "rm -rf dist && tsc -p tsconfig-build.json"
+    "build": "tsc --build tsconfig-build.json"
   },
   "repository": {
     "type": "git",

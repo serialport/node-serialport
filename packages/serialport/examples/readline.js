@@ -2,15 +2,15 @@
 
 // Use a Readline parser
 
-const SerialPort = require('serialport')
-const parsers = SerialPort.parsers
+const { SerialPort, ReadlineParser } = require('serialport')
 
 // Use a `\r\n` as a line terminator
-const parser = new parsers.Readline({
+const parser = new ReadlineParser({
   delimiter: '\r\n',
 })
 
-const port = new SerialPort('/dev/tty-usbserial1', {
+const port = new SerialPort({
+  path: '/dev/tty-usbserial1',
   baudRate: 57600,
 })
 

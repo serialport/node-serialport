@@ -3,8 +3,7 @@
 module.exports = {
   bail: true,
   require: [
-    'esbuild-register',
-    './test/initializers'
+    'esbuild-register'
   ],
-  'spec': ['packages/**/*.test.js'],
+  'spec': ['packages/**/*.test.ts'],
 }

@@ -1,3 +1,23 @@
+Upgading from 9x to 10x
+-------------
+
+- Typscript types are now available for all packages
+- Serialport no longer supports Node 10
+- SerialPort stream (from npm `serialport` and `@serialport/stream`) now take an options object with a required `path` and `baudRate`. They no longer default to a `baudRate` of 9600 as that's slow and usually not what's needed.
+- All packages now have named exports. They export their types and all relevant classes.
+- The package `serialport` no longer exports `serialport/test` but instead who classes `{ SerialPort, SerialPortMock }` where the mock is pre-configured with a mock binding.
+- Bindings have moved from `@serialport/bindings` to `@serialport/bindings-cpp` they are shipped with `prebuildify` and no longer require a post install download.
+- `@serialport/bindings-cpp` leverages N-API and shouldn't need to be upgraded for every node release or rebuild for electron
+- Bindings in general now have a new interface with the `@serialport/bindings-interface` type package that replaces `@serialport/bindings-abstract`
+- `SerialPortStream` from `@serialport/stream` no longer has a `list()` method as that was a direct call to the bindings.
+- `SerialPort` class from the `serialport` package no longer has a static `Bindings` property as it provides the OS specific bindings from `@serialport/bindings-cpp` if you need control of the bindings use `SerialPortStream`.
+- `SerialPortStream` methods (and by extension `SerialPort` methods) no longer throw when called with invalid input, their callbacks or the error event will convey input errors. This is because the binding layer now handles input validation as it's different on each platform.
+- `SerialPort` is now delivering a few more parsers
+
+TODO
+- stop bits are incorrect
+
+
 Upgrading from 8.x to 9.x
 -------------
 - Serialport no longer supports Node 8

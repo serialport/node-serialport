@@ -1,6 +1,10 @@
 {
   "name": "@serialport/parser-packet-length",
-  "main": "lib",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --build tsconfig-build.json"
+  },
   "version": "10.0.0",
   "engines": {
     "node": ">=8.6.0"
@@ -12,5 +16,8 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/serialport/node-serialport.git"
+  },
+  "devDependencies": {
+    "typescript": "^4.5.5"
   }
 }

@@ -1,13 +1,14 @@
 import debugFactory from 'debug'
-import { BindingInterface, PortStatus, SetOptions, UpdateOptions, OpenOptions, PortInfo } from '@serialport/bindings-cpp'
-const debug = debugFactory('serialport/bindings-mock')
+import { BindingInterface, BindingPortInterface, PortStatus, SetOptions, UpdateOptions, OpenOptions, PortInfo } from '@serialport/bindings-interface'
+const debug = debugFactory('serialport/binding-mock')
 
 interface MockPortInternal {
   data: Buffer
   echo: boolean
   record: boolean
-  readyData: Buffer
   info: PortInfo
+  maxReadSize: number
+  readyData?: Buffer
   openOpt?: OpenOptions
 }
 
@@ -15,6 +16,7 @@ interface CreatePortOptions {
   echo?: boolean
   record?: boolean
   readyData?: Buffer
+  maxReadSize?: number
   manufacturer?: string
   vendorId?: string
   productId?: string
@@ -37,67 +39,136 @@ export class CanceledError extends Error {
   }
 }
 
-/**
- * Mock bindings for pretend serialport access
- */
-export class MockBinding extends BindingInterface {
-  pendingRead: null | ((err: null | Error) => void)
-  port: null | MockPortInternal
-  lastWrite: null | Buffer
-  recording: Buffer
-  writeOperation: null | Promise<void>
-  isOpen: boolean
-  serialNumber?: string
+export interface MockBindingInterface extends BindingInterface<MockPortBinding> {
+  reset(): void
+  createPort(path: string, opt?: CreatePortOptions): void
+}
 
-  constructor() {
-    super()
-    this.pendingRead = null
-    this.isOpen = false
-    this.port = null
-    this.lastWrite = null
-    this.recording = Buffer.alloc(0)
-    this.writeOperation = null // in flight promise or null
-  }
-
-  // Reset mocks
-  static reset() {
+export const MockBinding: MockBindingInterface = {
+  reset() {
     ports = {}
     serialNumber = 0
-  }
+  },
 
   // Create a mock port
-  static createPort(path: string, opt: CreatePortOptions = {}) {
+  createPort(path: string, options: CreatePortOptions = {}) {
     serialNumber++
     const optWithDefaults = {
       echo: false,
       record: false,
-      readyData: Buffer.from('READY'),
       manufacturer: 'The J5 Robotics Company',
       vendorId: undefined,
       productId: undefined,
-      ...opt,
+      maxReadSize: 1024,
+      ...options,
     }
 
     ports[path] = {
       data: Buffer.alloc(0),
       echo: optWithDefaults.echo,
       record: optWithDefaults.record,
-      readyData: Buffer.from(optWithDefaults.readyData),
+      readyData: optWithDefaults.readyData,
+      maxReadSize: optWithDefaults.maxReadSize,
       info: {
         path,
-        manufacturer: opt.manufacturer,
+        manufacturer: optWithDefaults.manufacturer,
         serialNumber: `${serialNumber}`,
         pnpId: undefined,
         locationId: undefined,
-        vendorId: opt.vendorId,
-        productId: opt.productId,
+        vendorId: optWithDefaults.vendorId,
+        productId: optWithDefaults.productId,
       },
     }
-    debug(serialNumber, 'created port', JSON.stringify({ path, opt }))
-  }
+    debug(serialNumber, 'created port', JSON.stringify({ path, opt: options }))
+  },
 
-  static async list() {
+  async list() {
+    debug(null, 'list')
     return Object.values(ports).map(port => port.info)
+  },
+
+  async open(options) {
+    if (!options || typeof options !== 'object' || Array.isArray(options)) {
+      throw new TypeError('"options" is not an object')
+    }
+
+    if (!options.path) {
+      throw new TypeError('"path" is not a valid port')
+    }
+
+    if (!options.baudRate) {
+      throw new TypeError('"baudRate" is not a valid baudRate')
+    }
+
+    const openOptions: Required<OpenOptions> = {
+      dataBits: 8,
+      lock: true,
+      stopBits: 1,
+      parity: 'none',
+      rtscts: false,
+      xon: false,
+      xoff: false,
+      xany: false,
+      hupcl: true,
+      ...options,
+    }
+    const { path } = openOptions
+
+    debug(null, `open: opening path ${path}`)
+
+    const port = ports[path]
+    await resolveNextTick()
+    if (!port) {
+      throw new Error(`Port does not exist - please call MockBinding.createPort('${path}') first`)
+    }
+
+    const serialNumber = port.info.serialNumber
+
+    if (port.openOpt?.lock) {
+      debug(serialNumber, `open: Port is locked cannot open`)
+      throw new Error('Port is locked cannot open')
+    }
+
+    debug(serialNumber, `open: opened path ${path}`)
+
+    port.openOpt = { ...openOptions }
+
+    return new MockPortBinding(port, openOptions)
+  },
+}
+
+/**
+ * Mock bindings for pretend serialport access
+ */
+export class MockPortBinding implements BindingPortInterface {
+  readonly openOptions: Required<OpenOptions>
+  readonly port: MockPortInternal
+  private pendingRead: null | ((err: null | Error) => void)
+  lastWrite: null | Buffer
+  recording: Buffer
+  writeOperation: null | Promise<void>
+  isOpen: boolean
+  serialNumber?: string
+
+  constructor(port: MockPortInternal, openOptions: Required<OpenOptions>) {
+    this.port = port
+    this.openOptions = openOptions
+    this.pendingRead = null
+    this.isOpen = true
+    this.lastWrite = null
+    this.recording = Buffer.alloc(0)
+    this.writeOperation = null // in flight promise or null
+    this.serialNumber = port.info.serialNumber
+
+    if (port.readyData) {
+      const data = port.readyData
+      process.nextTick(() => {
+        if (this.isOpen) {
+          debug(this.serialNumber, 'emitting ready data')
+          this.emitData(data)
+        }
+      })
+    }
   }
 
   // Emit data on a mock port
@@ -114,48 +185,6 @@ export class MockBinding extends BindingInterface {
     }
   }
 
-  async open(path: string, options?: OpenOptions) {
-    if (!path) {
-      throw new TypeError('"path" is not a valid port')
-    }
-
-    if (typeof options !== 'object') {
-      throw new TypeError('"options" is not an object')
-    }
-    debug(null, `opening path ${path}`)
-
-    if (this.isOpen) {
-      throw new Error('Already open')
-    }
-
-    const port = (this.port = ports[path])
-    await resolveNextTick()
-    if (!port) {
-      throw new Error(`Port does not exist - please call MockBinding.createPort('${path}') first`)
-    }
-    this.serialNumber = port.info.serialNumber
-
-    if (port.openOpt?.lock) {
-      throw new Error('Port is locked cannot open')
-    }
-
-    if (this.isOpen) {
-      throw new Error('Open: binding is already open')
-    }
-
-    port.openOpt = { ...options }
-    this.isOpen = true
-    debug(this.serialNumber, 'port is open')
-    if (port.echo) {
-      process.nextTick(() => {
-        if (this.isOpen) {
-          debug(this.serialNumber, 'emitting ready data')
-          this.emitData(port.readyData)
-        }
-      })
-    }
-  }
-
   async close(): Promise<void> {
     debug(this.serialNumber, 'close')
     if (!this.isOpen) {
@@ -167,12 +196,11 @@ export class MockBinding extends BindingInterface {
       throw new Error('already closed')
     }
 
-    delete port.openOpt
+    port.openOpt = undefined
     // reset data on close
     port.data = Buffer.alloc(0)
     debug(this.serialNumber, 'port is closed')
-    this.port = null
-    delete this.serialNumber
+    this.serialNumber = undefined
     this.isOpen = false
     if (this.pendingRead) {
       this.pendingRead(new CanceledError('port is closed'))
@@ -222,9 +250,12 @@ export class MockBinding extends BindingInterface {
         }
       })
     }
-    const data = this.port.data.slice(0, length)
+
+    const lengthToRead = this.port.maxReadSize > length ? length : this.port.maxReadSize
+
+    const data = this.port.data.slice(0, lengthToRead)
     const bytesRead = data.copy(buffer, offset)
-    this.port.data = this.port.data.slice(length)
+    this.port.data = this.port.data.slice(lengthToRead)
     debug(this.serialNumber, 'read', bytesRead, 'bytes')
     return { bytesRead, buffer }
   }
