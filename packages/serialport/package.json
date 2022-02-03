@@ -56,9 +56,12 @@
     "@serialport/parser-cctalk": "10.0.1",
     "@serialport/parser-delimiter": "10.0.1",
     "@serialport/parser-inter-byte-timeout": "10.0.1",
+    "@serialport/parser-packet-length": "10.0.0",
     "@serialport/parser-readline": "10.0.1",
     "@serialport/parser-ready": "10.0.1",
     "@serialport/parser-regex": "10.0.1",
+    "@serialport/parser-slip-encoder": "10.0.1",
+    "@serialport/parser-spacepacket": "10.0.1",
     "@serialport/stream": "10.1.0",
     "debug": "^4.3.2"
   },

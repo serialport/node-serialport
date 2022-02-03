@@ -12,6 +12,7 @@ Upgading from 9x to 10x
 - `SerialPortStream` from `@serialport/stream` no longer has a `list()` method as that was a direct call to the bindings.
 - `SerialPort` class from the `serialport` package no longer has a static `Bindings` property as it provides the OS specific bindings from `@serialport/bindings-cpp` if you need control of the bindings use `SerialPortStream`.
 - `SerialPortStream` methods (and by extension `SerialPort` methods) no longer throw when called with invalid input, their callbacks or the error event will convey input errors. This is because the binding layer now handles input validation as it's different on each platform.
+- `SerialPort` is now delivering a few more parsers
 
 TODO
 - stop bits are incorrect
