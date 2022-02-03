@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.2.0](https://github.com/serialport/node-serialport/compare/v10.1.0...v10.2.0) (2022-02-03)
+
+
+### Features
+
+* Typescript everything ([#2406](https://github.com/serialport/node-serialport/issues/2406)) ([7ae6e51](https://github.com/serialport/node-serialport/commit/7ae6e51a84738da1999863a80f4ec8ce7acd953a))
+
+
+
+
+
 # [10.1.0](https://github.com/serialport/node-serialport/compare/v10.0.2...v10.1.0) (2022-01-23)
 
 **Note:** Version bump only for package @serialport/repl
