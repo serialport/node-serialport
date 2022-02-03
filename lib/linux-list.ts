@@ -1,7 +1,6 @@
-import { PortInfo } from '@serialport/bindings-interface'
-
 import { spawn } from 'child_process'
-import Readline from '@serialport/parser-readline'
+import { PortInfo } from '@serialport/bindings-interface'
+import { ReadlineParser } from '@serialport/parser-readline'
 
 // get only serial port names
 function checkPathOfDevice(path: string) {
@@ -42,7 +41,7 @@ function propVal(name: string, val: string) {
 export function linuxList(spawnCmd: typeof spawn = spawn) {
   const ports: PortInfo[] = []
   const udevadm = spawnCmd('udevadm', ['info', '-e'])
-  const lines = udevadm.stdout.pipe(new Readline())
+  const lines = udevadm.stdout.pipe(new ReadlineParser())
 
   let skipPort = false
   let port: PortInfo = {

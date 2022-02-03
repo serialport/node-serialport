@@ -2,7 +2,7 @@ import { assert, shouldReject } from '../test/assert'
 import { makeTestFeature } from '../test/makeTestFeature'
 import { BindingInterface, OpenOptions, PortInfo, SetOptions } from '@serialport/bindings-interface'
 import { autoDetect } from './index'
-import MockBinding from '@serialport/binding-mock'
+import { MockBinding } from '@serialport/binding-mock'
 import { BindingsError } from './errors'
 
 // All bindings are required to work with an "echo" firmware
@@ -36,7 +36,7 @@ interface MockBinding extends BindingInterface {
 
 const listFields = ['path', 'manufacturer', 'serialNumber', 'pnpId', 'locationId', 'vendorId', 'productId']
 
-// testBinding('mock', MockBinding, '/dev/exists')
+testBinding('mock', MockBinding, '/dev/exists')
 testBinding(process.platform, autoDetect(), TEST_PORT)
 
 function testBinding(bindingName: string, Binding: BindingInterface, testPort?: string) {
@@ -44,8 +44,8 @@ function testBinding(bindingName: string, Binding: BindingInterface, testPort?: 
 
   describe(`bindings/${bindingName}`, () => {
     before(() => {
-      if (bindingName === 'mock') {
-        (Binding as MockBinding).createPort(testPort!, { echo: true })
+      if (bindingName === 'mock' && testPort) {
+        (Binding as MockBinding).createPort(testPort, { echo: true })
       }
     })
 
