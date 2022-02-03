@@ -3,7 +3,7 @@ import { HEADER_LENGTH, convertHeaderBufferToObj, SpacePacket, SpacePacketHeader
 
 export { SpacePacket, SpacePacketHeader }
 
-export interface PacketLengthOptions extends Omit<TransformOptions, 'objectMode'> {
+export interface SpacePacketOptions extends Omit<TransformOptions, 'objectMode'> {
   timeCodeFieldLength?: number
   ancillaryDataFieldLength?: number
 }
@@ -30,7 +30,7 @@ export class SpacePacketParser extends Transform {
    * @param {Number} options.timeCodeFieldLength The length of the time code field within the data
    * @param {Number} options.ancillaryDataFieldLength The length of the ancillary data field within the data
    */
-  constructor(options: PacketLengthOptions = {}) {
+  constructor(options: SpacePacketOptions = {}) {
     super({ ...options, objectMode: true })
     // Set the constants for this Space Packet Connection; these will help us parse incoming data
     // fields:

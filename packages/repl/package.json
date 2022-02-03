@@ -7,7 +7,7 @@
     "build": "tsc --build tsconfig-build.json"
   },
   "bin": {
-    "serialport-terminal": "./dist/index.js"
+    "serialport-repl": "./dist/index.js"
   },
   "dependencies": {
     "debug": "^4.3.3",

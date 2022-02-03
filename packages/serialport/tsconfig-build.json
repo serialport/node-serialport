@@ -13,14 +13,17 @@
     "dist",
   ],
   "references": [
-    { "path": "../stream/tsconfig-build.json"},
     { "path": "../binding-mock/tsconfig-build.json"},
     { "path": "../parser-byte-length/tsconfig-build.json"},
     { "path": "../parser-cctalk/tsconfig-build.json"},
     { "path": "../parser-delimiter/tsconfig-build.json"},
     { "path": "../parser-inter-byte-timeout/tsconfig-build.json"},
+    { "path": "../parser-packet-length/tsconfig-build.json"},
     { "path": "../parser-readline/tsconfig-build.json"},
     { "path": "../parser-ready/tsconfig-build.json"},
     { "path": "../parser-regex/tsconfig-build.json"},
+    { "path": "../parser-slip-encoder/tsconfig-build.json"},
+    { "path": "../parser-spacepacket/tsconfig-build.json"},
+    { "path": "../stream/tsconfig-build.json"},
   ]
 }
