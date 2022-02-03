@@ -3,7 +3,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "rm -rf dist && tsc -p tsconfig-build.json"
+    "build": "tsc --build tsconfig-build.json"
   },
   "version": "10.0.0",
   "engines": {

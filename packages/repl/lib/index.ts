@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 
-const { promirepl } = require('promirepl')
-const repl = require('repl')
-const SerialPort = require('serialport')
+import { promirepl } from 'promirepl'
+import repl from 'repl'
+import { SerialPort, SerialPortMock } from 'serialport'
+// import debug from 'debug'
 
-process.env.DEBUG = process.env.DEBUG || '*'
+// debug.enable(process.env.DEBUG || '*')
+
+const baudRate = Number(process.env.BAUDRATE) || 9600
 
 // outputs the path to an arduino or nothing
 async function findArduino() {
@@ -14,7 +17,7 @@ async function findArduino() {
   }
   const ports = await SerialPort.list()
   for (const port of ports) {
-    if (/arduino/i.test(port.manufacturer)) {
+    if (/arduino/i.test(port.manufacturer || '')) {
       return port.path
     }
   }
@@ -27,10 +30,11 @@ findArduino()
   .then(portName => {
     console.log(`port = SerialPort("${portName}", { autoOpen: false })`)
     console.log('globals { SerialPort, portName, port }')
-    const port = new SerialPort(portName, { autoOpen: false })
+    const port = new SerialPort({ path: portName, baudRate, autoOpen: false })
     const spRepl = repl.start({ prompt: '> ' })
     promirepl(spRepl)
     spRepl.context.SerialPort = SerialPort
+    spRepl.context.SerialPortMock = SerialPortMock
     spRepl.context.portName = portName
     spRepl.context.port = port
   })

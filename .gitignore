@@ -5,3 +5,4 @@ node_modules
 npm-debug.log
 /packages/**/dist
 tsconfig-build.tsbuildinfo
+tsconfig.tsbuildinfo

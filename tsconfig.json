@@ -6,9 +6,9 @@
       "@serialport/*": ["packages/*/lib"],
       "serialport": ["packages/serialport/lib"]
     },
-    "allowJs": true,
+    "allowJs": false,
     "checkJs": false,
     "noEmit": true,
-    "resolveJsonModule": true,
+    "composite": true,
   }
 }

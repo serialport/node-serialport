@@ -1,11 +1,16 @@
 {
   "name": "@serialport/repl",
   "version": "10.1.0",
-  "main": "lib",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc --build tsconfig-build.json"
+  },
   "bin": {
-    "serialport-repl": "./lib/index.js"
+    "serialport-terminal": "./dist/index.js"
   },
   "dependencies": {
+    "debug": "^4.3.3",
     "promirepl": "^2.0.1",
     "serialport": "10.1.0"
   },

@@ -10,3 +10,4 @@ UPGRADE_GUIDE.md
 lib
 tsconfig.json
 tsconfig-build.json
+tsconfig-build.tsbuildinfo

@@ -7,6 +7,7 @@
   "exclude": [
     "node_modules",
     "**/*.test.ts",
+    "dist",
   ],
   "references": [
     { "path": "../parser-delimiter/tsconfig-build.json"}

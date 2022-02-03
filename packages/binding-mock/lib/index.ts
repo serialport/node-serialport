@@ -1,6 +1,6 @@
 import debugFactory from 'debug'
 import { BindingInterface, BindingPortInterface, PortStatus, SetOptions, UpdateOptions, OpenOptions, PortInfo } from '@serialport/bindings-interface'
-const debug = debugFactory('serialport/bindings-mock')
+const debug = debugFactory('serialport/binding-mock')
 
 interface MockPortInternal {
   data: Buffer

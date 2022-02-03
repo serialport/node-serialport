@@ -22,7 +22,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "build": "rm -rf dist && tsc -p tsconfig-build.json"
+    "build": "tsc --build tsconfig-build.json"
   },
   "repository": {
     "type": "git",

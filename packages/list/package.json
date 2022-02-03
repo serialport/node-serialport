@@ -7,7 +7,7 @@
     "serialport-list": "./dist/index.js"
   },
   "scripts": {
-    "build": "rm -rf dist && tsc -p tsconfig-build.json"
+    "build": "tsc --build tsconfig-build.json"
   },
   "dependencies": {
     "@serialport/bindings-cpp": "10.6.1",
