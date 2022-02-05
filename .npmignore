@@ -1,5 +1,6 @@
 .DS_Store
-.eslintrc
+.eslintrc.js
+.releaserc
 .github
 .mocharc.js
 .node-version
