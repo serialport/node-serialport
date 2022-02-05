@@ -1,7 +1,0 @@
-.DS_Store
-*.test.js
-CHANGELOG.md
-lib
-tsconfig.json
-tsconfig-build.json
-tsconfig-build.tsbuildinfo

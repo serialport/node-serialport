@@ -13,7 +13,6 @@
     "dist",
   ],
   "references": [
-    { "path": "../binding-mock/tsconfig-build.json"},
     { "path": "../parser-byte-length/tsconfig-build.json"},
     { "path": "../parser-cctalk/tsconfig-build.json"},
     { "path": "../parser-delimiter/tsconfig-build.json"},
