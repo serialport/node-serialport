@@ -12,6 +12,7 @@ jobs:
     - run: npm ci
     - run: npm run lint
     - run: npm run typecheck
+    - run: npm run build
   test:
     runs-on: ${{ matrix.config.os }}
     strategy:
