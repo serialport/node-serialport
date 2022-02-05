@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [10.2.2](https://github.com/serialport/node-serialport/compare/v10.2.1...v10.2.2) (2022-02-05)
+
+
+### Bug Fixes
+
+* run build as part of lint ([#2420](https://github.com/serialport/node-serialport/issues/2420)) ([ab3d900](https://github.com/serialport/node-serialport/commit/ab3d900e96119b9cc732b163396edc8281e1bf72))
+* stopbits definition and move binding-mock ([#2419](https://github.com/serialport/node-serialport/issues/2419)) ([63ec6bb](https://github.com/serialport/node-serialport/commit/63ec6bb7d6be312bcc8d0976c9780325c9898632))
+
+
+
+
+
 ## [10.2.1](https://github.com/serialport/node-serialport/compare/v10.2.0...v10.2.1) (2022-02-03)
 
 
