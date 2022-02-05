@@ -2,9 +2,9 @@
 
 import Enquirer from 'enquirer'
 import { program } from 'commander'
-import { SerialPortStream } from '@serialport/stream'
+import { SerialPortStream, OpenOptions } from '@serialport/stream'
 import { OutputTranslator } from './output-translator'
-import { autoDetect } from '@serialport/bindings-cpp'
+import { autoDetect, AutoDetectTypes } from '@serialport/bindings-cpp'
 const { version } = require('../package.json')
 
 const binding = autoDetect()
@@ -31,7 +31,7 @@ const args = program.opts<{
   baud: number
   databits: 8 | 7 | 6 | 5
   parity: string
-  stopbits: 1 | 2 | 3
+  stopbits: 1 | 1.5 | 2
   echo: boolean
   flowCtl?: string
 }>()
@@ -67,7 +67,7 @@ const askForPort = async () => {
 const createPort = (path: string) => {
   console.log(`Opening serial port: ${path} echo: ${args.echo}`)
 
-  const openOptions = {
+  const openOptions: OpenOptions<AutoDetectTypes> = {
     path,
     binding,
     baudRate: args.baud,
