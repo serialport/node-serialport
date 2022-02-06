@@ -5,22 +5,22 @@ import { program } from 'commander'
 import { SerialPortStream, OpenOptions } from '@serialport/stream'
 import { OutputTranslator } from './output-translator'
 import { autoDetect, AutoDetectTypes } from '@serialport/bindings-cpp'
-const { version } = require('../package.json')
 
+const { version } = require('../package.json')
 const binding = autoDetect()
 
 const makeNumber = (input: string) => Number(input)
 
 program
   .version(version)
-  .usage('[options]')
+  .usage('--list OR -p <port> -b <baud rate> [options...]')
   .description('A basic terminal interface for communicating over a serial port. Pressing ctrl+c exits.')
   .option('-l --list', 'List available ports then exit')
   .option('-p, --path <path>', 'Path of the serial port')
-  .option('-b, --baud <baudrate>', 'Baud rate default: 9600', makeNumber, 9600)
-  .option('--databits <databits>', 'Data bits default: 8', makeNumber, 8)
-  .option('--parity <parity>', 'Parity default: none', 'none')
-  .option('--stopbits <bits>', 'Stop bits default: 1', makeNumber, 1)
+  .option('-b, --baud <baudrate>', 'Baud rate', makeNumber)
+  .option('--databits <databits>', 'Data bits', makeNumber, 8)
+  .option('--parity <parity>', 'Parity', 'none')
+  .option('--stopbits <bits>', 'Stop bits', makeNumber, 1)
   .option('--no-echo', "Don't print characters as you type them.")
   .option('--flow-ctl <mode>', 'Enable flow control {XONOFF | RTSCTS}.')
   .parse(process.argv)
@@ -56,7 +56,7 @@ const askForPort = async () => {
     name: 'serial-port-selection',
     message: 'Select a serial port to open',
     choices: ports.map((port, i) => ({
-      value: `[${i + 1}]\t${port.path}\t${port.pnpId || ''}\t${port.manufacturer || ''}`,
+      message: `[${i + 1}] ${port.path}${port.pnpId ? ` - ${port.pnpId}` : ''}${port.manufacturer ? ` - ${port.manufacturer}` : ''}`,
       name: port.path,
     })),
     required: true,
@@ -64,13 +64,30 @@ const askForPort = async () => {
   return answer as string
 }
 
-const createPort = (path: string) => {
+const askForBaudRate = async () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const baud = await new (Enquirer as any).NumberPrompt({
+    name: 'baudRate-selection',
+    message: 'Enter a baud rate',
+    required: true,
+    float: false,
+    validate(input: number) {
+      if (Number(input) <= 0) {
+        return 'BaudRate must be a number greater than 0'
+      }
+      return true
+    },
+  }).run()
+  return baud
+}
+
+const createPort = ({ path, baudRate }: { path: string; baudRate: number }) => {
   console.log(`Opening serial port: ${path} echo: ${args.echo}`)
 
   const openOptions: OpenOptions<AutoDetectTypes> = {
     path,
     binding,
-    baudRate: args.baud,
+    baudRate,
     dataBits: args.databits,
     parity: args.parity,
     stopBits: args.stopbits,
@@ -121,7 +138,8 @@ const run = async () => {
     return
   }
   const path = args.path || (await askForPort())
-  await createPort(path)
+  const baudRate = Number(args.baud || (await askForBaudRate()))
+  await createPort({ path, baudRate })
 }
 
 run().catch(error => {
