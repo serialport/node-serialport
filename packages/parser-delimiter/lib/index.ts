@@ -1,8 +1,10 @@
 import { Transform, TransformCallback, TransformOptions } from 'stream'
 
 export interface DelimiterOptions extends TransformOptions {
-  includeDelimiter?: boolean
+  /** The delimiter on which to split incoming data. */
   delimiter: string | Buffer | number[]
+  /** Should the delimiter be included at the end of data. Defaults to `false` */
+  includeDelimiter?: boolean
 }
 
 /**
