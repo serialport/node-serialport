@@ -4,18 +4,18 @@ import { promirepl } from 'promirepl'
 import repl from 'repl'
 import { SerialPort, SerialPortMock } from 'serialport'
 
-const baudRate = Number(process.env.BAUDRATE) || 9600
-
 // outputs the path to an arduino or nothing
 async function findArduino() {
-  const envPort = process.argv[2] || process.env.TEST_PORT
-  if (envPort) {
-    return envPort
+  const path = process.argv[2] || process.env.TEST_PORT
+  const baudRate = Number(process.argv[3] || process.env.BAUDRATE) || 9600
+  if (path && baudRate) {
+    return { path, baudRate }
   }
+
   const ports = await SerialPort.list()
   for (const port of ports) {
     if (/arduino/i.test(port.manufacturer || '')) {
-      return port.path
+      return { path: port.path, baudRate }
     }
   }
   throw new Error(
@@ -24,16 +24,16 @@ async function findArduino() {
 }
 
 findArduino()
-  .then(portName => {
+  .then(({ path, baudRate }: { path: string; baudRate: number }) => {
     console.log(`DEBUG=${process.env.DEBUG || ''} # enable debugging with DEBUG=serialport*`)
-    console.log(`port = SerialPort({ path: "${portName}", autoOpen: false })`)
-    console.log('globals { SerialPort, SerialPortMock, portName, port }')
-    const port = new SerialPort({ path: portName, baudRate, autoOpen: false })
+    console.log(`port = SerialPort({ path: "${path}", baudRate: ${baudRate}, autoOpen: false })`)
+    console.log('globals { SerialPort, SerialPortMock, path, port }')
+    const port = new SerialPort({ path, baudRate, autoOpen: false })
     const spRepl = repl.start({ prompt: '> ' })
     promirepl(spRepl)
     spRepl.context.SerialPort = SerialPort
     spRepl.context.SerialPortMock = SerialPortMock
-    spRepl.context.portName = portName
+    spRepl.context.path = path
     spRepl.context.port = port
   })
   .catch(e => {
