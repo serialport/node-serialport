@@ -3,8 +3,11 @@ import { HEADER_LENGTH, convertHeaderBufferToObj, SpacePacket, SpacePacketHeader
 
 export { SpacePacket, SpacePacketHeader }
 
+/** The optional configuration object, only needed if either of the two fields of the secondary header need their length defined */
 export interface SpacePacketOptions extends Omit<TransformOptions, 'objectMode'> {
+  /** The length of the Time Code Field in octets, if present */
   timeCodeFieldLength?: number
+  /** The length of the Ancillary Data Field in octets, if present */
   ancillaryDataFieldLength?: number
 }
 

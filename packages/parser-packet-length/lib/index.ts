@@ -1,13 +1,13 @@
 import { Transform, TransformCallback, TransformOptions } from 'stream'
 
 export interface PacketLengthOptions extends TransformOptions {
-  /** defaults to 0xaa */
+  /** delimiter to use defaults to 0xaa */
   delimiter?: number
-  /** defaults to 2 */
+  /** overhead of packet (including length, delimiter and any checksum / packet footer) defaults to 2 */
   packetOverhead?: number
-  /** defaults to 1 */
+  /** number of bytes containing length defaults to 1 */
   lengthBytes?: number
-  /** defaults to 1 */
+  /** offset of length field defaults to 1 */
   lengthOffset?: number
   /**  max packet length defaults to 0xff */
   maxLen?: number
