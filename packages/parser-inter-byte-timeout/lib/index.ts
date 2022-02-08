@@ -8,15 +8,7 @@ export interface InterByteTimeoutOptions extends TransformOptions {
 }
 
 /**
- * Emits data if there is a pause between packets for the specified amount of time.
- *
- * A transform stream that emits data as a buffer after not receiving any bytes for the specified amount of time.
- * @example
-const SerialPort = require('serialport')
-const { InterByteTimeoutParser } = require('@serialport/parser-inter-byte-timeout')
-const port = new SerialPort('/dev/tty-usbserial1')
-const parser = port.pipe(new InterByteTimeoutParser({interval: 30}))
-parser.on('data', console.log) // will emit data if there is a pause between packets greater than 30ms
+ * A transform stream that buffers data and emits it after not receiving any bytes for the specified amount of time or hitting a max buffer size.
  */
 
 export class InterByteTimeoutParser extends Transform {

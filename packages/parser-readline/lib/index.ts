@@ -2,10 +2,10 @@ import { DelimiterParser } from '@serialport/parser-delimiter'
 import { TransformOptions } from 'stream'
 
 export interface ReadlineOptions extends TransformOptions {
-  /** defaults to false */
-  includeDelimiter?: boolean
-  /** defaults to \n */
+  /** delimiter to use defaults to \n */
   delimiter?: string | Buffer | number[]
+  /** include the delimiter at the end of the packet defaults to false */
+  includeDelimiter?: boolean
   /** Defaults to utf8 */
   encoding?: BufferEncoding
 }

@@ -1,34 +1,28 @@
 import { Transform, TransformCallback, TransformOptions } from 'stream'
 
 export interface SlipEncoderOptions extends TransformOptions {
+  /** Custom start byte */
   START?: number
-  ESC?: number
-  END?: number
+  /** Custom start escape byte */
   ESC_START?: number
+  /** custom escape byte */
+  ESC?: number
+  /** custom end byte */
+  END?: number
+  /** custom escape end byte */
   ESC_END?: number
+  /** custom escape escape byte */
   ESC_ESC?: number
+  /** Adds an END character at the beginning of each packet per the Bluetooth Core Specification 4.0, Volume 4, Part D, Chapter 3 "SLIP Layer" and allowed by RFC 1055 */
   bluetoothQuirk?: boolean
 }
 
 /**
-* A transform stream that emits SLIP-encoded data for each incoming packet.
-* @extends Transform
-* @summary Runs in O(n) time, adding a 0xC0 character at the end of each
-* received packet and escaping characters, according to RFC 1055. Adds another
-* 0xC0 character at the beginning if the `bluetoothQuirk` option is truthy (as
-* per the Bluetooth Core Specification 4.0, Volume 4, Part D, Chapter 3 "SLIP Layer").
-* Optionally, custom slip escape and delimiters can be provided.
-* @example
-// Read lines from a text file, then SLIP-encode each and send them to a serial port
-const SerialPort = require('serialport')
-const { SlipEncoder } = require('@serialport/parser-slip-encoder')
-const Readline = require('parser-readline')
-const fileReader = require('fs').createReadStream('/tmp/some-file.txt');
-const port = new SerialPort('/dev/tty-usbserial1')
-const lineParser = fileReader.pipe(new Readline({ delimiter: '\r\n' }));
-const encoder = fileReader.pipe(new SlipEncoder({ bluetoothQuirk: false }));
-encoder.pipe(port);
-*/
+ * A transform stream that emits SLIP-encoded data for each incoming packet.
+ *
+ * Runs in O(n) time, adding a 0xC0 character at the end of each
+ * received packet and escaping characters, according to RFC 1055.
+ */
 export class SlipEncoder extends Transform {
   opts: {
     START: number | undefined
