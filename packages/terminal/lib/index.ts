@@ -30,7 +30,7 @@ const args = program.opts<{
   path?: string
   baud: number
   databits: 8 | 7 | 6 | 5
-  parity: string
+  parity: OpenOptions<AutoDetectTypes>['parity']
   stopbits: 1 | 1.5 | 2
   echo: boolean
   flowCtl?: string

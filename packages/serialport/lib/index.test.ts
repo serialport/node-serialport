@@ -3,6 +3,7 @@ import { randomBytes } from 'crypto'
 import { SerialPort as SerialPortAutoDetect, SerialPortMock } from './'
 import { assert } from '../../../test/assert'
 import { testOnPlatform } from '../../../test/testOnPlatform'
+import { LinuxBinding, LinuxOpenOptions } from '@serialport/bindings-cpp'
 
 const platform = process.platform
 if (platform !== 'win32' && platform !== 'darwin' && platform !== 'linux') {
@@ -31,13 +32,13 @@ function testSerialPortClass(
 
     beforeEach(() => {
       if (platform === 'mock') {
-        SerialPortMock.MockBinding.createPort('/dev/exists', { echo: true, maxReadSize: 50 })
+        SerialPortMock.binding.createPort('/dev/exists', { echo: true, maxReadSize: 50 })
       }
     })
 
     afterEach(() => {
       if (platform === 'mock') {
-        SerialPortMock.MockBinding.reset()
+        SerialPortMock.binding.reset()
       }
     })
 
@@ -70,6 +71,16 @@ function testSerialPortClass(
         const port = new SerialPort({ ...openOptions, path: 'COM99' })
         port.on('error', err => {
           assert.instanceOf(err, Error)
+          done()
+        })
+      })
+
+      it('allows platform specific options', done => {
+        new SerialPort({
+          path: '/bad/port',
+          baudRate: 9600,
+          vmin: 10,
+        } as LinuxOpenOptions).on('error', () => {
           done()
         })
       })

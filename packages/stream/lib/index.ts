@@ -1,9 +1,18 @@
 import { Duplex } from 'stream'
 import debugFactory from 'debug'
-import { SetOptions, BindingInterface, PortInterfaceFromBinding, OpenOptions as BindingOpenOptions } from '@serialport/bindings-interface'
+import { SetOptions, BindingInterface, PortInterfaceFromBinding, OpenOptionsFromBinding } from '@serialport/bindings-interface'
 const debug = debugFactory('serialport/stream')
 
-interface InternalSettings<T extends BindingInterface> extends OpenOptions<T> {
+export class DisconnectedError extends Error {
+  disconnected: true
+  constructor(message: string) {
+    super(message)
+    this.disconnected = true
+  }
+}
+
+interface InternalSettings<T extends BindingInterface> {
+  binding: T
   autoOpen: boolean
   endOnClose: boolean
   highWaterMark: number
@@ -33,12 +42,14 @@ export type ErrorCallback = (err: Error | null) => void
 
 export type ModemBitsCallback = (err: Error | null, options?: { cts: boolean; dsr: boolean; dcd: boolean }) => void
 
+export type OpenOptions<T extends BindingInterface = BindingInterface> = StreamOptions<T> & OpenOptionsFromBinding<T>
+
 /**
  * Options to open a port
  */
-export interface OpenOptions<T extends BindingInterface> extends BindingOpenOptions {
+export interface StreamOptions<T extends BindingInterface> {
   /**
-   * The hardware access binding. `Bindings` are how Node-Serialport talks to the underlying system. By default we auto detect Windows (`WindowsBinding`), Linux (`LinuxBinding`) and OS X (`DarwinBinding`) and load the appropriate module for your system.
+   * The hardware access binding. `Bindings` are how Node-Serialport talks to the underlying system. If you're using the `serialport` package, this defaults to `'@serialport/bindings-cpp'` which auto detects Windows (`WindowsBinding`), Linux (`LinuxBinding`) and OS X (`DarwinBinding`) and load the appropriate module for your system.
    */
   binding: T
 
@@ -56,31 +67,16 @@ export interface OpenOptions<T extends BindingInterface> extends BindingOpenOpti
   endOnClose?: boolean
 }
 
-export class DisconnectedError extends Error {
-  disconnected: true
-  constructor(message: string) {
-    super(message)
-    this.disconnected = true
-  }
-}
-
 export class SerialPortStream<T extends BindingInterface = BindingInterface> extends Duplex {
   port?: PortInterfaceFromBinding<T>
   private _pool: PoolBuffer
   private _kMinPoolSpace: number
   opening: boolean
   closing: boolean
-  readonly settings: InternalSettings<T>
+  readonly settings: InternalSettings<T> & OpenOptionsFromBinding<T>
 
   /**
    * Create a new serial port object for the `path`. In the case of invalid arguments or invalid options, when constructing a new SerialPort it will throw an error. The port will open automatically by default, which is the equivalent of calling `port.open(openCallback)` in the next tick. You can disable this by setting the option `autoOpen` to `false`.
-   * @param {OpenOptions=} options - Port configuration options
-   * @param {ErrorCallback=} openCallback - If `autoOpen` is true (the default) it will be provided to `port.open()` and run after the port is opened. The callback will be ignored if `autoOpen` is set to `false`.
-   * @property {number} baudRate The port's baudRate. Use `.update` to change it. Read-only.
-   * @property {string} path The system path or name of the serial port. Read-only.
-   * @property {boolean} isOpen `true` if the port is open, `false` otherwise. Read-only.
-   * @property {InternalSettings} settings The current settings of the port
-   * @throws {TypeError} When given invalid arguments, a `TypeError` will be thrown.
    * @emits open
    * @emits data
    * @emits close
