@@ -14,29 +14,18 @@ export interface PacketLengthOptions extends TransformOptions {
 }
 
 /**
-* A transform stream that decodes packets with a delimiter and length of payload
-* specified within the data stream.
-* @extends Transform
-* @summary Decodes packets of the general form:
-*       [delimiter][len][payload0] ... [payload0 + len]
-*
-* The length field can be up to 4 bytes and can be at any offset within the packet
-*       [delimiter][header0][header1][len0][len1[payload0] ... [payload0 + len]
-*
-* The offset and number of bytes of the length field need to be provided in options
-* if not 1 byte immediately following the delimiter.
-* @example
-// Parse length encoded packets received on the serial port
-const SerialPort = require('serialport')
-const PacketLengthParser = require('@serialport/packet-length-parser')
-const port = new SerialPort('/dev/tty-usbserial1')
-const parser = port.pipe(new PacketLengthParser({
-  delimiter: 0xbc,
-  packetOverhead: 5,
-  lengthBytes: 2,
-  lengthOffset: 2,
-}))
-*/
+ * A transform stream that decodes packets with a delimiter and length of payload
+ * specified within the data stream.
+ * @extends Transform
+ * @summary Decodes packets of the general form:
+ *       [delimiter][len][payload0] ... [payload0 + len]
+ *
+ * The length field can be up to 4 bytes and can be at any offset within the packet
+ *       [delimiter][header0][header1][len0][len1[payload0] ... [payload0 + len]
+ *
+ * The offset and number of bytes of the length field need to be provided in options
+ * if not 1 byte immediately following the delimiter.
+ */
 export class PacketLengthParser extends Transform {
   buffer: Buffer
   start: boolean

@@ -9,12 +9,6 @@ export interface ByteLengthOptions extends TransformOptions {
  * Emit data every number of bytes
  *
  * A transform stream that emits data as a buffer after a specific number of bytes are received. Runs in O(n) time.
- * @example
-const SerialPort = require('serialport')
-const ByteLength = require('@serialport/parser-byte-length')
-const port = new SerialPort('/dev/tty-usbserial1')
-const parser = port.pipe(new ByteLength({length: 8}))
-parser.on('data', console.log) // will have 8 bytes per data event
  */
 export class ByteLengthParser extends Transform {
   length: number
