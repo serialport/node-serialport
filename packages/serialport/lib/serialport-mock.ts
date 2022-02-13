@@ -5,7 +5,7 @@ export type SerialPortMockOpenOptions = Omit<OpenOptions<MockBindingInterface>, 
 
 export class SerialPortMock extends SerialPortStream<MockBindingInterface> {
   static list = MockBinding.list
-  static readonly MockBinding = MockBinding
+  static readonly binding = MockBinding
 
   constructor(options: SerialPortMockOpenOptions, openCallback?: ErrorCallback) {
     const opts: OpenOptions<MockBindingInterface> = {

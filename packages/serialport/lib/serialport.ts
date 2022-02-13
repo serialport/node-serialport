@@ -1,11 +1,11 @@
-import { ErrorCallback, OpenOptions, SerialPortStream } from '@serialport/stream'
-import { autoDetect, AutoDetectTypes } from '@serialport/bindings-cpp'
+import { ErrorCallback, OpenOptions, SerialPortStream, StreamOptions } from '@serialport/stream'
+import { autoDetect, AutoDetectTypes, OpenOptionsFromBinding } from '@serialport/bindings-cpp'
 
 const DetectedBinding = autoDetect()
 
-export type SerialPortOpenOptions = Omit<OpenOptions<AutoDetectTypes>, 'binding'>
+export type SerialPortOpenOptions<T extends AutoDetectTypes> = Omit<StreamOptions<T>, 'binding'> & OpenOptionsFromBinding<T>
 
-export class SerialPort extends SerialPortStream<AutoDetectTypes> {
+export class SerialPort<T extends AutoDetectTypes = AutoDetectTypes> extends SerialPortStream<T> {
   /**
    * Retrieves a list of available serial ports with metadata. Only the `path` is guaranteed. If unavailable the other fields will be undefined. The `path` is either the path or an identifier (eg `COM1`) used to open the SerialPort.
    *
@@ -57,10 +57,11 @@ export class SerialPort extends SerialPortStream<AutoDetectTypes> {
   ```
   */
   static list = DetectedBinding.list
+  static readonly binding = DetectedBinding
 
-  constructor(options: SerialPortOpenOptions, openCallback?: ErrorCallback) {
-    const opts: OpenOptions<AutoDetectTypes> = {
-      binding: DetectedBinding,
+  constructor(options: SerialPortOpenOptions<T>, openCallback?: ErrorCallback) {
+    const opts: OpenOptions<T> = {
+      binding: DetectedBinding as T,
       ...options,
     }
     super(opts, openCallback)
