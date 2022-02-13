@@ -1,7 +1,6 @@
 /* eslint-disable node/no-missing-require */
 
 // Load Serialport with mock bindings
-// const SerialPort = require('../test'); // from inside the serialport repo
 const { SerialPortMock: SerialPort } = require('serialport') // when installed as a package
 const { MockBinding } = SerialPort
 

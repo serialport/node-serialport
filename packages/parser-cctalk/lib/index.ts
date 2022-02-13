@@ -5,12 +5,6 @@ import { Transform, TransformCallback } from 'stream'
  * @extends Transform
  *
  * A transform stream that emits CCTalk packets as they are received.
- * @example
-import { CCTalkParser } from '@serialport/parser-cctalk'
-const SerialPort = require('serialport')
-const port = new SerialPort('/dev/ttyUSB0')
-const parser = port.pipe(new CCtalk())
-parser.on('data', console.log)
  */
 export class CCTalkParser extends Transform {
   array: number[]

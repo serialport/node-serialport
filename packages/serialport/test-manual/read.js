@@ -1,7 +1,6 @@
 /* eslint-disable node/no-missing-require */
 
-const SerialPort = require('../')
-const ByteLength = SerialPort.parsers.ByteLength
+const { SerialPort, ByteLengthParser } = require('../')
 const exec = require('child_process').exec
 
 // Serial receiver device
@@ -30,7 +29,7 @@ serialPort.on('open', () => {
     }
 
     console.log(stdout)
-    const parser = serialPort.pipe(new ByteLength({ length: expected }))
+    const parser = serialPort.pipe(new ByteLengthParser({ length: expected }))
 
     // Read back the data received on the read device after a short timout to ensure transmission
     parser.on('data', data => {
