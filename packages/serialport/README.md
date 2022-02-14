@@ -1,4 +1,4 @@
-# SerialPort
+# serialport
 
 Access serial ports with JavaScript. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!
 
