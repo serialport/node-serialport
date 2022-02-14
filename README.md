@@ -13,42 +13,7 @@ Access serial ports with JavaScript. Linux, OSX and Windows. Welcome your roboti
 ## Quick Links
 
 - [**Guides**](https://serialport.io/docs/)
-- [**API Docs**](https://serialport.io/docs/api-serialport)
 - [The `serialport` package api docs](https://serialport.io/docs/api-serialport) (most people start here)
-
-### Serialport
-
-- [`serialport`](https://serialport.io/docs/api-serialport) Chances are you're looking for the `serialport` package which provides a good set of defaults for most projects. However it is quite easy to mix and match the parts of serialport you need.
-
-### Bindings
-
-The code for bindings can be found here https://github.com/serialport/bindings-cpp
-
-The Bindings provide a low level interface to work with your serialport. It is possible to use them alone but it's usually easier to use them with an interface.
-
-- [`@serialport/bindings`](https://serialport.io/docs/api-bindings) bindings for Linux, Mac and Windows
-- [`@serialport/binding-abstract`](https://serialport.io/docs/api-bindings-abstract) as an abstract class to use if you're making your own bindings
-- [`@serialport/binding-mock`](https://serialport.io/docs/api-binding-mock) for a mock binding package for testing
-
-### Interfaces
-
-Interfaces take a binding object and provide a different API on top of it. Currently we only ship a Node Stream Interface.
-
-- [`@serialport/stream`](https://serialport.io/docs/api-stream) our traditional Node.js Stream interface
-
-### Parsers
-
-Parsers are used to take raw binary data and transform them into usable messages. This may include tasks such as converting the data to text, emitting useful chunks of data when they have been fully received, or even validating protocols.
-
-Parsers are traditionally Transform streams, but Duplex streams and other non stream interfaces are acceptable.
-
-- [@serialport/parser-byte-length](https://serialport.io/docs/api-parser-byte-length)
-- [@serialport/parser-cctalk](https://serialport.io/docs/api-parser-cctalk)
-- [@serialport/parser-delimiter](https://serialport.io/docs/api-parser-delimiter)
-- [@serialport/parser-readline](https://serialport.io/docs/api-parser-readline)
-- [@serialport/parser-ready](https://serialport.io/docs/api-parser-ready)
-- [@serialport/parser-regex](https://serialport.io/docs/api-parser-regex)
-- [@serialport/parser-slip-encoder](https://serialport.io/docs/api-parser-slip-encoder)
 
 ## Developing
 
@@ -61,7 +26,7 @@ Parsers are traditionally Transform streams, but Duplex streams and other non st
 
 ### Developing Docs
 
-See <https://github.com/serialport/website>
+See https://github.com/serialport/website
 
 ## License
 
