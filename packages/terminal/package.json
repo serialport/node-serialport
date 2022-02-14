@@ -10,7 +10,7 @@
     "serialport-terminal": "./dist/index.js"
   },
   "dependencies": {
-    "@serialport/bindings-cpp": "10.6.2",
+    "@serialport/bindings-cpp": "10.6.3",
     "@serialport/stream": "10.2.2",
     "commander": "9.0.0",
     "enquirer": "2.3.6"
