@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.3.0](https://github.com/serialport/node-serialport/compare/v10.2.2...v10.3.0) (2022-02-14)
+
+
+### Bug Fixes
+
+* improve repl ([#2425](https://github.com/serialport/node-serialport/issues/2425)) ([7538995](https://github.com/serialport/node-serialport/commit/7538995c8a9e086be20b8d12b309c41ca93e4e43))
+
+
+
+
+
 ## [10.2.2](https://github.com/serialport/node-serialport/compare/v10.2.1...v10.2.2) (2022-02-05)
 
 
