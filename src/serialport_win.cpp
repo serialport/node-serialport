@@ -122,7 +122,17 @@ void OpenBaton::Execute() {
   }
 
   if (rtscts) {
-    dcb.fRtsControl = RTS_CONTROL_HANDSHAKE;
+    switch (rtsMode) {
+      case SERIALPORT_RTSMODE_ENABLE:
+        dcb.fRtsControl = RTS_CONTROL_ENABLE;
+        break;
+      case SERIALPORT_RTSMODE_HANDSHAKE:
+        dcb.fRtsControl = RTS_CONTROL_HANDSHAKE;
+        break;
+      case SERIALPORT_RTSMODE_TOGGLE:
+        dcb.fRtsControl = RTS_CONTROL_TOGGLE;
+        break;
+    }
     dcb.fOutxCtsFlow = TRUE;
   } else {
     dcb.fRtsControl = RTS_CONTROL_DISABLE;

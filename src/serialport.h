@@ -46,8 +46,15 @@ enum SerialPortStopBits {
   SERIALPORT_STOPBITS_TWO      = 3
 };
 
+enum SerialPortRtsMode {
+  SERIALPORT_RTSMODE_ENABLE     = 1,
+  SERIALPORT_RTSMODE_HANDSHAKE  = 2,
+  SERIALPORT_RTSMODE_TOGGLE     = 3
+};
+
 SerialPortParity ToParityEnum(const Napi::String& str);
 SerialPortStopBits ToStopBitEnum(double stopBits);
+SerialPortRtsMode ToRtsModeEnum(const Napi::String& str);
 
 struct OpenBaton : public Napi::AsyncWorker {
   OpenBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:OpenBaton"),
@@ -66,6 +73,7 @@ struct OpenBaton : public Napi::AsyncWorker {
   bool lock = false;
   SerialPortParity parity;
   SerialPortStopBits stopBits;
+  SerialPortRtsMode rtsMode;
 #ifndef WIN32
   uint8_t vmin = 0;
   uint8_t vtime = 0;

@@ -8,7 +8,9 @@ const debug = debugFactory('serialport/bindings-cpp')
 
 export interface WindowsOpenOptions extends OpenOptions {
   /** Device parity defaults to none */
-  parity?: 'none' | 'even' | 'odd' | 'mark' |'space'
+  parity?: 'none' | 'even' | 'odd' | 'mark' |'space',
+  /** RTS mode defaults to handshake */
+  rtsMode?: 'handshake' | 'enable' | 'toggle'
 }
 
 export type WindowsBindingInterface = BindingInterface<WindowsPortBinding, WindowsOpenOptions>
@@ -51,6 +53,7 @@ export const WindowsBinding: WindowsBindingInterface = {
       stopBits: 1,
       parity: 'none',
       rtscts: false,
+      rtsMode: 'handshake',
       xon: false,
       xoff: false,
       xany: false,

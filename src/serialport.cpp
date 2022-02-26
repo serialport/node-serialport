@@ -61,6 +61,7 @@ Napi::Value Open(const Napi::CallbackInfo& info) {
   baton->parity = ToParityEnum(getStringFromObj(options, "parity"));
   baton->stopBits = ToStopBitEnum(getDoubleFromObject(options, "stopBits"));
   baton->rtscts = getBoolFromObject(options, "rtscts");
+  baton->rtsMode = ToRtsModeEnum(getStringFromObj(options, "rtsMode"));
   baton->xon = getBoolFromObject(options, "xon");
   baton->xoff = getBoolFromObject(options, "xoff");
   baton->xany = getBoolFromObject(options, "xany");
@@ -296,6 +297,22 @@ inline SerialPortParity ToParityEnum(const Napi::String& napistr) {
     return SERIALPORT_STOPBITS_TWO;
   }
   return SERIALPORT_STOPBITS_ONE;
+}
+
+inline SerialPortRtsMode ToRtsModeEnum(const Napi::String& napistr) {
+  auto tmp = napistr.Utf8Value();
+  const char* str = tmp.c_str();
+
+  size_t count = strlen(str);
+  SerialPortRtsMode mode = SERIALPORT_RTSMODE_HANDSHAKE;
+  if (!strncasecmp(str, "enable", count)) {
+    mode = SERIALPORT_RTSMODE_ENABLE;
+  } else if (!strncasecmp(str, "handshake", count)) {
+    mode = SERIALPORT_RTSMODE_HANDSHAKE;
+  } else if (!strncasecmp(str, "toggle", count)) {
+    mode = SERIALPORT_RTSMODE_TOGGLE;
+  }
+  return mode;
 }
 
 Napi::Object init(Napi::Env env, Napi::Object exports) {
