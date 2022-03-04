@@ -1,6 +1,6 @@
 {
   "name": "@serialport/terminal",
-  "version": "10.3.0",
+  "version": "10.4.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {

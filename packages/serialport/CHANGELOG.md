@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.4.0](https://github.com/serialport/node-serialport/compare/v10.3.0...v10.4.0) (2022-03-04)
+
+
+### Features
+
+* upgrade serialport-cpp for windows rts-mode ([#2448](https://github.com/serialport/node-serialport/issues/2448)) ([9f34f85](https://github.com/serialport/node-serialport/commit/9f34f85fc8109357190ecf115ce3099dd2dd7a69))
+
+
+
+
+
 # [10.3.0](https://github.com/serialport/node-serialport/compare/v10.2.2...v10.3.0) (2022-02-14)
 
 
