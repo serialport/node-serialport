@@ -18,11 +18,11 @@ jobs:
             command: prebuildify
             args: --arch x64+arm64
           - name: win32-x86
-            os: windows-latest
+            os: windows-2019
             node: x86
             command: prebuildify
           - name: win32-x64
-            os: windows-latest
+            os: windows-2019
             node: x64
             command: prebuildify
           - name: linux-x64
@@ -54,7 +54,7 @@ jobs:
           path: prebuilds/
           if-no-files-found: error
       - if: failure()
-        run: ls -la
+        run: npx shx ls -lA
   release:
     needs: prebuild
     name: Release
