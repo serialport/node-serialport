@@ -12,12 +12,12 @@ jobs:
           - { os: ubuntu-latest, arch: x64 }
           - { os: windows-latest, arch: x64 }
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
-      with:
-        node-version: 16
-    - run: npm ci
-    - run: npm test
-    - uses: codecov/codecov-action@v2
-      with:
-        directory: ./coverage/
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+      - run: npm ci
+      - run: npm test
+      - uses: codecov/codecov-action@v2
+        with:
+          directory: ./coverage/
