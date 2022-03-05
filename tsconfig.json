@@ -8,6 +8,6 @@
     },
     "allowJs": false,
     "checkJs": false,
-    "noEmit": true,
-  },
+    "noEmit": true
+  }
 }
