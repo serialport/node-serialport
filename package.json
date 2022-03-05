@@ -9,7 +9,6 @@
   "license": "MIT",
   "scripts": {
     "build": "lerna run build",
-    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "format": "eslint packages test --fix",
     "lint": "eslint packages test",
     "outdated": "lerna exec --no-bail npm outdated && npm outdated",
@@ -17,7 +16,7 @@
     "publish": "lerna publish --exact",
     "test:arduino": "TEST_PORT=$(./bin/find-arduino.ts) npm test",
     "test:watch": "mocha -w",
-    "test": "nyc --reporter=html --reporter=text --reporter lcovonly mocha",
+    "test": "nyc --reporter lcov --reporter text mocha",
     "typecheck": "lerna exec tsc"
   },
   "repository": {
@@ -37,7 +36,6 @@
     "@typescript-eslint/parser": "^5.10.0",
     "chai": "^4.3.4",
     "chai-subset": "^1.6.0",
-    "codecov": "^3.8.3",
     "esbuild": "^0.14.13",
     "esbuild-register": "^3.3.2",
     "eslint": "^8.2.0",

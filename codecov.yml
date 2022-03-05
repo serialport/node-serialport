@@ -1,9 +1,8 @@
-comment: off
+comment: false
 parsers:
   javascript:
     enable_partials: yes
 coverage:
   status:
-    patch: off
-codecov:
-  token: 262a74e1-f31b-4cd4-a6a1-cdb25c5c2285
+    patch: false
+require_ci_to_pass: true
