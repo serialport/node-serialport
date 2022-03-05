@@ -18,6 +18,6 @@ jobs:
         node-version: 16
     - run: npm ci
     - run: npm test
-    - run: npm run coverage
-      env:
-        CI: true
+    - uses: codecov/codecov-action@v2
+      with:
+        directory: ./coverage/
