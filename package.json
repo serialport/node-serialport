@@ -39,6 +39,7 @@
     "esbuild": "^0.14.13",
     "esbuild-register": "^3.3.2",
     "eslint": "^8.2.0",
+    "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-mocha": "^9.0.0",
     "eslint-plugin-node": "^11.1.0",
