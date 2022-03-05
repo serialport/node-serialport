@@ -41,7 +41,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - if: matrix.node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 16.x
           architecture: ${{ matrix.node }}
@@ -65,7 +65,7 @@ jobs:
         with:
           name: build-artifacts
           path: prebuilds
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 16.x
       - run: npm ci
