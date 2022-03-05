@@ -1,0 +1,5 @@
+/.nyc_output
+/coverage
+/packages/**/dist
+tsconfig-build.tsbuildinfo
+tsconfig.tsbuildinfo

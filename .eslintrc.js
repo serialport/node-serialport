@@ -1,7 +1,7 @@
 module.exports = {
-  extends: ['eslint:recommended', 'plugin:node/recommended', 'plugin:mocha/recommended', 'plugin:@typescript-eslint/recommended'],
+  extends: ['eslint:recommended', 'plugin:node/recommended', 'plugin:mocha/recommended', 'plugin:@typescript-eslint/recommended', 'prettier'],
   parser: '@typescript-eslint/parser',
-  plugins: ['prettier', 'node', 'mocha', '@typescript-eslint'],
+  plugins: ['node', 'mocha', '@typescript-eslint'],
   env: {
     node: true,
     mocha: true,
@@ -38,16 +38,6 @@ module.exports = {
     'prefer-arrow-callback': 'error',
     'prefer-const': 'error',
     'prefer-template': 'error',
-    'prettier/prettier': [
-      'error',
-      {
-        singleQuote: true,
-        trailingComma: 'es5',
-        semi: false,
-        printWidth: 150,
-        arrowParens: 'avoid',
-      },
-    ],
     'mocha/no-exclusive-tests': 'error',
     'mocha/no-hooks-for-single-case': 'off',
     'mocha/no-mocha-arrows': 'off',
