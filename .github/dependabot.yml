@@ -12,3 +12,10 @@ updates:
     commit-message:
       prefix: 'chore: '
       include: 'scope'
+ - package-ecosystem: 'github-actions' 
+    directory: '/'
+    schedule:
+      interval: 'monthly'
+    commit-message:
+      prefix: 'chore: '
+      include: 'scope'
