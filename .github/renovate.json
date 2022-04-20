@@ -4,5 +4,24 @@
   ],
   "prHourlyLimit": 0,
   "prConcurrentLimit": 20,
-  "timezone": "America/New_York"
+  "timezone": "America/New_York",
+  "packageRules": [
+    {
+      "matchDepTypes": [
+        "devDependencies"
+      ],
+      "matchPackagePatterns": [
+        "eslint",
+        "@types",
+        "esbuild",
+        "sinon",
+        "chai",
+        "mocha",
+        "nyc",
+        "cc"
+      ],
+      "automerge": true,
+      "automergeType": "pr"
+    }
+  ]
 }
