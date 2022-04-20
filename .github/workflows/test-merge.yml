@@ -1,6 +1,9 @@
 name: Test Merge Commit
 on: pull_request
 
+permissions:
+  contents: read
+
 jobs:
   test-merge:
     runs-on: ${{ matrix.config.os }}
