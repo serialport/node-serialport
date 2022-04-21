@@ -1,0 +1,14 @@
+{
+  "extends": ["config:base"],
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 20,
+  "timezone": "America/New_York",
+  "packageRules": [
+    {
+      "matchDepTypes": ["devDependencies"],
+      "matchPackagePatterns": ["eslint", "@types", "esbuild", "sinon", "chai", "mocha", "nyc"],
+      "automerge": true,
+      "automergeType": "branch"
+    }
+  ]
+}
