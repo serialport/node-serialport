@@ -7,7 +7,7 @@
     "build": "tsc --build tsconfig-build.json"
   },
   "dependencies": {
-    "@serialport/bindings-interface": "1.2.1",
+    "@serialport/bindings-interface": "1.2.2",
     "debug": "^4.3.2"
   },
   "devDependencies": {
