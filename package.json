@@ -40,7 +40,7 @@
     "esbuild-register": "^3.3.2",
     "eslint": "8.13.0",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-import": "2.26.0",
     "eslint-plugin-mocha": "^9.0.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^6.0.0",
