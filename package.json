@@ -36,7 +36,7 @@
     "@typescript-eslint/parser": "5.26.0",
     "chai": "^4.3.4",
     "chai-subset": "^1.6.0",
-    "esbuild": "0.14.41",
+    "esbuild": "0.14.42",
     "esbuild-register": "^3.3.2",
     "eslint": "8.16.0",
     "eslint-config-prettier": "^8.5.0",
