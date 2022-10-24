@@ -72,6 +72,6 @@
   "funding": "https://opencollective.com/serialport/donate",
   "preferUnplugged": false,
   "devDependencies": {
-    "typescript": "^4.5.5"
+    "typescript": "4.6.2"
   }
 }

@@ -11,8 +11,8 @@
     "debug": "^4.3.2"
   },
   "devDependencies": {
-    "@serialport/binding-mock": "^10.2.2",
-    "typescript": "^4.5.5"
+    "@serialport/binding-mock": "10.2.2",
+    "typescript": "4.6.2"
   },
   "engines": {
     "node": ">=12.0.0"
