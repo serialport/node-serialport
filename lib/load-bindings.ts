@@ -2,6 +2,7 @@ import nodeGypBuild from 'node-gyp-build'
 import { promisify } from 'util'
 import { join } from 'path'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const binding = nodeGypBuild(join(__dirname, '../')) as any
 
 export const asyncClose = binding.close ? promisify(binding.close) : async () => { throw new Error('"binding.close" Method not implemented')}

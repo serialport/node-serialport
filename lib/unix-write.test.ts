@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { assert, shouldReject } from '../test/assert'
 import { unixWrite } from './unix-write'
 import { randomBytes } from 'crypto'

@@ -1,32 +1,37 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Poller } from './poller'
 import { assert } from '../test/assert'
 
 class MockPollerBindings {
   fd: number
   callback: any
-  lastPollFlag: string
+  lastPollFlag: number
   constructor(fd: number, callback: any) {
     this.fd = fd
     this.callback = callback
   }
-  poll(flag: string) {
+  poll(flag: number) {
     this.lastPollFlag = flag
     setImmediate(() => this.callback(null, flag))
   }
+  stop() {}
+  destroy() {}
 }
 
 class ErrorPollerBindings {
   fd: number
   callback: any
-  lastPollFlag: string
+  lastPollFlag: number
   constructor(fd: number, callback: any) {
     this.fd = fd
     this.callback = callback
   }
-  poll(flag: string) {
+  poll(flag: number) {
     this.lastPollFlag = flag
     setImmediate(() => this.callback(new Error('oh no!'), flag))
   }
+  stop() {}
+  destroy() {}
 }
 
 describe('Poller', () => {
@@ -37,7 +42,7 @@ describe('Poller', () => {
     const poller = new Poller(1, MockPollerBindings)
     poller.once('readable', err => {
       assert.equal(err, null)
-      assert.equal(poller.poller.lastPollFlag, 1)
+      assert.equal((poller.poller as MockPollerBindings).lastPollFlag, 1)
       done(err)
     })
   })
@@ -45,7 +50,7 @@ describe('Poller', () => {
     const poller = new Poller(1, MockPollerBindings)
     poller.once('writable', err => {
       assert.equal(err, null)
-      assert.equal(poller.poller.lastPollFlag, 2)
+      assert.equal((poller.poller as MockPollerBindings).lastPollFlag, 2)
       done(err)
     })
   })
@@ -53,7 +58,7 @@ describe('Poller', () => {
     const poller = new Poller(1, MockPollerBindings)
     poller.once('disconnect', err => {
       assert.equal(err, null)
-      assert.equal(poller.poller.lastPollFlag, 4)
+      assert.equal((poller.poller as MockPollerBindings).lastPollFlag, 4)
       done(err)
     })
   })

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import testConfig from './config.json'
 
 export const makeTestFeature = (envName: string, testPort?: string) => {

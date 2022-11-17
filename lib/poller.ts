@@ -4,8 +4,18 @@ import { join } from 'path'
 import nodeGypBuild from 'node-gyp-build'
 import { BindingsError } from './errors'
 
-const { Poller: PollerBindings } = nodeGypBuild(join(__dirname, '../')) as any
+const { Poller: PollerBindings } = nodeGypBuild(join(__dirname, '../')) as { Poller: PollerClass }
 const logger = debug('serialport/bindings-cpp/poller')
+
+interface PollerClass {
+  new(fd: number, cb: (err: Error, flag: number)=> void): PollerInstance
+}
+
+interface PollerInstance {
+  poll(flag: number): void
+  stop(): void
+  destroy(): void
+}
 
 export const EVENTS = {
   UV_READABLE: 0b0001,
@@ -39,8 +49,8 @@ function handleEvent(error: Error, eventFlag: number) {
  * Polls unix systems for readable or writable states of a file or serialport
  */
 export class Poller extends EventEmitter {
-  poller: any
-  constructor(fd: number, FDPoller = PollerBindings) {
+  poller: PollerInstance
+  constructor(fd: number, FDPoller: PollerClass = PollerBindings) {
     logger('Creating poller')
     super()
     this.poller = new FDPoller(fd, handleEvent.bind(this))

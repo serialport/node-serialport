@@ -2,7 +2,7 @@ import { assert, use } from 'chai'
 import chaiSubset from 'chai-subset'
 use(chaiSubset)
 
-export const shouldReject = async (promise: Promise<any>, errType = Error, message = 'Should have rejected') => {
+export const shouldReject = async (promise: Promise<unknown>, errType = Error, message = 'Should have rejected') => {
   try {
     await promise
   } catch (err) {
