@@ -10,7 +10,7 @@
     "build": "tsc --build tsconfig-build.json"
   },
   "dependencies": {
-    "@serialport/bindings-cpp": "10.7.0",
+    "@serialport/bindings-cpp": "10.8.0",
     "commander": "^9.0.0"
   },
   "engines": {
