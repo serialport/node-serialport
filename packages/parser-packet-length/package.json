@@ -5,7 +5,7 @@
   "scripts": {
     "build": "tsc --build tsconfig-build.json"
   },
-  "version": "10.3.0",
+  "version": "10.5.0",
   "engines": {
     "node": ">=8.6.0"
   },

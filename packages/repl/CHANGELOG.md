@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [10.5.0](https://github.com/serialport/node-serialport/compare/v10.4.0...v10.5.0) (2022-11-17)
+
+
+### Bug Fixes
+
+* **deps:** update dependency commander to v9.2.0 ([#2486](https://github.com/serialport/node-serialport/issues/2486)) ([4a14c4d](https://github.com/serialport/node-serialport/commit/4a14c4d817403c603c86be3a76c22634660a1a35))
+
+
+
+
+
 # [10.4.0](https://github.com/serialport/node-serialport/compare/v10.3.0...v10.4.0) (2022-03-04)
 
 **Note:** Version bump only for package @serialport/repl
