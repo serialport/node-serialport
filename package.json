@@ -46,7 +46,7 @@
     "nyc": "15.1.0",
     "prebuildify": "5.0.0",
     "prebuildify-cross": "5.0.0",
-    "semantic-release": "19.0.2",
+    "semantic-release": "19.0.5",
     "shx": "0.3.4",
     "sinon": "14.0.2",
     "typescript": "4.6.3"
