@@ -44,7 +44,7 @@
     "node-abi": "3.28.0",
     "node-gyp": "9.0.0",
     "nyc": "15.1.0",
-    "prebuildify": "5.0.0",
+    "prebuildify": "5.0.1",
     "prebuildify-cross": "5.0.0",
     "semantic-release": "19.0.5",
     "shx": "0.3.4",
