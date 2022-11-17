@@ -47,23 +47,24 @@ Napi::Value Read(const Napi::CallbackInfo& info);
 
 Napi::Value List(const Napi::CallbackInfo& info);
 void setIfNotEmpty(Napi::Object item, std::string key, const char *value);
+void setIfNotEmpty(Napi::Object item, std::string key, const wchar_t *value);
 
 struct ListResultItem {
-  std::string path;
-  std::string manufacturer;
-  std::string serialNumber;
-  std::string pnpId;
-  std::string locationId;
-  std::string friendlyName;
-  std::string vendorId;
-  std::string productId;
+  std::wstring path;
+  std::wstring manufacturer;
+  std::wstring serialNumber;
+  std::wstring pnpId;
+  std::wstring locationId;
+  std::wstring friendlyName;
+  std::wstring vendorId;
+  std::wstring productId;
 };
 
 struct ListBaton : public Napi::AsyncWorker {
   ListBaton(Napi::Function& callback) : Napi::AsyncWorker(callback, "node-serialport:ListBaton"), 
   errorString() {}
   std::list<ListResultItem*> results;
-  char errorString[ERROR_STRING_SIZE];
+  wchar_t errorString[ERROR_STRING_SIZE];
   void Execute() override;
 
   void OnOK() override {
