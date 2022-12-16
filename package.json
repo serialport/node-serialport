@@ -38,7 +38,7 @@
     "chai": "4.3.7",
     "chai-subset": "1.6.0",
     "esbuild": "0.16.7",
-    "esbuild-register": "3.4.1",
+    "esbuild-register": "3.4.2",
     "eslint": "8.29.0",
     "mocha": "10.2.0",
     "node-abi": "3.28.0",
