@@ -3,6 +3,9 @@ parsers:
   javascript:
     enable_partials: yes
 coverage:
+  project:
+    default:
+      threshold: 2%
   status:
     patch: false
 require_ci_to_pass: true
