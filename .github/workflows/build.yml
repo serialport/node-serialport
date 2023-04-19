@@ -43,7 +43,7 @@ jobs:
       - if: matrix.node
         uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 18.x
           architecture: ${{ matrix.node }}
       - uses: actions/checkout@v3
       - run: npm ci
@@ -67,7 +67,7 @@ jobs:
           path: prebuilds
       - uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 18.x
       - run: npm ci
       - run: npm run build
       - run: npm run semantic-release
