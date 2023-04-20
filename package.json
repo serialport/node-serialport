@@ -21,8 +21,8 @@
     "@serialport/bindings-interface": "1.2.2",
     "@serialport/parser-readline": "^10.2.1",
     "debug": "^4.3.2",
-    "node-addon-api": "^5.0.0",
-    "node-gyp-build": "^4.3.0"
+    "node-addon-api": "6.0.0",
+    "node-gyp-build": "4.6.0"
   },
   "devDependencies": {
     "@semantic-release/exec": "6.0.3",
@@ -42,7 +42,7 @@
     "eslint": "8.38.0",
     "mocha": "10.2.0",
     "node-abi": "3.40.0",
-    "node-gyp": "9.3.0",
+    "node-gyp": "9.3.1",
     "nyc": "15.1.0",
     "prebuildify": "5.0.1",
     "prebuildify-cross": "5.0.0",

@@ -32,7 +32,7 @@ jobs:
           - name: linux-arm
             os: ubuntu-latest
             command: prebuildify-cross
-            args: -i linux-arm64 -i linux-armv7 -i linux-armv6
+            args: -i linux-arm64-lts -i linux-armv7 -i linux-armv6
           - name: android-arm
             os: ubuntu-latest
             command: prebuildify-cross
