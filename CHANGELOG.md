@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [11.0.0](https://github.com/serialport/node-serialport/compare/v10.4.0...v11.0.0) (2023-04-29)
+
+### Bug Fixes
+
+- **deps:** update dependency commander to v9.2.0 ([#2486](https://github.com/serialport/node-serialport/issues/2486)) ([4a14c4d](https://github.com/serialport/node-serialport/commit/4a14c4d817403c603c86be3a76c22634660a1a35))
+
+### chore
+
+- upgrade packages and minimum node ([#2630](https://github.com/serialport/node-serialport/issues/2630)) ([daffa1a](https://github.com/serialport/node-serialport/commit/daffa1ae78895b3ed51db708219b312845bcd82b))
+
+### Features
+
+- upgrade serialport/bindings-cpp ([#2557](https://github.com/serialport/node-serialport/issues/2557)) ([cbb344d](https://github.com/serialport/node-serialport/commit/cbb344d1f75b52ee83fca7c7598f952f8db9c956))
+
+### BREAKING CHANGES
+
+- drop node 12
+
 # [10.5.0](https://github.com/serialport/node-serialport/compare/v10.4.0...v10.5.0) (2022-11-17)
 
 ### Bug Fixes
