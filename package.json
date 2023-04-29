@@ -24,7 +24,7 @@
     "url": "git://github.com/serialport/node-serialport.git"
   },
   "devDependencies": {
-    "@serialport/bindings-cpp": "10.8.0",
+    "@serialport/bindings-cpp": "11.0.1",
     "@tsconfig/node14": "1.0.3",
     "@types/chai": "4.3.4",
     "@types/chai-subset": "1.3.3",
