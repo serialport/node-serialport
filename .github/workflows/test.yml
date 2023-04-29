@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 # v3
       - uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # v3
         with:
-          node-version: 16
+          node-version: 18
       - run: npm ci
       - run: npm run lint
       - run: npm run typecheck
@@ -20,7 +20,7 @@ jobs:
     runs-on: ${{ matrix.config.os }}
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        node-version: [14.x, 16.x, 18.x, 20.x]
         config:
           # arch isn't used and we have no way to use it currently
           - { os: macos-latest, arch: x64 }

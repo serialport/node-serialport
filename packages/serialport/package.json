@@ -63,7 +63,7 @@
     "@serialport/parser-slip-encoder": "10.5.0",
     "@serialport/parser-spacepacket": "10.5.0",
     "@serialport/stream": "10.5.0",
-    "debug": "^4.3.3"
+    "debug": "4.3.4"
   },
   "engines": {
     "node": ">=12.0.0"
@@ -72,6 +72,6 @@
   "funding": "https://opencollective.com/serialport/donate",
   "preferUnplugged": false,
   "devDependencies": {
-    "typescript": "^4.5.5"
+    "typescript": "5.0.4"
   }
 }
