@@ -48,7 +48,7 @@
     "prebuildify-cross": "5.0.0",
     "semantic-release": "19.0.5",
     "shx": "0.3.4",
-    "sinon": "15.1.2",
+    "sinon": "15.2.0",
     "typescript": "5.0.4"
   },
   "engines": {
