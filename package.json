@@ -22,7 +22,9 @@
     "type": "git",
     "url": "git://github.com/serialport/node-serialport.git"
   },
-  "workspaces": ["./packages/*"],
+  "workspaces": [
+    "./packages/*"
+  ],
   "devDependencies": {
     "@serialport/bindings-cpp": "11.0.1",
     "@tsconfig/node14": "1.0.3",
