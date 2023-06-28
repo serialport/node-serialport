@@ -28,6 +28,6 @@
   },
   "funding": "https://opencollective.com/serialport/donate",
   "devDependencies": {
-    "typescript": "5.0.4"
+    "typescript": "5.1.5"
   }
 }
