@@ -15,6 +15,15 @@ function propName(name: string) {
     ID_VENDOR_ID: 'vendorId',
     ID_MODEL_ID: 'productId',
     DEVLINKS: 'pnpId',
+    /**
+    * Workaround for systemd defect
+    * see https://github.com/serialport/bindings-cpp/issues/115
+    */
+    ID_USB_VENDOR_ENC: 'manufacturer',
+    ID_USB_SERIAL_SHORT: 'serialNumber',
+    ID_USB_VENDOR_ID: 'vendorId',
+    ID_USB_MODEL_ID: 'productId',
+    // End of workaround
   }[name.toUpperCase()]
 }
 
