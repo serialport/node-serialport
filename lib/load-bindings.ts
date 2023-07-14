@@ -15,4 +15,4 @@ export const asyncOpen = binding.open ? promisify(binding.open) : async () => { 
 export const asyncSet = binding.set ? promisify(binding.set) : async () => { throw new Error('"binding.set" Method not implemented')}
 export const asyncUpdate = binding.update ? promisify(binding.update) : async () => { throw new Error('"binding.update" Method not implemented')}
 export const asyncRead = binding.read ? promisify(binding.read) : async () => { throw new Error('"binding.read" Method not implemented')}
-export const asyncWrite = binding.read ? promisify(binding.write) : async () => { throw new Error('"binding.write" Method not implemented')}
+export const asyncWrite = binding.write ? promisify(binding.write) : async () => { throw new Error('"binding.write" Method not implemented')}
