@@ -42,7 +42,7 @@
     "eslint": "8.45.0",
     "mocha": "10.2.0",
     "node-abi": "3.45.0",
-    "node-gyp": "9.3.1",
+    "node-gyp": "9.4.0",
     "nyc": "15.1.0",
     "prebuildify": "5.0.1",
     "prebuildify-cross": "5.0.0",
