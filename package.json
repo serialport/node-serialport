@@ -21,7 +21,7 @@
     "@serialport/bindings-interface": "1.2.2",
     "@serialport/parser-readline": "11.0.0",
     "debug": "4.3.4",
-    "node-addon-api": "6.1.0",
+    "node-addon-api": "7.0.0",
     "node-gyp-build": "4.6.0"
   },
   "devDependencies": {
