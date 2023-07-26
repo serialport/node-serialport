@@ -48,7 +48,7 @@
     "lerna-changelog": "2.2.0",
     "mocha": "10.2.0",
     "nyc": "^15.1.0",
-    "prettier": "3.0.0",
+    "prettier": "^2.8.8",
     "sinon": "15.2.0",
     "typescript": "5.1.6"
   },
