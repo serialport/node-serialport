@@ -19,7 +19,7 @@ async function findArduino() {
     }
   }
   throw new Error(
-    'No arduinos found. You must specify a port to load.\n\nFor example:\n\tserialport-repl COM3\n\tserialport-repl /dev/tty.my-serialport',
+    'No arduinos found. You must specify a port to load.\n\nFor example:\n\tserialport-repl COM3\n\tserialport-repl /dev/tty.my-serialport'
   )
 }
 

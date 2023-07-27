@@ -22,7 +22,7 @@ function testSerialPortClass(
   SerialPort: typeof SerialPortAutoDetect | typeof SerialPortMock,
   platform: string,
   path: string | undefined,
-  baudRate: number,
+  baudRate: number
 ) {
   describe(`${platform} SerialPort Integration Tests`, () => {
     if (!path) {
@@ -234,7 +234,7 @@ function testSerialPortClass(
               }
               port.close(done)
             })
-          }),
+          })
         )
       })
       it('deals with flushing during a read', done => {

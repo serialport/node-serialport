@@ -175,7 +175,7 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
         this.opening = false
         debug('Binding #open had an error', err)
         this._error(err, openCallback)
-      },
+      }
     )
   }
 
@@ -204,7 +204,7 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
       err => {
         debug('binding.update', 'error', err)
         return this._error(err, callback)
-      },
+      }
     )
   }
 
@@ -235,7 +235,7 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
   write(
     data: string | Buffer | number[],
     encoding?: BufferEncoding | ((error: Error | null | undefined) => void),
-    callback?: (error: Error | null | undefined) => void,
+    callback?: (error: Error | null | undefined) => void
   ) {
     if (Array.isArray(data)) {
       data = Buffer.from(data)
@@ -265,7 +265,7 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
           this._disconnected(err)
         }
         callback(err)
-      },
+      }
     )
   }
 
@@ -317,7 +317,7 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
           this._disconnected(err)
         }
         this._read(bytesToRead) // prime to read more once we're reconnected
-      },
+      }
     )
   }
 
@@ -361,7 +361,7 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
         this.closing = false
         debug('binding.close', 'had an error', err)
         return this._error(err, callback)
-      },
+      }
     )
   }
 
@@ -388,7 +388,7 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
       err => {
         debug('binding.set', 'had an error', err)
         return this._error(err, callback)
-      },
+      }
     )
   }
 
@@ -411,7 +411,7 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
       err => {
         debug('binding.get', 'had an error', err)
         return this._error(err, callback)
-      },
+      }
     )
   }
 
@@ -435,7 +435,7 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
       err => {
         debug('binding.flush', 'had an error', err)
         return this._error(err, callback)
-      },
+      }
     )
   }
 
@@ -470,7 +470,7 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
       err => {
         debug('binding.drain', 'had an error', err)
         return this._error(err, callback)
-      },
+      }
     )
   }
 }
