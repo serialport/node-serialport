@@ -1,6 +1,6 @@
 {
   "name": "@serialport/parser-inter-byte-timeout",
-  "version": "11.0.0",
+  "version": "11.0.1",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "engines": {

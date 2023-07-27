@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.0.1](https://github.com/serialport/node-serialport/compare/v11.0.0...v11.0.1) (2023-07-27)
+
+### Bug Fixes
+
+- **deps:** update dependency @serialport/bindings-cpp to v11.0.3 ([#2658](https://github.com/serialport/node-serialport/issues/2658)) ([8100318](https://github.com/serialport/node-serialport/commit/8100318d68d374f12ccc8d1a4127533a800d6aaa))
+- **deps:** update dependency @serialport/bindings-cpp to v11.0.3 ([#2662](https://github.com/serialport/node-serialport/issues/2662)) ([091528b](https://github.com/serialport/node-serialport/commit/091528baf7a4beb751c5407db23c8378df05dcf4))
+- **deps:** update dependency @serialport/bindings-cpp to v12 ([#2660](https://github.com/serialport/node-serialport/issues/2660)) ([bfd9bad](https://github.com/serialport/node-serialport/commit/bfd9bad2c30bc0147893544f8d652fb7ac2640cf))
+
+### Reverts
+
+- Revert "chore(deps): update dependency lerna to v6.6.2" (#2666) ([b4f6ca8](https://github.com/serialport/node-serialport/commit/b4f6ca882865868d803f0d5f358f09e7c264f683)), closes [#2666](https://github.com/serialport/node-serialport/issues/2666)
+- Revert "fix(deps): update dependency @serialport/bindings-cpp to v12" (#2664) ([bbbf516](https://github.com/serialport/node-serialport/commit/bbbf5163cf82ed881efd12ed516c6e55f1304765)), closes [#2664](https://github.com/serialport/node-serialport/issues/2664)
+
 # [11.0.0](https://github.com/serialport/node-serialport/compare/v10.4.0...v11.0.0) (2023-04-29)
 
 ### Bug Fixes

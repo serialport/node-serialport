@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [11.0.1](https://github.com/serialport/node-serialport/compare/v11.0.0...v11.0.1) (2023-07-27)
+
+**Note:** Version bump only for package @serialport/parser-slip-encoder
+
 # [11.0.0](https://github.com/serialport/node-serialport/compare/v10.4.0...v11.0.0) (2023-04-29)
 
 ### Bug Fixes
