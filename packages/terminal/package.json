@@ -13,7 +13,7 @@
     "@serialport/bindings-cpp": "11.0.3",
     "@serialport/stream": "11.0.1",
     "commander": "10.0.1",
-    "enquirer": "2.3.6"
+    "enquirer": "2.4.1"
   },
   "engines": {
     "node": ">=12.0.0"
