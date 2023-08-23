@@ -12,7 +12,6 @@
     "format": "npx prettier --write . && eslint packages test --fix",
     "lint": "eslint packages test && npx prettier --check .",
     "outdated": "lerna exec --no-bail npm outdated && npm outdated",
-    "postinstall": "lerna bootstrap --no-ci",
     "publish": "lerna publish --exact",
     "test:arduino": "TEST_PORT=$(./bin/find-arduino.ts) npm test",
     "test:watch": "mocha -w",
@@ -23,6 +22,9 @@
     "type": "git",
     "url": "git://github.com/serialport/node-serialport.git"
   },
+  "workspaces": [
+    "./packages/*"
+  ],
   "devDependencies": {
     "@serialport/bindings-cpp": "11.0.3",
     "@tsconfig/node14": "14.1.0",
@@ -44,7 +46,7 @@
     "eslint-plugin-mocha": "10.1.0",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "6.1.1",
-    "lerna": "6.6.1",
+    "lerna": "7.1.5",
     "lerna-changelog": "2.2.0",
     "mocha": "10.2.0",
     "nyc": "^15.1.0",
