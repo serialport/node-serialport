@@ -1,4 +1,4 @@
-/* eslint-disable node/no-missing-require */
+/* eslint-disable node/no-extraneous-require */
 
 // Open event example
 const { SerialPort } = require('serialport')
