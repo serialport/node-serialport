@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.0.0](https://github.com/serialport/node-serialport/compare/v11.0.1...v12.0.0) (2023-08-29)
+
+### Bug Fixes
+
+- **deps:** update dependency @serialport/bindings-cpp to v12 ([#2691](https://github.com/serialport/node-serialport/issues/2691)) ([8034a8f](https://github.com/serialport/node-serialport/commit/8034a8ff59d3b02ec9fc8f880a003f85a64ddff5))
+
 ## [11.0.1](https://github.com/serialport/node-serialport/compare/v11.0.0...v11.0.1) (2023-07-27)
 
 ### Bug Fixes

@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [12.0.0](https://github.com/serialport/node-serialport/compare/v11.0.1...v12.0.0) (2023-08-29)
+
+**Note:** Version bump only for package @serialport/parser-delimiter
+
 ## [11.0.1](https://github.com/serialport/node-serialport/compare/v11.0.0...v11.0.1) (2023-07-27)
 
 **Note:** Version bump only for package @serialport/parser-delimiter

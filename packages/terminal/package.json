@@ -1,6 +1,6 @@
 {
   "name": "@serialport/terminal",
-  "version": "11.0.1",
+  "version": "12.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@serialport/bindings-cpp": "12.0.1",
-    "@serialport/stream": "11.0.1",
+    "@serialport/stream": "12.0.0",
     "commander": "11.0.0",
     "enquirer": "2.4.1"
   },
