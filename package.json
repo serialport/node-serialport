@@ -39,7 +39,7 @@
     "chai": "4.3.8",
     "chai-subset": "1.6.0",
     "esbuild": "0.19.3",
-    "esbuild-register": "3.4.2",
+    "esbuild-register": "3.5.0",
     "eslint": "8.49.0",
     "eslint-config-prettier": "9.0.0",
     "eslint-plugin-import": "2.28.1",
