@@ -62,7 +62,7 @@ export class StartEndParser extends Transform {
       if (startIndex >= 0 && endIndex >= 0) {
         const block = data.slice(
           startIndex + (this.includeStartDelimiter ? 0 : this.startDelimiter.length),
-          endIndex + (this.includeEndDelimiter ? this.endDelimiter.length : 0)
+          endIndex + (this.includeEndDelimiter ? this.endDelimiter.length : 0),
         )
 
         this.push(block)
