@@ -17,7 +17,7 @@ describe('StartEndParser', () => {
     parser.write(Buffer.from(`${STX}I love robots${ETX}${STX}Each `))
     parser.write(Buffer.from(`and Every One${ETX}`))
     parser.write(Buffer.from(STX))
-    parser.write(Buffer.from(`even you!`))
+    parser.write(Buffer.from('even you!'))
 
     assert.deepEqual(spy.getCall(0).args[0], Buffer.from('I love robots'))
     assert.deepEqual(spy.getCall(1).args[0], Buffer.from('Each and Every One'))
@@ -35,7 +35,7 @@ describe('StartEndParser', () => {
     parser.write(Buffer.from(`${STX}I love robots${ETX}${STX}Each `))
     parser.write(Buffer.from(`and Every One${ETX}`))
     parser.write(Buffer.from(STX))
-    parser.write(Buffer.from(`even you!`))
+    parser.write(Buffer.from('even you!'))
 
     assert.deepEqual(spy.getCall(0).args[0], Buffer.from(`${STX}I love robots`))
     assert.deepEqual(spy.getCall(1).args[0], Buffer.from(`${STX}Each and Every One`))
@@ -53,7 +53,7 @@ describe('StartEndParser', () => {
     parser.write(Buffer.from(`${STX}I love robots${ETX}${STX}Each `))
     parser.write(Buffer.from(`and Every One${ETX}`))
     parser.write(Buffer.from(STX))
-    parser.write(Buffer.from(`even you!`))
+    parser.write(Buffer.from('even you!'))
 
     assert.deepEqual(spy.getCall(0).args[0], Buffer.from(`I love robots${ETX}`))
     assert.deepEqual(spy.getCall(1).args[0], Buffer.from(`Each and Every One${ETX}`))
@@ -72,7 +72,7 @@ describe('StartEndParser', () => {
     parser.write(Buffer.from(`${STX}I love robots${ETX}${STX}Each `))
     parser.write(Buffer.from(`and Every One${ETX}`))
     parser.write(Buffer.from(STX))
-    parser.write(Buffer.from(`even you!`))
+    parser.write(Buffer.from('even you!'))
 
     assert.deepEqual(spy.getCall(0).args[0], Buffer.from(`${STX}I love robots${ETX}`))
     assert.deepEqual(spy.getCall(1).args[0], Buffer.from(`${STX}Each and Every One${ETX}`))
@@ -108,7 +108,7 @@ describe('StartEndParser', () => {
     })
   })
 
-  it(`throws when called with a 0 length startDelimiter`, () => {
+  it('throws when called with a 0 length startDelimiter', () => {
     assert.throws(() => {
       new StartEndParser({
         startDelimiter: Buffer.alloc(0),
@@ -128,7 +128,7 @@ describe('StartEndParser', () => {
     })
   })
 
-  it(`throws when called with a 0 length endDelimiter`, () => {
+  it('throws when called with a 0 length endDelimiter', () => {
     assert.throws(() => {
       new StartEndParser({
         endDelimiter: Buffer.alloc(0),
@@ -148,15 +148,15 @@ describe('StartEndParser', () => {
     })
   })
 
-  it(`allows setting of the startDelimiter and endDelimiter with strings`, () => {
+  it('allows setting of the startDelimiter and endDelimiter with strings', () => {
     new StartEndParser({ startDelimiter: 'string', endDelimiter: 'string' })
   })
 
-  it(`allows setting of the startDelimiter and endDelimiter with buffers`, () => {
+  it('allows setting of the startDelimiter and endDelimiter with buffers', () => {
     new StartEndParser({ startDelimiter: Buffer.from([1]), endDelimiter: Buffer.from([1]) })
   })
 
-  it(`allows setting of the startDelimiter and endDelimiter with arrays of bytes`, () => {
+  it('allows setting of the startDelimiter and endDelimiter with arrays of bytes', () => {
     new StartEndParser({ startDelimiter: [1], endDelimiter: [1] })
   })
 
