@@ -37,7 +37,7 @@
     "cc": "3.0.1",
     "chai": "4.3.9",
     "chai-subset": "1.6.0",
-    "esbuild": "0.19.3",
+    "esbuild": "0.19.4",
     "esbuild-register": "3.5.0",
     "eslint": "8.50.0",
     "mocha": "10.2.0",
