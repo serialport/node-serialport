@@ -27,7 +27,7 @@
   "devDependencies": {
     "@semantic-release/exec": "6.0.3",
     "@serialport/binding-mock": "10.2.2",
-    "@types/chai": "4.3.8",
+    "@types/chai": "4.3.9",
     "@types/chai-subset": "1.3.3",
     "@types/debug": "4.1.9",
     "@types/mocha": "10.0.2",
