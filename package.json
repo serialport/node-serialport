@@ -33,7 +33,7 @@
     "@types/debug": "4.1.12",
     "@types/mocha": "10.0.6",
     "@types/node": "18.17.17",
-    "@types/sinon": "17.0.2",
+    "@types/sinon": "17.0.3",
     "@typescript-eslint/eslint-plugin": "6.18.1",
     "@typescript-eslint/parser": "6.18.1",
     "chai": "5.0.0",
