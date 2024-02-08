@@ -48,7 +48,7 @@
     "eslint-plugin-promise": "6.1.1",
     "lerna": "7.2.0",
     "lerna-changelog": "2.2.0",
-    "mocha": "10.2.0",
+    "mocha": "10.3.0",
     "nyc": "15.1.0",
     "prettier": "3.0.3",
     "sinon": "17.0.1",
