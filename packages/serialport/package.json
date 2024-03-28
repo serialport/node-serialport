@@ -1,6 +1,6 @@
 {
   "name": "serialport",
-  "version": "12.0.0",
+  "version": "12.0.1",
   "description": "Node.js package to access serial ports. Linux, OSX and Windows. Welcome your robotic JavaScript overlords. Better yet, program them!",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -56,7 +56,7 @@
     "@serialport/parser-cctalk": "12.0.0",
     "@serialport/parser-delimiter": "12.0.0",
     "@serialport/parser-inter-byte-timeout": "12.0.0",
-    "@serialport/parser-packet-length": "12.0.0",
+    "@serialport/parser-packet-length": "12.0.1",
     "@serialport/parser-readline": "12.0.0",
     "@serialport/parser-ready": "12.0.0",
     "@serialport/parser-regex": "12.0.0",
