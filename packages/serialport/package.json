@@ -63,7 +63,7 @@
     "@serialport/parser-slip-encoder": "12.0.0",
     "@serialport/parser-spacepacket": "12.0.0",
     "@serialport/stream": "12.0.0",
-    "debug": "4.3.4"
+    "debug": "4.3.5"
   },
   "engines": {
     "node": ">=16.0.0"
