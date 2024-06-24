@@ -51,7 +51,7 @@ It's very important that your pull requests include all of the above in order fo
 
 ## Writing Tests
 
-Tests are written using [mocha](https://mochajs.org/), [chai](http://chaijs.com/) and [sinon](http://sinonjs.org/). If you are having issues making a test pass, ask for help in the SerialPort [gitter](https://gitter.im/serialport/node-serialport) room or on your PR. Tests can be the hardest part to write when contributing code, so don't be discouraged.
+Tests are written using [mocha](https://mochajs.org/), [chai](http://chaijs.com/) and [sinon](http://sinonjs.org/). If you are having issues making a test pass, ask for help in the SerialPort [gitter](https://gitter.im/EmergingTechnologyAdvisors/node-serialport) room or on your PR. Tests can be the hardest part to write when contributing code, so don't be discouraged.
 
 <a name="writing-docs"></a>
 
