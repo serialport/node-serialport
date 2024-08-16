@@ -1,5 +1,3 @@
-/* eslint-disable node/no-extraneous-require */
-
 // When disabling open immediately.
 const { SerialPort } = require('serialport')
 const port = new SerialPort({ path: '/dev/tty-usbserial1', autoOpen: false })

@@ -1,5 +1,3 @@
-/* eslint-disable no-new */
-
 import sinon from 'sinon'
 import { ReadlineParser } from './'
 import { assert } from '../../../test/assert'
