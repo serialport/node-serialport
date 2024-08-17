@@ -1,5 +1,3 @@
-/* eslint-disable node/no-missing-require */
-
 const { SerialPort } = require('../')
 const port = process.env.TEST_PORT
 // number of bytes to send

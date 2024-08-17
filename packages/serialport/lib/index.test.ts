@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { randomBytes } from 'crypto'
 import { SerialPort as SerialPortAutoDetect, SerialPortMock } from './'
 import { assert } from '../../../test/assert'
@@ -237,6 +236,7 @@ function testSerialPortClass(
           }),
         )
       })
+
       it('deals with flushing during a read', done => {
         const port = new SerialPort(openOptions)
         port.on('error', done)

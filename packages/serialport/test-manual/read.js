@@ -1,5 +1,3 @@
-/* eslint-disable node/no-missing-require */
-
 const { SerialPort, ByteLengthParser } = require('../')
 const exec = require('child_process').exec
 

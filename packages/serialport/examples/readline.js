@@ -1,5 +1,3 @@
-/* eslint-disable node/no-extraneous-require */
-
 // Use a Readline parser
 
 const { SerialPort, ReadlineParser } = require('serialport')
