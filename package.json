@@ -38,7 +38,7 @@
     "@types/sinon": "17.0.3",
     "chai": "5.1.1",
     "chai-subset": "1.6.0",
-    "esbuild": "0.23.0",
+    "esbuild": "0.23.1",
     "esbuild-register": "3.6.0",
     "eslint": "9.9.0",
     "eslint-config-prettier": "9.1.0",
