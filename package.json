@@ -51,7 +51,7 @@
     "mocha": "10.7.3",
     "nyc": "17.0.0",
     "prettier": "3.0.3",
-    "sinon": "19.0.2",
+    "sinon": "18.0.1",
     "typescript": "5.2.2"
   },
   "funding": "https://opencollective.com/serialport/donate",
