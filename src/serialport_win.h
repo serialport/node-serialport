@@ -19,10 +19,10 @@ struct WriteBaton {
   size_t bufferLength = 0;
   size_t offset = 0;
   size_t bytesWritten = 0;
-  void* hThread = nullptr;
+  std::thread nativeThread;
   bool complete = false;
   Napi::ObjectReference buffer;
-	Napi::FunctionReference callback;
+	Napi::ThreadSafeFunction tsfn; 
   int result = 0;
   char errorString[ERROR_STRING_SIZE];
 };
@@ -37,10 +37,11 @@ struct ReadBaton {
   size_t bytesRead = 0;
   size_t bytesToRead = 0;
   size_t offset = 0;
-  void* hThread = nullptr;
-	Napi::FunctionReference callback;
+  
+  std::thread nativeThread;
   bool complete = false;
   char errorString[ERROR_STRING_SIZE];
+  Napi::ThreadSafeFunction tsfn; 
 };
 
 Napi::Value Read(const Napi::CallbackInfo& info);
@@ -91,3 +92,4 @@ struct ListBaton : public Napi::AsyncWorker {
 };
 
 #endif  // PACKAGES_SERIALPORT_SRC_SERIALPORT_WIN_H_
+  
