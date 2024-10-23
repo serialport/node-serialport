@@ -36,7 +36,7 @@
     "@types/sinon": "17.0.3",
     "@typescript-eslint/eslint-plugin": "8.11.0",
     "@typescript-eslint/parser": "8.11.0",
-    "chai": "5.1.1",
+    "chai": "5.1.2",
     "chai-subset": "1.6.0",
     "esbuild": "0.24.0",
     "esbuild-register": "3.6.0",
