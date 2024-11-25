@@ -246,7 +246,7 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
     return super.write(data, encoding, callback)
   }
 
-  _write(data: Buffer, encoding: BufferEncoding | undefined, callback: (error: Error | null) => void) {
+  _write(data: Buffer, encoding: BufferEncoding, callback: (error: Error | null) => void) {
     if (!this.isOpen || !this.port) {
       this.once('open', () => {
         this._write(data, encoding, callback)
