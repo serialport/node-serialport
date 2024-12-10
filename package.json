@@ -44,7 +44,7 @@
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-import": "2.31.0",
     "eslint-plugin-mocha": "10.5.0",
-    "eslint-plugin-n": "17.14.0",
+    "eslint-plugin-n": "17.15.0",
     "eslint-plugin-promise": "7.2.1",
     "lerna": "7.2.0",
     "lerna-changelog": "2.2.0",
