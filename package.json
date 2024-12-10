@@ -46,7 +46,7 @@
     "eslint-plugin-mocha": "10.5.0",
     "eslint-plugin-n": "17.15.0",
     "eslint-plugin-promise": "7.2.1",
-    "lerna": "7.2.0",
+    "lerna": "8.1.9",
     "lerna-changelog": "2.2.0",
     "mocha": "11.0.1",
     "nyc": "17.1.0",
