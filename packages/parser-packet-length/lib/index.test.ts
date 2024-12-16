@@ -90,4 +90,45 @@ describe('DelimiterParser', () => {
     assert.deepEqual(spy.getCall(1).args[0], Buffer.concat([Buffer.from([0xaa, 0x02, 0x13, 0x00]), Buffer.from('Each and Every One\n')]))
     assert(spy.calledTwice)
   })
+
+  it('works with multiple delimiters', () => {
+    const spy = sinon.spy()
+    const parser = new PacketLengthParser({ delimiter: [0xaa, 0xbb], lengthOffset: 2, packetOverhead: 4, lengthBytes: 2 })
+    parser.on('data', spy)
+    parser.write(Buffer.from('\xbb\x01\x0d'))
+    parser.write(Buffer.from('\x00I love hobits\xaa\x02\x13\x00Each '))
+    parser.write(Buffer.from('and Every One\n'))
+
+    assert.deepEqual(spy.getCall(0).args[0], Buffer.concat([Buffer.from([0xbb, 0x01, 0x0d, 0x00]), Buffer.from('I love hobits')]))
+    assert.deepEqual(spy.getCall(1).args[0], Buffer.concat([Buffer.from([0xaa, 0x02, 0x13, 0x00]), Buffer.from('Each and Every One\n')]))
+    assert(spy.calledTwice)
+  })
+
+  it('works with multibyte delimiters', () => {
+    const spy = sinon.spy()
+    const parser = new PacketLengthParser({ delimiter: [0xababba], delimiterBytes: 3, lengthOffset: 3, packetOverhead: 4, lengthBytes: 1 })
+    parser.on('data', spy)
+    parser.write(Buffer.from([0xab, 0xab, 0xba, 0x0d]))
+    parser.write(Buffer.from('I love hobits'))
+    parser.write(Buffer.from([0xab, 0xab, 0xba, 0x13]))
+    parser.write(Buffer.from('Each and Every One\n'))
+
+    assert.deepEqual(spy.getCall(0).args[0], Buffer.concat([Buffer.from([0xab, 0xab, 0xba, 0x0d]), Buffer.from('I love hobits')]))
+    assert.deepEqual(spy.getCall(1).args[0], Buffer.concat([Buffer.from([0xab, 0xab, 0xba, 0x13]), Buffer.from('Each and Every One\n')]))
+    assert(spy.calledTwice)
+  })
+
+  it('works with multiple multibyte delimiters', () => {
+    const spy = sinon.spy()
+    const parser = new PacketLengthParser({ delimiter: [0xababba, 0xbaddad], delimiterBytes: 3, lengthOffset: 3, packetOverhead: 4, lengthBytes: 1 })
+    parser.on('data', spy)
+    parser.write(Buffer.from([0xab, 0xab, 0xba, 0x0d]))
+    parser.write(Buffer.from('I love hobits'))
+    parser.write(Buffer.from([0xba, 0xdd, 0xad, 0x13]))
+    parser.write(Buffer.from('Each and Every One\n'))
+
+    assert.deepEqual(spy.getCall(0).args[0], Buffer.concat([Buffer.from([0xab, 0xab, 0xba, 0x0d]), Buffer.from('I love hobits')]))
+    assert.deepEqual(spy.getCall(1).args[0], Buffer.concat([Buffer.from([0xba, 0xdd, 0xad, 0x13]), Buffer.from('Each and Every One\n')]))
+    assert(spy.calledTwice)
+  })
 })
