@@ -8,8 +8,8 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4
-      - uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d # v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
       - run: npm ci
@@ -26,8 +26,8 @@ jobs:
           - { os: ubuntu-latest }
           - { os: windows-latest }
     steps:
-      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4
-      - uses: actions/setup-node@5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d # v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
