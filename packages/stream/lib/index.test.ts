@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import sinon from 'sinon'
 import { randomBytes } from 'crypto'
 import { MockBinding, MockBindingInterface } from '@serialport/binding-mock'

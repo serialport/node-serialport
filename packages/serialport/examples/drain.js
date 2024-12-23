@@ -1,5 +1,3 @@
-/* eslint-disable node/no-extraneous-require */
-
 const { SerialPort } = require('serialport')
 const port = new SerialPort({ path: '/dev/my-great-device', baudRate: 9600 })
 

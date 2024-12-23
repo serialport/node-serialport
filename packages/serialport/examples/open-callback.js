@@ -1,5 +1,3 @@
-/* eslint-disable node/no-extraneous-require */
-
 // Constructor callback example
 const { SerialPort } = require('serialport')
 const port = new SerialPort({ path: '/dev/tty-usbserial1', baudRate: 9600 }, () => {

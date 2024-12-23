@@ -1,5 +1,3 @@
-/* eslint-disable node/no-missing-require */
-
 /**
  * This is a small example app to turn off and on
  * the built-in LED of an arduino by data sent
