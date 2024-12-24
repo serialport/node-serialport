@@ -3,7 +3,7 @@
 import { autoDetect, PortInfo } from '@serialport/bindings-cpp'
 import { program, Option } from 'commander'
 
-const { version } = require('../package.json')
+import { version } from '../package.json'
 
 const formatOption = new Option('-f, --format <type>', 'Format the output').choices(['text', 'json', 'jsonline', 'jsonl']).default('text')
 

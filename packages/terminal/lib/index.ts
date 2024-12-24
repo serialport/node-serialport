@@ -6,7 +6,7 @@ import { SerialPortStream, OpenOptions } from '@serialport/stream'
 import { OutputTranslator } from './output-translator'
 import { autoDetect, AutoDetectTypes } from '@serialport/bindings-cpp'
 
-const { version } = require('../package.json')
+import { version } from '../package.json'
 const binding = autoDetect()
 
 const makeNumber = (input: string) => Number(input)
@@ -81,7 +81,7 @@ const askForBaudRate = async () => {
   return baud
 }
 
-const createPort = ({ path, baudRate }: { path: string; baudRate: number }) => {
+const createPort = ({ path, baudRate }: { path: string, baudRate: number }) => {
   console.log(`Opening serial port: ${path} echo: ${args.echo}`)
 
   const openOptions: OpenOptions<AutoDetectTypes> = {

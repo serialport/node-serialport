@@ -1,7 +1,0 @@
-/.nyc_output
-/coverage
-/packages/**/dist
-tsconfig-build.tsbuildinfo
-tsconfig.tsbuildinfo
-package-lock.json
-/packages/**/package-lock.json
