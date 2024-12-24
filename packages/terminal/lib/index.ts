@@ -5,8 +5,9 @@ import { program } from 'commander'
 import { SerialPortStream, OpenOptions } from '@serialport/stream'
 import { OutputTranslator } from './output-translator'
 import { autoDetect, AutoDetectTypes } from '@serialport/bindings-cpp'
+import { readFileSync } from 'node:fs'
 
-import { version } from '../package.json'
+const { version } = JSON.parse(readFileSync('../package.json', 'utf8'))
 const binding = autoDetect()
 
 const makeNumber = (input: string) => Number(input)
