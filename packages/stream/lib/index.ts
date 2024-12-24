@@ -272,7 +272,7 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
   _writev(data: Array<{ chunk: Buffer, encoding: BufferEncoding }>, callback: ErrorCallback) {
     debug('_writev', `${data.length} chunks of data`)
     const dataV = data.map(write => write.chunk)
-    this._write(Buffer.concat(dataV), undefined, callback)
+    this._write(Buffer.concat(dataV), 'binary', callback)
   }
 
   _read(bytesToRead: number) {

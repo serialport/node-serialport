@@ -1,4 +1,5 @@
-import { expect } from 'chai'
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { expect } = require('chai')
 import sinon from 'sinon'
 import { SpacePacketParser } from './'
 

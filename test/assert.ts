@@ -1,4 +1,5 @@
-import { assert, use } from 'chai'
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const { assert, use } = require('chai')
 import chaiSubset from 'chai-subset'
 use(chaiSubset)
 
