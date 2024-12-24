@@ -4,7 +4,7 @@
   "types": "./dist/index.d.ts",
   "version": "10.5.0",
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=20.0.0"
   },
   "publishConfig": {
     "access": "public"
@@ -19,6 +19,6 @@
   },
   "funding": "https://opencollective.com/serialport/donate",
   "devDependencies": {
-    "typescript": "^4.5.5"
+    "typescript": "5.2.2"
   }
 }
