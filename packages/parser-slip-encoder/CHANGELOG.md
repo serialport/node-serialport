@@ -3,6 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [13.0.0](https://github.com/serialport/node-serialport/compare/v12.0.0...v13.0.0) (2024-12-24)
+
+
+### Bug Fixes
+
+* linting ([#2966](https://github.com/serialport/node-serialport/issues/2966)) ([867d8d2](https://github.com/serialport/node-serialport/commit/867d8d2eeb2ec76573991813d66cc99a0575db1b))
+
+
+### chore
+
+* Upgrade to @serialport/bindings-cpp 13 ([#2963](https://github.com/serialport/node-serialport/issues/2963)) ([a4ea1fe](https://github.com/serialport/node-serialport/commit/a4ea1fe7ad73d45eae642634aa1e17fc640b1368))
+
+
+### BREAKING CHANGES
+
+* This upgrade brings node 20 as the lowest supported version - no other changes
+
+
+
+
+
 # [12.0.0](https://github.com/serialport/node-serialport/compare/v11.0.1...v12.0.0) (2023-08-29)
 
 **Note:** Version bump only for package @serialport/parser-slip-encoder

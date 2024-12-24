@@ -2,9 +2,9 @@
   "name": "@serialport/parser-readline",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "version": "12.0.0",
+  "version": "13.0.0",
   "dependencies": {
-    "@serialport/parser-delimiter": "12.0.0"
+    "@serialport/parser-delimiter": "13.0.0"
   },
   "engines": {
     "node": ">=20.0.0"

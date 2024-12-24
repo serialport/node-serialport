@@ -1,6 +1,6 @@
 {
   "name": "@serialport/parser-cctalk",
-  "version": "12.0.0",
+  "version": "13.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
