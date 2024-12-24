@@ -1,68 +1,28 @@
-import nodePlugin from 'eslint-plugin-n'
-import mocha from 'eslint-plugin-mocha'
 import globals from 'globals'
-import js from '@eslint/js'
-import eslintConfigPrettier from 'eslint-config-prettier'
-import eslint from '@eslint/js'
-import typescriptEslint from 'typescript-eslint'
+import pluginJs from '@eslint/js'
+import tseslint from 'typescript-eslint'
+import mocha from 'eslint-plugin-mocha'
+import stylistic from '@stylistic/eslint-plugin'
 
+/** @type {import('eslint').Linter.Config[]} */
 export default [
   {
-    ignores: ['packages/*/node_modules', '**/docs', 'packages/*/dist/*'],
+    ignores: ['**/dist/', '**/*.js'],
   },
-  js.configs.recommended,
-  nodePlugin.configs['flat/recommended-script'],
+  { languageOptions: { globals: globals.node } },
+  pluginJs.configs.recommended,
+  ...tseslint.configs.recommended,
   mocha.configs['flat'].recommended,
-  ...typescriptEslint.configs.recommended,
-  eslintConfigPrettier,
+  stylistic.configs['recommended-flat'],
   {
-    languageOptions: {
-      globals: {
-        ...globals.node,
-        ...globals.mocha,
-        assert: false,
-        makeTestFeature: false,
-        shouldReject: false,
-      },
-      ecmaVersion: 12,
-      sourceType: 'commonjs',
-    },
-
     rules: {
-      'no-extra-semi': 'off',
-      '@typescript-eslint/no-extra-semi': 'off',
-      'n/no-process-exit': 'off',
-      'no-var': 'error',
-
-      'n/no-extraneous-import': [
-        'error',
-        {
-          allowModules: ['sinon', 'chai'],
-        },
-      ],
-
-      'n/no-missing-import': 'off',
-      'n/no-missing-require': 'off',
-      'n/no-unpublished-import': 'off',
-      'n/no-unpublished-require': 'off',
-      'n/no-unsupported-features/es-builtins': 'error',
-      'n/no-unsupported-features/es-syntax': 'off',
-      'n/no-unsupported-features/node-builtins': 'error',
-      'n/hashbang': 'off',
-      'object-shorthand': 'error',
-      'prefer-arrow-callback': 'error',
-      'prefer-const': 'error',
-      'prefer-template': 'error',
-      'mocha/no-exclusive-tests': 'error',
-      'mocha/no-hooks-for-single-case': 'off',
       'mocha/no-mocha-arrows': 'off',
-      'mocha/no-pending-tests': 'error',
       'mocha/no-setup-in-describe': 'off',
-      strict: ['error', 'never'],
-      'valid-jsdoc': 'off',
-      '@typescript-eslint/no-var-requires': 'off',
-      '@typescript-eslint/no-empty-function': 'off',
-      '@typescript-eslint/no-require-imports': 'off',
+      'mocha/no-exclusive-tests': 'error',
+      '@stylistic/arrow-parens': ['error', 'as-needed'],
+      '@stylistic/brace-style': ['error', '1tbs', { allowSingleLine: true }],
+      '@stylistic/quotes': ['error', 'single', { avoidEscape: true }],
+      'object-shorthand': ['error', 'always', { avoidQuotes: true }],
     },
   },
 ]

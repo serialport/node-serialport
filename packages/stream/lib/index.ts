@@ -40,7 +40,7 @@ function allocNewReadPool(poolSize: number): PoolBuffer {
  */
 export type ErrorCallback = (err: Error | null) => void
 
-export type ModemBitsCallback = (err: Error | null, options?: { cts: boolean; dsr: boolean; dcd: boolean }) => void
+export type ModemBitsCallback = (err: Error | null, options?: { cts: boolean, dsr: boolean, dcd: boolean }) => void
 
 export type OpenOptions<T extends BindingInterface = BindingInterface> = StreamOptions<T> & OpenOptionsFromBinding<T>
 
@@ -53,7 +53,7 @@ export interface StreamOptions<T extends BindingInterface> {
    */
   binding: T
 
-  /** Automatically opens the port defaults to true*/
+  /** Automatically opens the port defaults to true */
   autoOpen?: boolean
 
   /**
@@ -269,10 +269,10 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
     )
   }
 
-  _writev(data: Array<{ chunk: Buffer; encoding: BufferEncoding }>, callback: ErrorCallback) {
+  _writev(data: Array<{ chunk: Buffer, encoding: BufferEncoding }>, callback: ErrorCallback) {
     debug('_writev', `${data.length} chunks of data`)
     const dataV = data.map(write => write.chunk)
-    this._write(Buffer.concat(dataV), undefined, callback)
+    this._write(Buffer.concat(dataV), 'binary', callback)
   }
 
   _read(bytesToRead: number) {
@@ -298,10 +298,10 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
     const start = pool.used
 
     // the actual read.
-    debug('_read', `reading`, { start, toRead })
+    debug('_read', 'reading', { start, toRead })
     this.port.read(pool, start, toRead).then(
       ({ bytesRead }) => {
-        debug('binding.read', `finished`, { bytesRead })
+        debug('binding.read', 'finished', { bytesRead })
         // zero bytes means read means we've hit EOF? Maybe this should be an error
         if (bytesRead === 0) {
           debug('binding.read', 'Zero bytes read closing readable stream')
@@ -312,7 +312,7 @@ export class SerialPortStream<T extends BindingInterface = BindingInterface> ext
         this.push(pool.slice(start, start + bytesRead))
       },
       err => {
-        debug('binding.read', `error`, err)
+        debug('binding.read', 'error', err)
         if (!err.canceled) {
           this._disconnected(err)
         }

@@ -29,7 +29,7 @@ export interface PacketLengthOptions extends TransformOptions {
 export class PacketLengthParser extends Transform {
   buffer: Buffer
   start: boolean
-  opts: { delimiter: number; packetOverhead: number; lengthBytes: number; lengthOffset: number; maxLen: number }
+  opts: { delimiter: number, packetOverhead: number, lengthBytes: number, lengthOffset: number, maxLen: number }
   constructor(options: PacketLengthOptions = {}) {
     super(options)
 

@@ -22,7 +22,7 @@ export interface SlipDecoderOptions extends TransformOptions {
  * Runs in O(n) time, stripping out slip encoding and emitting decoded data. Optionally custom slip escape and delimiters can be provided.
  */
 export class SlipDecoder extends Transform {
-  opts: { START: number | undefined; ESC: number; END: number; ESC_START: number | undefined; ESC_END: number; ESC_ESC: number }
+  opts: { START: number | undefined, ESC: number, END: number, ESC_START: number | undefined, ESC_END: number, ESC_ESC: number }
   buffer: Buffer
   escape: boolean
   start: boolean

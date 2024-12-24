@@ -24,7 +24,7 @@ async function findArduino() {
 }
 
 findArduino()
-  .then(({ path, baudRate }: { path: string; baudRate: number }) => {
+  .then(({ path, baudRate }: { path: string, baudRate: number }) => {
     console.log(`DEBUG=${process.env.DEBUG || ''} # enable debugging with DEBUG=serialport*`)
     console.log(`port = SerialPort({ path: "${path}", baudRate: ${baudRate}, autoOpen: false })`)
     console.log('globals { SerialPort, SerialPortMock, path, port }')
