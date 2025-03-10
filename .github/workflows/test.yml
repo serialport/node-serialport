@@ -32,6 +32,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
       - run: npm test
-      - uses: codecov/codecov-action@ab904c41d6ece82784817410c45d8b8c02684457 # v3
+      - uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574 # v5
         with:
           directory: ./coverage/
