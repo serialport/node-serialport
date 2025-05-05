@@ -49,7 +49,7 @@
     "nyc": "17.1.0",
     "sinon": "20.0.0",
     "typescript": "5.7.2",
-    "typescript-eslint": "8.31.1"
+    "typescript-eslint": "8.32.0"
   },
   "funding": "https://opencollective.com/serialport/donate",
   "changelog": {
