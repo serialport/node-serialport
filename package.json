@@ -41,7 +41,7 @@
     "esbuild": "0.25.4",
     "esbuild-register": "3.6.0",
     "eslint": "9.27.0",
-    "eslint-plugin-mocha": "11.0.0",
+    "eslint-plugin-mocha": "11.1.0",
     "globals": "15.14.0",
     "lerna": "7.4.2",
     "lerna-changelog": "2.2.0",
