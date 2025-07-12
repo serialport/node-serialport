@@ -36,7 +36,7 @@
     "@types/mocha": "10.0.10",
     "@types/node": "22.13.8",
     "@types/sinon": "17.0.4",
-    "chai": "5.2.0",
+    "chai": "5.2.1",
     "chai-subset": "1.6.0",
     "esbuild": "0.25.5",
     "esbuild-register": "3.6.0",
