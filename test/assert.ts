@@ -1,7 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { assert, use } = require('chai')
-import chaiSubset from 'chai-subset'
-use(chaiSubset)
+const { assert } = require('chai')
 
 export const shouldReject = async (promise: Promise<unknown>, errType = Error, message = 'Should have rejected') => {
   try {
