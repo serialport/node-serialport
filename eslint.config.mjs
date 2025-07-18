@@ -12,7 +12,7 @@ export default [
   { languageOptions: { globals: globals.node } },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
-  mocha.configs['flat'].recommended,
+  mocha.configs.recommended,
   stylistic.configs['recommended-flat'],
   {
     rules: {
