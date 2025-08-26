@@ -3,7 +3,7 @@
 import { autoDetect, PortInfo } from '@serialport/bindings-cpp'
 import { program, Option } from 'commander'
 import { readFileSync } from 'node:fs'
-import path from 'path';
+import { path } from 'node:path'
 
 const { version } = JSON.parse(readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'))
 
