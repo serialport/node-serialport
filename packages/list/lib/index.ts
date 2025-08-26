@@ -3,8 +3,9 @@
 import { autoDetect, PortInfo } from '@serialport/bindings-cpp'
 import { program, Option } from 'commander'
 import { readFileSync } from 'node:fs'
+import path from 'path';
 
-const { version } = JSON.parse(readFileSync('../package.json', 'utf8'))
+const { version } = JSON.parse(readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'))
 
 const formatOption = new Option('-f, --format <type>', 'Format the output').choices(['text', 'json', 'jsonline', 'jsonl']).default('text')
 
