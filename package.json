@@ -45,7 +45,7 @@
     "globals": "15.14.0",
     "lerna": "7.4.2",
     "lerna-changelog": "2.2.0",
-    "mocha": "11.7.2",
+    "mocha": "11.7.3",
     "nyc": "17.1.0",
     "sinon": "21.0.0",
     "typescript": "5.7.2",
