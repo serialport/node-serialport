@@ -7,7 +7,7 @@ import { OutputTranslator } from './output-translator'
 import { autoDetect, AutoDetectTypes } from '@serialport/bindings-cpp'
 import { readFileSync } from 'node:fs'
 
-const { version } = JSON.parse(readFileSync('../package.json', 'utf8'))
+const { version } = JSON.parse(readFileSync(__dirname + '/../package.json', 'utf8'))
 const binding = autoDetect()
 
 const makeNumber = (input: string) => Number(input)
