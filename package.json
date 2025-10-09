@@ -48,7 +48,7 @@
     "mocha": "11.7.4",
     "nyc": "17.1.0",
     "sinon": "21.0.0",
-    "typescript": "5.7.2",
+    "typescript": "5.9.3",
     "typescript-eslint": "8.46.0"
   },
   "funding": "https://opencollective.com/serialport/donate",
