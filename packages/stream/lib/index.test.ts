@@ -6,6 +6,7 @@ import { DisconnectedError, OpenOptions, SerialPortStream } from './'
 import { assert } from '../../../test/assert'
 
 const sandbox = sinon.createSandbox()
+
 describe('SerialPort', () => {
   const openOpts: OpenOptions<MockBindingInterface> = { path: '/dev/exists', baudRate: 9600, binding: MockBinding }
 
