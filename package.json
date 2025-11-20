@@ -35,7 +35,7 @@
     "@types/debug": "4.1.12",
     "@types/mocha": "10.0.10",
     "@types/node": "22.19.1",
-    "@types/sinon": "17.0.4",
+    "@types/sinon": "21.0.0",
     "chai": "6.0.1",
     "chai-subset": "1.6.0",
     "esbuild": "0.27.0",
