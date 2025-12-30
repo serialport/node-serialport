@@ -36,10 +36,13 @@ Parsers are traditionally Transform streams, but Duplex streams and other non st
 - [@serialport/parser-byte-length](https://serialport.io/docs/api-parser-byte-length)
 - [@serialport/parser-cctalk](https://serialport.io/docs/api-parser-cctalk)
 - [@serialport/parser-delimiter](https://serialport.io/docs/api-parser-delimiter)
+- [@serialport/parser-inter-byte-timeout](https://serialport.io/docs/api-parser-inter-byte-timeout)
+- [@serialport/parser-packet-length](https://serialport.io/docs/api-parser-packet-length)
 - [@serialport/parser-readline](https://serialport.io/docs/api-parser-readline)
 - [@serialport/parser-ready](https://serialport.io/docs/api-parser-ready)
 - [@serialport/parser-regex](https://serialport.io/docs/api-parser-regex)
 - [@serialport/parser-slip-encoder](https://serialport.io/docs/api-parser-slip-encoder)
+- [@serialport/parser-spacepacket](https://serialport.io/docs/api-parser-spacepacket)
 
 ## Developing
 
