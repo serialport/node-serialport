@@ -5,15 +5,11 @@ import { program } from 'commander'
 import { SerialPortStream, OpenOptions } from '@serialport/stream'
 import { OutputTranslator } from './output-translator'
 import { autoDetect, AutoDetectTypes } from '@serialport/bindings-cpp'
-import pkg from '../package.json' assert { type: 'json' };
-
-const { version } = pkg;
 const binding = autoDetect()
 
 const makeNumber = (input: string) => Number(input)
 
 program
-  .version(version)
   .usage('--list OR -p <port> -b <baud rate> [options...]')
   .description('A basic terminal interface for communicating over a serial port. Pressing ctrl+c exits.')
   .option('-l --list', 'List available ports then exit')

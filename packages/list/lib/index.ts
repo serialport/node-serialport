@@ -2,13 +2,12 @@
 
 import { autoDetect, PortInfo } from '@serialport/bindings-cpp'
 import { program, Option } from 'commander'
-import pkg from '../package.json' assert { type: 'json' };
-
-const { version } = pkg;
 
 const formatOption = new Option('-f, --format <type>', 'Format the output').choices(['text', 'json', 'jsonline', 'jsonl']).default('text')
 
-program.version(version).description('List available serial ports').addOption(formatOption).parse(process.argv)
+program
+  .description('List available serial ports')
+  .addOption(formatOption).parse(process.argv)
 
 function jsonl(ports: PortInfo[]) {
   ports.forEach(port => {
