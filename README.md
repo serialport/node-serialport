@@ -56,8 +56,8 @@ If you have a PR that improves the project people in any or all of the above peo
 
 ### Maintainers
 
-- [Francis Gulotta](https://twitter.com/reconbot) | [reconbot](https://github.com/reconbot)
-- [Nick Hehr](https://twitter.com/hipsterbrown) | [hipsterbrown](https://github.com/hipsterbrown)
+- [Francis Gulotta](https://toot.cafe/@reconbot) | [reconbot](https://github.com/reconbot)
+- [Nick Hehr](https://toot.cafe/@hipsterbrown) | [hipsterbrown](https://github.com/hipsterbrown)
 
 ### Contributors
 
