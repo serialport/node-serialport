@@ -29,7 +29,7 @@
     "@eslint/js": "9.39.2",
     "@serialport/bindings-cpp": "13.0.0",
     "@stylistic/eslint-plugin": "5.6.1",
-    "@tsconfig/node18": "18.2.4",
+    "@tsconfig/node20": "20.1.0",
     "@types/chai": "5.2.3",
     "@types/debug": "4.1.12",
     "@types/mocha": "10.0.10",
