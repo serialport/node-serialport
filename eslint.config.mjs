@@ -13,7 +13,7 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   mocha.configs.recommended,
-  stylistic.configs['recommended-flat'],
+  stylistic.configs['recommended'],
   {
     rules: {
       'mocha/no-mocha-arrows': 'off',

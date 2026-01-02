@@ -1,3 +1,4 @@
+/* eslint-disable mocha/consistent-spacing-between-blocks */
 import { randomBytes } from 'crypto'
 import { SerialPort as SerialPortAutoDetect, SerialPortMock } from './'
 import { assert } from '../../../test/assert'
@@ -240,7 +241,7 @@ function testSerialPortClass(
       it('deals with flushing during a read', done => {
         const port = new SerialPort(openOptions)
         port.on('error', done)
-        port.on('data', () => {}) // enter flowing mode
+        port.on('data', () => { }) // enter flowing mode
         port.once('data', () => {
           // we should have a pending read now since we're in flowing mode
           port.flush(err => {
