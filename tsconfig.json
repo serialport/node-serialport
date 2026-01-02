@@ -1,13 +1,17 @@
 {
-  "extends": "@tsconfig/node18/tsconfig.json",
+  "extends": "@tsconfig/node24/tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@serialport/*": ["packages/*/lib"],
-      "serialport": ["packages/serialport/lib"]
+      "@serialport/*": [
+        "packages/*/lib"
+      ],
+      "serialport": [
+        "packages/serialport/lib"
+      ]
     },
     "allowJs": false,
     "checkJs": false,
-    "noEmit": true
+    "noEmit": true,
   }
 }
