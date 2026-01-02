@@ -35,7 +35,7 @@
     "@types/mocha": "10.0.10",
     "@types/node": "22.19.3",
     "@types/sinon": "21.0.0",
-    "chai": "6.0.1",
+    "chai": "6.2.2",
     "esbuild": "0.27.2",
     "esbuild-register": "3.6.0",
     "eslint": "9.39.2",
