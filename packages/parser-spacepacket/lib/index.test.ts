@@ -165,4 +165,18 @@ describe('SpacePacketParser', () => {
 
     test.write(buffer)
   })
+
+  it('does not reuse payload data when a chunk ends at the next header', () => {
+    const first = buildSixCharacterBasicSpacePacket('hello!')
+    const second = buildSixCharacterBasicSpacePacket('world!')
+    const input = Buffer.concat([first.buffer, second.buffer])
+    for (let split = 0; split <= input.length; split++) {
+      const parser = new SpacePacketParser()
+      const packets: unknown[] = []
+      parser.on('data', packet => packets.push(packet))
+      parser.write(input.subarray(0, split))
+      parser.write(input.subarray(split))
+      expect(packets, `split ${split}`).to.deep.equal([first.expected, second.expected])
+    }
+  })
 })

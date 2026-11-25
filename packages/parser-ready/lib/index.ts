@@ -14,6 +14,7 @@ export class ReadyParser extends Transform {
   delimiter: Buffer
   readOffset: number
   ready: boolean
+  private prefixLengths: number[]
 
   constructor({ delimiter, ...options }: ReadyParserOptions) {
     if (delimiter === undefined) {
@@ -26,6 +27,17 @@ export class ReadyParser extends Transform {
 
     super(options)
     this.delimiter = Buffer.from(delimiter)
+    // A mismatch can still leave a delimiter prefix, including across writes.
+    this.prefixLengths = new Array(this.delimiter.length).fill(0)
+    for (let i = 1, prefix = 0; i < this.delimiter.length; i++) {
+      while (prefix > 0 && this.delimiter[i] !== this.delimiter[prefix]) {
+        prefix = this.prefixLengths[prefix - 1]
+      }
+      if (this.delimiter[i] === this.delimiter[prefix]) {
+        prefix++
+      }
+      this.prefixLengths[i] = prefix
+    }
     this.readOffset = 0
     this.ready = false
   }
@@ -38,10 +50,11 @@ export class ReadyParser extends Transform {
     const delimiter = this.delimiter
     let chunkOffset = 0
     while (this.readOffset < delimiter.length && chunkOffset < chunk.length) {
+      while (this.readOffset > 0 && delimiter[this.readOffset] !== chunk[chunkOffset]) {
+        this.readOffset = this.prefixLengths[this.readOffset - 1]
+      }
       if (delimiter[this.readOffset] === chunk[chunkOffset]) {
         this.readOffset++
-      } else {
-        this.readOffset = 0
       }
       chunkOffset++
     }

@@ -96,4 +96,20 @@ describe('ReadyParser', () => {
     assert.deepEqual(spy.getCall(0).args[0], Buffer.from('!!!!!!'))
     assert(spy.calledOnce)
   })
+
+  it('finds overlapping delimiters at every chunk boundary', () => {
+    for (const [delimiter, input] of [['READY', 'RREADYhello'], ['ab', 'aabhello'], ['ababac', 'ababababachello'], ['aaaab', 'aaaaabhello']]) {
+      for (let split = 0; split <= input.length; split++) {
+        const parser = new ReadyParser({ delimiter })
+        const data: Buffer[] = []
+        const ready = sinon.spy()
+        parser.on('ready', ready)
+        parser.on('data', chunk => data.push(chunk))
+        parser.write(Buffer.from(input.slice(0, split)))
+        parser.write(Buffer.from(input.slice(split)))
+        assert.isTrue(ready.calledOnce, `${delimiter}, split ${split}`)
+        assert.equal(Buffer.concat(data).toString(), input.slice(input.indexOf(delimiter) + delimiter.length))
+      }
+    }
+  })
 })
