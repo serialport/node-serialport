@@ -113,12 +113,9 @@ export class SpacePacketParser extends Transform {
       this.headerBuffer = headerAsBuffer
     }
 
-    if (startOfDataBuffer.length > 0) {
-      this.dataBuffer = Buffer.from(startOfDataBuffer)
-
-      if (this.dataBuffer.length >= this.dataLength) {
-        this.pushCompletedPacket()
-      }
+    this.dataBuffer = Buffer.from(startOfDataBuffer)
+    if (!this.expectingHeader && this.dataBuffer.length >= this.dataLength) {
+      this.pushCompletedPacket()
     }
   }
 

@@ -73,7 +73,7 @@ export class PacketLengthParser extends Transform {
             this.start = true
             this.buffer = Buffer.from([...this.buffer].reverse())
           } else {
-            this.buffer = Buffer.from(this.buffer.subarray(1, this.buffer.length))
+            this.buffer = Buffer.from(this.buffer.subarray(0, this.buffer.length - 1))
           }
         }
       }

@@ -131,4 +131,18 @@ describe('DelimiterParser', () => {
     assert.deepEqual(spy.getCall(1).args[0], Buffer.concat([Buffer.from([0xba, 0xdd, 0xad, 0x13]), Buffer.from('Each and Every One\n')]))
     assert(spy.calledTwice)
   })
+
+  it('recovers multibyte delimiters after noise at every chunk boundary', () => {
+    const first = Buffer.from([0xab, 0xab, 0xba, 2, 0x68, 0x69])
+    const second = Buffer.from([0xba, 0xdd, 0xad, 2, 0x79, 0x6f])
+    const input = Buffer.concat([Buffer.from([0, 0xab]), first, Buffer.from([0, 0xba]), second])
+    for (let split = 0; split <= input.length; split++) {
+      const parser = new PacketLengthParser({ delimiter: [0xababba, 0xbaddad], delimiterBytes: 3, lengthOffset: 3, packetOverhead: 4 })
+      const packets: Buffer[] = []
+      parser.on('data', packet => packets.push(packet))
+      parser.write(input.subarray(0, split))
+      parser.write(input.subarray(split))
+      assert.deepEqual(packets, [first, second], `split ${split}`)
+    }
+  })
 })
